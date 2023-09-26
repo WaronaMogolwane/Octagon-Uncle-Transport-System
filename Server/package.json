@@ -1,0 +1,11 @@
+{
+  "name": "school-transport-server",
+  "version": "1.0.0",
+  "description": "A server that handles HTTP requests from the School Transport App",
+  "main": "index.js",
+  "scripts": {
+    "test": "Test"
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -1,3 +1,9 @@
+import {FIREBASE_API_KEY,
+  FIREBASE_AUTH_DOMAIN,
+  FIREBASE_PROJECT_ID,
+  FIRBASE_STORAGE_BUCKET,
+  FIREBASE_MEESAGE_SENDER_ID,
+  FIREBASE_APP_ID} from "@env";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import {
@@ -14,12 +20,12 @@ import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDGlzRVvX3pdBut0_V7vI3kR19ZNumIwAM",
-  authDomain: "node-js-crud-cfdf9.firebaseapp.com",
-  projectId: "node-js-crud-cfdf9",
-  storageBucket: "node-js-crud-cfdf9.appspot.com",
-  messagingSenderId: "1334332932",
-  appId: "1:1334332932:web:a6d63aa9be9bd38cd82f51",
+  apiKey: FIREBASE_API_KEY,
+  authDomain: FIREBASE_AUTH_DOMAIN,
+  projectId: FIREBASE_PROJECT_ID,
+  storageBucket: FIRBASE_STORAGE_BUCKET,
+  messagingSenderId: FIREBASE_MEESAGE_SENDER_ID,
+  appId: FIREBASE_APP_ID,
 };
 
 // Initialize Firebase

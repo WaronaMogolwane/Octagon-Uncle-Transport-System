@@ -5,7 +5,7 @@ import {
   updatePassword,
   sendEmailVerification,
 } from "firebase/auth";
-import { FIREBASE_AUTH } from "./FirebaseConfig";
+import { FIREBASE_AUTH } from "../Firebase/FirebaseConfig";
 import { AuthenticationResponseModel } from "../Models/AuthenticationResponseModel";
 
 let authenticationResponse: AuthenticationResponseModel;

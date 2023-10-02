@@ -4,7 +4,7 @@ import {
   ForgotPassword,
   SetPassword,
   VerifyEmail
-} from "../Firebase/Authentication";
+} from "../Data/Authentication";
 
 export const UserSignUp = async (userEmail: string, userPassword: string) => {
    return await CreateUserWithEmailPassword(userEmail, userPassword);

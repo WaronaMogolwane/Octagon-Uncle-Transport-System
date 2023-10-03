@@ -1,9 +1,11 @@
-import {FIREBASE_API_KEY,
+import {
+  FIREBASE_API_KEY,
   FIREBASE_AUTH_DOMAIN,
   FIREBASE_PROJECT_ID,
   FIRBASE_STORAGE_BUCKET,
   FIREBASE_MEESAGE_SENDER_ID,
-  FIREBASE_APP_ID} from "@env";
+  FIREBASE_APP_ID,
+} from "@env";
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import {
@@ -11,6 +13,7 @@ import {
   onAuthStateChanged,
   signOut,
   createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
 } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
@@ -34,7 +37,7 @@ export const FIREBASE_APP = initializeApp(firebaseConfig);
 
 export const FIREBASE_AUTH = getAuth(FIREBASE_APP);
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(FIREBASE_AUTH, (user) => {
   if (user) {
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/auth.user
@@ -52,8 +55,7 @@ onAuthStateChanged(auth, (user) => {
 export const FIREBASE_STORAGE = getStorage(FIREBASE_APP);
 
 export function IsLoggedIn() {
-  if (auth.currentUser) {
-    console.log(auth.currentUser);
+  if (FIREBASE_AUTH.currentUser) {
     return true;
   }
 }
@@ -64,8 +66,8 @@ export function GetUserUid() {
   return UID;
 }
 
-export const YserSignOut = () => {
-  signOut(auth)
+export const UserSignOut = () => {
+  signOut(FIREBASE_AUTH)
     .then(() => {
       // Sign-out successful.
       return true;

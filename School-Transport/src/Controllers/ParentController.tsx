@@ -3,8 +3,8 @@ import {
   GetAllUsersFromDatabase,
   GetUserDetailsFromDatabase,
   deleteUserFromDatabase,
-} from "../Data/UserDAL";
-import { Parent } from "../Models/UserData";
+} from "../Data/ParentDAL";
+import { Parent } from "../Models/Parent";
 
 export const AddUser = async (parentDetails: Parent) => {
   await AddUserToDatabase(parentDetails);

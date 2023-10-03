@@ -11,19 +11,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { FIRESTORE_DB, GetUserUid } from "../Firebase/FirebaseConfig";
-import { Parent } from "../Models/UserData";
-
-/*
-export const AddParentToDatabase = async (parentDetails: Parent) => {
-  try {
-    const doc = addDoc(collection(FIRESTORE_DB, "parents"), {
-      parentDetails,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-*/
+import { Parent } from "../Models/Parent";
 
 export const AddUserToDatabase = async (personalDetailsForm: Parent) => {
   try {
@@ -46,10 +34,17 @@ export const GetUserDetailsFromDatabase = async () => {
       let parent = new Parent(
         snapshot.firstName,
         snapshot.lastName,
-        snapshot.age,
-        snapshot.email
+        snapshot.email,
+        snapshot.idNumber,
+        snapshot.email,
+        snapshot.role,
+        snapshot.addressLine1,
+        snapshot.addressLine2,
+        snapshot.suburb,
+        snapshot.cityTown,
+        snapshot.provinceState,
+        snapshot.postalCode
       );
-
       return parent;
     } else {
       // docSnap.data() will be undefined in this case
@@ -71,8 +66,16 @@ export const GetAllUsersFromDatabase = async () => {
       let parent = new Parent(
         snapshot.firstName,
         snapshot.lastName,
-        snapshot.age,
-        snapshot.email
+        snapshot.email,
+        snapshot.idNumber,
+        snapshot.email,
+        snapshot.role,
+        snapshot.addressLine1,
+        snapshot.addressLine2,
+        snapshot.suburb,
+        snapshot.cityTown,
+        snapshot.provinceState,
+        snapshot.postalCode
       );
 
       parentArray.push(parent);

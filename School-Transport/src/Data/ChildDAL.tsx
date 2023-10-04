@@ -10,25 +10,51 @@ import {
 import { FIRESTORE_DB, GetUserUid } from "../Firebase/FirebaseConfig";
 import { Child } from "../Models/Child";
 
-export const AddChildToDatabase = async (ChildlDetailsForm: Child) => {
+export const AddChildToDatabase = async (child: Child) => {
+  const docRef = doc(
+    FIRESTORE_DB,
+    "Users",
+    GetUserUid(),
+    "Children",
+    child.childId.toString()
+  );
+
   try {
-    await updateDoc(doc(FIRESTORE_DB, "Users", GetUserUid()), {
-      ChildlDetailsForm,
-    });
+    await setDoc(
+      doc(
+        FIRESTORE_DB,
+        "Users",
+        GetUserUid(),
+        "Children",
+        child.childId.toString()
+      ),
+      {
+        childId: child.childId,
+        age: child.age,
+        firstName: child.firstName,
+        lastName: child.lastName,
+        sex: child.sex,
+      }
+    );
     console.log("Child added successfuly");
   } catch (e) {
     console.error(e);
   }
 };
 
-export const GetChildDetailsFromDatabase = async () => {
+export const GetChildFromDatabase = async (childId: string) => {
   try {
-    const docRef = doc(FIRESTORE_DB, "Users", GetUserUid(), "Children");
+    const docRef = doc(
+      FIRESTORE_DB,
+      "Users",
+      GetUserUid(),
+      "Children",
+      childId
+    );
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
       let snapshot = docSnap.data();
-      //console.log("Document data:", docSnap.data());
 
       let child = new Child(
         snapshot.childId,
@@ -37,6 +63,8 @@ export const GetChildDetailsFromDatabase = async () => {
         snapshot.age,
         snapshot.sex
       );
+
+      console.log(child);
 
       return child;
     } else {
@@ -53,7 +81,7 @@ export const GetAllChildrenFromDatabase = async () => {
     let childArray: Child[] = [];
 
     const querySnapshot = await getDocs(
-      collection(FIRESTORE_DB, "Users", GetUserUid(), "")
+      collection(FIRESTORE_DB, "Users", GetUserUid(), "Children")
     );
     querySnapshot.docs.forEach((doc) => {
       let snapshot = doc.data();
@@ -71,15 +99,19 @@ export const GetAllChildrenFromDatabase = async () => {
 
     childArray = [...childArray];
 
+    console.log(childArray);
+
     return childArray;
   } catch (error) {
     console.log(error);
   }
 };
 
-export const deleteChildFromDatabase = async (id: String) => {
+export const deleteChildFromDatabase = async (childId: string) => {
   try {
-    await deleteDoc(doc(FIRESTORE_DB, "Users", GetUserUid(), "Children"));
+    await deleteDoc(
+      doc(FIRESTORE_DB, "Users", GetUserUid(), "Children", childId)
+    );
     console.log("Child deleted");
   } catch (error) {
     console.log(error);

@@ -1,23 +1,23 @@
 import {
-  AddUserToDatabase,
-  GetAllUsersFromDatabase,
-  GetUserDetailsFromDatabase,
-  deleteUserFromDatabase,
+  AddParentToDatabase,
+  GetAllParentsFromDatabase,
+  GetParentFromDatabase,
+  DeleteParentFromDatabase,
 } from "../Data/ParentDAL";
 import { Parent } from "../Models/Parent";
 
-export const AddUser = async (parentDetails: Parent) => {
-  await AddUserToDatabase(parentDetails);
+export const AddParent = async (parentDetails: Parent) => {
+  await AddParentToDatabase(parentDetails);
 };
 
-export const GetUser = async () => {
-  return await GetUserDetailsFromDatabase();
+export const GetParent = async () => {
+  return await GetParentFromDatabase();
 };
 
-export const GetAllUsers = async () => {
-  return await GetAllUsersFromDatabase();
+export const GetAllParents = async () => {
+  return await GetAllParentsFromDatabase();
 };
 
-export const deleteUser = async () => {
-  return await deleteUserFromDatabase();
+export const DeleteParent = async () => {
+  return await DeleteParentFromDatabase();
 };

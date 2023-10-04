@@ -5,24 +5,22 @@ import {
   getDoc,
   setDoc,
   doc,
-  query,
-  where,
-  onSnapshot,
   deleteDoc,
 } from "firebase/firestore";
 import { FIRESTORE_DB, GetUserUid } from "../Firebase/FirebaseConfig";
 import { Parent } from "../Models/Parent";
 
-export const AddUserToDatabase = async (personalDetailsForm: Parent) => {
+export const AddParentToDatabase = async (parentDetals: Parent) => {
   try {
-    await setDoc(doc(FIRESTORE_DB, "Users", GetUserUid()), personalDetailsForm);
+    await setDoc(doc(FIRESTORE_DB, "Users", GetUserUid()), parentDetals);
+
     console.log("Parent added successfuly");
   } catch (e) {
     console.error(e);
   }
 };
 
-export const GetUserDetailsFromDatabase = async () => {
+export const GetParentFromDatabase = async () => {
   try {
     const docRef = doc(FIRESTORE_DB, "Users", GetUserUid());
     const docSnap = await getDoc(docRef);
@@ -55,7 +53,7 @@ export const GetUserDetailsFromDatabase = async () => {
   }
 };
 
-export const GetAllUsersFromDatabase = async () => {
+export const GetAllParentsFromDatabase = async () => {
   try {
     let parentArray: Parent[] = [];
 
@@ -89,7 +87,7 @@ export const GetAllUsersFromDatabase = async () => {
   }
 };
 
-export const deleteUserFromDatabase = async () => {
+export const DeleteParentFromDatabase = async () => {
   try {
     await deleteDoc(doc(FIRESTORE_DB, "Users", GetUserUid()));
     console.log("Parent deleted");

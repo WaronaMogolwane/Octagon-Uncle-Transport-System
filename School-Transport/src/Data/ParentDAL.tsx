@@ -1,18 +1,18 @@
 import {
   collection,
-  addDoc,
   getDocs,
   getDoc,
   setDoc,
   doc,
   deleteDoc,
+  runTransaction,
 } from "firebase/firestore";
 import { FIRESTORE_DB, GetUserUid } from "../Firebase/FirebaseConfig";
 import { Parent } from "../Models/Parent";
 
-export const AddParentToDatabase = async (parentDetals: Parent) => {
+export const AddParentToDatabase = async (parent: Parent) => {
   try {
-    await setDoc(doc(FIRESTORE_DB, "Users", GetUserUid()), parentDetals);
+    await setDoc(doc(FIRESTORE_DB, "Users", GetUserUid()), parent);
 
     console.log("Parent added successfuly");
   } catch (e) {
@@ -93,5 +93,36 @@ export const DeleteParentFromDatabase = async () => {
     console.log("Parent deleted");
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const UpdateParentInDatabase = async (parent: Parent) => {
+  const docRef = doc(FIRESTORE_DB, "Users", GetUserUid());
+
+  try {
+    await runTransaction(FIRESTORE_DB, async (transaction) => {
+      const sfDoc = await transaction.get(docRef);
+      if (!sfDoc.exists()) {
+        throw "Document does not exist!";
+      }
+
+      transaction.update(docRef, {
+        firstName: parent.firstName,
+        lastName: parent.lastName,
+        cellphone: parent.cellphone,
+        idNumber: parent.idNumber,
+        email: parent.email,
+        addressLine1: parent.addressLine1,
+        addressLine2: parent.addressLine2,
+        suburb: parent.suburb,
+        cityTown: parent.cityTown,
+        provinceState: parent.provinceState,
+        postalCode: parent.postalCode,
+        role: parent.role,
+      });
+    });
+    console.log("Transaction successfully committed!");
+  } catch (e) {
+    console.log("Transaction failed: ", e);
   }
 };

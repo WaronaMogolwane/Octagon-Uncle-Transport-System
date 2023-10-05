@@ -2,7 +2,8 @@ import {
   AddChildToDatabase,
   GetChildFromDatabase,
   GetAllChildrenFromDatabase,
-  deleteChildFromDatabase,
+  DeleteChildFromDatabase,
+  UpdateChildInDatabase,
 } from "../Data/ChildDAL";
 import { Child } from "../Models/Child";
 
@@ -18,6 +19,10 @@ export const GetAllChildren = async () => {
   return await GetAllChildrenFromDatabase();
 };
 
-export const deleteChild = async (childId: string) => {
-  return await deleteChildFromDatabase(childId);
+export const DeleteChild = async (childId: string) => {
+  return await DeleteChildFromDatabase(childId);
+};
+
+export const UpdateChild = async (child: Child) => {
+  await UpdateChildInDatabase(child);
 };

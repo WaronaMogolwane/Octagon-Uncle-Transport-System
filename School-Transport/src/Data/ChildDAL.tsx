@@ -5,7 +5,7 @@ import {
   setDoc,
   doc,
   deleteDoc,
-  updateDoc,
+  runTransaction,
 } from "firebase/firestore";
 import { FIRESTORE_DB, GetUserUid } from "../Firebase/FirebaseConfig";
 import { Child } from "../Models/Child";
@@ -107,7 +107,7 @@ export const GetAllChildrenFromDatabase = async () => {
   }
 };
 
-export const deleteChildFromDatabase = async (childId: string) => {
+export const DeleteChildFromDatabase = async (childId: string) => {
   try {
     await deleteDoc(
       doc(FIRESTORE_DB, "Users", GetUserUid(), "Children", childId)
@@ -115,5 +115,34 @@ export const deleteChildFromDatabase = async (childId: string) => {
     console.log("Child deleted");
   } catch (error) {
     console.log(error);
+  }
+};
+
+export const UpdateChildInDatabase = async (child: Child) => {
+  const docRef = doc(
+    FIRESTORE_DB,
+    "Users",
+    GetUserUid(),
+    "Children",
+    child.childId.toString()
+  );
+
+  try {
+    await runTransaction(FIRESTORE_DB, async (transaction) => {
+      const sfDoc = await transaction.get(docRef);
+      if (!sfDoc.exists()) {
+        throw "Document does not exist!";
+      }
+
+      transaction.update(docRef, {
+        age: child.age,
+        firstName: child.firstName,
+        lastName: child.lastName,
+        sex: child.sex,
+      });
+    });
+    console.log("Transaction successfully committed!");
+  } catch (e) {
+    console.log("Transaction failed: ", e);
   }
 };

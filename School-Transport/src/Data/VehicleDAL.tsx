@@ -5,6 +5,9 @@ import { setDoc, doc, addDoc } from "firebase/firestore";
 import { FIRESTORE_DB, GetUserUid } from "../Firebase/FirebaseConfig";
 import { Vehicle } from "../Models/VehicleModel";
 
+let currentDate = new Date(Date.now());
+
+
 export const AddVehicleToDatabase = async (vehicleDetails: Vehicle) => {
     let response: string = "";
 
@@ -19,6 +22,7 @@ export const AddVehicleToDatabase = async (vehicleDetails: Vehicle) => {
         engineNo: vehicleDetails.engineNo,
         licencePlate: vehicleDetails.licencePlate,
         colour: vehicleDetails.colour,
+        dateCreated: currentDate
     }
     try {
         await setDoc(firestireVehiclesRef, data, { merge: true }).then(() => {

@@ -35,6 +35,7 @@ const firebaseConfig = {
 let UID = "";
 export const FIREBASE_APP = initializeApp(firebaseConfig);
 
+
 export const FIREBASE_AUTH = getAuth(FIREBASE_APP);
 
 onAuthStateChanged(FIREBASE_AUTH, (user) => {
@@ -63,7 +64,7 @@ export function IsLoggedIn() {
 export const FIRESTORE_DB = getFirestore(FIREBASE_APP);
 
 export function GetUserUid() {
-  return UID;
+  return "KJSBIUERHI8FG";
 }
 
 export const UserSignOut = () => {

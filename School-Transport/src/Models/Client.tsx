@@ -1,4 +1,4 @@
-export class Parent {
+export class Client {
   firstName: String;
   lastName: String;
   cellphone: String;
@@ -10,21 +10,23 @@ export class Parent {
   suburb: String;
   cityTown: String;
   provinceState: String;
-  postalCode: Number;
+  postalCode: String;
+  transporterId: String;
 
   constructor(
-    firstName: String,
-    lastName: String,
-    cellphone: String,
-    idNumber: String,
-    email: String,
-    addressLine1: String,
-    addressLine2: String,
-    suburb: String,
-    cityTown: String,
-    provinceState: String,
-    postalCode: Number,
-    role: Number
+    firstName: string,
+    lastName: string,
+    cellphone: string,
+    idNumber: string,
+    email: string,
+    addressLine1: string,
+    addressLine2: string,
+    suburb: string,
+    cityTown: string,
+    provinceState: string,
+    postalCode: string,
+    role: Number,
+    transporterId: string
   ) {
     this.firstName = firstName;
     this.lastName = lastName;
@@ -38,5 +40,6 @@ export class Parent {
     this.provinceState = provinceState;
     this.postalCode = postalCode;
     this.role = role;
+    this.transporterId = transporterId;
   }
 }

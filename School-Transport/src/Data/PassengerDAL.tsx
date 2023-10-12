@@ -12,19 +12,14 @@ import { Passenger } from "../Models/Passenger";
 
 export const AddPassengerToDatabase = async (
   passengerDetails: Passenger,
-  uid: string
+  uid: string,
+  passengerId: string
 ) => {
-  const docRef = doc(
-    FIRESTORE_DB,
-    "Client",
-    uid,
-    "Passenger",
-    passengerDetails.passengerId.toString()
-  );
+  const docRef = doc(FIRESTORE_DB, "Client", uid, "Passenger", passengerId);
 
   try {
     await setDoc(docRef, {
-      passengerId: passengerDetails.passengerId,
+      passengerId: passengerId,
       age: passengerDetails.age,
       firstName: passengerDetails.firstName,
       lastName: passengerDetails.lastName,
@@ -43,7 +38,6 @@ export const GetPassengerFromDatabase = async (
   const docRef = doc(FIRESTORE_DB, "Client", uid, "Passenger", passengerId);
 
   try {
-    //const docRef = doc(FIRESTORE_DB, "Users", uid, "Children", childId);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
@@ -116,15 +110,10 @@ export const DeletePassengerFromDatabase = async (
 
 export const UpdatePassengerInDatabase = async (
   passengerDetails: Passenger,
-  uid: string
+  uid: string,
+  passengerId: string
 ) => {
-  const docRef = doc(
-    FIRESTORE_DB,
-    "Client",
-    uid,
-    "Passenger",
-    passengerDetails.passengerId.toString()
-  );
+  const docRef = doc(FIRESTORE_DB, "Client", uid, "Passenger", passengerId);
 
   try {
     await runTransaction(FIRESTORE_DB, async (transaction) => {

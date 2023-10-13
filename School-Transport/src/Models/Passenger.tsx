@@ -1,5 +1,5 @@
-export class Child {
-  childId: String;
+export class Passenger {
+  passengerId: String;
   firstName: String;
   lastName: String;
   sex: String;
@@ -12,7 +12,7 @@ export class Child {
     age: Number,
     sex: String
   ) {
-    this.childId = childId;
+    this.passengerId = childId;
     this.firstName = firstName;
     this.lastName = lastName;
     this.age = age;

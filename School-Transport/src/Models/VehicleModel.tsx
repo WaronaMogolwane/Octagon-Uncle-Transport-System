@@ -6,8 +6,10 @@ export class Vehicle {
     registrationNo: string;
     vinNo: string;
     engineNo: string;
-    licencePlate: string;
+    licenceNo: string;
     colour: string;
+    dateCreated: Date;
+    dateModified: Date;
 
     constructor(
         ownerId: string,
@@ -17,8 +19,10 @@ export class Vehicle {
         registrationNo: string,
         vinNo: string,
         engineNo: string,
-        licencePlate: string,
-        colour: string
+        licenceNo: string,
+        colour: string,
+        dateCreated: Date,
+        dateModified: Date
     ) {
         this.ownerId = ownerId;
         this.make = make;
@@ -27,7 +31,9 @@ export class Vehicle {
         this.registrationNo = registrationNo;
         this.vinNo = vinNo;
         this.engineNo = engineNo;
-        this.licencePlate = licencePlate;
+        this.licenceNo = licenceNo;
         this.colour = colour;
+        this.dateCreated = dateCreated
+        this.dateModified = dateModified
     }
 }

@@ -6,30 +6,35 @@ import {
   doc,
   deleteDoc,
   runTransaction,
+  query,
+  where,
+  and,
 } from "firebase/firestore";
 import { FIRESTORE_DB, GetUserUid } from "../Firebase/FirebaseConfig";
-import { Parent } from "../Models/Parent";
+import { Client } from "../Models/Client";
 
-export const AddParentToDatabase = async (parent: Parent) => {
+export const AddClientToDatabase = async (
+  clientDetails: Client,
+  uid: string
+) => {
   try {
-    await setDoc(doc(FIRESTORE_DB, "Users", GetUserUid()), parent);
+    await setDoc(doc(FIRESTORE_DB, "Client", uid), clientDetails);
 
-    console.log("Parent added successfuly");
+    console.log("Client added successfuly");
   } catch (e) {
     console.error(e);
   }
 };
 
-export const GetParentFromDatabase = async () => {
+export const GetClientFromDatabase = async (uid: string) => {
   try {
-    const docRef = doc(FIRESTORE_DB, "Users", GetUserUid());
+    const docRef = doc(FIRESTORE_DB, "Client", uid);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
       let snapshot = docSnap.data();
-      //console.log("Document data:", docSnap.data());
 
-      let parent = new Parent(
+      let client = new Client(
         snapshot.firstName,
         snapshot.lastName,
         snapshot.email,
@@ -41,9 +46,10 @@ export const GetParentFromDatabase = async () => {
         snapshot.suburb,
         snapshot.cityTown,
         snapshot.provinceState,
-        snapshot.postalCode
+        snapshot.postalCode,
+        snapshot.transporterId
       );
-      return parent;
+      return client;
     } else {
       // docSnap.data() will be undefined in this case
       console.log("No such document!");
@@ -53,15 +59,21 @@ export const GetParentFromDatabase = async () => {
   }
 };
 
-export const GetAllParentsFromDatabase = async () => {
+export const GetAllClientFromDatabase = async () => {
   try {
-    let parentArray: Parent[] = [];
+    let clientArray: Client[] = [];
 
-    const querySnapshot = await getDocs(collection(FIRESTORE_DB, "Users"));
+    const q = query(
+      collection(FIRESTORE_DB, "Client"),
+      where("role", "==", 1),
+      where("transporterId", "==", GetUserUid())
+    );
+
+    const querySnapshot = await getDocs(q);
     querySnapshot.docs.forEach((doc) => {
       let snapshot = doc.data();
 
-      let parent = new Parent(
+      let client = new Client(
         snapshot.firstName,
         snapshot.lastName,
         snapshot.email,
@@ -73,31 +85,32 @@ export const GetAllParentsFromDatabase = async () => {
         snapshot.suburb,
         snapshot.cityTown,
         snapshot.provinceState,
-        snapshot.postalCode
+        snapshot.postalCode,
+        snapshot.transporterId
       );
 
-      parentArray.push(parent);
+      clientArray.push(client);
     });
 
-    parentArray = [...parentArray];
+    clientArray = [...clientArray];
 
-    return parentArray;
+    return clientArray;
   } catch (error) {
     console.log(error);
   }
 };
 
-export const DeleteParentFromDatabase = async () => {
+export const DeleteClientFromDatabase = async (uid: string) => {
   try {
-    await deleteDoc(doc(FIRESTORE_DB, "Users", GetUserUid()));
+    await deleteDoc(doc(FIRESTORE_DB, "Client", uid));
     console.log("Parent deleted");
   } catch (error) {
     console.log(error);
   }
 };
 
-export const UpdateParentInDatabase = async (parent: Parent) => {
-  const docRef = doc(FIRESTORE_DB, "Users", GetUserUid());
+export const UpdateClientInDatabase = async (client: Client, uid: string) => {
+  const docRef = doc(FIRESTORE_DB, "Client", uid);
 
   try {
     await runTransaction(FIRESTORE_DB, async (transaction) => {
@@ -107,18 +120,18 @@ export const UpdateParentInDatabase = async (parent: Parent) => {
       }
 
       transaction.update(docRef, {
-        firstName: parent.firstName,
-        lastName: parent.lastName,
-        cellphone: parent.cellphone,
-        idNumber: parent.idNumber,
-        email: parent.email,
-        addressLine1: parent.addressLine1,
-        addressLine2: parent.addressLine2,
-        suburb: parent.suburb,
-        cityTown: parent.cityTown,
-        provinceState: parent.provinceState,
-        postalCode: parent.postalCode,
-        role: parent.role,
+        firstName: client.firstName,
+        lastName: client.lastName,
+        cellphone: client.cellphone,
+        idNumber: client.idNumber,
+        email: client.email,
+        addressLine1: client.addressLine1,
+        addressLine2: client.addressLine2,
+        suburb: client.suburb,
+        cityTown: client.cityTown,
+        provinceState: client.provinceState,
+        postalCode: client.postalCode,
+        role: client.role,
       });
     });
     console.log("Transaction successfully committed!");

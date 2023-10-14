@@ -2,7 +2,7 @@ import { setDoc, doc, getDoc, getDocs, collection, query, where, getCountFromSer
 import { FIRESTORE_DB, GetUserUid } from "../Firebase/FirebaseConfig";
 import { Transporter } from "../Models/TransporterDetailsModel";
 import { BusinessDetails } from "../Models/BusinessDetailsModel";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 
 let currentDate = new Date(Date.now());
 

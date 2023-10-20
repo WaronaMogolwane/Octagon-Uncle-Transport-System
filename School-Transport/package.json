@@ -1,12 +1,13 @@
 {
   "name": "school-transport",
   "version": "1.0.0",
-  "main": "./src/App.tsx",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "ts:check": "tsc"
   },
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
@@ -28,7 +29,12 @@
     "react-native-svg": "13.9.0",
     "react-native-uuid": "^2.0.1",
     "react-native-webview": "13.2.2",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "expo-router": "^2.0.0",
+    "react-native-screens": "~3.22.0",
+    "expo-linking": "~5.0.2",
+    "expo-constants": "~14.4.2",
+    "react-native-gesture-handler": "~2.12.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

@@ -33,7 +33,7 @@ import {
 } from "@gluestack-ui/themed";
 import { config } from "@gluestack-ui/config";
 
-import { useSession } from "../src/Data/Authentication";
+import { useSession } from "../src/Services/AuthenticationService";
 import { UserSignIn } from "../src/Controllers/AuthenticationController";
 
 export default function SignIn() {

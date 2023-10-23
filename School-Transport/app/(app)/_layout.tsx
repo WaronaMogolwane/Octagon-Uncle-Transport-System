@@ -1,6 +1,6 @@
 import { Redirect, Stack } from 'expo-router';
 import { Text } from "react-native";
-import { useSession } from '../../src/Data/Authentication';
+import { useSession } from '../../src/Services/AuthenticationService';
 
 export default function AppLayout() {
   const { session, isLoading }:any = useSession();

@@ -1,6 +1,6 @@
 import { Text, View } from 'react-native';
 
-import { useSession } from '../../src/Data/Authentication';
+import { useSession } from '../../src/Services/AuthenticationService';
 
 export default function Index() {
   const { signOut }:any = useSession();

@@ -1,5 +1,5 @@
 import React from "react";
-import { useStorageState } from "./useStorageState";
+import { useStorageState } from "./StorageStateService";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,

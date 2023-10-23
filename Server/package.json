@@ -1,11 +1,30 @@
 {
-  "name": "school-transport-server",
+  "name": "octagon-uncle-transport-server",
   "version": "1.0.0",
-  "description": "A server that handles HTTP requests from the School Transport App",
-  "main": "index.js",
+  "description": "A server that handles HTTP requests from the Octagon Uncle Transport System",
+  "main": "index.tsx",
   "scripts": {
-    "test": "Test"
+    "test": "nodemon ./src/index.tsx"
   },
-  "author": "",
-  "license": "ISC"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MajorXp/Octagon-Uncle-Transport-Solutions-System.git"
+  },
+  "author": "Nicholai Jamusi & Warona Mogolwane",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MajorXp/Octagon-Uncle-Transport-Solutions-System/issues"
+  },
+  "homepage": "",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^8.5.1",
+    "mysql2": "^2.3.3",
+    "nodemailer": "^6.8.0",
+    "nodemon": "^2.0.20",
+    "uuid": "^9.0.0"
+  }
 }

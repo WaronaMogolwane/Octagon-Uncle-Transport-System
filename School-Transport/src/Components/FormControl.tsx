@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
 import {
   FormControl,
   FormControlLabel,
@@ -58,109 +59,44 @@ import {
   AlertCircleIcon,
   ChevronDownIcon,
 } from "@gluestack-ui/themed";
+import { FormStyles } from "../Stylesheets/GlobalStyles";
 
-type FormControlProps = {
-  isValid: boolean;
-  isDisabled: boolean;
-  isRequired: boolean;
-  type: "password" | "text";
-  defaultValue: string;
-  placeHolder: string;
-  size: string;
-  labelText: string;
-  helperText: string;
-  errorText: string;
-  onChangeText: (text: any) => void;
-};
-export const FormControlInput = (props: FormControlProps) => {
+export const FormControlInput = ({
+  isInvalid,
+  isDisabled,
+  errorText,
+  isRequired,
+  type,
+  defaultValue,
+  placeHolder,
+  size,
+  labelText,
+  helperText,
+  onChangeText,
+}: any) => {
   return (
     <FormControl
-      isInvalid={props.isValid}
-      size={props.size}
-      isDisabled={props.isDisabled}
-      isRequired={props.isRequired}
-    >
+      style={FormStyles.input}
+      isInvalid={isInvalid}
+      size={size}
+      isDisabled={isDisabled}
+      isRequired={isRequired}>
       <FormControlLabel>
-        <FormControlLabelText>{props.labelText}</FormControlLabelText>
+        <FormControlLabelText>{labelText}</FormControlLabelText>
       </FormControlLabel>
       <Input>
         <InputField
-          type={props.type}
-          defaultValue={props.defaultValue}
-          placeholder={props.placeHolder}
-          onChangeText={props.onChangeText}
-        />
+          type={type}
+          defaultValue={defaultValue}
+          placeholder={placeHolder}
+          onChangeText={onChangeText}/>
       </Input>
-
       <FormControlHelper>
-        <FormControlHelperText>{props.helperText}</FormControlHelperText>
+        <FormControlHelperText>{helperText}</FormControlHelperText>
       </FormControlHelper>
-
       <FormControlError>
-        <FormControlErrorIcon as={AlertCircleIcon} />
-        <FormControlErrorText>{props.errorText}</FormControlErrorText>
-      </FormControlError>
-    </FormControl>
-  );
-};
-export const FormControlLabelInput = (props: FormControlProps) => {
-  return (
-    <FormControl
-      isInvalid={props.isValid}
-      size={props.size}
-      isDisabled={props.isDisabled}
-      isRequired={props.isRequired}
-    >
-      <FormControlLabel>
-        <FormControlLabelText>{props.labelText}</FormControlLabelText>
-      </FormControlLabel>
-      <Input>
-        <InputField
-          type={props.type}
-          defaultValue={props.defaultValue}
-          placeholder={props.placeHolder}
-          onChangeText={props.onChangeText}
-        />
-      </Input>
-
-      <FormControlHelper>
-        <FormControlHelperText>{props.helperText}</FormControlHelperText>
-      </FormControlHelper>
-
-      <FormControlError>
-        <FormControlErrorIcon as={AlertCircleIcon} />
-        <FormControlErrorText>{props.errorText}</FormControlErrorText>
-      </FormControlError>
-    </FormControl>
-  );
-};
-export const FormInput = (props: FormControlProps) => {
-  return (
-    <FormControl
-      isInvalid={props.isValid}
-      size={props.size}
-      isDisabled={props.isDisabled}
-      isRequired={props.isRequired}
-    >
-      <FormControlLabel>
-        <FormControlLabelText>{props.labelText}</FormControlLabelText>
-      </FormControlLabel>
-      <Input>
-        <InputField
-          type={props.type}
-          defaultValue={props.defaultValue}
-          placeholder={props.placeHolder}
-          onChangeText={props.onChangeText}
-        />
-      </Input>
-
-      <FormControlHelper>
-        <FormControlHelperText>{props.helperText}</FormControlHelperText>
-      </FormControlHelper>
-
-      <FormControlError>
-        <FormControlErrorIcon as={AlertCircleIcon} />
-        <FormControlErrorText>{props.errorText}</FormControlErrorText>
+        <FormControlErrorIcon as={AlertCircleIcon}/>
+        <FormControlErrorText>{errorText}</FormControlErrorText>
       </FormControlError>
     </FormControl>
   );

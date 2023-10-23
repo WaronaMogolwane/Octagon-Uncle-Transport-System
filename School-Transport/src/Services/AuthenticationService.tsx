@@ -11,7 +11,7 @@ import { FIREBASE_AUTH } from "../Firebase/FirebaseConfig";
 import { AuthenticationResponseModel } from "../Models/AuthenticationResponseModel";
 
 const AuthContext = React.createContext<{
-  signIn: () => void;
+  signIn: (userEmail: string, userPassword: string) => any;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
@@ -35,9 +35,35 @@ export function SessionProvider(props: any) {
   return (
     <AuthContext.Provider
       value={{
-        signIn: () => {
+        signIn: async (userEmail: string, userPassword: string) => {
           // Perform sign-in logic here
-          setSession("xxx");
+          let response;
+          authenticationResponse = new AuthenticationResponseModel();
+          await signInWithEmailAndPassword(
+            FIREBASE_AUTH,
+            userEmail,
+            userPassword
+          )
+            .then((userCredential) => {
+              const user = userCredential.user;
+              authenticationResponse.firebaseFunction =
+                "signInWithEmailAndPassword";
+              authenticationResponse.uid = user.uid;
+              authenticationResponse.status = "Success";
+              response = Promise.resolve(authenticationResponse);
+              setSession(user.uid);
+            })
+            .catch((error) => {
+              const errorCode = error.code;
+              const errorMessage = error.message;
+              authenticationResponse.firebaseFunction =
+                "signInWithEmailAndPassword";
+              authenticationResponse.errorCode = errorCode;
+              authenticationResponse.errorMessage = errorMessage;
+              authenticationResponse.status = "Failed";
+              response = Promise.reject(authenticationResponse);
+            });
+          return response;
         },
         signOut: () => {
           setSession(null);

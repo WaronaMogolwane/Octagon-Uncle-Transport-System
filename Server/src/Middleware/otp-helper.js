@@ -2,18 +2,6 @@ require('dotenv').config();
 const { SendEmail } = require('./email-helper');
 const { SaveUserOtp, CheckOtp } = require('./database-helper');
 
-const HumanBody = {
-  Run: (param1, param2) => {
-
-  },
-  HandShake: (param1, param2) => {
-    this.run()
-  }
-}
-
-HumanBody.HandShake("hello", "poes");
-
-
 function SendOtp(req, res, next) {
   var otp = CreateOtp(req);
   var email = {

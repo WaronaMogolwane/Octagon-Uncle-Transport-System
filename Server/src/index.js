@@ -1,13 +1,12 @@
 require('dotenv').config();
 
-const {InitDatabaseTables} = require('.//Middleware/database-helper.js')
+const {InitDatabaseTables} = require('./Middleware/database-helper.js')
 
 const express = require('express');
 const app = express();
 
-const authRoute = require("./Routes/auth");
-const todoListRoute = require("./Routes/todo-list");
-const userProfileRoute = require("./Routes/user-profile");
+const authRoute = require("./Routes/auth.js");
+const userProfileRoute = require("./Routes/user-profile.js");
 
 const cors = require('cors');
 app.use(cors());

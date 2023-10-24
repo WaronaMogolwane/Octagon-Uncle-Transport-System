@@ -1,10 +1,5 @@
 require("dotenv").config();
 const { promises } = require("nodemailer/lib/xoauth2");
-const postgres = require("postgres");
-
-const sql = postgres({
-  /* options */
-});
 const mysql = require("mysql2");
 const host = process.env.HOST;
 const dbUser = process.env.DB_USER;
@@ -147,18 +142,6 @@ function dbConnect() {
 function dbDisconnect() {
   pool.end();
 }
- const GetUserDetails = async (uid) => {
-  const user =
-    await sql`SELECT uid, firstname, lastname, email, addressline1, addressline2, suburb, "city/town", province, postalcode, "role"
-    FROM octagon1."User"
-    WHERE uid = "${uid}";`;
-
-  if (user) {
-    return Promise.resolve(user);
-  } else {
-    return Promise.reject("No user of that user ID.");
-  }
-};
 
 module.exports = {
   InitDatabaseTables,
@@ -166,5 +149,4 @@ module.exports = {
   SaveUserOtp,
   CheckOtp,
   GetUserByEmail,
-  GetUserDetails
 };

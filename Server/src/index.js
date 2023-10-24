@@ -1,11 +1,27 @@
-const express = require('express')
-const app = express()
-const port = 3000
+require('dotenv').config();
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
+const {InitDatabaseTables} = require('./Middleware/database-helper.js')
+
+const express = require('express');
+const app = express();
+
+const authRoute = require("./Routes/auth.js");
+const userProfileRoute = require("./Routes/user-profile.js");
+
+const cors = require('cors');
+app.use(cors());
+app.use(express.json())
+
+const PORT = process.env.PORT || 8081
+
+app.use("/auth", authRoute);
+app.use("/user-profile", userProfileRoute);
+
+app.listen(PORT, function(){
+    InitialiseServer();
+    console.log(`Server is live on Port ${PORT}`);
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+function InitialiseServer(){
+    InitDatabaseTables();
+} 

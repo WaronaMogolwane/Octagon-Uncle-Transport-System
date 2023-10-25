@@ -4,7 +4,7 @@ import {
   ForgotPassword,
   SetPassword,
   VerifyEmail
-} from "../Data/Authentication";
+} from "../Services/AuthenticationService";
 
 export const UserSignUp = async (userEmail: string, userPassword: string) => {
    return await CreateUserWithEmailPassword(userEmail, userPassword);

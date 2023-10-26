@@ -1,6 +1,6 @@
 require('dotenv').config();
-const { SendEmail } = require('../Services/EmailService');
-const { SaveUserOtp, CheckOtp } = require('../Data/database-helper');
+const { SendEmail } = require('./EmailModel');
+const { SaveUserOtp, CheckOtp } = require('./DatabaseModel');
 
 function SendOtp(req, res, next) {
   var otp = CreateOtp(req);

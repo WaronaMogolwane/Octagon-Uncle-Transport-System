@@ -2,10 +2,11 @@
   "name": "octagon-uncle-transport-server",
   "version": "1.0.0",
   "description": "A server that handles HTTP requests from the Octagon Uncle Transport System",
-  "main": "server.js",
-  "type":"module",
+  "main": "server.ts",
+  "type": "module",
   "scripts": {
-    "test": "nodemon ./src/server.js"
+    "dev": "nodemon ./build/server.ts",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",

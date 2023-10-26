@@ -1,83 +1,75 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
-import { CheckOtp, SaveUserOtp } from './DatabaseModel.js';
-import { SendEmail } from './EmailModel.js';
+import { CheckOtp, SaveUserOtp } from "./DatabaseModel.ts";
+import { SendEmail } from "./EmailModel.ts";
 
 export const SendOtp = (req, res, next) => {
-  var otp = CreateOtp(req);
-  var email = {
-    fromName: 'Octagon Uncle',
-    fromAddress: 'developer@majorxp.co.za',
+  let otp: string = CreateOtp();
+  var email: any = {
+    fromName: "Octagon Uncle",
+    fromAddress: "developer@majorxp.co.za",
     toAddress: req.body.userDetails.Email,
     subject: "Octagon Uncle OTP: " + otp,
-    emailHtml: CreateEmailHtml(req, otp)
-  }
-  SendEmail(email).then((value) => {
-    SaveUserOtp(req, res, next);
-  },
+    emailHtml: CreateEmailHtml(req, otp),
+  };
+  SendEmail(email).then(
+    (value) => {
+      SaveUserOtp(otp, req, res, next);
+    },
     (error) => {
-      res
-        .status(400)
-        .send(error);
-    });
+      res.status(400).send(error);
+    }
+  );
   next();
-}
+};
 export const VerifyOtp = async (req, res, next) => {
-  let OtpVarification;
+  let otpVarification: any = {
+    OtpVerified: false,
+    OtpValid: false,
+  };
   try {
     var rows = await CheckOtp(req.body);
     if (rows) {
       if (IsOtpVaid(rows)) {
-        res
-          .status(201)
-          .send(
-            OtpVarification = {
-              "OtpVerified": true,
-              "OtpValid": true
-            });
-      }
-      else {
-        res
-          .status(400)
-          .send(
-            OtpVarification = {
-              "OtpVerified": false,
-              "OtpValid": true
-            });
-      }
-    }
-    else {
-      res
-        .status(400)
-        .send(
-          OtpVarification = {
-            "OtpVerified": false,
-            "OtpValid": false
-          }
+        res.status(201).send(
+          (otpVarification = {
+            OtpVerified: true,
+            OtpValid: true,
+          })
         );
-
+      } else {
+        res.status(400).send(
+          (otpVarification = {
+            OtpVerified: false,
+            OtpValid: true,
+          })
+        );
+      }
+    } else {
+      res.status(400).send(
+        (otpVarification = {
+          OtpVerified: false,
+          OtpValid: false,
+        })
+      );
     }
   } catch (error) {
     console.error(error);
   }
-
-}
-const CreateOtp = (req) => {
-  let otp = '';
-  var digits = '0123456789';
-
+};
+const CreateOtp = (): string => {
+  let otp: string = "";
+  const digits = "0123456789";
   for (let i = 0; i < 5; i++) {
-    otp += (digits[Math.floor(Math.random() * 10)]);
+    otp += digits[Math.floor(Math.random() * 10)];
   }
-  req.body.otp = otp;
-  return otp
-}
-const IsOtpVaid = (rows) => {
+  return otp;
+};
+const IsOtpVaid = (rows: any) => {
   if (new Date(rows.OTPExpireDate) > new Date()) {
     return true;
-  }
-  else return false;
-}
+  } else return false;
+};
 const CreateEmailHtml = (req, otp) => {
   return `
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -771,5 +763,5 @@ const CreateEmailHtml = (req, otp) => {
                     <script type="text/javascript" src="https://js.createsend1.com/js/compiled/app/content/emailPreview-iframe.min.js?h=8AF34A3A20210825125555" data-model="{&quot;Scrollbars&quot;:true}"></script><div id="ascrail2000" class="nicescroll-rails" style="width: 12px; z-index: auto; cursor: default; position: fixed; top: 0px; height: 100%; right: 0px; opacity: 0.25;"><div style="position: relative; top: 0px; float: right; width: 8px; height: 350px; background-color: rgb(0, 0, 0); border: 2px solid transparent; background-clip: padding-box; border-radius: 10px;"></div></div>
   
                   </body>
-  `
-}
+  `;
+};

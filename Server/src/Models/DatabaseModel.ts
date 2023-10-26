@@ -1,7 +1,7 @@
-import dotenv from 'dotenv'
+import dotenv from "dotenv";
 dotenv.config();
 import mysql from "mysql2";
-import mysql2 from "mysql2/promise"
+import mysql2 from "mysql2/promise";
 const host = process.env.HOST;
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
@@ -39,14 +39,15 @@ export const AddNewUser = (user) => {
         if (error) {
           reject(error.errno);
         } else {
-          resolve();
+          resolve(results);
         }
       }
     );
   });
   return AddNewUserPromise;
-}
-export const SaveUserOtp = async (req, res, next) => {
+};
+export const SaveUserOtp = async (otp: string, req, res, next) => {
+  console.log(otp);
   let UserRegistration;
   try {
     var user = await GetUserByEmail(req.body.userDetails.Email);
@@ -63,7 +64,7 @@ export const SaveUserOtp = async (req, res, next) => {
   pool.query(
     `INSERT INTO ${userOtpTable} (
         User_ID, Email, OTP, DateCreated, OTPExpireDate)
-        VALUES (${userId}, '${req.body.userDetails.Email}', '${req.body.otp}', CURRENT_TIMESTAMP(), ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0"))
+        VALUES (${userId}, '${req.body.userDetails.Email}', '${otp}', CURRENT_TIMESTAMP(), ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0"))
         ON DUPLICATE KEY UPDATE OTP = '${req.body.otp}', DateCreated = CURRENT_TIMESTAMP(), OTPExpireDate = ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0")`,
     function (error, results, fields) {
       if (error) {
@@ -79,19 +80,19 @@ export const SaveUserOtp = async (req, res, next) => {
       }
     }
   );
-}
+};
 export const GetUserByEmail = async (email) => {
   var sqlQuery = `SELECT * FROM User WHERE Email= "${email}" `;
   const connection = await mysql2.createConnection(dbConnectObj);
   const [rows] = await connection.execute(sqlQuery);
   return rows[0];
-}
+};
 export const CheckOtp = async (otpDetails) => {
   var sqlQuery = `SELECT * FROM User_OTP WHERE Email= "${otpDetails.email}" AND OTP = '${otpDetails.otp}' `;
   const connection = await mysql2.createConnection(dbConnectObj);
   const [rows] = await connection.execute(sqlQuery);
   return rows[0];
-}
+};
 export const InitDatabaseTables = () => {
   pool.query(
     `CREATE TABLE IF NOT EXISTS ${UserTable}(
@@ -130,15 +131,15 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       }
     }
   );
-}
-function dbConnect() {
-  pool.execute((error) => {
-    if (error) {
-      console.log(error);
-      return;
-    }
-  });
-}
-function dbDisconnect() {
-  pool.end();
-}
+};
+// function dbConnect() {
+//   pool.execute((error) => {
+//     if (error) {
+//       console.log(error);
+//       return;
+//     }
+//   });
+// }
+// function dbDisconnect() {
+//   pool.end();
+// }

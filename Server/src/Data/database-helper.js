@@ -5,7 +5,7 @@ const host = process.env.HOST;
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
 const databaseName = process.env.DATABASE;
-const usersTable = "Users";
+const UserTable = "User";
 const userOtpTable = "User_OTP";
 const pool = mysql.createPool({
   host: host,
@@ -25,7 +25,7 @@ const dbConnectObj = {
 function AddNewUser(user) {
   let AddNewUserPromise = new Promise((resolve, reject) => {
     pool.query(
-      `INSERT INTO ${usersTable} (
+      `INSERT INTO ${UserTable} (
         USER_ID, FirstName, LastName, Email, Phone, Password, DateCreated)
         VALUES (
             UUID(),  '${user.FirstName}',  '${user.LastName}', '${user.Email}', '${user.Phone}', '${user.Password}' , CURRENT_TIMESTAMP()
@@ -79,7 +79,7 @@ async function SaveUserOtp(req, res, next) {
   );
 }
 async function GetUserByEmail(email) {
-  var sqlQuery = `SELECT * FROM Users WHERE Email= "${email}" `;
+  var sqlQuery = `SELECT * FROM User WHERE Email= "${email}" `;
   const mysql2 = require("mysql2/promise");
   const connection = await mysql2.createConnection(dbConnectObj);
   const [rows] = await connection.execute(sqlQuery);
@@ -94,11 +94,11 @@ async function CheckOtp(otpDetails) {
 }
 function InitDatabaseTables() {
   pool.query(
-    `CREATE TABLE IF NOT EXISTS ${usersTable}(
+    `CREATE TABLE IF NOT EXISTS ${UserTable}(
 User_ID CHAR(36) PRIMARY KEY,
 FirstName VARCHAR(255) NOT NULL,
 LastName VARCHAR(255) NOT NULL,
-Email VARCHAR(50) NOT NULL,
+Email VARCHAR(50) NOT NULL UNIQUE,
 Phone VARCHAR(20) NOT NULL,
 Password VARCHAR(40) NOT NULL,
 AvatarURL VARCHAR(500),

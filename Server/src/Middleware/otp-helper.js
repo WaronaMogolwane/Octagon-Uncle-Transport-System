@@ -1,14 +1,14 @@
 require('dotenv').config();
-const { SendEmail } = require('./email-helper');
-const { SaveUserOtp, CheckOtp } = require('./database-helper');
+const { SendEmail } = require('../Services/EmailService');
+const { SaveUserOtp, CheckOtp } = require('../Data/database-helper');
 
 function SendOtp(req, res, next) {
   var otp = CreateOtp(req);
   var email = {
-    fromName: 'miTodo',
-    fromAddress: 'mitodo@mitodo.majorxp.co.za',
+    fromName: 'Octagon Uncle',
+    fromAddress: 'developer@majorxp.co.za',
     toAddress: req.body.userDetails.Email,
-    subject: "miTodo OTP: " + otp,
+    subject: "Octagon Uncle OTP: " + otp,
     emailHtml: CreateEmailHtml(req, otp)
   }
   SendEmail(email).then((value) => {
@@ -656,7 +656,7 @@ CreateEmailHtml = (req, otp) => {
   
                                 <div style="Margin-left: 20px;Margin-right: 20px;">
                                   <div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;">
-                                    <p class="size-16" style="Margin-top: 0;Margin-bottom: 20px;font-size: 16px;line-height: 24px;" lang="x-size-16"><span style="text-decoration: inherit;">Thank you for choosing Mi Todo. Use the following OTP to complete your Sign Up procedures.</span></p>
+                                    <p class="size-16" style="Margin-top: 0;Margin-bottom: 20px;font-size: 16px;line-height: 24px;" lang="x-size-16"><span style="text-decoration: inherit;">Thank you for choosing Octagon Uncle. Use the following OTP to complete your Sign Up procedures.</span></p>
                                   </div>
                                 </div>
   

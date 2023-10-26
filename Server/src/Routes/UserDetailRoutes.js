@@ -1,5 +1,5 @@
-const express = require("express");
-const router = express.Router();
+import { Router } from "express";
+const router = Router();
 
 router.delete("/delete-account", (req, res) =>{
     
@@ -13,4 +13,4 @@ router.get("/profile", (req, res) =>{
     
 })
 
-module.exports = router;
+export default router;

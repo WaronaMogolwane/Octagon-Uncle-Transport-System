@@ -1,9 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const mysql = require("mysql2");
-const {AddNewUser, GetUserByEmail} = require('../Models/DatabaseModel.js');
-const {SendOtp, VerifyOtp} = require('../Models/OtpModel.js')
-const {CheckIfUserExists, RegisterUser } = require('../Controllers/AuthenticationController.js')
+import { Router } from "express";
+import { AddNewUser, GetUserByEmail } from '../Models/DatabaseModel.js';
+import { SendOtp, VerifyOtp } from '../Models/OtpModel.js';
+import { CheckIfUserExists, RegisterUser } from '../Controllers/AuthenticationController.js';
+const router = Router();
+
 
 
 router.post("/register-user", RegisterUser, (req, res) => {});
@@ -18,4 +18,4 @@ router.post("/verify-otp", VerifyOtp, (req, res) => {});
 
 router.get('/', (req, res) => {});
 
-module.exports = router;
+export default router;

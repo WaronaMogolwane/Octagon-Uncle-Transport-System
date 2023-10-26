@@ -1,8 +1,9 @@
-require('dotenv').config();
-const { SendEmail } = require('./EmailModel');
-const { SaveUserOtp, CheckOtp } = require('./DatabaseModel');
+import dotenv from 'dotenv';
+dotenv.config();
+import { CheckOtp, SaveUserOtp } from './DatabaseModel.js';
+import { SendEmail } from './EmailModel.js';
 
-function SendOtp(req, res, next) {
+export const SendOtp = (req, res, next) => {
   var otp = CreateOtp(req);
   var email = {
     fromName: 'Octagon Uncle',
@@ -21,18 +22,8 @@ function SendOtp(req, res, next) {
     });
   next();
 }
-
-function CreateOtp(req) {
-  let otp = '';
-  var digits = '0123456789';
-
-  for (let i = 0; i < 5; i++) {
-    otp += (digits[Math.floor(Math.random() * 10)]);
-  }
-  req.body.otp = otp;
-  return otp
-}
-async function VerifyOtp(req, res, next) {
+export const VerifyOtp = async (req, res, next) => {
+  let OtpVarification;
   try {
     var rows = await CheckOtp(req.body);
     if (rows) {
@@ -71,13 +62,23 @@ async function VerifyOtp(req, res, next) {
   }
 
 }
-function IsOtpVaid(rows) {
+const CreateOtp = (req) => {
+  let otp = '';
+  var digits = '0123456789';
+
+  for (let i = 0; i < 5; i++) {
+    otp += (digits[Math.floor(Math.random() * 10)]);
+  }
+  req.body.otp = otp;
+  return otp
+}
+const IsOtpVaid = (rows) => {
   if (new Date(rows.OTPExpireDate) > new Date()) {
     return true;
   }
   else return false;
 }
-CreateEmailHtml = (req, otp) => {
+const CreateEmailHtml = (req, otp) => {
   return `
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title></title>
@@ -772,5 +773,3 @@ CreateEmailHtml = (req, otp) => {
                   </body>
   `
 }
-
-module.exports = { SendOtp, VerifyOtp };

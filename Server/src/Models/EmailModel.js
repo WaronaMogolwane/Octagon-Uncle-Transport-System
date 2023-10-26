@@ -1,7 +1,6 @@
-"use strict";
-require('dotenv').config();
-
-const nodemailer = require("nodemailer");
+import dotenv from 'dotenv';
+dotenv.config();
+import nodemailer from "nodemailer";
 const host = process.env.SMTP_HOST;
 const port = process.env.SMTP_PORT;
 const emailUser = process.env.EMAIL_USER;
@@ -18,7 +17,7 @@ const transporter = nodemailer.createTransport({
     },
 });
 // async..await is not allowed in global scope, must use a wrapper
-async function SendEmail(email) {
+export const SendEmail = async (email) => {
     try {
         // send mail with defined transport object
         let info = await transporter.sendMail({
@@ -33,4 +32,3 @@ async function SendEmail(email) {
     }
     return Promise.resolve('success');
 }
-module.exports = { SendEmail }

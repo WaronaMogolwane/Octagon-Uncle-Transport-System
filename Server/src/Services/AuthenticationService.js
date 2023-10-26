@@ -1,4 +1,4 @@
-const { GetUserByEmail, AddNewUser } = require('./../Middleware/database-helper.js')
+const { GetUserByEmail, AddNewUser } = require('../Data/database-helper.js')
 
 async function CheckIfUserExists(req, res, next) {
     if (await GetUserByEmail(req.body.userDetails.Email)) {

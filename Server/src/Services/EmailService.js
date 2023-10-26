@@ -2,8 +2,6 @@
 require('dotenv').config();
 
 const nodemailer = require("nodemailer");
-const { promises } = require('nodemailer/lib/xoauth2');
-
 const host = process.env.SMTP_HOST;
 const port = process.env.SMTP_PORT;
 const emailUser = process.env.EMAIL_USER;

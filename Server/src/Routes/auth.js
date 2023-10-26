@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const mysql = require("mysql2");
-const {AddNewUser, GetUserByEmail} = require('./../Middleware/database-helper.js');
+const {AddNewUser, GetUserByEmail} = require('../Data/database-helper.js');
 const {SendOtp, VerifyOtp} = require('./../Middleware/otp-helper.js')
-const {CheckIfUserExists, RegisterUser } = require('./../Middleware/auth-helper.js')
+const {CheckIfUserExists, RegisterUser } = require('../Services/AuthenticationService.js')
 
 
 router.post("/register-user", RegisterUser, (req, res) => {});

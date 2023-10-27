@@ -5,20 +5,18 @@ import { InitDatabaseTables } from "./Models/DatabaseModel";
 import express from "express";
 import authRoute from "./Routes/AuthenticationRoutes";
 import userProfileRoute from "./Routes/UserDetailRoutes";
+import { authenticateJWT } from "./Middleware/Auth";
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 8081;
 
-app.use("/auth", authRoute);
-app.use("/user-profile", userProfileRoute);
+app.use("/auth", authenticateJWT, authRoute);
+app.use("/user-profile", authenticateJWT, userProfileRoute);
 
 app.listen(PORT, function () {
-  InitialiseServer();
+  InitDatabaseTables();
   console.log(`Server is live on Port ${PORT}`);
 });
 
-const InitialiseServer = () => {
-  InitDatabaseTables();
-};

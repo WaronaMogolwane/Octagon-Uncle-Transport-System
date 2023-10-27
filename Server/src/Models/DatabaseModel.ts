@@ -23,13 +23,13 @@ const dbConnectObj = {
   password: dbPassword,
   database: databaseName,
 };
-export const AddNewUser = (user) => {
+export const AddNewUser = (user: any) => {
   let AddNewUserPromise = new Promise((resolve, reject) => {
     pool.query(
       `INSERT INTO ${UserTable} (
-        USER_ID, FirstName, LastName, Email, Phone, Password, DateCreated)
+        userId, email, password, cellphone, status, lastLogin,` + "`role`" + `, token)
         VALUES (
-            UUID(),  '${user.FirstName}',  '${user.LastName}', '${user.Email}', '${user.Phone}', '${user.Password}' , CURRENT_TIMESTAMP()
+            'e9rg-w993-fcsi-3eo9',  '${user.Email}',  '${user.Password}', '${user.Cellphone}', ${user.status}, "2000-01-01" , '${user.Role}', NULL
         )`,
       function (error, results, fields) {
         // error will be an Error if one occurred during the query
@@ -125,8 +125,6 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       if (error) {
         console.log(error.message);
         return;
-      } else {
-        console.log("Database successfully initialised");
       }
     }
   );

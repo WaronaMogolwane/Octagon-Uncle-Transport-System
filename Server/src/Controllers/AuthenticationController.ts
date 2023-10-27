@@ -1,4 +1,4 @@
-import { GetUserByEmail, AddNewUser } from "../Models/DatabaseModel.ts";
+import { GetUserByEmail, AddNewUser } from "../Models/DatabaseModel";
 
 export const CheckIfUserExists = async (req, res, next) => {
   if (await GetUserByEmail(req.body.userDetails.Email)) {

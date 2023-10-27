@@ -1,6 +1,7 @@
-require("dotenv").config();
-const { promises } = require("nodemailer/lib/xoauth2");
-const mysql = require("mysql2");
+import dotenv from "dotenv";
+dotenv.config();
+import mysql from "mysql2";
+import mysql2 from "mysql2/promise";
 const host = process.env.HOST;
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
@@ -22,7 +23,7 @@ const dbConnectObj = {
   password: dbPassword,
   database: databaseName,
 };
-function AddNewUser(user) {
+export const AddNewUser = (user) => {
   let AddNewUserPromise = new Promise((resolve, reject) => {
     pool.query(
       `INSERT INTO ${UserTable} (
@@ -38,14 +39,16 @@ function AddNewUser(user) {
         if (error) {
           reject(error.errno);
         } else {
-          resolve();
+          resolve(results);
         }
       }
     );
   });
   return AddNewUserPromise;
-}
-async function SaveUserOtp(req, res, next) {
+};
+export const SaveUserOtp = async (otp: string, req, res, next) => {
+  console.log(otp);
+  let UserRegistration;
   try {
     var user = await GetUserByEmail(req.body.userDetails.Email);
   } catch (error) {
@@ -61,7 +64,7 @@ async function SaveUserOtp(req, res, next) {
   pool.query(
     `INSERT INTO ${userOtpTable} (
         User_ID, Email, OTP, DateCreated, OTPExpireDate)
-        VALUES (${userId}, '${req.body.userDetails.Email}', '${req.body.otp}', CURRENT_TIMESTAMP(), ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0"))
+        VALUES (${userId}, '${req.body.userDetails.Email}', '${otp}', CURRENT_TIMESTAMP(), ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0"))
         ON DUPLICATE KEY UPDATE OTP = '${req.body.otp}', DateCreated = CURRENT_TIMESTAMP(), OTPExpireDate = ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0")`,
     function (error, results, fields) {
       if (error) {
@@ -77,22 +80,20 @@ async function SaveUserOtp(req, res, next) {
       }
     }
   );
-}
-async function GetUserByEmail(email) {
+};
+export const GetUserByEmail = async (email) => {
   var sqlQuery = `SELECT * FROM User WHERE Email= "${email}" `;
-  const mysql2 = require("mysql2/promise");
   const connection = await mysql2.createConnection(dbConnectObj);
   const [rows] = await connection.execute(sqlQuery);
   return rows[0];
-}
-async function CheckOtp(otpDetails) {
+};
+export const CheckOtp = async (otpDetails) => {
   var sqlQuery = `SELECT * FROM User_OTP WHERE Email= "${otpDetails.email}" AND OTP = '${otpDetails.otp}' `;
-  const mysql2 = require("mysql2/promise");
   const connection = await mysql2.createConnection(dbConnectObj);
   const [rows] = await connection.execute(sqlQuery);
   return rows[0];
-}
-function InitDatabaseTables() {
+};
+export const InitDatabaseTables = () => {
   pool.query(
     `CREATE TABLE IF NOT EXISTS ${UserTable}(
 User_ID CHAR(36) PRIMARY KEY,
@@ -130,23 +131,15 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       }
     }
   );
-}
-function dbConnect() {
-  pool.execute((error) => {
-    if (error) {
-      console.log(error);
-      return;
-    }
-  });
-}
-function dbDisconnect() {
-  pool.end();
-}
-
-module.exports = {
-  InitDatabaseTables,
-  AddNewUser,
-  SaveUserOtp,
-  CheckOtp,
-  GetUserByEmail,
 };
+// function dbConnect() {
+//   pool.execute((error) => {
+//     if (error) {
+//       console.log(error);
+//       return;
+//     }
+//   });
+// }
+// function dbDisconnect() {
+//   pool.end();
+// }

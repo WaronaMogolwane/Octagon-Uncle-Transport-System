@@ -3,10 +3,15 @@
   "version": "1.0.0",
   "description": "A server that handles HTTP requests from the Octagon Uncle Transport System",
   "main": "server.ts",
-  "type": "module",
   "scripts": {
-    "dev": "nodemon ./build/server.ts",
-    "build": "tsc"
+    "dev": "npx tsc & nodemon --inspect-brk ./src/bin/build/server.js",
+    "ts-serv": "npx ts-node --esm src/server.ts",
+    "build": "npx tsc --build",
+    "rebuild": "npx tsc --build --clean & npx tsc --build",
+    "clean": "npx tsc --build --clean",
+    "debug": "node ./src/bin/build/server.js",
+    "build-debug": "npm run build & npm run debug",
+    "rebuild-debug": "npm run rebuild & npm run debug"
   },
   "repository": {
     "type": "git",
@@ -26,7 +31,6 @@
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.3.3",
     "nodemailer": "^6.8.0",
-    "nodemon": "^2.0.20",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -36,6 +40,7 @@
     "@typescript-eslint/parser": "^6.9.0",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "nodemon": "^2.0.20"
   }
 }

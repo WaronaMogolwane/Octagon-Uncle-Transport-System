@@ -4,7 +4,7 @@ import { SendOtp, VerifyOtp } from "../Models/OtpModel";
 import {
   CheckIfUserExists,
   RegisterUser,
-} from "../Controllers/AuthenticationController.js";
+} from "../Controllers/AuthenticationController";
 const router = Router();
 
 router.post("/register-user", RegisterUser, (req, res) => {});

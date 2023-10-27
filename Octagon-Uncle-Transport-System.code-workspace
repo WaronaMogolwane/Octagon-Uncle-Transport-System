@@ -1,13 +1,13 @@
 {
-	"folders": [
-		{
-			"path": "School-Transport"
-		},
-		{
-			"path": "Admin"
-		},
-		{
-			"path": "Server"
-		}
-	]
+  "folders": [
+    {
+      "path": "School-Transport"
+    },
+    {
+      "path": "Admin"
+    },
+    {
+      "path": "Server"
+    }
+  ]
 }

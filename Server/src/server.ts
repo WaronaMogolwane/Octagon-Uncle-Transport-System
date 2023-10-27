@@ -1,10 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
-import { InitDatabaseTables } from "./Models/DatabaseModel.ts";
+import { InitDatabaseTables } from "./Models/DatabaseModel";
 import express from "express";
-import authRoute from "./Routes/AuthenticationRoutes.ts";
-import userProfileRoute from "./Routes/UserDetailRoutes.ts";
+import authRoute from "./Routes/AuthenticationRoutes";
+import userProfileRoute from "./Routes/UserDetailRoutes";
 const app = express();
 app.use(cors());
 app.use(express.json());

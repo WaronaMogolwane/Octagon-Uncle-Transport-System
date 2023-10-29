@@ -7,11 +7,11 @@
     "dev": "npx tsc & nodemon --inspect-brk ./src/bin/build/server.js",
     "ts-serv": "npx ts-node --esm src/server.ts",
     "build": "npx tsc --build",
-    "rebuild": "npx tsc --build --clean & npx tsc --build",
+    "rebuild": "npx tsc --build --clean && npx tsc --build",
     "clean": "npx tsc --build --clean",
     "debug": "node ./src/bin/build/server.js",
-    "build-debug": "npm run build & npm run debug",
-    "rebuild-debug": "npm run rebuild & npm run debug"
+    "build-debug": "npm run build && npm run debug",
+    "rebuild-debug": "npm run rebuild && npm run debug"
   },
   "repository": {
     "type": "git",
@@ -36,11 +36,12 @@
   "devDependencies": {
     "@types/express": "^4.17.20",
     "@types/jest": "^29.5.6",
+    "@types/jsonwebtoken": "^9.0.4",
     "@types/node": "^20.8.9",
     "@typescript-eslint/parser": "^6.9.0",
+    "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.2.2",
-    "nodemon": "^2.0.20"
+    "typescript": "^5.2.2"
   }
 }

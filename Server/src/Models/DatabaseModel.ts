@@ -23,13 +23,13 @@ const dbConnectObj = {
   password: dbPassword,
   database: databaseName,
 };
-export const AddNewUser = (user) => {
+export const AddNewUser = (user: any) => {
   let AddNewUserPromise = new Promise((resolve, reject) => {
     pool.query(
       `INSERT INTO ${UserTable} (
-        USER_ID, FirstName, LastName, Email, Phone, Password, DateCreated)
+        userId, email, password, cellphone, status, lastLogin,` + "`role`" + `, token)
         VALUES (
-            UUID(),  '${user.FirstName}',  '${user.LastName}', '${user.Email}', '${user.Phone}', '${user.Password}' , CURRENT_TIMESTAMP()
+            'e9rg-w993-fcsi-3eo9',  '${user.Email}',  '${user.Password}', '${user.Cellphone}', ${user.status}, "2000-01-01" , '${user.Role}', NULL
         )`,
       function (error, results, fields) {
         // error will be an Error if one occurred during the query
@@ -47,7 +47,6 @@ export const AddNewUser = (user) => {
   return AddNewUserPromise;
 };
 export const SaveUserOtp = async (otp: string, req, res, next) => {
-  console.log(otp);
   let UserRegistration;
   try {
     var user = await GetUserByEmail(req.body.userDetails.Email);
@@ -65,7 +64,7 @@ export const SaveUserOtp = async (otp: string, req, res, next) => {
     `INSERT INTO ${userOtpTable} (
         User_ID, Email, OTP, DateCreated, OTPExpireDate)
         VALUES (${userId}, '${req.body.userDetails.Email}', '${otp}', CURRENT_TIMESTAMP(), ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0"))
-        ON DUPLICATE KEY UPDATE OTP = '${req.body.otp}', DateCreated = CURRENT_TIMESTAMP(), OTPExpireDate = ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0")`,
+        ON DUPLICATE KEY UPDATE OTP = '${otp}', DateCreated = CURRENT_TIMESTAMP(), OTPExpireDate = ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0")`,
     function (error, results, fields) {
       if (error) {
         console.log(error);
@@ -126,8 +125,6 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       if (error) {
         console.log(error.message);
         return;
-      } else {
-        console.log("Database successfully initialised");
       }
     }
   );

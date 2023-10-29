@@ -1,6 +1,6 @@
 import { GetUserByEmail, AddNewUser } from "../Models/DatabaseModel";
 
-export const CheckIfUserExists = async (req, res, next) => {
+export const CheckIfUserExists = async (req: any, res: any, next: any) => {
   if (await GetUserByEmail(req.body.userDetails.Email)) {
     res.status(400).send("User account already exists");
   } else {
@@ -8,15 +8,8 @@ export const CheckIfUserExists = async (req, res, next) => {
   }
 };
 
-export const RegisterUser = (req, res, next) => {
-  let user = {
-    FirstName: req.body.userDetails.FirstName,
-    LastName: req.body.userDetails.LastName,
-    Email: req.body.userDetails.Email,
-    Phone: req.body.userDetails.Phone,
-    Password: req.body.userDetails.Password,
-    AvatarUrl: "NULL",
-  };
+export const RegisterUser = (req: any, res: any, next: any) => {
+  let user = req.body.userDetails;
   AddNewUser(user).then(
     () => {
       res.status(200).json({

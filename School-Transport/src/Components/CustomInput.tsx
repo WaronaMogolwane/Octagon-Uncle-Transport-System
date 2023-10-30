@@ -3,14 +3,23 @@ import React, { useState } from "react";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import COLORS from "../Const/colors";
 import { StyleSheet, TextInput } from "react-native";
+
+type CustomInputProps = {
+  label: string;
+  iconName: any;
+  error: any;
+  password: any;
+  onFocus: () => void;
+};
+
 const Input = ({
   label,
   iconName,
   error,
-  //password,
+  password,
   onFocus = () => {},
   ...props
-}) => {
+}: CustomInputProps) => {
   const [isFocused, setIsFocused] = useState(false);
   return (
     <View style={{ margin: 20 }}>

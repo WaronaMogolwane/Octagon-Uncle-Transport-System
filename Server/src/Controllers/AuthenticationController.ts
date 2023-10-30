@@ -17,17 +17,7 @@ export const RegisterUser = (req: any, res: any, next: any) => {
       });
     },
     (error) => {
-      if (error.errno === 1062) {
-        res.status(491).json({
-          UserCreated: false,
-          error: "User already exists",
-        });
-      } else {
-        res.status(400).json({
-          UserCreated: false,
-          error: "There was an erorr while creating the user",
-        });
-      }
+      next(error);
     }
   );
 };

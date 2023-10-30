@@ -6,6 +6,7 @@ import express from "express";
 import authRoute from "./Routes/AuthenticationRoutes";
 import userProfileRoute from "./Routes/UserDetailRoutes";
 import { authenticateJWT } from "./Middleware/Auth";
+import ErrorHandler from "./Middleware/ErrorHandler";
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -20,3 +21,4 @@ app.listen(PORT, function () {
   console.log(`Server is live on Port ${PORT}`);
 });
 
+app.use(ErrorHandler);

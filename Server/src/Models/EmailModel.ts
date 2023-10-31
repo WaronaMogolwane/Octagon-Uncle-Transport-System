@@ -1,39 +1,25 @@
-import dotenv from "dotenv";
-dotenv.config();
-import nodemailer from "nodemailer";
-const host = process.env.SMTP_HOST;
-const port = process.env.SMTP_PORT;
-const emailUser = process.env.EMAIL_USER;
-const emailPassword = process.env.EMAIL_PASSWORD;
+import { mailTransporter } from "../Services/EmailService";
 
-// create reusable transporter object using the default SMTP transport
-const transporter = nodemailer.createTransport({
-  host: host,
-  port: port,
-  secure: true, // true for 465, false for other ports
-  auth: {
-    user: emailUser, // generated ethereal user
-    pass: emailPassword, // generated ethereal password
-  },
-});
 // async..await is not allowed in global scope, must use a wrapper
-export const SendEmail = async (email: {
-  fromName: string;
-  fromAddress: string;
-  toAddress: string;
-  subject: string;
-  emailHtml: string;
-}) => {
-  const emailData = {
-    from: `"${email.fromName}" <${email.fromAddress}>`, // sender address
-    to: email.toAddress, // list of receivers
-    subject: email.subject, // Subject line
+export const SendEmail = async (
+  emailData: {
+    fromName: string;
+    fromAddress: string;
+    toAddress: string;
+    subject: string;
+    emailHtml: string;
+  }
+) => {
+  const email = {
+    from: `"${emailData.fromName}" <${emailData.fromAddress}>`, // sender address
+    to: emailData.toAddress, // list of receivers
+    subject: emailData.subject, // Subject line
     // text: `${email.Message}`, // plain text body
-    html: email.emailHtml, // html body
+    html: emailData.emailHtml, // html body
   };
   try {
     // send mail with defined transport object
-    await transporter.sendMail(emailData, null);
+    await mailTransporter.sendMail(email, null);
   } catch (error) {
     return Promise.reject(error);
   }

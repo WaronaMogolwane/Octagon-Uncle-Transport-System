@@ -1,14 +1,17 @@
-import { Router } from "express";
+//import { Router } from "express";
+import Router from 'express-promise-router'
 import { AddNewUser, GetUserByEmail } from "../Models/DatabaseModel";
 import { SendOtp, VerifyOtp } from "../Models/OtpModel";
 import {
   CheckIfUserExists,
   RegisterUser,
+
 } from "../Controllers/AuthenticationController";
 import { authenticateJWT } from "../Middleware/Auth";
 const router = Router();
 
-router.post("/register-user", RegisterUser, (req, res, next) => { });
+router.post("/register-user", RegisterUser, async (req, res, next) => {
+});
 
 router.post("/login", (req, res) => { });
 

@@ -2,11 +2,14 @@ import dotenv from "dotenv";
 dotenv.config();
 import mysql from "mysql2";
 import mysql2 from "mysql2/promise";
+import { User } from "../Classes/User";
+import { DbClient } from "../Services/DatabaseService";
+import { error } from "console";
 const host = process.env.HOST;
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
 const databaseName = process.env.DATABASE;
-const UserTable = "User";
+const UserTable = "Users";
 const userOtpTable = "User_OTP";
 const pool = mysql.createPool({
   host: host,
@@ -27,9 +30,9 @@ export const AddNewUser = (user: any) => {
   let AddNewUserPromise = new Promise((resolve, reject) => {
     pool.query(
       `INSERT INTO ${UserTable} (
-        userId, email, password, cellphone, status, lastLogin,` + "`role`" + `, token)
+        UserId, Email, Password, Cellphone, Status, LastLogin, UserRole)
         VALUES (
-            'e9rg-w993-fcsi-3eo9',  '${user.Email}',  '${user.Password}', '${user.Cellphone}', ${user.status}, "2000-01-01" , '${user.Role}', NULL
+            'e9rg-w993-fcsi-3eo9',  '${user.Email}',  '${user.Password}', '${user.Cellphone}', b'${user.Status}', '2000-01-01' , '${user.Role}'
         )`,
       function (error, results, fields) {
         // error will be an Error if one occurred during the query
@@ -37,6 +40,7 @@ export const AddNewUser = (user: any) => {
         // fields will contain information about the returned results fields (if any)
 
         if (error) {
+          console.error(error.code)
           reject(error.errno);
         } else {
           resolve(results);
@@ -140,3 +144,20 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 // function dbDisconnect() {
 //   pool.end();
 // }
+
+export const CreateNewUser = async (user: User, callback: (error, result) => void) => {
+  DbClient.connect((err) => {
+    DbClient.query('CALL public.sp_insert_new_user($1::text,$2::text,$3::text,$4::text,$5::bit,$6::date,$7::integer)',
+      [user.userId, user.email, user.password, user.cellphone, user.status, user.lastLogin, user.userRole],
+      (err, res) => {
+        //console.log(err ? err : res.rows[0].message) // Hello World!
+        DbClient.end()
+        if (err) {
+          callback(err, null);
+        }
+        else {
+          callback(null, res);
+        }
+      })
+  })
+}

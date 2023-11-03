@@ -5,12 +5,13 @@ import { SendOtp, VerifyOtp } from "../Models/OtpModel";
 import {
   CheckIfUserExists,
   RegisterUser,
+
 } from "../Controllers/AuthenticationController";
-import { DbConnect } from "../Services/DatabaseService"
 import { authenticateJWT } from "../Middleware/Auth";
 const router = Router();
 
-router.post("/register-user", DbConnect, (req, res, next) => { });
+router.post("/register-user", RegisterUser, async (req, res, next) => {
+});
 
 router.post("/login", (req, res) => { });
 

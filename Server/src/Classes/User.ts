@@ -1,20 +1,20 @@
-export class UserModel {
-    userId: string
-    email: string
-    password: string
-    cellphone: string
-    status: boolean
-    lastLogin: Date
-    userRole: Number
+export class User {
+    userId?: string
+    email?: string
+    password?: string
+    cellphone?: string
+    status?: boolean
+    lastLogin?: Date
+    userRole?: Number
 
     constructor(
-        userId: string,
-        email: string,
-        password: string,
-        cellphone: string,
-        status: boolean,
-        lastLogin: Date,
-        userRole: Number) {
+        userId?: string,
+        email?: string,
+        password?: string,
+        cellphone?: string,
+        status?: boolean,
+        lastLogin?: Date,
+        userRole?: Number) {
         this.userId = userId
         this.email = email
         this.password = password

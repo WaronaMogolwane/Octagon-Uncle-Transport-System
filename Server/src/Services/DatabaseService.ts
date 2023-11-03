@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { Client } from 'pg'
+import { Client, Pool } from 'pg'
 
 const dotEnv = dotenv.config();
 export const DbClient = new Client({

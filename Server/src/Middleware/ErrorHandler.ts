@@ -1,5 +1,6 @@
 import { ErrorRequestHandler } from "express";
 import { isHttpError } from "http-errors";
+import { ErrorResponse } from "../Classes/ErrorResponse";
 
 const ErrorHandler: ErrorRequestHandler = (
   error: any,
@@ -7,9 +8,9 @@ const ErrorHandler: ErrorRequestHandler = (
   res: any,
   next: any
 ) => {
-  console.error("poes" + error);
-  let statusCode = 500;
-  let errorMessage = "An unknown error occured";
+  console.error(error);
+  let statusCode: number = 500;
+  let errorMessage: string = "An unknown error occured";
   if (isHttpError(error)) {
     statusCode = error.status;
     errorMessage = error.message;

@@ -1,27 +1,10 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { CheckOtp, SaveUserOtp } from "./DatabaseModel";
+import { CheckOtp, InsertOtp } from "./DatabaseModel";
 import { SendEmail } from "./EmailModel";
+import { Email } from "../Classes/Email";
 
-export const SendOtp = (req, res, next) => {
-  let otp: string = CreateOtp();
-  var email: any = {
-    fromName: "Octagon Uncle",
-    fromAddress: "developer@majorxp.co.za",
-    toAddress: req.body.userDetails.Email,
-    subject: "Octagon Uncle OTP: " + otp,
-    emailHtml: CreateEmailHtml(req, otp),
-  };
-  SendEmail(email).then(
-    (value) => {
-      SaveUserOtp(otp, req, res, next);
-    },
-    (error) => {
-      res.status(400).send(error);
-    }
-  );
-  next();
-};
+
 export const VerifyOtp = async (req, res, next) => {
   let otpVarification: any = {
     OtpVerified: false,
@@ -57,7 +40,7 @@ export const VerifyOtp = async (req, res, next) => {
     console.error(error);
   }
 };
-const CreateOtp = (): string => {
+export const CreateOtp = (): string => {
   let otp: string = "";
   const digits = "0123456789";
   for (let i = 0; i < 5; i++) {
@@ -70,7 +53,7 @@ const IsOtpVaid = (rows: any) => {
     return true;
   } else return false;
 };
-const CreateEmailHtml = (req, otp) => {
+export const CreateEmailHtml = (us, otp) => {
   return `
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title></title>
@@ -639,7 +622,7 @@ const CreateEmailHtml = (req, otp) => {
   
                                 <div style="Margin-left: 20px;Margin-right: 20px;">
                                   <div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;">
-                                    <h2 style="Margin-top: 0;Margin-bottom: 16px;font-style: normal;font-weight: normal;color: #000;font-size: 28px;line-height: 36px;"><strong>Hi ${req.body.userDetails.FirstName},</strong></h2>
+                                    <h2 style="Margin-top: 0;Margin-bottom: 16px;font-style: normal;font-weight: normal;color: #000;font-size: 28px;line-height: 36px;"><strong>Hi ${userDetails.FirstName},</strong></h2>
                                   </div>
                                 </div>
   

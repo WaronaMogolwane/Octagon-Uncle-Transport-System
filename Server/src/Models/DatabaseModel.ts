@@ -145,12 +145,27 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 //   pool.end();
 // }
 
-export const CreateNewUser = async (user: User, callback: (error, result) => void) => {
+export const InsertOtp = async (userId: string, email: string, otp: string, callback: (error, result) => void) => {
+  DbClient.connect((err) => {
+    DbClient.query('CALL public.sp_insert_otp($1::text,$2::text,$3::text)',
+      [userId, email, otp],
+      (err, res) => {
+        //console.log(err ? err : res.rows[0].message) // Hello World!
+        DbClient.end()
+        if (err) {
+          callback(err, null);
+        }
+        else {
+          callback(null, res);
+        }
+      })
+  })
+}
+export const InsertNewUser = async (user: User, callback: (error, result) => void) => {
   DbClient.connect((err) => {
     DbClient.query('CALL public.sp_insert_new_user($1::text,$2::text,$3::text,$4::text,$5::bit,$6::date,$7::integer)',
       [user.userId, user.email, user.password, user.cellphone, user.status, user.lastLogin, user.userRole],
       (err, res) => {
-        //console.log(err ? err : res.rows[0].message) // Hello World!
         DbClient.end()
         if (err) {
           callback(err, null);

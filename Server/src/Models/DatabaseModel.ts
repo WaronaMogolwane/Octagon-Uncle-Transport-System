@@ -1,4 +1,4 @@
-<<<<<<<< HEAD:Server/src/Data/database-helper.js
+<<<<<<<< HEAD: Server / src / Data / database - helper.js
 require("dotenv").config();
 const { promises } = require("nodemailer/lib/xoauth2");
 const mysql = require("mysql2");
@@ -148,7 +148,7 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         User_ID CHAR(36) ,
         OTP CHAR(5) NOT NULL,
         DateCreated TIMESTAMP,
-        OTPExpireDate TIMESTAMP 
+        OTPExpireDate TIMESTAMP
         )`,
     function (error, results) {
       if (error) {

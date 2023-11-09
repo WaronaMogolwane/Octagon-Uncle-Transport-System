@@ -5,6 +5,7 @@ import mysql2 from "mysql2/promise";
 import { User } from "../Classes/User";
 import { DbClient } from "../Services/DatabaseService";
 import { error } from "console";
+
 const host = process.env.HOST;
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;

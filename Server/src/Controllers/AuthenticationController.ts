@@ -1,9 +1,10 @@
+import { error } from 'console';
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
-import { GetUserByEmail, AddNewUser, InsertNewUser } from "../Models/DatabaseModel";
+import { GetUserByEmail, AddNewUser, InsertNewUser, InsertOtp, CheckOtp } from "../Models/DatabaseModel";
 import Router from 'express-promise-router';
 import { SendEmail } from "../Models/EmailModel";
-import { CreateEmailHtml, CreateOtp } from "../Models/OtpModel";
+import { CreateEmailHtml, CreateOtp, IsOtpVaid } from "../Models/OtpModel";
 import { Email } from "../Classes/Email";
 
 export const CheckIfUserExists = async (req: any, res: any, next: any) => {
@@ -43,21 +44,67 @@ export const RegisterUser = async (req: any, res: any, next: any) => {
 };
 
 export const SendEmailOtp = async (req: any, res: any, next: any) => {
-  let toAddress = req.body.email;
+  let userDetails: any = req.body.userDetails;
   let otp: string = CreateOtp();
   let emailData: Email = {
     fromName: "Octagona Uncle Transport",
     fromAddress: process.env.OTP_FROM_ADDRESS,
-    toAddress: toAddress,
+    toAddress: userDetails.email,
     subject: "Octagon Uncle OTP",
-    emailHtml: CreateEmailHtml(req, otp)
+    emailHtml: CreateEmailHtml(userDetails, otp)
   }
-  SendEmail(toAddress).then(
-    (value) => {
-      InsertOtp(otp);
-    },
-    (error) => {
-      res.status(400).send(error);
+  InsertOtp(userDetails.userId, userDetails.email, otp, (error, result) => {
+    if (error) {
+      next(error);
     }
-  );
+    else {
+      SendEmail(emailData).then(
+        (value) => {
+          res.status(200).json({
+            OtpSent: true,
+            Message: value
+          });
+        },
+        (error) => {
+          next(error);
+        }
+      );
+    }
+  })
+}
+export const VerifyOtp = async (req, res, next) => {
+  let otpVarification: any = {
+    OtpVerified: false,
+    OtpValid: false,
+  };
+  try {
+    var rows = await CheckOtp(req.body);
+    if (rows) {
+      if (IsOtpVaid(rows)) {
+        res.status(201).send(
+          (otpVarification = {
+            OtpVerified: true,
+            OtpValid: true,
+          })
+        );
+      } else {
+        res.status(400).send(
+          (otpVarification = {
+            OtpVerified: false,
+            OtpValid: true,
+          })
+        );
+      }
+    } else {
+      res.status(400).send(
+        (otpVarification = {
+          OtpVerified: false,
+          OtpValid: false,
+        })
+      );
+    }
+  } catch (error) {
+    console.error(error);
+  }
 };
+

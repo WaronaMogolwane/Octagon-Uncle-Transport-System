@@ -23,7 +23,7 @@ export const AddUserDetail = async (req: any, res: any, next: any) => {
   await AddUserDetailData(newUserDetail, (error, result) => {
     if (error) {
       let err: any = {
-        status: error.status,
+        status: 400,
         message: error.message,
       };
       next(err);
@@ -42,7 +42,7 @@ export const GetAllUserDetail = async (req: any, res: any, next: any) => {
   await GetUserDetailData(userId, (error, result) => {
     if (error) {
       let err: any = {
-        status: error.status,
+        status: 400,
         message: error.message,
       };
       next(err);
@@ -56,12 +56,11 @@ export const GetAllUserDetail = async (req: any, res: any, next: any) => {
 };
 
 export const GetUserDetail = async (req: any, res: any, next: any) => {
-  let userId = req.body.userDetails.userId;
-
+  let userId = req.body.userDetails.UserId;
   await GetUserDetailData(userId, (error, result) => {
     if (error) {
       let err: any = {
-        status: error.status,
+        status: 400,
         message: error.message,
       };
       next(err);
@@ -90,7 +89,7 @@ export const UpdateUserDetail = async (req: any, res: any, next: any) => {
   await UpdateUserDetailData(userDetail, (error, result) => {
     if (error) {
       let err: any = {
-        status: error.status,
+        status: 400,
         message: error.message,
       };
       next(err);

@@ -1,3 +1,4 @@
+import { GetOtp } from './../Models/DatabaseModel';
 import { error } from 'console';
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
@@ -73,38 +74,37 @@ export const SendEmailOtp = async (req: any, res: any, next: any) => {
   })
 }
 export const VerifyOtp = async (req, res, next) => {
-  let otpVarification: any = {
-    OtpVerified: false,
-    OtpValid: false,
-  };
-  try {
-    var rows = await CheckOtp(req.body);
-    if (rows) {
-      if (IsOtpVaid(rows)) {
-        res.status(201).send(
-          (otpVarification = {
-            OtpVerified: true,
-            OtpValid: true,
-          })
-        );
+  let email: string = req.body.email;
+  let otp: string = req.body.otp;
+  await GetOtp(email, otp, (error, result) => {
+    if (error) {
+      next(
+        {
+          message: error,
+          status: 400
+        }
+      )
+    }
+    else {
+      if (result.rows) {
+        let otpExpireDate = new Date(result.rows[0].otp_expire_date);
+        if (IsOtpVaid(otpExpireDate)) {
+          res.status(201).send("OTP verified.");
+        } else {
+          res.status(400).send({
+            message: "OTP expired.",
+            status: 400
+          }
+          );
+        }
       } else {
-        res.status(400).send(
-          (otpVarification = {
-            OtpVerified: false,
-            OtpValid: true,
-          })
+        res.status(400).send({
+          message: "OTP does not exist.",
+          status: 400
+        }
         );
       }
-    } else {
-      res.status(400).send(
-        (otpVarification = {
-          OtpVerified: false,
-          OtpValid: false,
-        })
-      );
     }
-  } catch (error) {
-    console.error(error);
-  }
-};
+  });
+}
 

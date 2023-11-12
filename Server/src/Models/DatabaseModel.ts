@@ -162,9 +162,9 @@ export const InsertOtp = async (userId: string, email: string, otp: string, call
       })
   })
 }
-export const VerifyOtp = async (email: string, otp: string, callback: (error, result) => void) => {
+export const GetOtp = async (email: string, otp: string, callback: (error, result) => void) => {
   DbClient.connect((err) => {
-    DbClient.query('select * from fn_verify_otp($1::text,$2::text',
+    DbClient.query('SELECT * from public.fn_verify_otp($1::text,$2::text)',
       [email, otp],
       (err, res) => {
         //console.log(err ? err : res.rows[0].message) // Hello World!

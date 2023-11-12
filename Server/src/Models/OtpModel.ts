@@ -12,8 +12,8 @@ export const CreateOtp = (): string => {
   }
   return otp;
 };
-export const IsOtpVaid = (rows: any) => {
-  if (new Date(rows.OTPExpireDate) > new Date()) {
+export const IsOtpVaid = (otpExpireDate: Date) => {
+  if (otpExpireDate > new Date()) {
     return true;
   } else return false;
 };

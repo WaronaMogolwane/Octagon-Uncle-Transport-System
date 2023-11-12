@@ -1,5 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
+import { User } from "../Classes/User";
+import { DbClient } from "../Services/DatabaseService";
+
 
 export const InsertOtp = async (userId: string, email: string, otp: string, callback: (error, result) => void) => {
   DbClient.connect((err) => {

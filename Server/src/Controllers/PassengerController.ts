@@ -22,7 +22,7 @@ export const AddPassenger = async (req: any, res: any, next: any) => {
   await AddPassengerData(newPassenger, (error, result) => {
     if (error) {
       let err: any = {
-        status: error.status,
+        status: 400,
         message: error.message,
       };
       next(err);
@@ -41,7 +41,7 @@ export const GetPassenger = async (req: any, res: any, next: any) => {
   await GetPassengerData(passengerId, (error, result) => {
     if (error) {
       let err: any = {
-        status: error.status,
+        status: 400,
         message: error.message,
       };
       next(err);
@@ -69,7 +69,7 @@ export const UpdatePassenger = async (req: any, res: any, next: any) => {
   await UpdatePassengerData(passenger, (error, result) => {
     if (error) {
       let err: any = {
-        status: error.status,
+        status: 400,
         message: error.message,
       };
       next(err);
@@ -83,13 +83,12 @@ export const UpdatePassenger = async (req: any, res: any, next: any) => {
 };
 
 export const GetAllUserPassenger = async (req: any, res: any, next: any) => {
-  let passengerId = req.body.passenger.PassengerId;
   let userId = req.body.passenger.UserId;
 
-  await GetAllPassengerUserData(passengerId, userId, (error, result) => {
+  await GetAllPassengerUserData(userId, (error, result) => {
     if (error) {
       let err: any = {
-        status: error.status,
+        status: 400,
         message: error.message,
       };
       next(err);
@@ -107,25 +106,20 @@ export const GetAllBusinessPassenger = async (
   res: any,
   next: any
 ) => {
-  let passengerId = req.body.passenger.PassengerId;
   let businessDetailId = req.body.passenger.BusinessDetailId;
 
-  await GetAllPassengerBusinessData(
-    passengerId,
-    businessDetailId,
-    (error, result) => {
-      if (error) {
-        let err: any = {
-          status: error.status,
-          message: error.message,
-        };
-        next(err);
-      } else {
-        res.status(200).json({
-          RecordRetrieved: true,
-          result: result.rows[0],
-        });
-      }
+  await GetAllPassengerBusinessData(businessDetailId, (error, result) => {
+    if (error) {
+      let err: any = {
+        status: 400,
+        message: error.message,
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result.rows[0],
+      });
     }
-  );
+  });
 };

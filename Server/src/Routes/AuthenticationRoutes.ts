@@ -8,12 +8,13 @@ import {
   VerifyOtp
 
 } from "../Controllers/AuthenticationController";
+import { CreateJWT } from '../Middleware/Auth';
 const router = Router();
 
-router.post("/register-user", RegisterUser, async (req, res, next) => {
+router.post("/register-user", RegisterUser, CreateJWT, async (req, res, next) => {
 });
 
-router.post("/login", UserLogin, async (req, res, next) => { });
+router.post("/login", UserLogin, CreateJWT, async (req, res, next) => { });
 
 router.post("/send-email-otp", SendEmailOtp, (req, res) => { });
 

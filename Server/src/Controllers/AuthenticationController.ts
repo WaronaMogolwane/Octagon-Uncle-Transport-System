@@ -34,9 +34,8 @@ export const RegisterUser = async (req: any, res: any, next: any) => {
       next(err);
     }
     else {
-      res.status(200).json({
-        UserCreated: true
-      })
+      req.body.message = "User successfully created.";
+      next();
     }
   }
   );
@@ -118,7 +117,8 @@ export const UserLogin = async (req, res, next) => {
     }
     else {
       if (result.rows) {
-        res.status(200).json("User successfully logged in.")
+        req.body.message = "User successfully logged in.";
+        next();
       }
     }
   });

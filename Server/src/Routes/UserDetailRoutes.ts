@@ -2,17 +2,17 @@ import Router from "express-promise-router";
 import {
   AddUserDetail,
   GetUserDetail,
-  UpdateUserDetail,
+  UpdateUserPersonalDetail,
 } from "../Controllers/UserDetailController";
 const router = Router();
 
-router.post("/create-user-detail", AddUserDetail, async (req, res, next) => {});
+router.post("/add-user-details", AddUserDetail, async (req, res, next) => {});
 
-router.get("/get-user-detail", GetUserDetail, async (req, res, next) => {});
+router.get("/get-user-details", GetUserDetail, async (req, res, next) => {});
 
 router.patch(
-  "/update-user-detail",
-  UpdateUserDetail,
+  "/update-user-details",
+  UpdateUserPersonalDetail,
   async (req, res, next) => {}
 );
 

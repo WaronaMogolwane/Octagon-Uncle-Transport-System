@@ -3,7 +3,7 @@ import { UserDetail } from "../Classes/UserDetail";
 import { DbPool } from "../Services/DatabaseService";
 dotenv.config();
 
-export const AddUserDetailData = async (
+export const InsertUserDetail = async (
   userDetail: UserDetail,
   callback: (error, result) => void
 ) => {
@@ -31,12 +31,13 @@ export const AddUserDetailData = async (
   );
 };
 
-export const GetUserDetailData = async (
+export const GetUserDetailByUserId = async (
   userId: string,
   callback: (error, result) => void
 ) => {
   await DbPool.query(
-    `select * from public.sp_get_user_detail('${userId}');`,
+    "select * from public.fn_get_user_detail($1::text);",
+    [userId],
     (err, res) => {
       if (err) {
         callback(err, null);
@@ -47,7 +48,7 @@ export const GetUserDetailData = async (
   );
 };
 
-export const UpdateUserDetailData = async (
+export const UpdateUserDetail = async (
   userDetail: UserDetail,
   callback: (error, result) => void
 ) => {

@@ -1,8 +1,5 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { CheckOtp, InsertOtp } from "./DatabaseModel";
-import { SendEmail } from "./EmailModel";
-import { Email } from "../Classes/Email";
 
 export const CreateOtp = (): string => {
   let otp: string = "";

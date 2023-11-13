@@ -1,12 +1,11 @@
-import { GetOtp } from './../Models/DatabaseModel';
-import { error } from 'console';
+import { GetOtp, GetUserByEmailPassword, } from './../Models/DatabaseModel';
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
-import { GetUserByEmail, AddNewUser, InsertNewUser, InsertOtp, CheckOtp } from "../Models/DatabaseModel";
-import Router from 'express-promise-router';
-import { SendEmail } from "../Models/EmailModel";
+import { GetUserByEmail, InsertNewUser, InsertOtp } from "../Models/DatabaseModel";
 import { CreateEmailHtml, CreateOtp, IsOtpVaid } from "../Models/OtpModel";
 import { Email } from "../Classes/Email";
+import { UserCredentials } from '../Classes/UserCredentials';
+import { SendEmail } from '../Models/EmailModel';
 
 export const CheckIfUserExists = async (req: any, res: any, next: any) => {
   if (await GetUserByEmail(req.body.userDetails.Email)) {
@@ -107,4 +106,22 @@ export const VerifyOtp = async (req, res, next) => {
     }
   });
 }
-
+export const UserLogin = async (req, res, next) => {
+  let userLogin: UserCredentials = {
+    email: req.body.email,
+    password: req.body.password
+  };
+  await GetUserByEmailPassword(userLogin, (error, result) => {
+    if (error) {
+      next({
+        message: error,
+        status: 400
+      });
+    }
+    else {
+      if (result.rows) {
+        res.status(200).json("User successfully logged in.")
+      }
+    }
+  });
+}

@@ -11,13 +11,22 @@ export const authenticateJWT = (req: any, res: any, next: any) => {
     const token = authHeader.split(" ")[1];
     jwt.verify(token, jwtSecret, (err: any, user: any) => {
       if (err) {
-        return res.sendStatus(403);
+        next(
+          {
+            message: "Unauthorised",
+            status: 401
+          }
+        );
       }
-
       req.user = user;
       next();
     });
   } else {
-    res.sendStatus(401);
+    next(
+      {
+        message: "Unauthorised",
+        status: 401
+      }
+    );
   }
 };

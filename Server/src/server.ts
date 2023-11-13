@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
-import { InitDatabaseTables } from "./Models/DatabaseModel";
 import express from "express";
 import authRoute from "./Routes/AuthenticationRoutes";
 import userProfileRoute from "./Routes/UserDetailRoutes";
@@ -21,7 +20,6 @@ app.use("/user-profile", authenticateJWT, userProfileRoute);
 app.use("/passenger", authenticateJWT, passengerRoute);
 
 app.listen(PORT, function () {
-  InitDatabaseTables();
   console.log(`Server is live on Port ${PORT}`);
 });
 

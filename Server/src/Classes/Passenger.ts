@@ -3,9 +3,10 @@ export class Passenger {
   firstName?: string;
   lastName?: string;
   age?: string;
-  homeaddress?: string;
-  destinationaddress?: string;
-  userId?: string;
+  homeAddress?: string;
+  destinationAddress?: string;
+  payerId?: string;
+  businessId?: string;
 
   constructor(
     passenger_id?: string,
@@ -14,14 +15,16 @@ export class Passenger {
     age?: string,
     homeaddress?: string,
     destinationaddress?: string,
-    userId?: string
+    payerId?: string,
+    businessId?: string
   ) {
     this.passenger_id = passenger_id;
     this.firstName = firstName;
     this.lastName = lastName;
     this.age = age;
-    this.homeaddress = homeaddress;
-    this.destinationaddress = destinationaddress;
-    this.userId = userId;
+    this.homeAddress = homeaddress;
+    this.destinationAddress = destinationaddress;
+    this.payerId = payerId;
+    this.businessId = businessId;
   }
 }

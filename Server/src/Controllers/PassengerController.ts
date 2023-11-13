@@ -1,6 +1,12 @@
 import { randomUUID } from "crypto";
 import { Passenger } from "../Classes/Passenger";
-import { AddPassengerData } from "../Models/PassengerModel";
+import {
+  InsertPassenger,
+  GetAllPassengersByPayerId,
+  GetAllPassengersByBusinessId,
+  GetPassengerByPassengerId,
+  UpdatePassenger,
+} from "../Models/PassengerModel";
 
 export const AddPassenger = async (req: any, res: any, next: any) => {
   let newPassenger = new Passenger(
@@ -8,14 +14,15 @@ export const AddPassenger = async (req: any, res: any, next: any) => {
     req.body.passenger.FirstName,
     req.body.passenger.LastName,
     req.body.passenger.Age,
-    req.body.passenger.Homeaddress,
-    req.body.passenger.Destinationaddress,
-    req.body.passenger.UserId
+    req.body.passenger.HomeAddress,
+    req.body.passenger.DestinationAddress,
+    req.body.passenger.PayerId,
+    req.body.passenger.BusinessId
   );
-  await AddPassengerData(newPassenger, (error, result) => {
+  await InsertPassenger(newPassenger, (error, result) => {
     if (error) {
       let err: any = {
-        status: error.status,
+        status: 400,
         message: error.message,
       };
       next(err);
@@ -23,6 +30,95 @@ export const AddPassenger = async (req: any, res: any, next: any) => {
       res.status(200).json({
         PassengerCreated: true,
         result: result.rows[0],
+      });
+    }
+  });
+};
+
+export const GetPassenger = async (req: any, res: any, next: any) => {
+  let passengerId = req.body.passenger.PassengerId;
+
+  await GetPassengerByPassengerId(passengerId, (error, result) => {
+    if (error) {
+      let err: any = {
+        status: 400,
+        message: error.message,
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result.rows[0],
+      });
+      console.log(result);
+    }
+  });
+};
+
+export const UpdatePassengerDetail = async (req: any, res: any, next: any) => {
+  let passenger = new Passenger(
+    req.body.passenger.PassengerId,
+    req.body.passenger.FirstName,
+    req.body.passenger.LastName,
+    req.body.passenger.Age,
+    req.body.passenger.HomeAddress,
+    req.body.passenger.DestinationAddress,
+    req.body.passenger.PayerId,
+    req.body.passenger.BusinessId
+  );
+  await UpdatePassenger(passenger, (error, result) => {
+    if (error) {
+      let err: any = {
+        status: 400,
+        message: error.message,
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        UserDetailUpdated: true,
+        result: result.rows[0],
+      });
+    }
+  });
+};
+
+export const GetPassengersByPayer = async (req: any, res: any, next: any) => {
+  let payerId = req.body.passenger.PayerId;
+
+  await GetAllPassengersByPayerId(payerId, (error, result) => {
+    if (error) {
+      let err: any = {
+        status: 400,
+        message: error.message,
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result.rows,
+      });
+    }
+  });
+};
+
+export const GetPassengersByBusiness = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  let businessId = req.body.passenger.BusinessId;
+
+  await GetAllPassengersByBusinessId(businessId, (error, result) => {
+    if (error) {
+      let err: any = {
+        status: 400,
+        message: error.message,
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result.rows,
       });
     }
   });

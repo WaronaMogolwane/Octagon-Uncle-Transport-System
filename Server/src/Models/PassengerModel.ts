@@ -3,7 +3,7 @@ import { Passenger } from "../Classes/Passenger";
 import { DbPool } from "../Services/DatabaseService";
 dotenv.config();
 
-export const AddPassengerData = async (
+export const InsertPassenger = async (
   passenger: Passenger,
   callback: (error, result) => void
 ) => {
@@ -16,8 +16,8 @@ export const AddPassengerData = async (
       passenger.age,
       passenger.homeAddress,
       passenger.destinationAddress,
-      passenger.userId,
-      passenger.businessDetailId,
+      passenger.payerId,
+      passenger.businessId,
     ],
     (err, res) => {
       if (err) {
@@ -29,12 +29,13 @@ export const AddPassengerData = async (
   );
 };
 
-export const GetPassengerData = async (
-  passngerId: string,
+export const GetPassengerByPassengerId = async (
+  passengerId: string,
   callback: (error, result) => void
 ) => {
   await DbPool.query(
-    `select * from sp_get_passenger('${passngerId}');`,
+    "select * from fn_get_passenger($1::text);",
+    [passengerId],
     (err, res) => {
       if (err) {
         callback(err, null);
@@ -45,7 +46,7 @@ export const GetPassengerData = async (
   );
 };
 
-export const UpdatePassengerData = async (
+export const UpdatePassenger = async (
   passenger: Passenger,
   callback: (error, result) => void
 ) => {
@@ -69,12 +70,13 @@ export const UpdatePassengerData = async (
   );
 };
 
-export const GetAllPassengerBusinessData = async (
-  businessDetailId: string,
+export const GetAllPassengersByBusinessId = async (
+  businessId: string,
   callback: (error, result) => void
 ) => {
   await DbPool.query(
-    `select * from sp_get_all_passenger_business('${businessDetailId}');`,
+    "select * from public.fn_get_passengers_by_business_id($1::text);",
+    [businessId],
     (err, res) => {
       if (err) {
         callback(err, null);
@@ -85,12 +87,13 @@ export const GetAllPassengerBusinessData = async (
   );
 };
 
-export const GetAllPassengerUserData = async (
-  userId: string,
+export const GetAllPassengersByPayerId = async (
+  payerId: string,
   callback: (error, result) => void
 ) => {
   await DbPool.query(
-    `select * from sp_get_all_passenger_user('${userId}');`,
+    "select * from public.fn_get_passengers_by_payer_id($1::text);",
+    [payerId],
     (err, res) => {
       if (err) {
         callback(err, null);

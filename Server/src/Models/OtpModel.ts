@@ -1,63 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
-import { CheckOtp, SaveUserOtp } from "./DatabaseModel";
-import { SendEmail } from "./EmailModel";
 
-export const SendOtp = (req, res, next) => {
-  let otp: string = CreateOtp();
-  var email: any = {
-    fromName: "Octagon Uncle",
-    fromAddress: "developer@majorxp.co.za",
-    toAddress: req.body.userDetails.Email,
-    subject: "Octagon Uncle OTP: " + otp,
-    emailHtml: CreateEmailHtml(req, otp),
-  };
-  SendEmail(email).then(
-    (value) => {
-      SaveUserOtp(otp, req, res, next);
-    },
-    (error) => {
-      res.status(400).send(error);
-    }
-  );
-  next();
-};
-export const VerifyOtp = async (req, res, next) => {
-  let otpVarification: any = {
-    OtpVerified: false,
-    OtpValid: false,
-  };
-  try {
-    var rows = await CheckOtp(req.body);
-    if (rows) {
-      if (IsOtpVaid(rows)) {
-        res.status(201).send(
-          (otpVarification = {
-            OtpVerified: true,
-            OtpValid: true,
-          })
-        );
-      } else {
-        res.status(400).send(
-          (otpVarification = {
-            OtpVerified: false,
-            OtpValid: true,
-          })
-        );
-      }
-    } else {
-      res.status(400).send(
-        (otpVarification = {
-          OtpVerified: false,
-          OtpValid: false,
-        })
-      );
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
-const CreateOtp = (): string => {
+export const CreateOtp = (): string => {
   let otp: string = "";
   const digits = "0123456789";
   for (let i = 0; i < 5; i++) {
@@ -65,12 +9,12 @@ const CreateOtp = (): string => {
   }
   return otp;
 };
-const IsOtpVaid = (rows: any) => {
-  if (new Date(rows.OTPExpireDate) > new Date()) {
+export const IsOtpVaid = (otpExpireDate: Date) => {
+  if (otpExpireDate > new Date()) {
     return true;
   } else return false;
 };
-const CreateEmailHtml = (req, otp) => {
+export const CreateEmailHtml = (userDetails: any, otp: string) => {
   return `
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title></title>
@@ -639,7 +583,7 @@ const CreateEmailHtml = (req, otp) => {
   
                                 <div style="Margin-left: 20px;Margin-right: 20px;">
                                   <div style="mso-line-height-rule: exactly;mso-text-raise: 11px;vertical-align: middle;">
-                                    <h2 style="Margin-top: 0;Margin-bottom: 16px;font-style: normal;font-weight: normal;color: #000;font-size: 28px;line-height: 36px;"><strong>Hi ${req.body.userDetails.FirstName},</strong></h2>
+                                    <h2 style="Margin-top: 0;Margin-bottom: 16px;font-style: normal;font-weight: normal;color: #000;font-size: 28px;line-height: 36px;"><strong>Hi ${userDetails.firstName},</strong></h2>
                                   </div>
                                 </div>
   

@@ -1,15 +1,8 @@
+import { Email } from "../Classes/Email";
 import { mailTransporter } from "../Services/EmailService";
 
 // async..await is not allowed in global scope, must use a wrapper
-export const SendEmail = async (
-  emailData: {
-    fromName: string;
-    fromAddress: string;
-    toAddress: string;
-    subject: string;
-    emailHtml: string;
-  }
-) => {
+export const SendEmail = async (emailData: Email) => {
   const email = {
     from: `"${emailData.fromName}" <${emailData.fromAddress}>`, // sender address
     to: emailData.toAddress, // list of receivers

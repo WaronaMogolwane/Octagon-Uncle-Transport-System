@@ -1,7 +1,7 @@
-import { GetOtp, GetUserByEmailPassword, } from './../Models/DatabaseModel';
+import { GetOtp, GetUserByEmailPassword, } from '../Models/AuthenticationModel';
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
-import { GetUserByEmail, InsertNewUser, InsertOtp } from "../Models/DatabaseModel";
+import { GetUserByEmail, InsertNewUser, InsertOtp } from "../Models/AuthenticationModel";
 import { CreateEmailHtml, CreateOtp, IsOtpVaid } from "../Models/OtpModel";
 import { Email } from "../Classes/Email";
 import { UserCredentials } from '../Classes/UserCredentials';
@@ -14,7 +14,6 @@ export const CheckIfUserExists = async (req: any, res: any, next: any) => {
     next();
   }
 };
-
 export const RegisterUser = async (req: any, res: any, next: any) => {
   let newUser = new User(
     randomUUID(),
@@ -42,7 +41,6 @@ export const RegisterUser = async (req: any, res: any, next: any) => {
   }
   );
 };
-
 export const SendEmailOtp = async (req: any, res: any, next: any) => {
   let userDetails: any = req.body.userDetails;
   let otp: string = CreateOtp();

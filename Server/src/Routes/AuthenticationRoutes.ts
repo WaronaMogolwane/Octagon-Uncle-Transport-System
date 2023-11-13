@@ -8,7 +8,6 @@ import {
   VerifyOtp
 
 } from "../Controllers/AuthenticationController";
-import { authenticateJWT } from "../Middleware/Auth";
 const router = Router();
 
 router.post("/register-user", RegisterUser, async (req, res, next) => {
@@ -16,7 +15,7 @@ router.post("/register-user", RegisterUser, async (req, res, next) => {
 
 router.post("/login", UserLogin, async (req, res, next) => { });
 
-router.post("/send-login-otp", SendEmailOtp, (req, res) => { });
+router.post("/send-email-otp", SendEmailOtp, (req, res) => { });
 
 router.post("/send-register-otp", CheckIfUserExists, SendEmailOtp, (req, res) => { });
 

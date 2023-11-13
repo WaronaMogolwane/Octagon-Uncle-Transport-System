@@ -1,33 +1,33 @@
 import Router from "express-promise-router";
 import {
   AddPassenger,
-  GetAllBusinessPassenger,
-  GetAllUserPassenger,
+  GetPassengersByBusiness,
+  GetPassengersByPayer,
   GetPassenger,
-  UpdatePassenger,
+  UpdatePassengerDetail,
 } from "../Controllers/PassengerController";
 
 const router = Router();
 
-router.post("/create-passenger", AddPassenger, async (req, res, next) => {});
+router.post("/add-passenger", AddPassenger, async (req, res, next) => {});
 
 router.get("/get-passenger", GetPassenger, async (req, res, next) => {});
 
 router.patch(
-  "/update-passenger",
-  UpdatePassenger,
+  "/update-passenger-details",
+  UpdatePassengerDetail,
   async (req, res, next) => {}
 );
 
 router.get(
-  "/get-all-passenger-user",
-  GetAllUserPassenger,
+  "/get-client-passengers",
+  GetPassengersByPayer,
   async (req, res, next) => {}
 );
 
 router.get(
-  "/get-all-passenger-business",
-  GetAllBusinessPassenger,
+  "/get-business-passengers",
+  GetPassengersByBusiness,
   async (req, res, next) => {}
 );
 

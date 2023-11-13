@@ -1,11 +1,11 @@
 import { randomUUID } from "crypto";
 import { Passenger } from "../Classes/Passenger";
 import {
-  AddPassengerData,
-  GetAllPassengerUserData,
-  GetAllPassengerBusinessData,
-  GetPassengerData,
-  UpdatePassengerData,
+  InsertPassenger,
+  GetAllPassengersByPayerId,
+  GetAllPassengersByBusinessId,
+  GetPassengerByPassengerId,
+  UpdatePassenger,
 } from "../Models/PassengerModel";
 
 export const AddPassenger = async (req: any, res: any, next: any) => {
@@ -16,10 +16,10 @@ export const AddPassenger = async (req: any, res: any, next: any) => {
     req.body.passenger.Age,
     req.body.passenger.HomeAddress,
     req.body.passenger.DestinationAddress,
-    req.body.passenger.UserId,
-    req.body.passenger.BusinessDetailId
+    req.body.passenger.PayerId,
+    req.body.passenger.BusinessId
   );
-  await AddPassengerData(newPassenger, (error, result) => {
+  await InsertPassenger(newPassenger, (error, result) => {
     if (error) {
       let err: any = {
         status: 400,
@@ -38,7 +38,7 @@ export const AddPassenger = async (req: any, res: any, next: any) => {
 export const GetPassenger = async (req: any, res: any, next: any) => {
   let passengerId = req.body.passenger.PassengerId;
 
-  await GetPassengerData(passengerId, (error, result) => {
+  await GetPassengerByPassengerId(passengerId, (error, result) => {
     if (error) {
       let err: any = {
         status: 400,
@@ -55,7 +55,7 @@ export const GetPassenger = async (req: any, res: any, next: any) => {
   });
 };
 
-export const UpdatePassenger = async (req: any, res: any, next: any) => {
+export const UpdatePassengerDetail = async (req: any, res: any, next: any) => {
   let passenger = new Passenger(
     req.body.passenger.PassengerId,
     req.body.passenger.FirstName,
@@ -63,10 +63,10 @@ export const UpdatePassenger = async (req: any, res: any, next: any) => {
     req.body.passenger.Age,
     req.body.passenger.HomeAddress,
     req.body.passenger.DestinationAddress,
-    req.body.passenger.UserId,
-    req.body.passenger.BusinessDetailId
+    req.body.passenger.PayerId,
+    req.body.passenger.BusinessId
   );
-  await UpdatePassengerData(passenger, (error, result) => {
+  await UpdatePassenger(passenger, (error, result) => {
     if (error) {
       let err: any = {
         status: 400,
@@ -82,10 +82,10 @@ export const UpdatePassenger = async (req: any, res: any, next: any) => {
   });
 };
 
-export const GetAllUserPassenger = async (req: any, res: any, next: any) => {
-  let userId = req.body.passenger.UserId;
+export const GetPassengersByPayer = async (req: any, res: any, next: any) => {
+  let payerId = req.body.passenger.PayerId;
 
-  await GetAllPassengerUserData(userId, (error, result) => {
+  await GetAllPassengersByPayerId(payerId, (error, result) => {
     if (error) {
       let err: any = {
         status: 400,
@@ -95,20 +95,20 @@ export const GetAllUserPassenger = async (req: any, res: any, next: any) => {
     } else {
       res.status(200).json({
         RecordRetrieved: true,
-        result: result.rows[0],
+        result: result.rows,
       });
     }
   });
 };
 
-export const GetAllBusinessPassenger = async (
+export const GetPassengersByBusiness = async (
   req: any,
   res: any,
   next: any
 ) => {
-  let businessDetailId = req.body.passenger.BusinessDetailId;
+  let businessId = req.body.passenger.BusinessId;
 
-  await GetAllPassengerBusinessData(businessDetailId, (error, result) => {
+  await GetAllPassengersByBusinessId(businessId, (error, result) => {
     if (error) {
       let err: any = {
         status: 400,
@@ -118,7 +118,7 @@ export const GetAllBusinessPassenger = async (
     } else {
       res.status(200).json({
         RecordRetrieved: true,
-        result: result.rows[0],
+        result: result.rows,
       });
     }
   });

@@ -2,9 +2,9 @@ import { randomUUID } from "crypto";
 import { UserDetail } from "../Classes/UserDetail";
 
 import {
-  AddUserDetailData,
-  GetUserDetailData,
-  UpdateUserDetailData,
+  InsertUserDetail,
+  GetUserDetailByUserId,
+  UpdateUserDetail,
 } from "../Models/UserDetailsModel";
 
 export const AddUserDetail = async (req: any, res: any, next: any) => {
@@ -20,7 +20,7 @@ export const AddUserDetail = async (req: any, res: any, next: any) => {
     req.body.userDetail.PostalCode,
     req.body.userDetail.UserId
   );
-  await AddUserDetailData(newUserDetail, (error, result) => {
+  await InsertUserDetail(newUserDetail, (error, result) => {
     if (error) {
       let err: any = {
         status: 400,
@@ -36,28 +36,9 @@ export const AddUserDetail = async (req: any, res: any, next: any) => {
   });
 };
 
-export const GetAllUserDetail = async (req: any, res: any, next: any) => {
-  let userId = req.body.userDetails.userId;
-
-  await GetUserDetailData(userId, (error, result) => {
-    if (error) {
-      let err: any = {
-        status: 400,
-        message: error.message,
-      };
-      next(err);
-    } else {
-      res.status(200).json({
-        RecordRetrieved: true,
-        result: result.rows[0],
-      });
-    }
-  });
-};
-
 export const GetUserDetail = async (req: any, res: any, next: any) => {
   let userId = req.body.userDetails.UserId;
-  await GetUserDetailData(userId, (error, result) => {
+  await GetUserDetailByUserId(userId, (error, result) => {
     if (error) {
       let err: any = {
         status: 400,
@@ -73,7 +54,11 @@ export const GetUserDetail = async (req: any, res: any, next: any) => {
   });
 };
 
-export const UpdateUserDetail = async (req: any, res: any, next: any) => {
+export const UpdateUserPersonalDetail = async (
+  req: any,
+  res: any,
+  next: any
+) => {
   let userDetail = new UserDetail(
     req.body.userDetail.userDetailId,
     req.body.userDetail.FirstName,
@@ -86,7 +71,7 @@ export const UpdateUserDetail = async (req: any, res: any, next: any) => {
     req.body.userDetail.PostalCode,
     req.body.userDetail.UserId
   );
-  await UpdateUserDetailData(userDetail, (error, result) => {
+  await UpdateUserDetail(userDetail, (error, result) => {
     if (error) {
       let err: any = {
         status: 400,
@@ -101,3 +86,22 @@ export const UpdateUserDetail = async (req: any, res: any, next: any) => {
     }
   });
 };
+
+// export const GetAllUserDetail = async (req: any, res: any, next: any) => {
+//   let userId = req.body.userDetails.userId;
+
+//   await GetUserDetailByUserId(userId, (error, result) => {
+//     if (error) {
+//       let err: any = {
+//         status: 400,
+//         message: error.message,
+//       };
+//       next(err);
+//     } else {
+//       res.status(200).json({
+//         RecordRetrieved: true,
+//         result: result.rows[0],
+//       });
+//     }
+//   });
+// };

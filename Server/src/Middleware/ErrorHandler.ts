@@ -11,7 +11,11 @@ const ErrorHandler: ErrorRequestHandler = (
   console.error(error);
   let statusCode: number = 500;
   let errorMessage: string = "An unknown error occured";
-  if (isHttpError(error)) {
+
+  if (error) {
+    statusCode = error.status;
+    errorMessage = error.message;
+  } else if (isHttpError(error)) {
     statusCode = error.status;
     errorMessage = error.message;
   }

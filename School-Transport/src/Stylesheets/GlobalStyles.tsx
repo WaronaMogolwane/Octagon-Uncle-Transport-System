@@ -6,6 +6,7 @@ export const ThemeStyles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    width: "80%",
   },
   logo: {
     marginBottom: 32,
@@ -17,9 +18,10 @@ export const FormStyles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    maxWidth: "80%",
   },
   input: {
-    width: "75%",
+    width: "80%",
     marginBottom: 16,
   },
   logo: {

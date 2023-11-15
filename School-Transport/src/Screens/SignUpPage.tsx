@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet } from "react-native";
 import {
   UserSignUp,
   UserSignIn,
@@ -10,7 +10,7 @@ import { registerRootComponent } from "expo";
 import { StatusBar } from "expo-status-bar";
 import { FormControlInput } from "./../Components/FormControl";
 import React, { useState, useEffect } from "react";
-import { FormStyles, Theme } from "./../Stylesheets/GlobalStyles";
+import { FormStyles, ThemeStyles } from "./../Stylesheets/GlobalStyles";
 import {
   GluestackUIProvider,
   Text,
@@ -59,103 +59,103 @@ const handleOnChange = (text: any, input: any) => {
 
 export default function SignUpPage() {
   <GluestackUIProvider config={config}>
-  <Box style={Theme.container}>
-    <Image
-      style={Theme.logo}
-      alt="Logo"
-      size="lg"
-      source={{
-        uri: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    <Box style={ThemeStyles.container}>
+      <Image
+        style={ThemeStyles.logo}
+        alt="Logo"
+        size="lg"
+        source={{
+          uri: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        }}
+      />
+      <FormControlInput
+        isInvalid={false}
+        isDisabled={false}
+        isRequired={false}
+        type={"text"}
+        defaultValue={""}
+        placeHolder={"John"}
+        size={"md"}
+        labelText={"Cellphone"}
+        helperText={"help"}
+        errorText={"error"}
+        onChangeText={(text: any) => handleOnChange(text, "firstName")}
+      />
+      {isEmailVerified ? (
+        <FormControl>
+          <Button bg="$darkBlue600">
+            <ButtonText fontSize="$sm" fontWeight="$medium">
+              Next
+            </ButtonText>
+          </Button>
+        </FormControl>
+      ) : (
+        <FormControl>
+          <Button
+            bg="$darkBlue600"
+            onPress={() => setShowModal(true)}
+            ref={ref}
+          >
+            <ButtonText fontSize="$sm" fontWeight="$medium">
+              Confirm
+            </ButtonText>
+          </Button>
+        </FormControl>
+      )}
+    </Box>
+    <Modal
+      isOpen={showModal}
+      onClose={() => {
+        setShowModal(false);
       }}
-    />
-    <FormControlInput
-      isInvalid={false}
-      isDisabled={false}
-      isRequired={false}
-      type={"text"}
-      defaultValue={""}
-      placeHolder={"John"}
-      size={"md"}
-      labelText={"Cellphone"}
-      helperText={"help"}
-      errorText={"error"}
-      onChangeText={(text: any) => handleOnChange(text, "firstName")}
-    />
-    {isEmailVerified ? (
-      <FormControl>
-        <Button bg="$darkBlue600">
-          <ButtonText fontSize="$sm" fontWeight="$medium">
-            Next
-          </ButtonText>
-        </Button>
-      </FormControl>
-    ) : (
-      <FormControl>
-        <Button
-          bg="$darkBlue600"
-          onPress={() => setShowModal(true)}
-          ref={ref}
-        >
-          <ButtonText fontSize="$sm" fontWeight="$medium">
-            Confirm
-          </ButtonText>
-        </Button>
-      </FormControl>
-    )}
-  </Box>
-  <Modal
-    isOpen={showModal}
-    onClose={() => {
-      setShowModal(false);
-    }}
-  >
-    <ModalBackdrop />
-    <ModalContent>
-      <ModalHeader>
-        <Heading size="lg">Cellphone verification</Heading>
-        <ModalCloseButton>
-          <Icon as={CloseIcon} />
-        </ModalCloseButton>
-      </ModalHeader>
-      <ModalBody>
-        <Text>Enter the OTP sent to {}</Text>
-        <Input
-          variant="outline"
-          size="md"
-          isDisabled={false}
-          isInvalid={false}
-          isReadOnly={false}
-        >
-          <InputField placeholder="Enter Text here" />
-        </Input>
-      </ModalBody>
-      <ModalFooter>
-        <Button
-          variant="outline"
-          size="sm"
-          action="secondary"
-          mr="$3"
-          onPress={() => {
-            setShowModal(false);
-          }}
-        >
-          <ButtonText>Cancel</ButtonText>
-        </Button>
-        <Button
-          size="sm"
-          action="positive"
-          borderWidth="$0"
-          onPress={() => {
-            setShowModal(false);
-            setIsEmailVerified(true);
-          }}
-        >
-          <ButtonText>Explore</ButtonText>
-        </Button>
-      </ModalFooter>
-    </ModalContent>
-  </Modal>
-</GluestackUIProvider>
+    >
+      <ModalBackdrop />
+      <ModalContent>
+        <ModalHeader>
+          <Heading size="lg">Cellphone verification</Heading>
+          <ModalCloseButton>
+            <Icon as={CloseIcon} />
+          </ModalCloseButton>
+        </ModalHeader>
+        <ModalBody>
+          <Text>Enter the OTP sent to {}</Text>
+          <Input
+            variant="outline"
+            size="md"
+            isDisabled={false}
+            isInvalid={false}
+            isReadOnly={false}
+          >
+            <InputField placeholder="Enter Text here" />
+          </Input>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant="outline"
+            size="sm"
+            action="secondary"
+            mr="$3"
+            onPress={() => {
+              setShowModal(false);
+            }}
+          >
+            <ButtonText>Cancel</ButtonText>
+          </Button>
+          <Button
+            size="sm"
+            action="positive"
+            borderWidth="$0"
+            onPress={() => {
+              setShowModal(false);
+              setIsEmailVerified(true);
+            }}
+          >
+            <ButtonText>Explore</ButtonText>
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  </GluestackUIProvider>;
 }
 
 const userAuthentication = {
@@ -215,7 +215,6 @@ const styles = StyleSheet.create({
   },
   button: {
     fontSize: 16,
-    marginVertical: 16
-  }
+    marginVertical: 16,
+  },
 });
-

@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 
-export const Theme = StyleSheet.create({
+export const ThemeStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",

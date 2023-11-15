@@ -44,7 +44,7 @@ import {
 } from "react-native-safe-area-context";
 import { useSession } from "../src/Services/AuthenticationService";
 import { UserSignIn } from "../src/Controllers/AuthenticationController";
-import { SignInForm } from "../src/Components/SignInForm";
+import { SignInForm } from "../src/Components/Forms/SignInForm";
 import axios from "axios";
 export default function SignIn() {
   const { signIn }: any = useSession();
@@ -90,10 +90,8 @@ export default function SignIn() {
     });
   };
   return (
-    <SafeAreaView style={FormStyles.container}>
-      <Button>
-        <ButtonText onPress={apiCall}>Press me</ButtonText>
-      </Button>
+    <SafeAreaView style={ThemeStyles.container}>
+      <SignInForm />
     </SafeAreaView>
   );
 }

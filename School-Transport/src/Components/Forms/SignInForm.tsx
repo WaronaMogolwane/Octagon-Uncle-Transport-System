@@ -53,143 +53,44 @@ import { GluestackUIStyledProvider } from "@gluestack-ui/themed";
 //import { config } from "./../../../gluestack-ui.config";
 import { FormStyles, ThemeStyles } from "../../Stylesheets/GlobalStyles";
 import { GestureResponderEvent } from "react-native/Libraries/Types/CoreEventTypes";
+import { CustomFormControlInput } from "../CustomFormInput";
+import { CustomButton } from "../Button";
+import {
+  ButtonProps,
+  InputProps,
+  SignInFormProps,
+} from "../../Models/FormControlProps";
 
-const registerSchema = yup.object().shape({
-  email: yup.string().email("Invalid email").required("Email is required"),
-  password: yup
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-      "Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character"
-    )
-    .required("Password is required"),
-});
-
-const registerInitialValues = {
-  email: "",
-  password: "",
-};
-export function SignInForm() {
-  const toast = useToast();
-  const formik = useFormik({
-    initialValues: registerInitialValues,
-    validationSchema: registerSchema,
-
-    onSubmit: (values, { resetForm }) => {
-      toast.show({
-        placement: "bottom right",
-        render: ({ id }) => {
-          return (
-            <Toast nativeID={id} variant="accent" action="success">
-              <ToastTitle>Signed in successfully</ToastTitle>
-            </Toast>
-          );
-        },
-      });
-      resetForm();
-    },
-  });
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleState = () => {
-    setShowPassword((showState) => {
-      return !showState;
-    });
-  };
-
+export function SignInForm(props: SignInFormProps) {
   return (
-    <Box
-      sx={{
-        _dark: { bg: "$backgroundDark800" },
-        _web: {
-          height: "100vh",
-          w: "100vw",
-          overflow: "hidden",
-        },
-      }}
-      height="$full"
-      bg="$backgroundLight0"
-    >
-      <Box
-        p="$4"
-        flex={1}
-        maxWidth="$96"
-        alignSelf="center"
-        justifyContent="center"
-        w="$full"
-      >
-        <Heading mb="$4">Sign in form using formik -:</Heading>
-        <VStack>
-          <FormControl
-            size="md"
-            isRequired={true}
-            isInvalid={!!formik.errors.email}
-          >
-            <FormControlLabel>
-              <FormControlLabelText>Email</FormControlLabelText>
-            </FormControlLabel>
-            <Input>
-              <InputField
-                type="text"
-                placeholder="email"
-                onChangeText={formik.handleChange("email")}
-                onBlur={formik.handleBlur("email")}
-                value={formik.values?.email}
-              />
-            </Input>
+    <View>
+      <Heading mb="$3">Sign In</Heading>
+      <VStack>
+        <CustomFormControlInput
+          labelText="Email"
+          placeHolder="email"
+          isInvalid={props.emailIsInvalid}
+          isRequired={true}
+          type="text"
+          onChangeText={props.emailOnChangeText}
+          errorText={props.emailErrorText}
+          onBlur={props.emailOnBlur}
+          value={props.emailValue}
+        />
 
-            <FormControlError>
-              <FormControlErrorIcon as={AlertCircleIcon} />
-              <FormControlErrorText>
-                {formik?.errors?.email}
-              </FormControlErrorText>
-            </FormControlError>
-          </FormControl>
-          <FormControl
-            size="md"
-            isRequired={true}
-            my="$4"
-            isInvalid={!!formik.errors.password}
-          >
-            <FormControlLabel>
-              <FormControlLabelText>Password</FormControlLabelText>
-            </FormControlLabel>
-            <Input>
-              <InputField
-                placeholder="password"
-                onChangeText={formik.handleChange("password")}
-                onBlur={formik.handleBlur("password")}
-                value={formik.values?.password}
-                type={showPassword ? "text" : "password"}
-              />
-              <InputSlot onPress={handleState} pr="$3">
-                <InputIcon as={showPassword ? EyeIcon : EyeOffIcon} />
-              </InputSlot>
-            </Input>
-
-            <FormControlError>
-              <FormControlErrorIcon as={AlertCircleIcon} />
-              <FormControlErrorText>
-                {formik?.errors?.password}
-              </FormControlErrorText>
-            </FormControlError>
-          </FormControl>
-          <Button
-            onPress={
-              formik.handleSubmit as (
-                values:
-                  | GestureResponderEvent
-                  | React.FormEvent<HTMLFormElement>
-                  | undefined
-              ) => void
-            }
-            my="$4"
-          >
-            <ButtonText>Sign in</ButtonText>
-          </Button>
-        </VStack>
-      </Box>
-    </Box>
+        <CustomFormControlInput
+          labelText="Password"
+          placeHolder="password"
+          isInvalid={props.passwordIsInvalid}
+          isRequired={true}
+          type="password"
+          onChangeText={props.passwordOnChangeText}
+          errorText={props.passwordErrorText}
+          onBlur={props.passwordOnBlur}
+          value={props.passwordValue}
+        />
+        <CustomButton title={"Sign In"} onPress={props.signInButtonOnPress} />
+      </VStack>
+    </View>
   );
 }

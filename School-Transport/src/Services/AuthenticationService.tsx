@@ -9,9 +9,16 @@ import {
 } from "firebase/auth";
 import { FIREBASE_AUTH } from "../Firebase/FirebaseConfig";
 import { AuthenticationResponseModel } from "../Models/AuthenticationResponseModel";
+import axios from "axios";
+import { UserSignIn } from "../Controllers/AuthenticationController";
+import { router } from "expo-router";
 
 const AuthContext = React.createContext<{
-  signIn: (userEmail: string, userPassword: string) => any;
+  signIn: (
+    userEmail: string,
+    userPassword: string,
+    callback: (error: any, result: any) => void
+  ) => any;
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
@@ -35,35 +42,24 @@ export function SessionProvider(props: any) {
   return (
     <AuthContext.Provider
       value={{
-        signIn: async (userEmail: string, userPassword: string) => {
+        signIn: async (
+          userEmail: string,
+          userPassword: string,
+          callback: (error: any, result: any) => any
+        ) => {
           // Perform sign-in logic here
-          let response;
-          authenticationResponse = new AuthenticationResponseModel();
-          await signInWithEmailAndPassword(
-            FIREBASE_AUTH,
+          await LoginWithEmailPassword(
             userEmail,
-            userPassword
-          )
-            .then((userCredential) => {
-              const user = userCredential.user;
-              authenticationResponse.firebaseFunction =
-                "signInWithEmailAndPassword";
-              authenticationResponse.uid = user.uid;
-              authenticationResponse.status = "Success";
-              response = Promise.resolve(authenticationResponse);
-              setSession(user.uid);
-            })
-            .catch((error) => {
-              const errorCode = error.code;
-              const errorMessage = error.message;
-              authenticationResponse.firebaseFunction =
-                "signInWithEmailAndPassword";
-              authenticationResponse.errorCode = errorCode;
-              authenticationResponse.errorMessage = errorMessage;
-              authenticationResponse.status = "Failed";
-              response = Promise.reject(authenticationResponse);
-            });
-          return response;
+            userPassword,
+            (error, result) => {
+              if (error) {
+                callback(error, null);
+              } else {
+                setSession(result);
+                callback(null, result);
+              }
+            }
+          );
         },
         signOut: () => {
           setSession(null);
@@ -106,28 +102,25 @@ export const CreateUserWithEmailPassword = async (
 
 export const LoginWithEmailPassword = async (
   userEmail: string,
-  userPassword: string
+  userPassword: string,
+  callback: (error: any, result: any) => void
 ) => {
-  let response;
   authenticationResponse = new AuthenticationResponseModel();
-  await signInWithEmailAndPassword(FIREBASE_AUTH, userEmail, userPassword)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      authenticationResponse.firebaseFunction = "signInWithEmailAndPassword";
-      authenticationResponse.uid = user.uid;
-      authenticationResponse.status = "Success";
-      response = Promise.resolve(authenticationResponse);
+  await axios
+    .post("http://192.168.1.36:9999/auth/login", {
+      email: "Yetty.Braun@yopmail.com",
+      password: "wK6mMQESfR",
+    })
+    .then((response: any) => {
+      let result = response.data;
+
+      console.log(result);
+      callback(null, result);
     })
     .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      authenticationResponse.firebaseFunction = "signInWithEmailAndPassword";
-      authenticationResponse.errorCode = errorCode;
-      authenticationResponse.errorMessage = errorMessage;
-      authenticationResponse.status = "Failed";
-      response = Promise.reject(authenticationResponse);
+      console.log(error);
+      callback(error, null);
     });
-  return response;
 };
 
 export const ForgotPassword = async (userEmail: string) => {

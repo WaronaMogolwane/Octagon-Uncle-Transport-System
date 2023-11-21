@@ -1,11 +1,11 @@
 import { StyleSheet, View } from "react-native";
 
-export const Theme = StyleSheet.create({
+export const ThemeStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
-    alignItems: "center",
     justifyContent: "center",
+    paddingHorizontal: 50,
   },
   logo: {
     marginBottom: 32,
@@ -19,7 +19,6 @@ export const FormStyles = StyleSheet.create({
     justifyContent: "center",
   },
   input: {
-    width: "75%",
     marginBottom: 16,
   },
   logo: {

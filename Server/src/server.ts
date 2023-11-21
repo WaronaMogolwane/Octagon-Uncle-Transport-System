@@ -10,12 +10,13 @@ import ErrorHandler from "./Middleware/ErrorHandler";
 
 const app = express();
 
+var cors = require('cors');
 app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 8081;
 
-app.use("/auth", AuthenticateJWT, authRoute);
+app.use("/auth", authRoute);
 app.use("/user-profile", AuthenticateJWT, userProfileRoute);
 app.use("/passenger", AuthenticateJWT, passengerRoute);
 

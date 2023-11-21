@@ -1,17 +1,50 @@
-import { AddIcon, Button, ButtonIcon, ButtonText } from "@gluestack-ui/themed";
 import React from "react";
+import { GestureResponderEvent } from "react-native/Libraries/Types/CoreEventTypes";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
-type ButtonProps = {
-  title: string;
-  size: string;
-  variant: string;
-  action: string;
-  isDisabled: boolean;
-  isFocusVisible: boolean;
-  buttonText: string;
-  buttonIcon: any;
-  onPress: () => void;
-};
+import {
+  GluestackUIProvider,
+  Text,
+  Box,
+  FormControlLabel,
+  FormControl,
+  FormControlLabelText,
+  FormControlHelper,
+  FormControlHelperText,
+  FormControlError,
+  FormControlErrorIcon,
+  FormControlErrorText,
+  AlertCircleIcon,
+  Input,
+  InputField,
+  Button,
+  ButtonText,
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  useToast,
+  Toast,
+  ModalCloseButton,
+  ModalFooter,
+  ModalHeader,
+  ModalContent,
+  Heading,
+  Icon,
+  CloseIcon,
+  Image,
+  View,
+  AddIcon,
+  ButtonIcon,
+  Theme,
+  VStack,
+  InputSlot,
+  InputIcon,
+  EyeIcon,
+  ToastTitle,
+  EyeOffIcon,
+} from "@gluestack-ui/themed";
+import { ButtonProps } from "../Models/FormControlProps";
 
 export const CustomButton = (props: ButtonProps) => {
   return (

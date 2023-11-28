@@ -1,4 +1,5 @@
 import { router } from "expo-router";
+import { Button } from "react-native";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { GestureResponderEvent } from "react-native/Libraries/Types/CoreEventTypes";
@@ -19,7 +20,6 @@ import {
   AlertCircleIcon,
   Input,
   InputField,
-  Button,
   ButtonText,
   Modal,
   ModalBackdrop,
@@ -51,9 +51,9 @@ import { useSession } from "../src/Services/AuthenticationService";
 import { UserSignIn } from "../src/Controllers/AuthenticationController";
 import { SignInForm } from "../src/Components/Forms/SignInForm";
 import axios from "axios";
+import { CustomButton } from "../src/Components/Button";
 export default function SignIn() {
-  const { signIn }: any = useSession();
-
+  const { signIn, session }: any = useSession();
   const ref = React.useRef(null);
 
   const registerSchema = yup.object().shape({
@@ -79,28 +79,36 @@ export default function SignIn() {
     validationSchema: registerSchema,
 
     onSubmit: async (values, { resetForm }) => {
-      await signIn("test", "test", (error: any, result: any) => {
-        if (error) {
-          console.log(error);
-        } else {
-          console.log(result);
-          toast.show({
-            placement: "bottom",
-            render: ({ id }) => {
-              return (
-                <Toast nativeID={id} variant="accent" action="success">
-                  <ToastTitle>Signed in successfully</ToastTitle>
-                </Toast>
-              );
-            },
-          });
+      console.log("Form Valid: " + formik.isValid);
 
-          resetForm();
-          router.replace("/(app)");
+      await signIn("test", "test", (error: any, result: any) => {
+        if (formik.isValid) {
+          if (error) {
+            console.log(error);
+          } else if (result) {
+            //console.log(result);
+            toast.show({
+              placement: "bottom",
+              render: ({ id }) => {
+                return (
+                  <Toast nativeID={id} variant="accent" action="success">
+                    <ToastTitle>Signed in successfully</ToastTitle>
+                  </Toast>
+                );
+              },
+            });
+            resetForm();
+            console.log("Sign In session " + session);
+            router.replace("/");
+          }
         }
       });
     },
   });
+
+  const ForgotPassword = () => {
+    router.push("/Forgot-Password/");
+  };
   return (
     <SafeAreaView style={ThemeStyles.container}>
       <SignInForm
@@ -123,6 +131,7 @@ export default function SignIn() {
           ) => void
         }
       />
+      <Button onPress={ForgotPassword} title="Forgot Password" />
     </SafeAreaView>
   );
 }

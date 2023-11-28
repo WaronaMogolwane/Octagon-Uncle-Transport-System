@@ -1,6 +1,5 @@
 import React from "react";
 import { useStorageState } from "./StorageStateService";
-import { FIREBASE_AUTH } from "../Firebase/FirebaseConfig";
 import { AuthenticationResponseModel } from "../Models/AuthenticationResponseModel";
 import axios from "axios";
 import { UserSignIn } from "../Controllers/AuthenticationController";
@@ -112,7 +111,5 @@ export const SetPassword = async (newUserPassword: string) => {
 };
 
 export const VerifyEmail = async () => {
-  const user: any = FIREBASE_AUTH.currentUser;
-
   return authenticationResponse;
 };

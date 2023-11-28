@@ -1,9 +1,9 @@
-import { Redirect, Stack } from 'expo-router';
+import { Redirect, Stack } from "expo-router";
 import { Text } from "react-native";
-import { useSession } from '../../src/Services/AuthenticationService';
+import { useSession } from "../../src/Services/AuthenticationService";
 
 export default function AppLayout() {
-  const { session, isLoading }:any = useSession();
+  const { session, isLoading }: any = useSession();
 
   // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {

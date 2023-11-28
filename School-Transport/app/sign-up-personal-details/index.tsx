@@ -1,5 +1,6 @@
 import { GestureResponderEvent, View } from "react-native";
 import { UserDetailForm } from "../../src/Components/Forms/UserDetailForm";
+import { Image } from "@gluestack-ui/themed";
 import { ThemeStyles } from "../../src/Stylesheets/GlobalStyles";
 import { useFormik } from "formik";
 import * as yup from "yup";
@@ -91,6 +92,17 @@ export default function UserDetailSignUp() {
   return (
     <ScrollView>
       <SafeAreaView style={ThemeStyles.container}>
+        <View style={ThemeStyles.container}>
+          <View style={{ margin: 5 }}>
+            <Image
+              size="xl"
+              borderRadius="$lg"
+              source={{
+                uri: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+              }}
+            />
+          </View>
+        </View>
         <View style={{ paddingBottom: 15, paddingTop: 15 }}>
           <UserDetailForm
             firstNameIsInvalid={!!formik.errors.firstname}

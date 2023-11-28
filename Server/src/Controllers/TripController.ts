@@ -4,8 +4,10 @@ import {
   InsertTrip,
   GetTripById,
   UpdateTrip,
-  GetAllTripsByBusinessId,
+  GetAllTripsByBusinessId as GetAllTripsForBusiness,
+  GetAllTripsByBusinessIdAndParentId,
 } from "../Models/TripModel";
+import { FilterRows } from "../Services/FilterService";
 
 export const AddTrip = async (req: any, res: any, next: any) => {
   let newTrip = new Trip(
@@ -84,10 +86,10 @@ export const UpdateTripDetails = async (req: any, res: any, next: any) => {
   });
 };
 
-export const GetTripsByBusinessId = async (req: any, res: any, next: any) => {
+export const GetTripsForBusiness = async (req: any, res: any, next: any) => {
   let businesId = req.body.trip.BusinessId;
 
-  await GetAllTripsByBusinessId(businesId, (error, result) => {
+  await GetAllTripsForBusiness(businesId, (error, result) => {
     if (error) {
       let err: any = {
         status: 400,
@@ -101,4 +103,27 @@ export const GetTripsByBusinessId = async (req: any, res: any, next: any) => {
       });
     }
   });
+};
+
+export const GetTripsForParent = async (req: any, res: any, next: any) => {
+  let businessId = req.body.trip.BusinessId;
+  let payerId = req.body.trip.PayerId;
+
+  await GetAllTripsByBusinessIdAndParentId(
+    businessId,
+    async (error, result) => {
+      if (error) {
+        let err: any = {
+          status: 400,
+          message: error.message,
+        };
+        next(err);
+      } else {
+        res.status(200).json({
+          RecordRetrieved: true,
+          result: await FilterRows(result.rows, payerId),
+        });
+      }
+    }
+  );
 };

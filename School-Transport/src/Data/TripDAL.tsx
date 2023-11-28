@@ -60,89 +60,88 @@ export const GetAllTripsForClientFromDatabase = async (
   businessId: string
 ) => {
   let res: any;
-  await axios
-    .post("http://192.168.3.57:9999/user-profile/get-user-details", {
-      userDetails: {
-        UserId: userId,
-      },
-    })
-    .then((response: any) => {
-      let result = response.data.result;
+  await axios.post("http://192.168.3.57:9999/user-profile/get-user-details", {
+    userDetails: {
+      UserId: payerId,
+    },
+  });
+  // .then((response: any) => {
+  //   let result = response.data.result;
 
-      let userDetail = new UserDetail(
-        result.userDetail_id,
-        result.firstname,
-        result.lastname,
-        result.addressline1,
-        result.addressline2,
-        result.suburb,
-        result.city,
-        result.province,
-        result.postalcode,
-        result.user_id
-      );
+  //       let userDetail = new UserDetail(
+  //         result.userDetail_id,
+  //         result.firstname,
+  //         result.lastname,
+  //         result.addressline1,
+  //         result.addressline2,
+  //         result.suburb,
+  //         result.city,
+  //         result.province,
+  //         result.postalcode,
+  //         result.user_id
+  //       );
 
-      res = userDetail;
-    })
-    .catch((error) => {
-      console.log(error);
-      res = error;
-    });
-  return res;
+  //       res = userDetail;
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       res = error;
+  //     });
+  //   return res;
 };
 
 export const GetAllTripsForBusinessFromDatabase = async (
   businessId: string
 ) => {
   let res: any;
-  await axios
-    .post("http://192.168.3.57:9999/user-profile/get-user-details", {
-      userDetails: {
-        UserId: userId,
-      },
-    })
-    .then((response: any) => {
-      let result = response.data.result;
+  //   await axios
+  //     .post("http://192.168.3.57:9999/user-profile/get-user-details", {
+  //       userDetails: {
+  //         UserId: userId,
+  //       },
+  //     })
+  //     .then((response: any) => {
+  //       let result = response.data.result;
 
-      let userDetail = new UserDetail(
-        result.userDetail_id,
-        result.firstname,
-        result.lastname,
-        result.addressline1,
-        result.addressline2,
-        result.suburb,
-        result.city,
-        result.province,
-        result.postalcode,
-        result.user_id
-      );
+  //       let userDetail = new UserDetail(
+  //         result.userDetail_id,
+  //         result.firstname,
+  //         result.lastname,
+  //         result.addressline1,
+  //         result.addressline2,
+  //         result.suburb,
+  //         result.city,
+  //         result.province,
+  //         result.postalcode,
+  //         result.user_id
+  //       );
 
-      res = userDetail;
-    })
-    .catch((error) => {
-      console.log(error);
-      res = error;
-    });
-  return res;
+  //       res = userDetail;
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       res = error;
+  //     });
+  //   return res;
 };
 
-export const UpdateTripInDatabase = async (userDetails: UserDetail) => {
+export const UpdateTripInDatabase = async (trip: Trip) => {
   let statusCode: any;
   let data: any;
 
   await axios
     .patch("http://192.168.3.57:9999/passenger/update-passenger-details", {
       userDetail: {
-        UserDetailId: userDetails.userDetailId,
-        FirstName: userDetails.firstName,
-        LastName: userDetails.lastName,
-        AddressLine1: userDetails.addressLine1,
-        AddressLine2: userDetails.addressLine2,
-        Surburb: userDetails.suburb,
-        City: userDetails.city,
-        Province: userDetails.province,
-        PostalCode: userDetails.postalCode,
-        UserId: userDetails.userId,
+        // UserDetailId: trip.userDetailId,
+        // FirstName: trip.firstName,
+        // LastName: trip.lastName,
+        // AddressLine1: trip.addressLine1,
+        // AddressLine2: trip.addressLine2,
+        // Surburb: trip.suburb,
+        // City: trip.city,
+        // Province: trip.province,
+        // PostalCode: trip.postalCode,
+        // UserId: trip.userId,
       },
     })
     .then((response: any) => {

@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { DbPool } from "../Services/DatabaseService";
 import { Trip } from "../Classes/Trip";
+import { FilterRows } from "../Services/FilterService";
 dotenv.config();
 
 export const InsertTrip = async (
@@ -73,6 +74,23 @@ export const UpdateTrip = async (
 };
 
 export const GetAllTripsByBusinessId = async (
+  businessId: string,
+  callback: (error, result) => void
+) => {
+  await DbPool.query(
+    "select * from public.fn_get_user_detail_trip_by_business($1::text);",
+    [businessId],
+    (err, res) => {
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, res);
+      }
+    }
+  );
+};
+
+export const GetAllTripsByBusinessIdAndParentId = async (
   businessId: string,
   callback: (error, result) => void
 ) => {

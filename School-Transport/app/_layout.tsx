@@ -1,4 +1,4 @@
-import { Slot } from "expo-router";
+import { Slot, Stack } from "expo-router";
 import { SessionProvider } from "../src/Services/AuthenticationService";
 import { Theme } from "@gluestack-style/react";
 import {

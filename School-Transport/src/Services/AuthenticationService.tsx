@@ -56,6 +56,7 @@ export function SessionProvider(props: any) {
                 callback(error, null);
               } else {
                 setSession(result);
+                console.log("Session Sign In:" + session);
                 callback(null, result);
               }
             }
@@ -63,6 +64,7 @@ export function SessionProvider(props: any) {
         },
         signOut: () => {
           setSession(null);
+          console.log("Session Sign Out:" + session);
         },
         session,
         isLoading,
@@ -113,12 +115,9 @@ export const LoginWithEmailPassword = async (
     })
     .then((response: any) => {
       let result = response.data;
-
-      console.log(result);
       callback(null, result);
     })
     .catch((error) => {
-      console.log(error);
       callback(error, null);
     });
 };

@@ -8,6 +8,9 @@
     },
     {
       "path": "Server"
+    },
+    {
+      "path": "OctagonUncleMobileApp"
     }
   ]
 }

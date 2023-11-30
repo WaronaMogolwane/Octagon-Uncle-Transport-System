@@ -34,11 +34,15 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
   return (
-    <SessionProvider>
-      <GluestackUIProvider config={config}>
-        <AppNav />
-      </GluestackUIProvider>
-    </SessionProvider>
+    <NavigationContainer>
+      <SafeAreaView style={backgroundStyle}>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor={backgroundStyle.backgroundColor}
+        />
+        <Text>Home Page</Text>
+      </SafeAreaView>
+    </NavigationContainer>
   );
 }
 

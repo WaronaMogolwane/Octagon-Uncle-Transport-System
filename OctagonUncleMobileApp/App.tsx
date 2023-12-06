@@ -24,8 +24,7 @@ import {
   SessionProvider,
   useSession,
 } from './src/Services/AuthenticationService';
-import AuthenticationWrapper from './src/Components/AuthenticationWrapper';
-import AppNav from './src/Navigation/AppNav';
+import AppNav from './src/Navigation/AppNavigation';
 import {GluestackUIProvider} from '@gluestack-ui/themed';
 import {config} from '@gluestack-ui/config';
 function App(): JSX.Element {

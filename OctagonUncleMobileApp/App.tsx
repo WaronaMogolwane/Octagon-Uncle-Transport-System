@@ -19,6 +19,10 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 import {NavigationContainer} from '@react-navigation/native';
+import UserDetailSignUp from './src/Screens/UserDetailsSignUp';
+import {GluestackUIProvider} from '@gluestack-ui/themed';
+import {config} from '@gluestack-ui/config';
+import {UpcomingTrips} from './src/Screens/UpcomingTrips';
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -100,20 +104,37 @@ function App(): JSX.Element {
   }
   const Drawer = createDrawerNavigator();
   return (
-    <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Home">
-        <Drawer.Screen name="Home" component={HomeScreen} />
-        <Drawer.Screen name="Trips" component={TripsScreen} />
-        <Drawer.Screen name="Payments" component={PaymentsScreen} />
-        <Drawer.Screen
-          name="Manage Vehicles"
-          component={ManageVehiclesScreen}
-        />
-        <Drawer.Screen name="Manage Drivers" component={ManageDriversScreen} />
-        <Drawer.Screen name="Manage Clients" component={ManageClientsScreen} />
-        <Drawer.Screen name="Profile" component={ProfileScreen} />
-      </Drawer.Navigator>
-    </NavigationContainer>
+    <GluestackUIProvider config={config}>
+      <NavigationContainer>
+        <Drawer.Navigator initialRouteName="Home">
+          <Drawer.Screen name="Home" component={HomeScreen} />
+          <Drawer.Screen name="Trips" component={TripsScreen} />
+          <Drawer.Screen name="Payments" component={PaymentsScreen} />
+          <Drawer.Screen
+            name="Manage Vehicles"
+            component={ManageVehiclesScreen}
+          />
+          <Drawer.Screen
+            name="Manage Drivers"
+            component={ManageDriversScreen}
+          />
+          <Drawer.Screen
+            name="Manage Clients"
+            component={ManageClientsScreen}
+          />
+          <Drawer.Screen name="Profile" component={ProfileScreen} />
+          <Drawer.Screen
+            name="User Detail Sign-up"
+            component={UserDetailSignUp}
+          />
+          <Drawer.Screen
+            name="Upcoming Trips"
+            component={UpcomingTrips}
+            options={{headerShown: false}}
+          />
+        </Drawer.Navigator>
+      </NavigationContainer>
+    </GluestackUIProvider>
   );
 }
 

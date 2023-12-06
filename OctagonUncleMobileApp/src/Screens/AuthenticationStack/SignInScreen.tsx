@@ -39,14 +39,11 @@ const SignInScreen = ({navigation}: any) => {
     validationSchema: registerSchema,
 
     onSubmit: async (values, {resetForm}) => {
-      console.log('Form Valid: ' + formik.isValid);
-      console.log(values);
       await signIn(values.email, values.password, (error: any, result: any) => {
         if (formik.isValid) {
           if (error) {
             console.log(error);
           } else if (result) {
-            //console.log(result);
             resetForm();
           }
         }

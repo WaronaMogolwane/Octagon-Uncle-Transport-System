@@ -29,10 +29,6 @@ export function useSession() {
 
 export function SessionProvider(props: any) {
   const [[isLoading, session], setSession] = useStorageState('session');
-
-  // const [isLoading, setIsLoading] = useState(false);
-  // const [session, setSession] = useState(null);
-
   return (
     <AuthContext.Provider
       value={{
@@ -41,9 +37,6 @@ export function SessionProvider(props: any) {
           userPassword: string,
           callback: (error: any, result: any) => any,
         ) => {
-          // Perform sign-in logic here
-          console.log(userEmail);
-
           await LoginWithEmailPassword(
             userEmail,
             userPassword,
@@ -51,7 +44,7 @@ export function SessionProvider(props: any) {
               if (error) {
                 callback(error, null);
               } else {
-                setSession(result.headers.sessionId);
+                setSession(result.headers.sessionid);
                 callback(null, result.data);
               }
             },
@@ -86,7 +79,7 @@ export const LoginWithEmailPassword = async (
 ) => {
   authenticationResponse = new AuthenticationResponseModel();
   await axios
-    .post('http://192.168.1.2:9999/auth/login', {
+    .post('http://192.168.1.36:9999/auth/login', {
       email: userEmail,
       password: userPassword,
     })

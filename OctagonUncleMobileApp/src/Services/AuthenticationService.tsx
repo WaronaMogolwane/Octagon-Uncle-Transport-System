@@ -28,7 +28,7 @@ export function useSession() {
 }
 
 export function SessionProvider(props: any) {
-  let [[isLoading, session], setSession] = useStorageState('session');
+  const [[isLoading, session], setSession] = useStorageState('session');
 
   // const [isLoading, setIsLoading] = useState(false);
   // const [session, setSession] = useState(null);
@@ -42,6 +42,8 @@ export function SessionProvider(props: any) {
           callback: (error: any, result: any) => any,
         ) => {
           // Perform sign-in logic here
+          console.log(userEmail);
+
           await LoginWithEmailPassword(
             userEmail,
             userPassword,
@@ -49,16 +51,14 @@ export function SessionProvider(props: any) {
               if (error) {
                 callback(error, null);
               } else {
-                setStorageItemAsync('usesrToken', result);
-                console.log('Session Sign In:' + session);
-                callback(null, result);
+                setSession(result.headers.sessionId);
+                callback(null, result.data);
               }
             },
           );
         },
-        signOut: () => {
+        signOut: async () => {
           setSession(null);
-          console.log('Session Sign Out:' + session);
         },
         session,
         isLoading,
@@ -86,13 +86,12 @@ export const LoginWithEmailPassword = async (
 ) => {
   authenticationResponse = new AuthenticationResponseModel();
   await axios
-    .post('http://192.168.1.36:9999/auth/login', {
-      email: 'Yetty.Braun@yopmail.com',
-      password: 'wK6mMQESfR',
+    .post('http://192.168.1.2:9999/auth/login', {
+      email: userEmail,
+      password: userPassword,
     })
     .then((response: any) => {
-      let result = response.data;
-      callback(null, result);
+      callback(null, response);
     })
     .catch(error => {
       callback(error, null);

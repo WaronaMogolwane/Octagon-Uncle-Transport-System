@@ -1,7 +1,7 @@
 import {View, Text, ActivityIndicator} from 'react-native';
 import React, {useContext} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import AuthStack from './AuthStack';
+import AuthenticationStack from './AuthenticationStack';
 import AppDrawer from './AppDrawer';
 import {AuthContext} from '../Services/AuthenticationService';
 import {ThemeStyles} from '../Stylesheets/GlobalStyles';
@@ -19,7 +19,7 @@ const AppNav = () => {
 
   return (
     <NavigationContainer>
-      {session ? <AppDrawer /> : <AuthStack />}
+      {session ? <AppDrawer /> : <AuthenticationStack />}
     </NavigationContainer>
   );
 };

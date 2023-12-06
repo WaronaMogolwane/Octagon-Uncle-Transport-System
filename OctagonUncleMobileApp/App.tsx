@@ -26,6 +26,8 @@ import {
 } from './src/Services/AuthenticationService';
 import AuthenticationWrapper from './src/Components/AuthenticationWrapper';
 import AppNav from './src/Navigation/AppNav';
+import {GluestackUIProvider} from '@gluestack-ui/themed';
+import {config} from '@gluestack-ui/config';
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -34,7 +36,9 @@ function App(): JSX.Element {
   };
   return (
     <SessionProvider>
-      <AppNav />
+      <GluestackUIProvider config={config}>
+        <AppNav />
+      </GluestackUIProvider>
     </SessionProvider>
   );
 }

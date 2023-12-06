@@ -39,6 +39,8 @@ export async function setStorageItemAsync(key: string, value: string | null) {
 export function useStorageState(key: string): UseStateHook<string> {
   // Public
   const [state, setState] = useAsyncState<string>();
+  // Get
+
   const UseStorage = async (stateKey: any) => {
     await AsyncStorage.getItem(stateKey)
       .then(value => {
@@ -48,7 +50,7 @@ export function useStorageState(key: string): UseStateHook<string> {
         console.log(error);
       });
   };
-  // Get
+
   React.useEffect(() => {
     UseStorage(key);
   }, [key]);

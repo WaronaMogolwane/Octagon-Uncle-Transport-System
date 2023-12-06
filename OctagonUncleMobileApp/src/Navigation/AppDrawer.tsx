@@ -1,79 +1,13 @@
-import {View, Text, Button} from 'react-native';
+import {View, Button as TouchableOpacity} from 'react-native';
 import React from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-
-function HomeScreen({navigation}: any) {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Button
-        onPress={() => navigation.navigate('Trips')}
-        title="Go to Trips"
-      />
-      <Button
-        onPress={() => navigation.navigate('Payments')}
-        title="Go to Payments"
-      />
-      <Button
-        onPress={() => navigation.navigate('Manage Vehicles')}
-        title="Go to Manage Vehicles"
-      />
-      <Button
-        onPress={() => navigation.navigate('Manage Drivers')}
-        title="Go to Manage Drivers"
-      />
-      <Button
-        onPress={() => navigation.navigate('Manage Clients')}
-        title="Go to Manage Clients"
-      />
-      <Button
-        onPress={() => navigation.navigate('Profile')}
-        title="Go to Profile"
-      />
-    </View>
-  );
-}
-function TripsScreen({navigation}: any) {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Button onPress={() => navigation.goBack()} title="Go back home" />
-    </View>
-  );
-}
-function PaymentsScreen({navigation}: any) {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Button onPress={() => navigation.goBack()} title="Go back home" />
-    </View>
-  );
-}
-function ManageVehiclesScreen({navigation}: any) {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Button onPress={() => navigation.goBack()} title="Go back home" />
-    </View>
-  );
-}
-function ManageDriversScreen({navigation}: any) {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Button onPress={() => navigation.goBack()} title="Go back home" />
-    </View>
-  );
-}
-function ManageClientsScreen({navigation}: any) {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Button onPress={() => navigation.goBack()} title="Go back home" />
-    </View>
-  );
-}
-function ProfileScreen({navigation}: any) {
-  return (
-    <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-      <Button onPress={() => navigation.goBack()} title="Go back home" />
-    </View>
-  );
-}
+import HomeScreen from '../Screens/AppDrawer/HomeScreen';
+import TripsScreen from '../Screens/AppDrawer/TripsScreen';
+import PaymentsScreen from '../Screens/AppDrawer/PaymentsScreen';
+import ManageVehiclesScreen from '../Screens/AppDrawer/ManageVehiclesScreen';
+import ManageDriversScreen from '../Screens/AppDrawer/ManageDriversScreen';
+import ManageClientsScreen from '../Screens/AppDrawer/ManageClientsScreen';
+import ProfileScreen from '../Screens/AppDrawer/ProfileScreen';
 
 const AppDrawer = () => {
   const Drawer = createDrawerNavigator();

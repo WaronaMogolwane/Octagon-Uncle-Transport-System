@@ -1,27 +1,26 @@
-import React from "react";
-import { useStorageState } from "./StorageStateService";
-import { AuthenticationResponseModel } from "../Models/AuthenticationResponseModel";
-import axios from "axios";
-import { UserSignIn } from "../Controllers/AuthenticationController";
-import { router } from "expo-router";
+import React, {useState} from 'react';
+import {setStorageItemAsync, useStorageState} from './StorageStateService';
+import {AuthenticationResponseModel} from '../Models/AuthenticationResponseModel';
+import axios from 'axios';
+import {UserSignIn} from '../Controllers/AuthenticationController';
 
-const AuthContext = React.createContext<{
-  signIn: (
+export const AuthContext = React.createContext<{
+  signIn?: (
     userEmail: string,
     userPassword: string,
-    callback: (error: any, result: any) => void
+    callback: (error: any, result: any) => void,
   ) => any;
-  signOut: () => void;
-  session?: string | null;
-  isLoading: boolean;
+  signOut?: () => void;
+  session?: string | null | undefined;
+  isLoading?: boolean;
 } | null>(null);
 
 // This hook can be used to access the user info.
 export function useSession() {
   const value = React.useContext(AuthContext);
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== 'production') {
     if (!value) {
-      throw new Error("useSession must be wrapped in a <SessionProvider />");
+      throw new Error('useSession must be wrapped in a <SessionProvider />');
     }
   }
 
@@ -29,17 +28,15 @@ export function useSession() {
 }
 
 export function SessionProvider(props: any) {
-  const [[isLoading, session], setSession] = useStorageState("session");
-
+  const [[isLoading, session], setSession] = useStorageState('session');
   return (
     <AuthContext.Provider
       value={{
         signIn: async (
           userEmail: string,
           userPassword: string,
-          callback: (error: any, result: any) => any
+          callback: (error: any, result: any) => any,
         ) => {
-          // Perform sign-in logic here
           await LoginWithEmailPassword(
             userEmail,
             userPassword,
@@ -47,21 +44,18 @@ export function SessionProvider(props: any) {
               if (error) {
                 callback(error, null);
               } else {
-                setSession(result);
-                console.log("Session Sign In:" + session);
-                callback(null, result);
+                setSession(result.headers.sessionid);
+                callback(null, result.data);
               }
-            }
+            },
           );
         },
-        signOut: () => {
+        signOut: async () => {
           setSession(null);
-          console.log("Session Sign Out:" + session);
         },
         session,
         isLoading,
-      }}
-    >
+      }}>
       {props.children}
     </AuthContext.Provider>
   );
@@ -71,7 +65,7 @@ let authenticationResponse: AuthenticationResponseModel;
 
 export const CreateUserWithEmailPassword = async (
   userEmail: string,
-  userPassword: string
+  userPassword: string,
 ) => {
   authenticationResponse = new AuthenticationResponseModel();
 
@@ -81,19 +75,18 @@ export const CreateUserWithEmailPassword = async (
 export const LoginWithEmailPassword = async (
   userEmail: string,
   userPassword: string,
-  callback: (error: any, result: any) => void
+  callback: (error: any, result: any) => void,
 ) => {
   authenticationResponse = new AuthenticationResponseModel();
   await axios
-    .post("http://192.168.1.36:9999/auth/login", {
-      email: "Yetty.Braun@yopmail.com",
-      password: "wK6mMQESfR",
+    .post('http://192.168.1.36:9999/auth/login', {
+      email: userEmail,
+      password: userPassword,
     })
     .then((response: any) => {
-      let result = response.data;
-      callback(null, result);
+      callback(null, response);
     })
-    .catch((error) => {
+    .catch(error => {
       callback(error, null);
     });
 };

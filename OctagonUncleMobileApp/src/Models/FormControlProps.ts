@@ -10,7 +10,7 @@ export type InputProps = {
   defaultValue?: string;
   placeHolder?: string;
   onBlur?: (e: any) => void;
-  size?: string;
+  size?: "sm" | "md" | "lg" | undefined;
   labelText?: string;
   helperText?: string;
   value?: string;
@@ -19,7 +19,7 @@ export type InputProps = {
 
 export type ButtonProps = {
   title?: string;
-  size?: string;
+  size?: "sm" | "md" | "lg" | undefined;
   variant?: string;
   action?: string;
   isDisabled?: boolean;

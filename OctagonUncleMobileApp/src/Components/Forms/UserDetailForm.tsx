@@ -1,8 +1,8 @@
-import { Heading, VStack } from "@gluestack-ui/themed";
-import { View } from "react-native";
-import { UserDetailsFormProps } from "../../Models/FormControlProps";
-import { CustomButton } from "../Button";
-import { CustomFormControlInput } from "../CustomFormInput";
+import {Heading, VStack} from '@gluestack-ui/themed';
+import {View} from 'react-native';
+import {UserDetailsFormProps} from '../../Models/FormControlProps';
+import {CustomButton1} from '../Buttons';
+import {CustomFormControlInput} from '../CustomFormInput';
 
 export function UserDetailForm(props: UserDetailsFormProps) {
   return (
@@ -103,7 +103,7 @@ export function UserDetailForm(props: UserDetailsFormProps) {
           value={props.postalCodeValue}
         />
 
-        <CustomButton title={"Submit"} onPress={props.submitUserDetails} />
+        <CustomButton1 title={'Submit'} onPress={props.submitUserDetails} />
       </VStack>
     </View>
   );

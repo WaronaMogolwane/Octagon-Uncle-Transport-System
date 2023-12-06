@@ -24,9 +24,8 @@ import {
   SessionProvider,
   useSession,
 } from './src/Services/AuthenticationService';
-import AppNav from './src/Navigation/AppNavigation';
-import {GluestackUIProvider} from '@gluestack-ui/themed';
-import {config} from '@gluestack-ui/config';
+import AuthenticationWrapper from './src/Components/AuthenticationWrapper';
+import AppNav from './src/Navigation/AppNav';
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
@@ -34,15 +33,9 @@ function App(): JSX.Element {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
   return (
-    <NavigationContainer>
-      <SafeAreaView style={backgroundStyle}>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={backgroundStyle.backgroundColor}
-        />
-        <Text>Home Page</Text>
-      </SafeAreaView>
-    </NavigationContainer>
+    <SessionProvider>
+      <AppNav />
+    </SessionProvider>
   );
 }
 

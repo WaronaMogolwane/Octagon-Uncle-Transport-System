@@ -1,65 +1,7 @@
-import { useFormik } from "formik";
-import * as yup from "yup";
-import { useState } from "react";
-import { config } from "@gluestack-ui/config";
-import {
-  ThemeProvider,
-  DarkTheme,
-  DefaultTheme,
-  useTheme,
-} from "@react-navigation/native";
-import {
-  GluestackUIProvider,
-  Text,
-  Box,
-  FormControlLabel,
-  FormControl,
-  FormControlLabelText,
-  FormControlHelper,
-  FormControlHelperText,
-  FormControlError,
-  FormControlErrorIcon,
-  FormControlErrorText,
-  AlertCircleIcon,
-  Input,
-  InputField,
-  Button,
-  ButtonText,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  useToast,
-  Toast,
-  ModalCloseButton,
-  ModalFooter,
-  ModalHeader,
-  ModalContent,
-  Heading,
-  Icon,
-  CloseIcon,
-  Image,
-  View,
-  AddIcon,
-  ButtonIcon,
-  Theme,
-  VStack,
-  InputSlot,
-  InputIcon,
-  EyeIcon,
-  ToastTitle,
-  EyeOffIcon,
-} from "@gluestack-ui/themed";
-import { GluestackUIStyledProvider } from "@gluestack-ui/themed";
-//import { config } from "./../../../gluestack-ui.config";
-import { FormStyles, ThemeStyles } from "../../Stylesheets/GlobalStyles";
-import { GestureResponderEvent } from "react-native/Libraries/Types/CoreEventTypes";
-import { CustomFormControlInput } from "../CustomFormInput";
-import { CustomButton } from "../Button";
-import {
-  ButtonProps,
-  InputProps,
-  SignInFormProps,
-} from "../../Models/FormControlProps";
+import {Heading, View, VStack} from '@gluestack-ui/themed';
+import {CustomFormControlInput} from '../CustomFormInput';
+import {CustomButton1} from '../Buttons';
+import {SignInFormProps} from '../../Models/FormControlProps';
 
 export function SignInForm(props: SignInFormProps) {
   return (
@@ -77,7 +19,6 @@ export function SignInForm(props: SignInFormProps) {
           onBlur={props.emailOnBlur}
           value={props.emailValue}
         />
-
         <CustomFormControlInput
           labelText="Password"
           placeHolder="password"
@@ -89,7 +30,7 @@ export function SignInForm(props: SignInFormProps) {
           onBlur={props.passwordOnBlur}
           value={props.passwordValue}
         />
-        <CustomButton title={"Sign In"} onPress={props.signInButtonOnPress} />
+        <CustomButton1 title="Sign In" onPress={props.signInButtonOnPress} />
       </VStack>
     </View>
   );

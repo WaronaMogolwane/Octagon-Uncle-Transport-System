@@ -12,5 +12,8 @@
     {
       "path": "OctagonUncleMobileApp"
     }
-  ]
+  ],
+  "settings": {
+    "java.compile.nullAnalysis.mode": "automatic"
+  }
 }

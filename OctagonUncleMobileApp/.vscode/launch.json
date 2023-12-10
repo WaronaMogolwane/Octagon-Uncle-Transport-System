@@ -9,7 +9,15 @@
       "request": "attach",
       "type": "reactnativedirect",
       "cwd": "${workspaceFolder}",
-      "address": "192.168.1.57"
+      "address": "192.168.1.36"
+    },
+    {
+      "name": "Debug Android",
+      "cwd": "${workspaceFolder}",
+      "type": "reactnative",
+      "request": "launch",
+      "platform": "android",
+      "isDynamic": true
     }
   ]
 }

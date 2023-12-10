@@ -79,7 +79,7 @@ export const LoginWithEmailPassword = async (
 ) => {
   authenticationResponse = new AuthenticationResponseModel();
   await axios
-    .post('http://192.168.1.36:9999/auth/login', {
+    .post('http://server.majorxp.co.za:9998/auth/login', {
       email: userEmail,
       password: userPassword,
     })

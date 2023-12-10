@@ -35,9 +35,12 @@ export const GetOtp = async (email: string, otp: string, callback: (error, resul
 export const GetUserByEmailPassword = async (user: UserCredentials, callback: (error, result) => void) => {
   DbPool.query('SELECT * FROM public.fn_user_login($1::text,$2::text)',
     [user.email, user.password],
-    (err, res) => {
+    (err: any, res: any) => {
       if (err) {
         callback(err, null);
+      }
+      if (!res.rows[0]) {
+        callback("No user found.", null);
       }
       else {
         callback(null, res);

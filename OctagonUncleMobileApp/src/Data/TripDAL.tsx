@@ -1,9 +1,10 @@
-import axios from "axios";
-import { Trip } from "../Models/Trip";
+import axios from 'axios';
+import {Trip} from '../Models/Trip';
+import {TripDataParent} from '../types/tripDataType';
 
 export const AddTripToDatabase = async (trip: Trip) => {
   await axios
-    .post("http://192.168.3.57:9999/trip/add-trip", {
+    .post('http://192.168.3.57:9999/trip/add-trip', {
       trip: {
         RegistrationNumber: trip.registrationNumber,
         Passengers: trip.passenger,
@@ -20,14 +21,12 @@ export const AddTripToDatabase = async (trip: Trip) => {
     .catch((error: any) => {
       console.log(error);
     });
-
-  [];
 };
 
 export const GetTripFromDatabase = async (tripId: string) => {
   let res: any;
   await axios
-    .post("http://192.168.3.57:9999/trip/get-trip", {
+    .post('http://192.168.3.57:9999/trip/get-trip', {
       trip: {
         TripId: tripId,
       },
@@ -43,12 +42,12 @@ export const GetTripFromDatabase = async (tripId: string) => {
         result.addressline2,
         result.suburb,
         result.city,
-        result.province
+        result.province,
       );
 
       res = userDetail;
     })
-    .catch((error) => {
+    .catch(error => {
       console.log(error);
       res = error;
     });
@@ -57,41 +56,41 @@ export const GetTripFromDatabase = async (tripId: string) => {
 
 export const GetAllTripsForClientFromDatabase = async (
   payerId: string,
-  businessId: string
+  businessId: string,
 ) => {
   let res: any;
-  await axios.post("http://192.168.3.57:9999/user-profile/get-user-details", {
-    userDetails: {
-      UserId: payerId,
-    },
-  });
-  // .then((response: any) => {
-  //   let result = response.data.result;
+  let tripData: TripDataParent[];
+  await axios
+    .post('http://192.168.3.57:9999/trip/get-trips-for-parent', {
+      trip: {
+        BusinessId: businessId,
+        PayerId: payerId,
+      },
+    })
+    .then((response: any) => {
+      let r = [response.data.result];
+      r.forEach((result: any) => {
+        let trip = {
+          passengerName: result.Passenger.FirstName,
+          driverName: result.FirstName + result.LastName,
+          pickUpLocation: result.Passenger.HomeAddress,
+          pickUpTime: result.Time,
+          pickUpDate: result.Date,
+          tripId: result.TripId,
+        };
 
-  //       let userDetail = new UserDetail(
-  //         result.userDetail_id,
-  //         result.firstname,
-  //         result.lastname,
-  //         result.addressline1,
-  //         result.addressline2,
-  //         result.suburb,
-  //         result.city,
-  //         result.province,
-  //         result.postalcode,
-  //         result.user_id
-  //       );
-
-  //       res = userDetail;
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       res = error;
-  //     });
-  //   return res;
+        tripData.push(trip);
+      });
+    })
+    .catch((error: any) => {
+      console.log(error);
+      res = error;
+    });
+  return;
 };
 
 export const GetAllTripsForBusinessFromDatabase = async (
-  businessId: string
+  businessId: string,
 ) => {
   let res: any;
   //   await axios
@@ -130,7 +129,7 @@ export const UpdateTripInDatabase = async (trip: Trip) => {
   let data: any;
 
   await axios
-    .patch("http://192.168.3.57:9999/passenger/update-passenger-details", {
+    .patch('http://192.168.3.57:9999/passenger/update-passenger-details', {
       userDetail: {
         // UserDetailId: trip.userDetailId,
         // FirstName: trip.firstName,
@@ -158,3 +157,6 @@ export const UpdateTripInDatabase = async (trip: Trip) => {
 export const GetAllUserDetailsFromDatabase = async () => {};
 
 export const DeleteTripFromDatabase = async (uid: string) => {};
+function then(arg0: (response: any) => void) {
+  throw new Error('Function not implemented.');
+}

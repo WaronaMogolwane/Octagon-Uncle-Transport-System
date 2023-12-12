@@ -1,17 +1,12 @@
-import {Button, GestureResponderEvent} from 'react-native';
+import {GestureResponderEvent} from 'react-native';
 import React, {useContext} from 'react';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
 import {SignInForm} from '../../Components/Forms/SignInForm';
-import {useToast, Toast, ToastTitle} from '@gluestack-ui/themed';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
-import {
-  CustomButton1,
-  CustomButton2,
-  CustomButton3,
-} from '../../Components/Buttons';
+import {CustomButton3} from '../../Components/Buttons';
 
 const SignInScreen = ({navigation}: any) => {
   const {signIn, session}: any = useContext(AuthContext);
@@ -54,8 +49,8 @@ const SignInScreen = ({navigation}: any) => {
   const GoToForgotPasswordPage = () => {
     navigation.navigate('Forgot Password');
   };
-  const GoToSignUpPage = () => {
-    navigation.navigate('Sign Up');
+  const GoToUserRoleSelectPage = () => {
+    navigation.navigate('User Role');
   };
   return (
     <SafeAreaView style={ThemeStyles.container}>
@@ -80,7 +75,7 @@ const SignInScreen = ({navigation}: any) => {
         }
       />
       <CustomButton3
-        onPress={GoToSignUpPage}
+        onPress={GoToUserRoleSelectPage}
         title={'New around here? Create an account'}
       />
       <CustomButton3

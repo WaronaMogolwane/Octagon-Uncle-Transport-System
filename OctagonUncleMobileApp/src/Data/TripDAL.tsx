@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {Trip} from '../Models/Trip';
-import {TripDataParent} from '../types/tripDataType';
+import {ConvertDate} from '../Services/DataConverterService';
 
 export const AddTripToDatabase = async (trip: Trip) => {
   await axios
@@ -58,8 +58,10 @@ export const GetAllTripsForClientFromDatabase = async (
   payerId: string,
   businessId: string,
 ) => {
-  let res: any;
-  let tripData: TripDataParent[];
+  let result: any;
+  const tripData: {}[] = [];
+  let trip = {};
+
   await axios
     .post('http://192.168.3.57:9999/trip/get-trips-for-parent', {
       trip: {
@@ -68,25 +70,29 @@ export const GetAllTripsForClientFromDatabase = async (
       },
     })
     .then((response: any) => {
-      let r = [response.data.result];
-      r.forEach((result: any) => {
-        let trip = {
-          passengerName: result.Passenger.FirstName,
-          driverName: result.FirstName + result.LastName,
-          pickUpLocation: result.Passenger.HomeAddress,
-          pickUpTime: result.Time,
-          pickUpDate: result.Date,
-          tripId: result.TripId,
+      let res = [...response.data.result];
+
+      res.forEach(data => {
+        trip = {
+          tripId: data.TripId,
+          driverName: data.FirstName + ' ' + data.LastName,
+          pickUpTime: data.Time,
+          pickUpDate: ConvertDate(data.Date),
+          passengerName: data.Passenger.FirstName,
+          pickUpLocation: data.Passenger.HomeAddress,
         };
 
         tripData.push(trip);
       });
+
+      result = tripData;
     })
     .catch((error: any) => {
       console.log(error);
-      res = error;
+      result = error;
     });
-  return;
+
+  return result;
 };
 
 export const GetAllTripsForBusinessFromDatabase = async (
@@ -160,3 +166,34 @@ export const DeleteTripFromDatabase = async (uid: string) => {};
 function then(arg0: (response: any) => void) {
   throw new Error('Function not implemented.');
 }
+
+// export const GetAllPassengerFromDatabase = async (uid: string) => {
+//   try {
+//     let passengerArray: Passenger[] = [];
+
+//     const querySnapshot = await getDocs(
+//       collection(FIRESTORE_DB, 'Client', uid, 'Passenger'),
+//     );
+//     querySnapshot.docs.forEach(doc => {
+//       let snapshot = doc.data();
+
+//       let passenger = new Passenger(
+//         snapshot.passengerId,
+//         snapshot.firstName,
+//         snapshot.lastName,
+//         snapshot.age,
+//         snapshot.sex,
+//       );
+
+//       passengerArray.push(passenger);
+//     });
+
+//     passengerArray = [...passengerArray];
+
+//     console.log(passengerArray);
+
+//     return passengerArray;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };

@@ -1,35 +1,33 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, View} from 'react-native';
+import {FlatList, RefreshControl, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {randomData} from '../../randomData/SampleData';
 import {TripCard} from '../../Components/TripCard';
 import {CustomButton1} from '../../Components/Buttons';
 import {GetAllTripsForClient} from '../../Controllers/TripController';
 
 const TripsScreen = ({navigation}: any) => {
+  const [tripList, setTripList] = useState([]);
+  const [refreshing, setRefreshing] = React.useState(false);
+
   const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836';
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  let data: any[] = [];
-
-  const [tripList, setTripList] = useState([]);
-
-  const getTrips = async () => {
-    await GetAllTripsForClient(payerId, businessId).then((...response: any) => {
-      data = response;
-      //console.log(data);
-    });
-  };
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    pressedButton();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
   useEffect(() => {
-    getTrips();
-    //setTripList(data);
+    pressedButton();
   }, []);
 
   const pressedButton = async () => {
-    let r = await GetAllTripsForClient(payerId, businessId);
-    //console.log(r);
-    //result = r;
+    await GetAllTripsForClient(payerId, businessId).then(trip => {
+      setTripList(trip);
+    });
   };
 
   const Tab = createMaterialTopTabNavigator();
@@ -40,6 +38,9 @@ const TripsScreen = ({navigation}: any) => {
         <FlatList
           data={tripList}
           renderItem={({item}) => renderItemComponent(item)}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
         />
       </View>
     );

@@ -21,8 +21,6 @@ export const AddTrip = async (req: any, res: any, next: any) => {
     req.body.trip.Time
   );
 
-  //console.log(newTrip);
-
   await InsertTrip(newTrip, (error, result) => {
     if (error) {
       let err: any = {
@@ -32,7 +30,7 @@ export const AddTrip = async (req: any, res: any, next: any) => {
       next(err);
     } else {
       res.status(200).json({
-        PassengerCreated: true,
+        TripCreated: true,
         result: result.rows[0],
       });
     }
@@ -49,12 +47,17 @@ export const GetTrip = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
+    } else if (result.rowCount == 0) {
+      let err: any = {
+        status: 405,
+        message: "Record not found",
+      };
+      next(err);
     } else {
       res.status(200).json({
         RecordRetrieved: true,
         result: result.rows[0],
       });
-      console.log(result);
     }
   });
 };
@@ -79,7 +82,7 @@ export const UpdateTripDetails = async (req: any, res: any, next: any) => {
       next(err);
     } else {
       res.status(200).json({
-        UserDetailUpdated: true,
+        TripUpdated: true,
         result: result.rows[0],
       });
     }
@@ -94,6 +97,12 @@ export const GetTripsForBusiness = async (req: any, res: any, next: any) => {
       let err: any = {
         status: 400,
         message: error.message,
+      };
+      next(err);
+    } else if (result.rowCount == 0) {
+      let err: any = {
+        status: 405,
+        message: "Record not found",
       };
       next(err);
     } else {
@@ -116,6 +125,12 @@ export const GetTripsForParent = async (req: any, res: any, next: any) => {
         let err: any = {
           status: 400,
           message: error.message,
+        };
+        next(err);
+      } else if (result.rowCount == 0) {
+        let err: any = {
+          status: 405,
+          message: "Record not found",
         };
         next(err);
       } else {

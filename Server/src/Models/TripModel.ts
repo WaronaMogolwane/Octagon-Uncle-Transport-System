@@ -1,7 +1,6 @@
 import dotenv from "dotenv";
 import { DbPool } from "../Services/DatabaseService";
 import { Trip } from "../Classes/Trip";
-import { FilterRows } from "../Services/FilterService";
 dotenv.config();
 
 export const InsertTrip = async (

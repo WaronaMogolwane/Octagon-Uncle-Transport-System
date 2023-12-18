@@ -3,6 +3,7 @@ import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {TripCard} from '../../Components/TripCard';
+import {CustomButton1} from '../../Components/Buttons';
 import {
   GetPastTripsForClient,
   GetUpcomingTripsForClient,
@@ -17,20 +18,20 @@ const TripsScreen = ({navigation}: any) => {
 
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
+    getPastTrips();
 
     setTimeout(() => {
-      getPastTrips();
+      setRefreshingUpcomingTrips(false);
     }, 2000);
-    setRefreshingPastTrips(false);
   }, []);
 
   const onRefreshUpcomingTrips = React.useCallback(() => {
     setRefreshingUpcomingTrips(true);
+    getUpcomingTrips();
 
     setTimeout(() => {
-      getUpcomingTrips();
+      setRefreshingUpcomingTrips(true);
     }, 2000);
-    setRefreshingUpcomingTrips(false);
   }, []);
 
   const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836';
@@ -39,16 +40,18 @@ const TripsScreen = ({navigation}: any) => {
   useEffect(() => {
     getUpcomingTrips();
     getPastTrips();
+    getUpcomingTrips();
+    getPastTrips();
   }, []);
 
   const getUpcomingTrips = async () => {
-    return await GetUpcomingTripsForClient(payerId, businessId).then(trip => {
+    await GetUpcomingTripsForClient(payerId, businessId).then(trip => {
       setUpcomingTripList(trip);
     });
   };
 
   const getPastTrips = async () => {
-    return await GetPastTripsForClient(payerId, businessId).then(trip => {
+    await GetPastTripsForClient(payerId, businessId).then(trip => {
       setPastTripList(trip);
     });
   };
@@ -60,8 +63,13 @@ const TripsScreen = ({navigation}: any) => {
       <View style={{flex: 1}}>
         <FlatList
           data={UpcomingTripList}
+          data={UpcomingTripList}
           renderItem={({item}) => renderItemComponent(item)}
           refreshControl={
+            <RefreshControl
+              refreshing={refreshingUpcomingTrips}
+              onRefresh={onRefreshUpcomingTrips}
+            />
             <RefreshControl
               refreshing={refreshingUpcomingTrips}
               onRefresh={onRefreshUpcomingTrips}
@@ -74,6 +82,16 @@ const TripsScreen = ({navigation}: any) => {
 
   function SecondRoute() {
     return (
+      <View style={{flex: 1}}>
+        <FlatList
+          data={PastTripList}
+          renderItem={({item}) => renderItemComponent(item)}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshingPastTrips}
+              onRefresh={onRefreshPastTrips}
+            />
+          }
       <View style={{flex: 1}}>
         <FlatList
           data={PastTripList}

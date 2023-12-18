@@ -72,12 +72,12 @@ export const UpdateTrip = async (
   );
 };
 
-export const GetAllTripsByBusinessId = async (
+export const GetPastTripsByBusinessIdAndParentId = async (
   businessId: string,
   callback: (error, result) => void
 ) => {
   await DbPool.query(
-    "select * from public.fn_get_user_detail_trip_by_business($1::text);",
+    "select * from public.fn_get_past_trips($1::text);",
     [businessId],
     (err, res) => {
       if (err) {
@@ -89,12 +89,12 @@ export const GetAllTripsByBusinessId = async (
   );
 };
 
-export const GetAllTripsByBusinessIdAndParentId = async (
+export const GetUpcomingTripsByBusinessIdAndParentId = async (
   businessId: string,
   callback: (error, result) => void
 ) => {
   await DbPool.query(
-    "select * from public.fn_get_user_detail_trip_by_business($1::text);",
+    "select * from public.fn_get_upcoming_trips($1::text);",
     [businessId],
     (err, res) => {
       if (err) {

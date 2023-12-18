@@ -2,8 +2,8 @@ import { Router } from "express";
 import {
   AddTrip,
   GetTrip,
-  GetTripsForBusiness as GetTripsForBusiness,
-  GetTripsForParent,
+  GetPastTripsForParent,
+  GetUpcomingTripsForParent,
   UpdateTripDetails,
 } from "../Controllers/TripController";
 
@@ -14,13 +14,13 @@ router.post("/add-trip", AddTrip, async (req, res, next) => {});
 router.post("/get-trip", GetTrip, async (req, res, next) => {});
 
 router.post(
-  "/get-trips-for-business",
-  GetTripsForBusiness,
+  "/get-past-trip-for-parent",
+  GetPastTripsForParent,
   async (req, res, next) => {}
 );
 router.post(
-  "/get-trips-for-parent",
-  GetTripsForParent,
+  "/get-upcoming-trips-for-parent",
+  GetUpcomingTripsForParent,
   async (req, res, next) => {}
 );
 

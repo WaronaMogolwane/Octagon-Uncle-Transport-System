@@ -4,8 +4,8 @@ import {
   InsertTrip,
   GetTripById,
   UpdateTrip,
-  GetAllTripsByBusinessId as GetAllTripsForBusiness,
-  GetAllTripsByBusinessIdAndParentId,
+  GetPastTripsByBusinessIdAndParentId,
+  GetUpcomingTripsByBusinessIdAndParentId,
 } from "../Models/TripModel";
 import { FilterRows } from "../Services/FilterService";
 
@@ -89,36 +89,11 @@ export const UpdateTripDetails = async (req: any, res: any, next: any) => {
   });
 };
 
-export const GetTripsForBusiness = async (req: any, res: any, next: any) => {
-  let businesId = req.body.trip.BusinessId;
-
-  await GetAllTripsForBusiness(businesId, (error, result) => {
-    if (error) {
-      let err: any = {
-        status: 400,
-        message: error.message,
-      };
-      next(err);
-    } else if (result.rowCount == 0) {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
-    } else {
-      res.status(200).json({
-        RecordRetrieved: true,
-        result: result.rows,
-      });
-    }
-  });
-};
-
-export const GetTripsForParent = async (req: any, res: any, next: any) => {
+export const GetPastTripsForParent = async (req: any, res: any, next: any) => {
   let businessId = req.body.trip.BusinessId;
   let payerId = req.body.trip.PayerId;
 
-  await GetAllTripsByBusinessIdAndParentId(
+  await GetPastTripsByBusinessIdAndParentId(
     businessId,
     async (error, result) => {
       if (error) {
@@ -127,13 +102,46 @@ export const GetTripsForParent = async (req: any, res: any, next: any) => {
           message: error.message,
         };
         next(err);
-      } else if (result.rowCount == 0) {
+      } /* else if (result.rowCount == 0) {
         let err: any = {
           status: 405,
           message: "Record not found",
         };
         next(err);
-      } else {
+      }*/ else {
+        res.status(200).json({
+          RecordRetrieved: true,
+          result: await FilterRows(result.rows, payerId),
+        });
+      }
+    }
+  );
+};
+
+export const GetUpcomingTripsForParent = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  let businessId = req.body.trip.BusinessId;
+  let payerId = req.body.trip.PayerId;
+
+  await GetUpcomingTripsByBusinessIdAndParentId(
+    businessId,
+    async (error, result) => {
+      if (error) {
+        let err: any = {
+          status: 400,
+          message: error.message,
+        };
+        next(err);
+      } /*else if (result.rowCount == 0) {
+        let err: any = {
+          status: 405,
+          message: "Record not found",
+        };
+        next(err);
+      }*/ else {
         res.status(200).json({
           RecordRetrieved: true,
           result: await FilterRows(result.rows, payerId),

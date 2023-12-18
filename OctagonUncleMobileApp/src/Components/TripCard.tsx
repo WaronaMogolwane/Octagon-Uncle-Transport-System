@@ -1,5 +1,5 @@
-import { Text, StyleSheet, View, Button } from "react-native";
-import React from "react";
+import {Text, StyleSheet, View, Button} from 'react-native';
+import React from 'react';
 
 type tripCardProps = {
   driverName: string;
@@ -13,7 +13,7 @@ export const TripCard = (props: tripCardProps) => {
   return (
     <View style={styles.cardBorder}>
       <View style={styles.cardContainer}>
-        <View style={{ marginEnd: 5 }}>
+        <View style={{marginEnd: 5}}>
           <Text style={styles.cardText}>Driver:</Text>
         </View>
         <View>
@@ -23,7 +23,7 @@ export const TripCard = (props: tripCardProps) => {
       <View style={styles.cardContainer}>
         <View style={styles.cardContainer}>
           <Text style={styles.cardText}>Pickup Time:</Text>
-          <Text style={{ marginEnd: 20 }}>{props.pickUpTime}</Text>
+          <Text style={{marginEnd: 20}}>{props.pickUpTime}</Text>
         </View>
         <View style={styles.cardContainer}>
           <Text style={styles.cardText}>Pickup Date:</Text>
@@ -31,7 +31,7 @@ export const TripCard = (props: tripCardProps) => {
         </View>
       </View>
       <View style={styles.cardContainer}>
-        <View style={{ marginEnd: 5 }}>
+        <View style={{marginEnd: 5}}>
           <Text style={styles.cardText}>Passenger:</Text>
         </View>
         <View>
@@ -50,19 +50,22 @@ export const TripCard = (props: tripCardProps) => {
 
 const styles = StyleSheet.create({
   cardContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     padding: 2,
-    textAlign: "center",
+    textAlign: 'center',
   },
   cardText: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   cardBorder: {
     padding: 2,
     borderRadius: 10,
     borderWidth: 2,
     margin: 8,
-    backgroundColor: "#E5E4E2",
+    backgroundColor: '#E5E4E2',
+  },
+  Text: {
+    color: '#000000',
   },
   cardElement: {},
 });

@@ -45,6 +45,12 @@ export const GetUserDetail = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
+    } else if (result.rowCount == 0) {
+      let err: any = {
+        status: 405,
+        message: "Record not found",
+      };
+      next(err);
     } else {
       res.status(200).json({
         RecordRetrieved: true,

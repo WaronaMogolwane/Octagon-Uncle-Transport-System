@@ -1,12 +1,13 @@
 import {
   AddTripToDatabase,
   GetTripFromDatabase,
-  GetAllTripsForClientFromDatabase,
+  GetPastTripsFromDatabase,
   GetAllTripsForBusinessFromDatabase,
   DeleteTripFromDatabase,
   UpdateTripInDatabase,
-} from "../Data/TripDAL";
-import { Trip } from "../Models/Trip";
+  GetUpcomingTripsFromDatabase,
+} from '../Data/TripDAL';
+import {Trip} from '../Models/Trip';
 
 export const AddTrip = async (trip: Trip) => {
   await AddTripToDatabase(trip);
@@ -16,11 +17,18 @@ export const GetTrip = async (tripId: string) => {
   return await GetTripFromDatabase(tripId);
 };
 
-export const GetAllTripsForClient = async (
+export const GetUpcomingTripsForClient = async (
   payerId: string,
-  businessId: string
+  businessId: string,
 ) => {
-  return await GetAllTripsForClientFromDatabase(payerId, businessId);
+  return await GetUpcomingTripsFromDatabase(payerId, businessId);
+};
+
+export const GetPastTripsForClient = async (
+  payerId: string,
+  businessId: string,
+) => {
+  return await GetPastTripsFromDatabase(payerId, businessId);
 };
 
 export const GetAllTripsForBusiness = async (businessId: string) => {

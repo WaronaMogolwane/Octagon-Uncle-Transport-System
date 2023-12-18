@@ -81,7 +81,6 @@ export const GetUpcomingTripsFromDatabase = async (
           pickUpDate: ConvertDate(data.Date),
           passengerName: data.Passenger.FirstName,
           pickUpLocation: data.Passenger.HomeAddress,
-          isSuccess: Number(data.Passenger.Success),
         };
 
         tripData.push(trip);
@@ -106,7 +105,7 @@ export const GetPastTripsFromDatabase = async (
   let trip = {};
 
   await axios
-    .post('http://192.168.3.57:9999/trip/get-past-trip-for-parent', {
+    .post(`{SERVER_HOST}:${SERVER_PORT}/trip/get-past-trip-for-parent`, {
       trip: {
         BusinessId: businessId,
         PayerId: payerId,

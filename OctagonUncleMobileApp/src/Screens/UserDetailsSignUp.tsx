@@ -8,34 +8,45 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {UserDetail} from '../Models/UserDetail';
 import {AddUserDetail} from '../Controllers/UserDetailController';
+import {CustomButton1} from '../Components/Buttons';
 
 export default function UserDetailSignUp({navigation}: any) {
   const userId = 'c7728615-394f-466b-833e-ea9dd60ba836';
 
-  const userDetailHelper = (values: any) => {
+  const userDetailHelper = async (values: any) => {
     let userDetail = new UserDetail(
       '',
       values.firstname,
       values.lastname,
       values.addressline1,
       values.addressline2,
-      values.surburb,
+      values.suburb,
       values.city,
       values.province,
-      values.postalCode,
+      values.postalcode,
       userId,
     );
 
-    AddUserDetail(userDetail);
+    await AddUserDetail(userDetail)
+      .then((r: any) => {
+        if (r == 200) {
+          console.log('Insert Success code here');
+          formik.resetForm();
+          //
+        } else {
+          console.log('Something went wrong');
+        }
+      })
+      .catch(error => console.log(error));
   };
 
   const userDetailSchema = yup.object().shape({
-    firstName: yup
+    firstname: yup
       .string()
       .min(2, 'Firstname too Short!')
       .max(50, 'Firstname too Long!')
       .required('Required'),
-    lastName: yup
+    lastname: yup
       .string()
       .min(2, 'lastname too Short!')
       .max(50, 'lastname too Long!')
@@ -61,7 +72,7 @@ export default function UserDetailSignUp({navigation}: any) {
       .min(2, 'Province too Short!')
       .max(50, 'Province too Long!')
       .required('Required'),
-    postalCode: yup
+    postalcode: yup
       .string()
       .min(2, 'Postal code too Short!')
       .max(4, 'Postal code too Long!')
@@ -73,10 +84,10 @@ export default function UserDetailSignUp({navigation}: any) {
     lastname: '',
     addressline1: '',
     addressline2: '',
-    surburb: '',
+    suburb: '',
     city: '',
     province: '',
-    postalCode: '',
+    postalcode: '',
   };
 
   const formik = useFormik({
@@ -85,7 +96,7 @@ export default function UserDetailSignUp({navigation}: any) {
 
     onSubmit: (values, {resetForm}) => {
       userDetailHelper(values);
-      resetForm();
+      //resetForm();
     },
   });
 
@@ -96,6 +107,7 @@ export default function UserDetailSignUp({navigation}: any) {
           <View style={{margin: 5}}>
             <Image
               size="xl"
+              alt="Logo of Company"
               borderRadius="$lg"
               source={{
                 uri: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
@@ -125,11 +137,11 @@ export default function UserDetailSignUp({navigation}: any) {
             addressline2ErrorText={formik?.errors?.addressline2}
             addressline2OnBlur={formik.handleBlur('addressline2')}
             addressline2Value={formik.values?.addressline2}
-            suburbIsInvalid={!!formik.errors.surburb}
-            suburbOnChangeText={formik.handleChange('surburb')}
-            suburbErrorText={formik?.errors?.surburb}
-            suburbOnBlur={formik.handleBlur('surburb')}
-            suburbValue={formik.values?.surburb}
+            suburbIsInvalid={!!formik.errors.suburb}
+            suburbOnChangeText={formik.handleChange('suburb')}
+            suburbErrorText={formik?.errors?.suburb}
+            suburbOnBlur={formik.handleBlur('suburb')}
+            suburbValue={formik.values?.suburb}
             cityIsInvalid={!!formik.errors.city}
             cityOnChangeText={formik.handleChange('city')}
             cityErrorText={formik?.errors?.city}
@@ -140,11 +152,11 @@ export default function UserDetailSignUp({navigation}: any) {
             provinceErrorText={formik?.errors?.province}
             provinceOnBlur={formik.handleBlur('province')}
             provinceValue={formik.values?.province}
-            postalCodeIsInvalid={!!formik.errors.postalCode}
-            postalCodeOnChangeText={formik.handleChange('postalCode')}
-            postalCodeErrorText={formik?.errors?.postalCode}
-            postalCodeOnBlur={formik.handleBlur('postalCode')}
-            postalCodeValue={formik.values?.postalCode}
+            postalCodeIsInvalid={!!formik.errors.postalcode}
+            postalCodeOnChangeText={formik.handleChange('postalcode')}
+            postalCodeErrorText={formik?.errors?.postalcode}
+            postalCodeOnBlur={formik.handleBlur('postalcode')}
+            postalCodeValue={formik.values?.postalcode}
             submitUserDetails={
               formik.handleSubmit as (
                 values:
@@ -154,9 +166,11 @@ export default function UserDetailSignUp({navigation}: any) {
               ) => void
             }
           />
-        </View>
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-          <Button onPress={() => navigation.goBack()} title="Go back home" />
+
+          <CustomButton1
+            onPress={() => navigation.goBack()}
+            title="Go back home"
+          />
         </View>
       </SafeAreaView>
     </ScrollView>

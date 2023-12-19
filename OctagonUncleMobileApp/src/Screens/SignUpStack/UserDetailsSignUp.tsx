@@ -1,14 +1,15 @@
-import {Button, GestureResponderEvent, View} from 'react-native';
-import {UserDetailForm} from '../Components/Forms/UserDetailForm';
+import {GestureResponderEvent, View} from 'react-native';
+import {UserDetailForm} from '../../Components/Forms/UserDetailForm';
 import {Image} from '@gluestack-ui/themed';
-import {ThemeStyles} from '../Stylesheets/GlobalStyles';
+import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {ScrollView} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {UserDetail} from '../Models/UserDetail';
-import {AddUserDetail} from '../Controllers/UserDetailController';
-import {CustomButton1} from '../Components/Buttons';
+import {UserDetail} from '../../Models/UserDetail';
+import {AddUserDetail} from '../../Controllers/UserDetailController';
+import {CustomButton1} from '../../Components/Buttons';
+import Toast from 'react-native-simple-toast';
 
 export default function UserDetailSignUp({navigation}: any) {
   const userId = 'c7728615-394f-466b-833e-ea9dd60ba836';
@@ -30,11 +31,13 @@ export default function UserDetailSignUp({navigation}: any) {
     await AddUserDetail(userDetail)
       .then((r: any) => {
         if (r == 200) {
-          console.log('Insert Success code here');
+          //On success this cofe runs
           formik.resetForm();
-          //
+          //navigation.push('Home');
+          navigation.navigate('Home');
         } else {
-          console.log('Something went wrong');
+          //On faluire this code runs
+          Toast.show('Something went wrong, please try again', Toast.LONG);
         }
       })
       .catch(error => console.log(error));
@@ -96,7 +99,6 @@ export default function UserDetailSignUp({navigation}: any) {
 
     onSubmit: (values, {resetForm}) => {
       userDetailHelper(values);
-      //resetForm();
     },
   });
 

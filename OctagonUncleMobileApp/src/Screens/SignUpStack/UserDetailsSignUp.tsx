@@ -1,6 +1,13 @@
 import {GestureResponderEvent, View} from 'react-native';
 import {UserDetailForm} from '../../Components/Forms/UserDetailForm';
-import {Image} from '@gluestack-ui/themed';
+import {
+  Image,
+  ToastDescription,
+  ToastTitle,
+  VStack,
+  useToast,
+  Toast,
+} from '@gluestack-ui/themed';
 import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
@@ -9,9 +16,9 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {UserDetail} from '../../Models/UserDetail';
 import {AddUserDetail} from '../../Controllers/UserDetailController';
 import {CustomButton1} from '../../Components/Buttons';
-import Toast from 'react-native-simple-toast';
 
 export default function UserDetailSignUp({navigation}: any) {
+  const toast = useToast();
   const userId = 'c7728615-394f-466b-833e-ea9dd60ba836';
 
   const userDetailHelper = async (values: any) => {
@@ -37,7 +44,23 @@ export default function UserDetailSignUp({navigation}: any) {
           navigation.navigate('Home');
         } else {
           //On faluire this code runs
-          Toast.show('Something went wrong, please try again', Toast.LONG);
+          toast.show({
+            placement: 'top',
+            render: ({id}) => {
+              const toastId = 'toast-' + id;
+              return (
+                <Toast nativeID={toastId} action="attention" variant="outline">
+                  <VStack space="xs">
+                    <ToastTitle>Something went wrong</ToastTitle>
+                    <ToastDescription>
+                      Please check your internt and try again. If the problem
+                      persists contact support.
+                    </ToastDescription>
+                  </VStack>
+                </Toast>
+              );
+            },
+          });
         }
       })
       .catch(error => console.log(error));

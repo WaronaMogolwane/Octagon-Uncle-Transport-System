@@ -7141,11 +7141,6 @@ react-native-screens@^3.27.0:
     react-freeze "^1.0.0"
     warn-once "^0.1.0"
 
-react-native-simple-toast@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/react-native-simple-toast/-/react-native-simple-toast-3.1.0.tgz#c9c2cc666803a74c690b274d4faa107283c228c1"
-  integrity sha512-7gy7nfMLmUUEHby8x8g0v+0cMbEC5L7nUiS3s8Qf7yK+jJRI8PVwniRMVICyeuczfAgRWGkvZb/CVqb4SYNpzA==
-
 react-native-svg@^13.4.0:
   version "13.4.0"
   resolved "https://registry.npmjs.org/react-native-svg/-/react-native-svg-13.4.0.tgz"

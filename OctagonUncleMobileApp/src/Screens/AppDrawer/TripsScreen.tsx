@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, RefreshControl, View} from 'react-native';
+import {FlatList, RefreshControl, StyleSheet, Text, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {TripCard} from '../../Components/TripCard';
-import {CustomButton1} from '../../Components/Buttons';
 import {
   GetPastTripsForClient,
   GetUpcomingTripsForClient,
@@ -22,7 +21,7 @@ const TripsScreen = ({navigation}: any) => {
 
     setTimeout(() => {
       setRefreshingUpcomingTrips(false);
-    }, 2000);
+    }, 500);
   }, []);
 
   const onRefreshUpcomingTrips = React.useCallback(() => {
@@ -31,7 +30,7 @@ const TripsScreen = ({navigation}: any) => {
 
     setTimeout(() => {
       setRefreshingUpcomingTrips(true);
-    }, 2000);
+    }, 500);
   }, []);
 
   const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836';
@@ -97,6 +96,7 @@ const TripsScreen = ({navigation}: any) => {
       pickUpDate={itemData.pickUpDate}
       passengerName={itemData.passengerName}
       pickUpLocation={itemData.pickUpLocation}
+      isSuccess={itemData.isSuccess}
     />
   );
 
@@ -109,5 +109,13 @@ const TripsScreen = ({navigation}: any) => {
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  cardContainer: {
+    flexDirection: 'row',
+    padding: 2,
+    textAlign: 'center',
+  },
+});
 
 export default TripsScreen;

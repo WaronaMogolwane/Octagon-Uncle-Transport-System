@@ -81,6 +81,7 @@ export const GetUpcomingTripsFromDatabase = async (
           pickUpDate: ConvertDate(data.Date),
           passengerName: data.Passenger.FirstName,
           pickUpLocation: data.Passenger.HomeAddress,
+          isSuccess: Number(data.Passenger.Success),
         };
 
         tripData.push(trip);

@@ -11,8 +11,6 @@ const ProfileScreen = ({navigation}: any) => {
   return (
     <SafeAreaView style={ThemeStyles.container}>
       <ScrollView>
-        <View style={ThemeStyles.container}></View>
-
         <CustomButton1
           onPress={() => navigation.goBack()}
           title="Go back home"

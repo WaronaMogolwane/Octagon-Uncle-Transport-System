@@ -20,7 +20,7 @@ const AppDrawer = () => {
       <Drawer.Screen name="Manage Vehicles" component={ManageVehiclesScreen} />
       <Drawer.Screen name="Manage Drivers" component={ManageDriversScreen} />
       <Drawer.Screen name="Manage Clients" component={ManageClientsScreen} />
-      <Drawer.Screen name="Profile" component={UserDetailSignUp} />
+      <Drawer.Screen name="Profile" component={ProfileScreen} />
     </Drawer.Navigator>
   );
 };

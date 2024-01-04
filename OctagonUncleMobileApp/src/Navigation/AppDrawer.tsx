@@ -8,6 +8,7 @@ import ManageVehiclesScreen from '../Screens/AppDrawer/ManageVehiclesScreen';
 import ManageDriversScreen from '../Screens/AppDrawer/ManageDriversScreen';
 import ManageClientsScreen from '../Screens/AppDrawer/ManageClientsScreen';
 import ProfileScreen from '../Screens/AppDrawer/ProfileScreen';
+import UserDetailSignUp from '../Screens/SignUpStack/UserDetailsSignUp';
 
 const AppDrawer = () => {
   const Drawer = createDrawerNavigator();

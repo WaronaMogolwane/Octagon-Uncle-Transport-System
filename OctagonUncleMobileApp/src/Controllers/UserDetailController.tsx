@@ -4,11 +4,11 @@ import {
   GetUserDetailsFromDatabase,
   // DeleteUserDetailsFromDatabase,
   UpdateUserDetailsInDatabase,
-} from "../Data/UserDetailDAL";
-import { UserDetail } from "../Models/UserDetail";
+} from '../Data/UserDetailDAL';
+import {UserDetail} from '../Models/UserDetail';
 
 export const AddUserDetail = async (userDetail: UserDetail) => {
-  await AddUserDetailsToDatabase(userDetail);
+  return await AddUserDetailsToDatabase(userDetail);
 };
 
 export const GetUserDetail = async (userDetail: string) => {

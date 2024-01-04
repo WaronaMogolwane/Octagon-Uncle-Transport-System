@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {FlatList, RefreshControl, StyleSheet, Text, View} from 'react-native';
+import {FlatList, RefreshControl, StyleSheet, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {TripCard} from '../../Components/TripCard';
@@ -17,20 +17,20 @@ const TripsScreen = ({navigation}: any) => {
 
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
-    getPastTrips();
 
     setTimeout(() => {
-      setRefreshingUpcomingTrips(false);
-    }, 500);
+      getPastTrips();
+    }, 2000);
+    setRefreshingPastTrips(false);
   }, []);
 
   const onRefreshUpcomingTrips = React.useCallback(() => {
     setRefreshingUpcomingTrips(true);
-    getUpcomingTrips();
 
     setTimeout(() => {
-      setRefreshingUpcomingTrips(true);
-    }, 500);
+      getUpcomingTrips();
+    }, 2000);
+    setRefreshingUpcomingTrips(false);
   }, []);
 
   const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836';
@@ -42,13 +42,13 @@ const TripsScreen = ({navigation}: any) => {
   }, []);
 
   const getUpcomingTrips = async () => {
-    await GetUpcomingTripsForClient(payerId, businessId).then(trip => {
+    return await GetUpcomingTripsForClient(payerId, businessId).then(trip => {
       setUpcomingTripList(trip);
     });
   };
 
   const getPastTrips = async () => {
-    await GetPastTripsForClient(payerId, businessId).then(trip => {
+    return await GetPastTripsForClient(payerId, businessId).then(trip => {
       setPastTripList(trip);
     });
   };

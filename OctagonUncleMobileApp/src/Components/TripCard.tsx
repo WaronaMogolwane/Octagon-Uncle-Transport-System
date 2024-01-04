@@ -1,5 +1,6 @@
 import {Text, StyleSheet, View, Button} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import COLORS from '../Const/colors';
 
 type tripCardProps = {
   driverName: string;
@@ -7,11 +8,27 @@ type tripCardProps = {
   pickUpDate: string;
   passengerName: string;
   pickUpLocation: string;
+  isSuccess: number;
 };
 
 export const TripCard = (props: tripCardProps) => {
+  const tripCompletion = () => {
+    if (props.isSuccess == 0) {
+      return null;
+    } else if (props.isSuccess == 1) {
+      return (
+        <Text style={{color: COLORS.red, fontWeight: 'bold'}}>Uncompleted</Text>
+      );
+    } else if (props.isSuccess == 2) {
+      return (
+        <Text style={{color: COLORS.green, fontWeight: 'bold'}}>Completed</Text>
+      );
+    }
+  };
+
   return (
     <View style={styles.cardBorder}>
+      <View style={styles.cardContainer}>{tripCompletion()}</View>
       <View style={styles.cardContainer}>
         <View style={{marginEnd: 5}}>
           <Text style={styles.cardText}>Driver:</Text>

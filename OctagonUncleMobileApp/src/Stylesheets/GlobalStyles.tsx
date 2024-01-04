@@ -6,7 +6,6 @@ export const ThemeStyles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
-    // paddingHorizontal: 50,
   },
   logo: {
     marginBottom: 32,

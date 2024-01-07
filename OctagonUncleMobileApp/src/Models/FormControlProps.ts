@@ -46,7 +46,16 @@ export type SignInFormProps = {
     values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
   ) => void;
 };
-
+export type SetPasswordFormProps = {
+  passwordIsInvalid: boolean;
+  passwordOnChangeText: (e: string | ChangeEvent<any>) => void;
+  passwordErrorText: string | undefined;
+  passwordOnBlur: (e: any) => void;
+  passwordValue: string;
+  setPasswordButtonOnPress: (
+    values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
+  ) => void;
+};
 export type SelectUserRoleFormProps = {
   userRoleSelectIsInvalid: boolean;
   userRoleSelectOnChangeText: (e: string | ChangeEvent<any>) => void;

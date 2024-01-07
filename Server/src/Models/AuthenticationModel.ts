@@ -3,6 +3,7 @@ dotenv.config();
 import { User } from "../Classes/User";
 import { DbPool } from "../Services/DatabaseService";
 import { UserCredentials } from "../Classes/UserCredentials";
+import { UserInvitation } from "../Classes/UserInvitation";
 
 
 export const InsertOtp = async (userId: string, email: string, otp: string, callback: (error, result) => void) => {
@@ -63,3 +64,34 @@ export const InsertNewUser = async (user: User, callback: (error, result) => voi
 export const GetUserByEmail = async (x: any) => {
   return true;
 }
+export const InsertUserInvitation = async (userInvitation: UserInvitation, callback: (error, result) => void) => {
+  DbPool.query('CALL public.sp_insert_invitation_code($1::text,$2::text,$3::text)',
+    [userInvitation.businessId, userInvitation.invitationCode, userInvitation.userRole],
+    (err, res) => {
+      if (err) {
+        callback(err, null);
+      }
+      else {
+        callback(null, res);
+      }
+    })
+}
+export const GetUserInvitation = async (invitationCode: string, userRole: string, callback: (error, result) => void) => {
+  DbPool.query('SELECT * FROM public.fn_verify_invitation_code($1::text,$2::text)',
+    [invitationCode, userRole],
+    (err, res) => {
+
+      if (err) {
+        callback(err, null);
+      }
+      else {
+        callback(null, res);
+      }
+    })
+}
+export const IsUserInvitationValid = (userInvitationExpireDate: Date) => {
+  if (userInvitationExpireDate > new Date()) {
+    return true;
+  } else return false;
+};
+

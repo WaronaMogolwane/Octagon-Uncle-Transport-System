@@ -1,11 +1,12 @@
-import { GetOtp, GetUserByEmailPassword, } from '../Models/AuthenticationModel';
+import { GetOtp, GetUserByEmailPassword, GetUserInvitation, InsertUserInvitation, IsUserInvitationValid, } from '../Models/AuthenticationModel';
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
 import { GetUserByEmail, InsertNewUser, InsertOtp } from "../Models/AuthenticationModel";
-import { CreateEmailHtml, CreateOtp, IsOtpVaid } from "../Models/OtpModel";
+import { CreateOtp, IsOtpVaid } from "../Models/OtpModel";
 import { Email } from "../Classes/Email";
 import { UserCredentials } from '../Classes/UserCredentials';
-import { SendEmail } from '../Models/EmailModel';
+import { CreateOtpEmailHtml, SendEmail } from '../Models/EmailModel';
+import { UserInvitation } from '../Classes/UserInvitation';
 
 export const CheckIfUserExists = async (req: any, res: any, next: any) => {
   if (await GetUserByEmail(req.body.userDetails.Email)) {
@@ -42,13 +43,15 @@ export const RegisterUser = async (req: any, res: any, next: any) => {
 };
 export const SendEmailOtp = async (req: any, res: any, next: any) => {
   let userDetails: any = req.body.userDetails;
-  let otp: string = CreateOtp();
+  let otp: string = CreateOtp(5);
+  const message = "Thank you for choosing Octagon Uncle. Use the following OTP to complete your Sign Up procedures."
   let emailData: Email = {
     fromName: "Octagona Uncle Transport",
     fromAddress: process.env.OTP_FROM_ADDRESS,
     toAddress: userDetails.email,
     subject: "Octagon Uncle OTP",
-    emailHtml: CreateEmailHtml(userDetails, otp)
+    emailMessage: message,
+    emailHtml: CreateOtpEmailHtml(userDetails.firtName, message, otp)
   }
   InsertOtp(userDetails.userId, userDetails.email, otp, (error, result) => {
     if (error) {
@@ -122,4 +125,75 @@ export const UserLogin = async (req, res, next) => {
       }
     }
   });
+}
+export const VerifyUserInvitation = async (req, res, next) => {
+  const invitationCode: string = req.body.invitationCode;
+  const userRole: string = req.body.userRole;
+  await GetUserInvitation(invitationCode, userRole, (error, result) => {
+    if (error) {
+      next(
+        {
+          message: error,
+          status: 400
+        }
+      )
+    }
+    else {
+      if (result.rowCount) {
+        let userInvitationExpireDate = new Date(result.rows[0].expirydate);
+        if (IsUserInvitationValid(userInvitationExpireDate)) {
+          res.status(201).send("User invitation verified.");
+        } else {
+          res.status(400).send({
+            message: "User invitation expired.",
+            status: 400
+          }
+          );
+        }
+      } else {
+        res.status(400).send({
+          message: "User invitation does not exist.",
+          status: 400
+        }
+        );
+      }
+    }
+  });
+}
+export const SendUserInvitation = async (req: any, res: any, next: any) => {
+  let userInviation: UserInvitation = {
+    businessId: req.body.businessId,
+    invitationCode: CreateOtp(13),
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    userEmail: req.body.userEmail,
+    userRole: req.body.userRole
+  }
+  const message = "Thank you for choosing Octagon Uncle. Use the following Invitation Code to sign up."
+  let emailData: Email = {
+    fromName: "Octagona Uncle Transport",
+    fromAddress: process.env.OTP_FROM_ADDRESS,
+    toAddress: userInviation.userEmail,
+    subject: "Octagon Uncle Invitation Code",
+    emailMessage: message,
+    emailHtml: CreateOtpEmailHtml(userInviation.firstName, message, userInviation.invitationCode)
+  }
+  InsertUserInvitation(userInviation, (error, result) => {
+    if (error) {
+      next(error);
+    }
+    else {
+      SendEmail(emailData).then(
+        (value) => {
+          res.status(200).json({
+            OtpSent: true,
+            Message: value
+          });
+        },
+        (error) => {
+          next(error);
+        }
+      );
+    }
+  })
 }

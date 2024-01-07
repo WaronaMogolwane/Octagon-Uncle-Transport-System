@@ -1,11 +1,12 @@
 import {UserDetail} from '../Models/UserDetail';
 import axios from 'axios';
+import {SERVER_HOST, SERVER_PORT} from '@env';
 
 export const AddUserDetailsToDatabase = async (userDetail: UserDetail) => {
   let statusCode: any;
   let data: any;
   await axios
-    .post('http://server.majorxp.co.za:9998/user-profile/add-user-details', {
+    .post(`${SERVER_HOST}:${SERVER_PORT}/user-profile/add-user-details`, {
       userDetail: {
         FirstName: userDetail.firstName,
         LastName: userDetail.lastName,
@@ -34,7 +35,7 @@ export const AddUserDetailsToDatabase = async (userDetail: UserDetail) => {
 export const GetUserDetailsFromDatabase = async (userId: string) => {
   let res: any;
   await axios
-    .post('http://server.majorxp.co.za:9998/user-profile/get-user-details', {
+    .post(`${SERVER_HOST}:${SERVER_PORT}/user-profile/get-user-details`, {
       userDetails: {
         UserId: userId,
       },
@@ -69,23 +70,20 @@ export const UpdateUserDetailsInDatabase = async (userDetails: UserDetail) => {
   let data: any;
 
   await axios
-    .patch(
-      'http://server.majorxp.co.za:9998/user-profile/update-user-details',
-      {
-        userDetail: {
-          UserDetailId: userDetails.userDetailId,
-          FirstName: userDetails.firstName,
-          LastName: userDetails.lastName,
-          AddressLine1: userDetails.addressLine1,
-          AddressLine2: userDetails.addressLine2,
-          Surburb: userDetails.suburb,
-          City: userDetails.city,
-          Province: userDetails.province,
-          PostalCode: userDetails.postalCode,
-          UserId: userDetails.userId,
-        },
+    .patch(`${SERVER_HOST}:${SERVER_PORT}/passenger/update-passenger-details`, {
+      userDetail: {
+        UserDetailId: userDetails.userDetailId,
+        FirstName: userDetails.firstName,
+        LastName: userDetails.lastName,
+        AddressLine1: userDetails.addressLine1,
+        AddressLine2: userDetails.addressLine2,
+        Surburb: userDetails.suburb,
+        City: userDetails.city,
+        Province: userDetails.province,
+        PostalCode: userDetails.postalCode,
+        UserId: userDetails.userId,
       },
-    )
+    })
     .then((response: any) => {
       data = response.data;
       statusCode = response.status;

@@ -3,6 +3,7 @@ import {setStorageItemAsync, useStorageState} from './StorageStateService';
 import {AuthenticationResponseModel} from '../Models/AuthenticationResponseModel';
 import axios from 'axios';
 import {UserSignIn} from '../Controllers/AuthenticationController';
+import {SERVER_HOST, SERVER_PORT} from '@env';
 
 export const AuthContext = React.createContext<{
   signIn?: (
@@ -77,9 +78,10 @@ export const LoginWithEmailPassword = async (
   userPassword: string,
   callback: (error: any, result: any) => void,
 ) => {
+  console.log(process.env.SERVER_HOST);
   authenticationResponse = new AuthenticationResponseModel();
   await axios
-    .post('http://server.majorxp.co.za:9998/auth/login', {
+    .post(`${SERVER_HOST}:${SERVER_PORT}/auth/login`, {
       email: userEmail,
       password: userPassword,
     })

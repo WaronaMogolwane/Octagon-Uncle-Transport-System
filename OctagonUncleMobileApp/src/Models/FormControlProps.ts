@@ -26,7 +26,7 @@ export type ButtonProps = {
   isFocusVisible?: boolean;
   buttonText?: string;
   buttonIcon?: any;
-  onPress: (
+  onPress?: (
     values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
   ) => void;
 };
@@ -44,6 +44,29 @@ export type SignInFormProps = {
   passwordValue: string;
   signInButtonOnPress: (
     values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
+  ) => void;
+};
+export type SetPasswordFormProps = {
+  passwordIsInvalid: boolean;
+  passwordOnChangeText: (e: string | ChangeEvent<any>) => void;
+  passwordErrorText: string | undefined;
+  passwordOnBlur: (e: any) => void;
+  passwordValue: string;
+  setPasswordButtonOnPress: (
+    values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
+  ) => void;
+};
+export type SelectUserRoleFormProps = {
+  userRoleSelectIsInvalid: boolean;
+  userRoleSelectOnChangeText: (e: string | ChangeEvent<any>) => void;
+  userRoleSelectErrorText: string | undefined;
+  userRoleSelectOnBlur: (e: any) => void;
+  userRoleSelectValue: string;
+  nextButtonOnPress: (
+    values:
+      | GestureResponderEvent
+      | React.FormEvent<HTMLFormElement>
+      | undefined,
   ) => void;
 };
 

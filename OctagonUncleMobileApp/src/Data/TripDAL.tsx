@@ -1,10 +1,11 @@
 import axios from 'axios';
 import {Trip} from '../Models/Trip';
 import {ConvertDate} from '../Services/DataConverterService';
+import {SERVER_HOST, SERVER_PORT} from '@env';
 
 export const AddTripToDatabase = async (trip: Trip) => {
   await axios
-    .post('http://192.168.3.57:9999/trip/add-trip', {
+    .post(`${SERVER_HOST}:${SERVER_PORT}/trip/add-trip`, {
       trip: {
         RegistrationNumber: trip.registrationNumber,
         Passengers: trip.passenger,
@@ -26,7 +27,7 @@ export const AddTripToDatabase = async (trip: Trip) => {
 export const GetTripFromDatabase = async (tripId: string) => {
   let res: any;
   await axios
-    .post('http://192.168.3.57:9999/trip/get-trip', {
+    .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-trip`, {
       trip: {
         TripId: tripId,
       },
@@ -105,7 +106,7 @@ export const GetPastTripsFromDatabase = async (
   let trip = {};
 
   await axios
-    .post('http://192.168.3.57:9999/trip/get-past-trip-for-parent', {
+    .post(`{SERVER_HOST}:${SERVER_PORT}/trip/get-past-trip-for-parent`, {
       trip: {
         BusinessId: businessId,
         PayerId: payerId,
@@ -143,7 +144,7 @@ export const GetAllTripsForBusinessFromDatabase = async (
 ) => {
   let res: any;
   //   await axios
-  //     .post("http://192.168.3.57:9999/user-profile/get-user-details", {
+  //     .post(`${SERVER_HOST}:${SERVER_PORT}/user-profile/get-user-details`, {
   //       userDetails: {
   //         UserId: userId,
   //       },
@@ -178,7 +179,7 @@ export const UpdateTripInDatabase = async (trip: Trip) => {
   let data: any;
 
   await axios
-    .patch('http://192.168.3.57:9999/passenger/update-passenger-details', {
+    .patch(`${SERVER_HOST}:${SERVER_PORT}/passenger/update-passenger-details`, {
       userDetail: {
         // UserDetailId: trip.userDetailId,
         // FirstName: trip.firstName,

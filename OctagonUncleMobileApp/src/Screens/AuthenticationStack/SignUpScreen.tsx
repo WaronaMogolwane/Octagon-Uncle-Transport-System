@@ -60,26 +60,25 @@ const SignUpScreen = () => {
   return (
     <SafeAreaView style={ThemeStyles.container}>
       <Box>
-        <Image
-          style={ThemeStyles.logo}
-          alt="Logo"
-          size="lg"
-          source={{
-            uri: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-          }}
+        <CustomFormControlInput
+          labelText="New password"
+          placeHolder="Password"
+          value={formik.values?.password}
+          type="password"
+          isRequired={true}
+          errorText={formik?.errors?.password}
+          isInvalid={!!formik.errors.password}
+          onChangeText={formik.handleChange('password')}
         />
         <CustomFormControlInput
-          isInvalid={false}
-          isDisabled={false}
-          isRequired={false}
-          type={'text'}
-          defaultValue={''}
-          placeHolder={'John'}
-          size={'md'}
-          labelText={'Cellphone'}
-          helperText={'help'}
-          errorText={'error'}
-          onChangeText={(text: any) => handleOnChange(text, 'firstName')}
+          labelText="Confirm password"
+          placeHolder="Password"
+          value={formik.values?.confirmPassword}
+          type="password"
+          isRequired={true}
+          errorText={formik?.errors?.confirmPassword}
+          isInvalid={!!formik.errors.confirmPassword}
+          onChangeText={formik.handleChange('confirmPassword')}
         />
         {isEmailVerified ? (
           <FormControl>

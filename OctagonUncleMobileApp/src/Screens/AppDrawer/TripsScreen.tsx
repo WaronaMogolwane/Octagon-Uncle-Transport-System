@@ -39,8 +39,6 @@ const TripsScreen = ({navigation}: any) => {
   useEffect(() => {
     getUpcomingTrips();
     getPastTrips();
-    getUpcomingTrips();
-    getPastTrips();
   }, []);
 
   const getUpcomingTrips = async () => {
@@ -62,13 +60,8 @@ const TripsScreen = ({navigation}: any) => {
       <View style={{flex: 1}}>
         <FlatList
           data={UpcomingTripList}
-          data={UpcomingTripList}
           renderItem={({item}) => renderItemComponent(item)}
           refreshControl={
-            <RefreshControl
-              refreshing={refreshingUpcomingTrips}
-              onRefresh={onRefreshUpcomingTrips}
-            />
             <RefreshControl
               refreshing={refreshingUpcomingTrips}
               onRefresh={onRefreshUpcomingTrips}
@@ -81,16 +74,6 @@ const TripsScreen = ({navigation}: any) => {
 
   function SecondRoute() {
     return (
-      <View style={{flex: 1}}>
-        <FlatList
-          data={PastTripList}
-          renderItem={({item}) => renderItemComponent(item)}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshingPastTrips}
-              onRefresh={onRefreshPastTrips}
-            />
-          }
       <View style={{flex: 1}}>
         <FlatList
           data={PastTripList}
@@ -116,7 +99,6 @@ const TripsScreen = ({navigation}: any) => {
       isSuccess={itemData.isSuccess}
     />
   );
-
   return (
     <NavigationContainer independent={true}>
       <Tab.Navigator>

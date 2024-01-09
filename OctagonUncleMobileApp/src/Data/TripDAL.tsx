@@ -64,7 +64,7 @@ export const GetUpcomingTripsFromDatabase = async (
   let trip = {};
 
   await axios
-    .post('http://192.168.3.57:9999/trip/get-upcoming-trips-for-parent', {
+    .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-upcoming-trips-for-parent`, {
       trip: {
         BusinessId: businessId,
         PayerId: payerId,
@@ -106,7 +106,7 @@ export const GetPastTripsFromDatabase = async (
   let trip = {};
 
   await axios
-    .post(`{SERVER_HOST}:${SERVER_PORT}/trip/get-past-trip-for-parent`, {
+    .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-past-trip-for-parent`, {
       trip: {
         BusinessId: businessId,
         PayerId: payerId,

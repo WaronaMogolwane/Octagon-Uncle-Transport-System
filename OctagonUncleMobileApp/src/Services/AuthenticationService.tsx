@@ -5,6 +5,7 @@ import axios from 'axios';
 import {UserSignIn} from '../Controllers/AuthenticationController';
 import {SERVER_HOST, SERVER_PORT} from '@env';
 import {UserInvitationModel} from '../Models/UserInvitation';
+import {User} from '../Models/UserModel';
 
 export const AuthContext = React.createContext<{
   signIn?: (
@@ -12,6 +13,7 @@ export const AuthContext = React.createContext<{
     userPassword: string,
     callback: (error: any, result: any) => void,
   ) => any;
+  signUp?: (user: User, callback: (error: any, result: any) => void) => any;
   signOut?: () => void;
   session?: string | null | undefined;
   isLoading?: boolean;
@@ -52,6 +54,19 @@ export function SessionProvider(props: any) {
             },
           );
         },
+        signUp: async (
+          user: User,
+          callback: (error: any, result: any) => void,
+        ) => {
+          await CreateUserWithEmailPassword(user, (error, result) => {
+            if (error) {
+              callback(error, null);
+            } else {
+              setSession(result.headers.sessionid);
+              callback(null, result);
+            }
+          });
+        },
         signOut: async () => {
           setSession(null);
         },
@@ -66,12 +81,24 @@ export function SessionProvider(props: any) {
 let authenticationResponse: AuthenticationResponseModel;
 
 export const CreateUserWithEmailPassword = async (
-  userEmail: string,
-  userPassword: string,
+  user: User,
+  callback: (error: any, result: any) => void,
 ) => {
+  console.log(`${SERVER_HOST}:${SERVER_PORT}/auth/register-user`);
   authenticationResponse = new AuthenticationResponseModel();
-
-  return authenticationResponse;
+  await axios
+    .post(`${SERVER_HOST}:${SERVER_PORT}/auth/register-user`, {
+      Password: user.password,
+      Cellphone: user.cellphone,
+      Email: user.email,
+      UserRole: user.userRole,
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
 };
 
 export const LoginWithEmailPassword = async (

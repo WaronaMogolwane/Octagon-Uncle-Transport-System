@@ -4,6 +4,7 @@ import {AuthenticationResponseModel} from '../Models/AuthenticationResponseModel
 import axios from 'axios';
 import {UserSignIn} from '../Controllers/AuthenticationController';
 import {SERVER_HOST, SERVER_PORT} from '@env';
+import {UserInvitationModel} from '../Models/UserInvitation';
 
 export const AuthContext = React.createContext<{
   signIn?: (
@@ -78,7 +79,7 @@ export const LoginWithEmailPassword = async (
   userPassword: string,
   callback: (error: any, result: any) => void,
 ) => {
-  console.log(process.env.SERVER_HOST);
+  console.log(`${SERVER_HOST}:${SERVER_PORT}/auth/login`);
   authenticationResponse = new AuthenticationResponseModel();
   await axios
     .post(`${SERVER_HOST}:${SERVER_PORT}/auth/login`, {
@@ -105,6 +106,19 @@ export const SetPassword = async (newUserPassword: string) => {
   return authenticationResponse;
 };
 
-export const VerifyEmail = async () => {
-  return authenticationResponse;
+export const VerifyUserInvitation = async (
+  userInvitation: UserInvitationModel,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .post(`${SERVER_HOST}:${SERVER_PORT}/auth/verify-invitation`, {
+      invitationCode: userInvitation.invitationCode,
+      userRole: userInvitation.userRole,
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
 };

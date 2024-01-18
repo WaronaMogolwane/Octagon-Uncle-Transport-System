@@ -40,7 +40,6 @@ import {UserInvitationModel} from '../../Models/UserInvitation';
 import {useStorageState} from '../../Services/StorageStateService';
 
 const SelectUserRoleScreen = ({navigation}: any) => {
-  const [[isLoading, session], setSession] = useStorageState('session');
   const ref = React.useRef(null);
   const [showModal, setShowModal] = useState(false);
   const [userRole, setuserRole] = useState(0);
@@ -50,8 +49,8 @@ const SelectUserRoleScreen = ({navigation}: any) => {
 
   const registerSchema = yup.object().shape({
     selectedUserRole: yup
-      .string()
-      .oneOf(['1', '2', '3'])
+      .number()
+      .oneOf([1, 2, 3])
       .required('Please select a user type.'),
     otp: yup.string(),
   });
@@ -77,7 +76,7 @@ const SelectUserRoleScreen = ({navigation}: any) => {
     },
   });
   const GoToSignUpPage = (userRole: string) => {
-    navigation.navigate('Sign Up');
+    navigation.navigate('Sign Up', {userRole: formik.values.selectedUserRole});
   };
 
   const EmailVerification = async () => {
@@ -91,29 +90,31 @@ const SelectUserRoleScreen = ({navigation}: any) => {
           console.log(error);
         } else if (result) {
           setShowModal(false);
-          toast.show({
-            placement: 'top',
-            render: ({id}) => {
-              const toastId = 'toast-' + id;
-              return (
-                <Toast nativeID={toastId} action="success" variant="solid">
-                  <VStack space="xs">
-                    <ToastTitle>Success</ToastTitle>
-                    <ToastDescription>
-                      Invitation code successfully verfied.
-                    </ToastDescription>
-                  </VStack>
-                </Toast>
-              );
-            },
-          });
-
+          ShowToast();
           GoToSignUpPage(formik.values.selectedUserRole);
         }
       }
     });
   };
 
+  const ShowToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="success" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Success</ToastTitle>
+              <ToastDescription>
+                Invitation code successfully verfied.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
   return (
     <SafeAreaView style={ThemeStyles.container}>
       <SelectUserRoleForm

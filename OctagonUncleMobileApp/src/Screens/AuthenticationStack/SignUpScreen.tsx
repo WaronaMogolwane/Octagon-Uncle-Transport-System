@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useContext, useState} from 'react';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -6,9 +6,24 @@ import {View, GestureResponderEvent} from 'react-native';
 import {SignUpForm} from '../../Components/Forms/SignUpForm';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
 import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {UserSignUp} from '../../Controllers/AuthenticationController';
+import {User} from '../../Models/UserModel';
+import {useStorageState} from '../../Services/StorageStateService';
+import {
+  Toast,
+  ToastDescription,
+  ToastTitle,
+  VStack,
+  useToast,
+} from '@gluestack-ui/themed';
+import {AuthContext} from '../../Services/AuthenticationService';
 
-const SignUpScreen = ({navigation}: any) => {
+const SignUpScreen = ({route, navigation}: any) => {
+  const {userRole} = route.params;
   const [showModal, setShowModal] = useState(false);
+  const {signIn, session, signUp}: any = useContext(AuthContext);
+  const toast = useToast();
+
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [role, setRole] = useState('');
 
@@ -41,19 +56,59 @@ const SignUpScreen = ({navigation}: any) => {
     confirmPassword: '',
     email: '',
     cellphone: '',
-    opt: '',
+    otp: '',
   };
   const formik = useFormik({
     initialValues: registerInitialValues,
     validationSchema: registerSchema,
-    onSubmit: (values, {resetForm}) => {
-      setShowModal(true);
+    onSubmit: async (values, {resetForm}) => {
+      const newUser: User = new User(
+        undefined,
+        formik.values.email,
+        formik.values.password,
+        formik.values.cellphone,
+        undefined,
+        undefined,
+        userRole,
+      );
+      if (formik.isValid) {
+        if (userRole == 1) {
+          setShowModal(true);
+        } else {
+          await signUp(newUser, (error: any, result: any) => {
+            if (error) {
+              console.error(error);
+            } else {
+              ShowToast();
+            }
+          });
+        }
+      }
     },
   });
 
   const GoToUserDetailsSignUp = () => {
     navigation.navigate('User Details Sign Up');
   };
+  const ShowToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="success" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Success</ToastTitle>
+              <ToastDescription>
+                Invitation code successfully verfied.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
   return (
     <SafeAreaView style={ThemeStyles.container}>
       <View>
@@ -98,6 +153,11 @@ const SignUpScreen = ({navigation}: any) => {
         CloseOtpModalButtonOnPress={() => {
           setShowModal(false);
         }}
+        otpIsInvalid={!!formik.errors.otp}
+        otpOnChangeText={formik.handleChange('otp')}
+        otpErrorText={formik?.errors?.otp}
+        otpOnBlur={formik.handleBlur('otp')}
+        otpValue={formik.values?.otp}
       />
     </SafeAreaView>
   );

@@ -23,6 +23,8 @@ import {
   Button,
   Text,
   Modal,
+  VStack,
+  ToastDescription,
 } from '@gluestack-ui/themed';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
@@ -32,12 +34,17 @@ import {
   CustomButton3,
 } from '../../Components/Buttons';
 import SelectUserRoleForm from '../../Components/Forms/SelectUserRoleForm';
+import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
+import {UserVerifyEmail} from '../../Controllers/AuthenticationController';
+import {UserInvitationModel} from '../../Models/UserInvitation';
+import {useStorageState} from '../../Services/StorageStateService';
 
 const SelectUserRoleScreen = ({navigation}: any) => {
-  const {signIn, session}: any = useContext(AuthContext);
+  const [[isLoading, session], setSession] = useStorageState('session');
   const ref = React.useRef(null);
   const [showModal, setShowModal] = useState(false);
   const [userRole, setuserRole] = useState(0);
+  const toast = useToast();
 
   const [selectedRole, setSelectedRole] = useState(0);
 
@@ -46,10 +53,12 @@ const SelectUserRoleScreen = ({navigation}: any) => {
       .string()
       .oneOf(['1', '2', '3'])
       .required('Please select a user type.'),
+    otp: yup.string(),
   });
 
   const registerInitialValues = {
     selectedUserRole: '',
+    otp: '',
   };
 
   const formik = useFormik({
@@ -71,6 +80,40 @@ const SelectUserRoleScreen = ({navigation}: any) => {
     navigation.navigate('Sign Up');
   };
 
+  const EmailVerification = async () => {
+    const userInvitation: UserInvitationModel = new UserInvitationModel(
+      formik.values.otp,
+      formik.values.selectedUserRole,
+    );
+    await UserVerifyEmail(userInvitation, (error: any, result: any) => {
+      if (formik.isValid) {
+        if (error) {
+          console.log(error);
+        } else if (result) {
+          setShowModal(false);
+          toast.show({
+            placement: 'top',
+            render: ({id}) => {
+              const toastId = 'toast-' + id;
+              return (
+                <Toast nativeID={toastId} action="success" variant="solid">
+                  <VStack space="xs">
+                    <ToastTitle>Success</ToastTitle>
+                    <ToastDescription>
+                      Invitation code successfully verfied.
+                    </ToastDescription>
+                  </VStack>
+                </Toast>
+              );
+            },
+          });
+
+          GoToSignUpPage(formik.values.selectedUserRole);
+        }
+      }
+    });
+  };
+
   return (
     <SafeAreaView style={ThemeStyles.container}>
       <SelectUserRoleForm
@@ -88,57 +131,21 @@ const SelectUserRoleScreen = ({navigation}: any) => {
           ) => void
         }
       />
-      <Modal
-        isOpen={showModal}
-        onClose={() => {
+      <VerifyEmailModal
+        otpIsInvalid={!!formik.errors.otp}
+        otpOnChangeText={formik.handleChange('otp')}
+        otpErrorText={formik?.errors?.otp}
+        otpOnBlur={formik.handleBlur('otp')}
+        otpValue={formik.values?.otp}
+        ShowModal={showModal}
+        ToEmailAddress={''}
+        VerifyOtpButtonOnPress={() => {
+          EmailVerification();
+        }}
+        CloseOtpModalButtonOnPress={() => {
           setShowModal(false);
-        }}>
-        <ModalBackdrop />
-        <ModalContent>
-          <ModalHeader>
-            <Heading size="lg">User verification</Heading>
-            <ModalCloseButton>
-              <Icon as={CloseIcon} />
-            </ModalCloseButton>
-          </ModalHeader>
-          <ModalBody>
-            <Text>
-              Enter the code that was sent to you when the Transporter signed
-              you up as their xxx {}
-            </Text>
-            <Input
-              variant="outline"
-              size="md"
-              isDisabled={false}
-              isInvalid={false}
-              isReadOnly={false}>
-              <InputField placeholder="Enter code here" />
-            </Input>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              variant="outline"
-              size="sm"
-              action="secondary"
-              mr="$3"
-              onPress={() => {
-                setShowModal(false);
-              }}>
-              <ButtonText>Cancel</ButtonText>
-            </Button>
-            <Button
-              size="sm"
-              action="positive"
-              borderWidth="$0"
-              onPress={() => {
-                setShowModal(false);
-                GoToSignUpPage(formik.values.selectedUserRole);
-              }}>
-              <ButtonText>Verify</ButtonText>
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        }}
+      />
     </SafeAreaView>
   );
 };

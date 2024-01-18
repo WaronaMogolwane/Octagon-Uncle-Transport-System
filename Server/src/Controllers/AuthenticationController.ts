@@ -17,12 +17,13 @@ export const CheckIfUserExists = async (req: any, res: any, next: any) => {
 };
 export const RegisterUser = async (req: any, res: any, next: any) => {
   let newUser = new User(
+
     randomUUID(),
     req.body.Email,
     req.body.Password,
     req.body.Cellphone,
-    req.body.Status,
-    req.body.LastLogin,
+    null,
+    null,
     req.body.UserRole
   );
 

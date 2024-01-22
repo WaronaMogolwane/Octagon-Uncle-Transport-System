@@ -15,6 +15,15 @@ export const AuthContext = React.createContext<{
   ) => any;
   signUp?: (user: User, callback: (error: any, result: any) => void) => any;
   signOut?: () => void;
+  emailOtp?: (
+    email: string,
+    callback: (error: any, result: any) => void,
+  ) => void;
+  verifyOtp?: (
+    email: string,
+    otp: string,
+    callback: (error: any, result: any) => void,
+  ) => void;
   session?: string | null | undefined;
   isLoading?: boolean;
 } | null>(null);
@@ -70,6 +79,31 @@ export function SessionProvider(props: any) {
         signOut: async () => {
           setSession(null);
         },
+        emailOtp: async (
+          email: string,
+          callback: (error: any, result: any) => void,
+        ) => {
+          await InsertEmailOtp(email, (error, result) => {
+            if (error) {
+              callback(error, null);
+            } else {
+              callback(null, result);
+            }
+          });
+        },
+        verifyOtp: async (
+          email: string,
+          otp: string,
+          callback: (error: any, result: any) => void,
+        ) => {
+          await GetOtp(otp, email, (error, result) => {
+            if (error) {
+              callback(error, null);
+            } else {
+              callback(null, result);
+            }
+          });
+        },
         session,
         isLoading,
       }}>
@@ -84,14 +118,30 @@ export const CreateUserWithEmailPassword = async (
   user: User,
   callback: (error: any, result: any) => void,
 ) => {
-  console.log(`${SERVER_HOST}:${SERVER_PORT}/auth/register-user`);
-  authenticationResponse = new AuthenticationResponseModel();
   await axios
     .post(`${SERVER_HOST}:${SERVER_PORT}/auth/register-user`, {
       Password: user.password,
       Cellphone: user.cellphone,
       Email: user.email,
       UserRole: user.userRole,
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
+};
+
+export const InsertEmailOtp = async (
+  email: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .post(`${SERVER_HOST}:${SERVER_PORT}/auth/send-email-otp`, {
+      userDetails: {
+        email: email,
+      },
     })
     .then((response: any) => {
       callback(null, response);
@@ -133,6 +183,23 @@ export const SetPassword = async (newUserPassword: string) => {
   return authenticationResponse;
 };
 
+export const GetOtp = async (
+  otp: string,
+  email: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .post(`${SERVER_HOST}:${SERVER_PORT}/auth/verify-otp`, {
+      otp: otp,
+      email: email,
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
+};
 export const VerifyUserInvitation = async (
   userInvitation: UserInvitationModel,
   callback: (error: any, result: any) => void,

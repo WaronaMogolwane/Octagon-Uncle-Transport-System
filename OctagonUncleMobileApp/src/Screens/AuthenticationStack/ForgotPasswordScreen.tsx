@@ -1,4 +1,4 @@
-import {View} from 'react-native';
+import {GestureResponderEvent, View} from 'react-native';
 import React, {useState} from 'react';
 import {CustomFormControlInput} from '../../Components/CustomFormInput';
 import {CustomButton1} from '../../Components/Buttons';
@@ -23,89 +23,117 @@ import {
 } from '@gluestack-ui/themed';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
+import {SetPasswordForm} from '../../Components/Forms/SetPasswordForm';
 
 const ForgotPasswordScreen = () => {
+  const phoneRegExp: RegExp =
+    /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/;
+  const passwordExp: RegExp =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
   const registerSchema = yup.object().shape({
     password: yup
       .string()
       .min(8, 'Password must be at least 8 characters')
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        passwordExp,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
       )
       .required('Password is required'),
     confirmPassword: yup
       .string()
       .oneOf([yup.ref('password')], 'Passwords must match'),
+    email: yup.string().email('Invalid email').required('Email is required'),
+    phoneNumber: yup.string().matches(phoneRegExp, 'Phone number is not valid'),
   });
 
   const registerInitialValues = {
     password: '',
     confirmPassword: '',
+    email: '',
+    cellphone: '',
   };
 
   const formik = useFormik({
     initialValues: registerInitialValues,
     validationSchema: registerSchema,
 
-    onSubmit: (values, {resetForm}) => {},
+    onSubmit: (values, {resetForm}) => {
+      if (isEmailVerified) {
+      } else {
+        setShowOtpModal(true);
+      }
+    },
   });
-
-  const [showModal, setShowModal] = useState(false);
+  const [showOtpModal, setShowOtpModal] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
   return (
     <SafeAreaView style={ThemeStyles.container}>
       {isEmailVerified ? (
         <View>
-          <CustomFormControlInput
-            labelText="New password"
-            placeHolder="Password"
-            value={formik.values?.password}
-            type="password"
-            isRequired={true}
-            errorText={formik?.errors?.password}
-            isInvalid={!!formik.errors.password}
-            onChangeText={formik.handleChange('password')}
-          />
-          <CustomFormControlInput
-            labelText="Confirm password"
-            placeHolder="Password"
-            value={formik.values?.confirmPassword}
-            type="password"
-            isRequired={true}
-            errorText={formik?.errors?.confirmPassword}
-            isInvalid={!!formik.errors.confirmPassword}
-            onChangeText={formik.handleChange('confirmPassword')}
+          <SetPasswordForm
+            passwordIsInvalid={!!formik.errors.password}
+            passwordOnChangeText={formik.handleChange('password')}
+            passwordErrorText={formik?.errors?.password}
+            passwordValue={formik.values?.password}
+            passwordOnBlur={formik.handleBlur('password')}
+            confirmPasswordIsInvalid={!!formik.errors.confirmPassword}
+            confirmPasswordOnChangeText={formik.handleChange('confirmPassword')}
+            confirmPasswordErrorText={formik?.errors?.confirmPassword}
+            confirmPasswordOnBlur={formik.handleBlur('confirmPassword')}
+            confirmPasswordValue={formik.values?.confirmPassword}
+            setPasswordButtonOnPress={
+              formik.handleSubmit as (
+                values:
+                  | GestureResponderEvent
+                  | React.FormEvent<HTMLFormElement>
+                  | undefined,
+              ) => void
+            }
           />
         </View>
       ) : (
-        <CustomFormControlInput
-          labelText="Enter your email"
-          placeHolder="email"
-          isInvalid={false}
-          isRequired={true}
-          type="text"
-          onChangeText={() => {}}
-          errorText={''}
-          onBlur={() => {}}
-          value={''}
-        />
+        <View>
+          <CustomFormControlInput
+            labelText="Email"
+            placeHolder="Email"
+            isInvalid={!!formik.errors.email}
+            isRequired={true}
+            type="text"
+            onChangeText={formik.handleChange('email')}
+            errorText={formik?.errors?.email}
+            onBlur={formik.handleBlur('email')}
+            value={formik.values?.email}
+          />
+          <CustomFormControlInput
+            labelText="Cellphone"
+            placeHolder="Cellphone"
+            isInvalid={!!formik.errors.cellphone}
+            isRequired={true}
+            type="text"
+            onChangeText={formik.handleChange('cellphone')}
+            errorText={formik?.errors?.cellphone}
+            onBlur={formik.handleBlur('cellphone')}
+            value={formik.values?.cellphone}
+          />
+          <CustomButton1
+            title={'Confirm Email'}
+            onPress={() => {
+              formik.handleSubmit as (
+                values:
+                  | GestureResponderEvent
+                  | React.FormEvent<HTMLFormElement>
+                  | undefined,
+              ) => void;
+            }}
+          />
+        </View>
       )}
-      {isEmailVerified ? (
-        <CustomButton1 title="Save" onPress={() => {}} />
-      ) : (
-        <CustomButton1
-          title="Next"
-          onPress={() => {
-            setShowModal(true);
-          }}
-        />
-      )}
+
       <Modal
-        isOpen={showModal}
+        isOpen={showOtpModal}
         onClose={() => {
-          setShowModal(false);
+          setShowOtpModal(false);
         }}>
         <ModalBackdrop />
         <ModalContent>
@@ -133,7 +161,7 @@ const ForgotPasswordScreen = () => {
               action="secondary"
               mr="$3"
               onPress={() => {
-                setShowModal(false);
+                setShowOtpModal(false);
               }}>
               <ButtonText>Cancel</ButtonText>
             </Button>
@@ -142,7 +170,7 @@ const ForgotPasswordScreen = () => {
               action="positive"
               borderWidth="$0"
               onPress={() => {
-                setShowModal(false);
+                setShowOtpModal(false);
                 setIsEmailVerified(true);
               }}>
               <ButtonText>Verify</ButtonText>

@@ -21,7 +21,8 @@ import {AuthContext} from '../../Services/AuthenticationService';
 const SignUpScreen = ({route, navigation}: any) => {
   const {userRole} = route.params;
   const [showModal, setShowModal] = useState(false);
-  const {signIn, session, signUp}: any = useContext(AuthContext);
+  const {signIn, session, signUp, emailOtp, verifyOtp}: any =
+    useContext(AuthContext);
   const toast = useToast();
 
   const [isEmailVerified, setIsEmailVerified] = useState(false);
@@ -73,7 +74,14 @@ const SignUpScreen = ({route, navigation}: any) => {
       );
       if (formik.isValid) {
         if (userRole == 1) {
-          setShowModal(true);
+          await emailOtp(formik.values.email, (error: any, result: any) => {
+            if (error) {
+              console.error(error);
+            } else {
+              console.log(result.data);
+              setShowModal(true);
+            }
+          });
         } else {
           await signUp(newUser, (error: any, result: any) => {
             if (error) {
@@ -99,14 +107,35 @@ const SignUpScreen = ({route, navigation}: any) => {
           <Toast nativeID={toastId} action="success" variant="solid">
             <VStack space="xs">
               <ToastTitle>Success</ToastTitle>
-              <ToastDescription>
-                Invitation code successfully verfied.
-              </ToastDescription>
+              <ToastDescription>Email successfully verified.</ToastDescription>
             </VStack>
           </Toast>
         );
       },
     });
+  };
+
+  const SendOtp = async () => {
+    await emailOtp(formik.values.email, (error: any, result: any) => {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log(result.data);
+      }
+    });
+  };
+
+  const VerifyOtp = async () => {
+    verifyOtp(
+      formik.values.otp,
+      formik.values.email,
+      (error: any, result: any) => {
+        if (error) {
+          console.warn(error);
+        } else {
+        }
+      },
+    );
   };
 
   return (
@@ -147,8 +176,7 @@ const SignUpScreen = ({route, navigation}: any) => {
         ShowModal={showModal}
         ToEmailAddress={formik.values.email}
         VerifyOtpButtonOnPress={() => {
-          setShowModal(false);
-          GoToUserDetailsSignUp();
+          VerifyOtp();
         }}
         CloseOtpModalButtonOnPress={() => {
           setShowModal(false);

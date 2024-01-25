@@ -165,11 +165,11 @@ const SignUpScreen = ({route, navigation}: any) => {
           cellphoneOnBlur={formik.handleBlur('cellphone')}
           cellphoneOnChangeText={formik.handleChange('cellphone')}
           cellphoneValue={formik.values?.cellphone}
-          confirmPasswordIsInvalid={!!formik.errors.password}
-          confirmPasswordOnChangeText={formik.handleChange('password')}
-          confirmPasswordErrorText={formik?.errors?.password}
-          confirmPasswordOnBlur={formik.handleBlur('password')}
-          confirmPasswordValue={formik.values?.password}
+          confirmPasswordIsInvalid={!!formik.errors.confirmPassword}
+          confirmPasswordOnChangeText={formik.handleChange('confirmPassword')}
+          confirmPasswordErrorText={formik?.errors?.confirmPassword}
+          confirmPasswordOnBlur={formik.handleBlur('confirmPassword')}
+          confirmPasswordValue={formik.values?.confirmPassword}
           signUpButtonOnPress={
             formik.handleSubmit as (
               values:

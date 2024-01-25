@@ -17,10 +17,10 @@ export const GetTrip = async (tripId: string) => {
 };
 
 export const GetAllTripsForClient = async (
-  payerId: string,
+  ParentId: string,
   businessId: string
 ) => {
-  return await GetAllTripsForClientFromDatabase(payerId, businessId);
+  return await GetAllTripsForClientFromDatabase(ParentId, businessId);
 };
 
 export const GetAllTripsForBusiness = async (businessId: string) => {

@@ -2,6 +2,7 @@ import axios from 'axios';
 import {Trip} from '../Models/Trip';
 import {ConvertDate} from '../Services/DataConverterService';
 import {SERVER_HOST, SERVER_PORT} from '@env';
+import {Passenger} from '../Models/Passenger';
 
 export const AddTripToDatabase = async (trip: Trip) => {
   await axios
@@ -35,18 +36,19 @@ export const GetTripFromDatabase = async (tripId: string) => {
     .then((response: any) => {
       let result = response.data.result;
 
-      let userDetail = new Trip(
-        result.userDetail_id,
-        result.firstname,
-        result.lastname,
-        result.addressline1,
-        result.addressline2,
-        result.suburb,
-        result.city,
-        result.province,
+      let trip = new Trip(
+        result.trip_id,
+        result.registrationnumber,
+        [...result.passenger],
+        result.vehicle_id,
+        result.business_id,
+        result.driver_id,
+        result.date,
+        result.time,
+        result.iscompleted,
       );
 
-      res = userDetail;
+      res = trip;
     })
     .catch(error => {
       console.log(error);
@@ -55,8 +57,8 @@ export const GetTripFromDatabase = async (tripId: string) => {
   return res;
 };
 
-export const GetUpcomingTripsFromDatabase = async (
-  payerId: string,
+export const GetUpcomingTripsParentFromDatabase = async (
+  parentId: string,
   businessId: string,
 ) => {
   let result: any;
@@ -67,7 +69,7 @@ export const GetUpcomingTripsFromDatabase = async (
     .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-upcoming-trips-for-parent`, {
       trip: {
         BusinessId: businessId,
-        PayerId: payerId,
+        ParentId: parentId,
       },
     })
     .then((response: any) => {
@@ -81,7 +83,7 @@ export const GetUpcomingTripsFromDatabase = async (
           pickUpDate: ConvertDate(data.Date),
           passengerName: data.Passenger.FirstName,
           pickUpLocation: data.Passenger.HomeAddress,
-          isSuccess: Number(data.Passenger.Success),
+          tripStatus: Number(data.Passenger.Success),
         };
 
         tripData.push(trip);
@@ -97,8 +99,8 @@ export const GetUpcomingTripsFromDatabase = async (
   return result;
 };
 
-export const GetPastTripsFromDatabase = async (
-  payerId: string,
+export const GetPastTripsParentFromDatabase = async (
+  parentId: string,
   businessId: string,
 ) => {
   let result: any;
@@ -109,7 +111,7 @@ export const GetPastTripsFromDatabase = async (
     .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-past-trip-for-parent`, {
       trip: {
         BusinessId: businessId,
-        PayerId: payerId,
+        ParentId: parentId,
       },
     })
     .then((response: any) => {
@@ -123,7 +125,92 @@ export const GetPastTripsFromDatabase = async (
           pickUpDate: ConvertDate(data.Date),
           passengerName: data.Passenger.FirstName,
           pickUpLocation: data.Passenger.HomeAddress,
-          isSuccess: Number(data.Passenger.Success),
+          tripStatus: Number(data.Passenger.Success),
+        };
+
+        tripData.push(trip);
+      });
+
+      result = tripData;
+    })
+    .catch((error: any) => {
+      console.log(error);
+      result = error;
+    });
+
+  return result;
+};
+
+export const GetUpcomingTripsDriverFromDatabase = async (
+  parentId: string,
+  businessId: string,
+) => {
+  let result: any;
+  const tripData: {}[] = [];
+  let trip = {};
+
+  await axios
+    .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-upcoming-trips-for-parent`, {
+      trip: {
+        BusinessId: businessId,
+        ParentId: parentId,
+      },
+    })
+    .then((response: any) => {
+      let res = [...response.data.result];
+
+      res.forEach(data => {
+        trip = {
+          tripId: data.TripId,
+          passengerId: data.Passenger.PassengerId,
+          passengerName:
+            data.Passenger.FirstName + ' ' + data.Passenger.FirstName,
+          pickUpTime: data.Time,
+          pickUpDate: ConvertDate(data.Date),
+          pickUpLocation: data.Passenger.HomeAddress,
+          tripStatus: data.Passenger.TripStatus,
+        };
+
+        tripData.push(trip);
+      });
+
+      result = tripData;
+    })
+    .catch((error: any) => {
+      console.log(error);
+      result = error;
+    });
+
+  return result;
+};
+
+export const GetPastTripsDriverFromDatabase = async (
+  parentId: string,
+  businessId: string,
+) => {
+  let result: any;
+  const tripData: {}[] = [];
+  let trip = {};
+
+  await axios
+    .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-past-trip-for-parent`, {
+      trip: {
+        BusinessId: businessId,
+        ParentId: parentId,
+      },
+    })
+    .then((response: any) => {
+      let res = [...response.data.result];
+
+      res.forEach(data => {
+        trip = {
+          tripId: data.TripId,
+          driverName: data.FirstName + ' ' + data.LastName,
+          pickUpTime: data.Time,
+          pickUpDate: ConvertDate(data.Date),
+          passengerName: data.Passenger.FirstName,
+          pickUpLocation: data.Passenger.HomeAddress,
+          tripStatus: Number(data.Passenger.Success),
         };
 
         tripData.push(trip);
@@ -143,35 +230,6 @@ export const GetAllTripsForBusinessFromDatabase = async (
   businessId: string,
 ) => {
   let res: any;
-  //   await axios
-  //     .post(`${SERVER_HOST}:${SERVER_PORT}/user-profile/get-user-details`, {
-  //       userDetails: {
-  //         UserId: userId,
-  //       },
-  //     })
-  //     .then((response: any) => {
-  //       let result = response.data.result;
-
-  //       let userDetail = new UserDetail(
-  //         result.userDetail_id,
-  //         result.firstname,
-  //         result.lastname,
-  //         result.addressline1,
-  //         result.addressline2,
-  //         result.suburb,
-  //         result.city,
-  //         result.province,
-  //         result.postalcode,
-  //         result.user_id
-  //       );
-
-  //       res = userDetail;
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       res = error;
-  //     });
-  //   return res;
 };
 
 export const UpdateTripInDatabase = async (trip: Trip) => {
@@ -204,12 +262,34 @@ export const UpdateTripInDatabase = async (trip: Trip) => {
   return [data, statusCode];
 };
 
+export const UpdatePassengerStatusInDB = async (
+  passenger: Passenger[],
+  tripId: string,
+) => {
+  let statusCode: any;
+  let data: any;
+
+  await axios
+    .patch(`${SERVER_HOST}:${SERVER_PORT}/trip/update-passenger-status`, {
+      trip: {
+        TripId: tripId,
+        Passenger: passenger,
+      },
+    })
+    .then((response: any) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: any) => {
+      console.log(error);
+    });
+
+  return [data, statusCode];
+};
+
 export const GetAllUserDetailsFromDatabase = async () => {};
 
 export const DeleteTripFromDatabase = async (uid: string) => {};
-function then(arg0: (response: any) => void) {
-  throw new Error('Function not implemented.');
-}
 
 // export const GetAllPassengerFromDatabase = async (uid: string) => {
 //   try {

@@ -72,6 +72,24 @@ export const UpdateTrip = async (
   );
 };
 
+export const UpdateTripPassengers = async (
+  trip: any,
+  callback: (error, result) => void
+) => {
+  console.log(trip);
+  await DbPool.query(
+    `CALL public.update_trip_passenger_status($1::text,$2::json)`,
+    [trip.tripId, JSON.stringify(trip.passenger)],
+    (err, res) => {
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, res);
+      }
+    }
+  );
+};
+
 export const GetPastTripsByBusinessIdAndParentId = async (
   businessId: string,
   callback: (error, result) => void

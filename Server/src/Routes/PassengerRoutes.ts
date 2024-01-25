@@ -2,7 +2,7 @@ import Router from "express-promise-router";
 import {
   AddPassenger,
   GetPassengersByBusiness,
-  GetPassengersByPayer,
+  GetPassengersByParent,
   GetPassenger,
   UpdatePassengerDetail,
 } from "../Controllers/PassengerController";
@@ -11,7 +11,7 @@ const router = Router();
 
 router.post("/add-passenger", AddPassenger, async (req, res, next) => {});
 
-router.get("/get-passenger", GetPassenger, async (req, res, next) => {});
+router.post("/get-passenger", GetPassenger, async (req, res, next) => {});
 
 router.patch(
   "/update-passenger-details",
@@ -21,7 +21,7 @@ router.patch(
 
 router.get(
   "/get-client-passengers",
-  GetPassengersByPayer,
+  GetPassengersByParent,
   async (req, res, next) => {}
 );
 

@@ -5,6 +5,7 @@ import {
   GetPastTripsForParent,
   GetUpcomingTripsForParent,
   UpdateTripDetails,
+  UpdateTripPassengerStatus,
 } from "../Controllers/TripController";
 
 const router = Router();
@@ -21,6 +22,12 @@ router.post(
 router.post(
   "/get-upcoming-trips-for-parent",
   GetUpcomingTripsForParent,
+  async (req, res, next) => {}
+);
+
+router.patch(
+  "/update-passenger-status",
+  UpdateTripPassengerStatus,
   async (req, res, next) => {}
 );
 

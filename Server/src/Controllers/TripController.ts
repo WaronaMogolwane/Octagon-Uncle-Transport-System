@@ -6,8 +6,10 @@ import {
   UpdateTrip,
   GetPastTripsByBusinessIdAndParentId,
   GetUpcomingTripsByBusinessIdAndParentId,
+  UpdateTripPassengers,
 } from "../Models/TripModel";
 import { FilterRows } from "../Services/FilterService";
+import { TripPassengerStatus } from "../Classes/TripPassengerStatus";
 
 export const AddTrip = async (req: any, res: any, next: any) => {
   let newTrip = new Trip(
@@ -89,9 +91,36 @@ export const UpdateTripDetails = async (req: any, res: any, next: any) => {
   });
 };
 
+export const UpdateTripPassengerStatus = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  const updatedPassenger = new TripPassengerStatus(req.body.trip.TripId, [
+    ...req.body.trip.Passenger,
+  ]);
+
+  console.log(updatedPassenger);
+
+  await UpdateTripPassengers(updatedPassenger, (error, result) => {
+    if (error) {
+      let err: any = {
+        status: 400,
+        message: error.message,
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        TripPassengerUpdated: true,
+        result: result.rows[0],
+      });
+    }
+  });
+};
+
 export const GetPastTripsForParent = async (req: any, res: any, next: any) => {
   let businessId = req.body.trip.BusinessId;
-  let payerId = req.body.trip.PayerId;
+  let parentId = req.body.trip.ParentId;
 
   await GetPastTripsByBusinessIdAndParentId(
     businessId,
@@ -108,10 +137,10 @@ export const GetPastTripsForParent = async (req: any, res: any, next: any) => {
           message: "Record not found",
         };
         next(err);
-      }*/ else {
+      } */ else {
         res.status(200).json({
           RecordRetrieved: true,
-          result: await FilterRows(result.rows, payerId),
+          result: await FilterRows(result.rows, parentId),
         });
       }
     }
@@ -124,7 +153,7 @@ export const GetUpcomingTripsForParent = async (
   next: any
 ) => {
   let businessId = req.body.trip.BusinessId;
-  let payerId = req.body.trip.PayerId;
+  let parentId = req.body.trip.ParentId;
 
   await GetUpcomingTripsByBusinessIdAndParentId(
     businessId,
@@ -135,16 +164,16 @@ export const GetUpcomingTripsForParent = async (
           message: error.message,
         };
         next(err);
-      } /*else if (result.rowCount == 0) {
+      } /* else if (result.rowCount == 0) {
         let err: any = {
           status: 405,
           message: "Record not found",
         };
         next(err);
-      }*/ else {
+      } */ else {
         res.status(200).json({
           RecordRetrieved: true,
-          result: await FilterRows(result.rows, payerId),
+          result: await FilterRows(result.rows, parentId),
         });
       }
     }

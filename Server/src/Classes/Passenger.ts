@@ -5,7 +5,7 @@ export class Passenger {
   age?: string;
   homeAddress?: string;
   destinationAddress?: string;
-  payerId?: string;
+  parentId?: string;
   businessId?: string;
 
   constructor(
@@ -15,7 +15,7 @@ export class Passenger {
     age?: string,
     homeaddress?: string,
     destinationaddress?: string,
-    payerId?: string,
+    parentId?: string,
     businessId?: string
   ) {
     this.passenger_id = passenger_id;
@@ -24,7 +24,7 @@ export class Passenger {
     this.age = age;
     this.homeAddress = homeaddress;
     this.destinationAddress = destinationaddress;
-    this.payerId = payerId;
+    this.parentId = parentId;
     this.businessId = businessId;
   }
 }

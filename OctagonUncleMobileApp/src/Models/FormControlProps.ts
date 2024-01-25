@@ -52,7 +52,37 @@ export type SetPasswordFormProps = {
   passwordErrorText: string | undefined;
   passwordOnBlur: (e: any) => void;
   passwordValue: string;
+  confirmPasswordIsInvalid: boolean;
+  confirmPasswordOnChangeText: (e: string | ChangeEvent<any>) => void;
+  confirmPasswordErrorText: string | undefined;
+  confirmPasswordOnBlur: (e: any) => void;
+  confirmPasswordValue: string;
   setPasswordButtonOnPress: (
+    values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
+  ) => void;
+};
+export type SignUpFormProps = {
+  passwordIsInvalid: boolean;
+  passwordOnChangeText: (e: string | ChangeEvent<any>) => void;
+  passwordErrorText: string | undefined;
+  passwordOnBlur: (e: any) => void;
+  passwordValue: string;
+  confirmPasswordIsInvalid: boolean;
+  confirmPasswordOnChangeText: (e: string | ChangeEvent<any>) => void;
+  confirmPasswordErrorText: string | undefined;
+  confirmPasswordOnBlur: (e: any) => void;
+  confirmPasswordValue: string;
+  emailIsInvalid: boolean;
+  emailOnChangeText: (e: string | ChangeEvent<any>) => void;
+  emailErrorText: string | undefined;
+  emailOnBlur: (e: any) => void;
+  emailValue: string;
+  cellphoneIsInvalid: boolean;
+  cellphoneOnChangeText: (e: string | ChangeEvent<any>) => void;
+  cellphoneErrorText: string | undefined;
+  cellphoneOnBlur: (e: any) => void;
+  cellphoneValue: string;
+  signUpButtonOnPress: (
     values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
   ) => void;
 };

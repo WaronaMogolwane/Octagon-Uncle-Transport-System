@@ -1,4 +1,4 @@
-import {View} from 'react-native';
+import {GestureResponderEvent, View} from 'react-native';
 import React, {useState} from 'react';
 import {CustomFormControlInput} from '../../Components/CustomFormInput';
 import {CustomButton1} from '../../Components/Buttons';
@@ -21,17 +21,14 @@ import {
   Button,
   Modal,
 } from '@gluestack-ui/themed';
-import {useFormik} from 'formik';
-import * as yup from 'yup';
+import {VerifyOtpModalProps} from '../../Models/ModalProps';
 
-const VerifyEmailModal = () => {
+const VerifyEmailModal = (props: VerifyOtpModalProps) => {
   return (
     <View>
       <Modal
-        isOpen={showModal}
-        onClose={() => {
-          setShowModal(false);
-        }}>
+        isOpen={props.ShowModal}
+        onClose={props.CloseOtpModalButtonOnPress}>
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
@@ -41,15 +38,18 @@ const VerifyEmailModal = () => {
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
-            <Text>Enter the OTP sent to {}</Text>
-            <Input
-              variant="outline"
-              size="md"
-              isDisabled={false}
-              isInvalid={false}
-              isReadOnly={false}>
-              <InputField placeholder="Enter the code here" />
-            </Input>
+            <Text>Enter the OTP sent to {props.ToEmailAddress}</Text>
+            <CustomFormControlInput
+              labelText="OTP"
+              placeHolder="Enter the code here"
+              isInvalid={props.otpIsInvalid}
+              isRequired={true}
+              type="text"
+              onChangeText={props.otpOnChangeText}
+              errorText={props.otpErrorText}
+              onBlur={props.otpOnBlur}
+              value={props.otpValue}
+            />
           </ModalBody>
           <ModalFooter>
             <Button
@@ -57,19 +57,14 @@ const VerifyEmailModal = () => {
               size="sm"
               action="secondary"
               mr="$3"
-              onPress={() => {
-                setShowModal(false);
-              }}>
+              onPress={props.CloseOtpModalButtonOnPress}>
               <ButtonText>Cancel</ButtonText>
             </Button>
             <Button
               size="sm"
               action="positive"
               borderWidth="$0"
-              onPress={() => {
-                setShowModal(false);
-                setIsEmailVerified(true);
-              }}>
+              onPress={props.VerifyOtpButtonOnPress}>
               <ButtonText>Verify</ButtonText>
             </Button>
           </ModalFooter>

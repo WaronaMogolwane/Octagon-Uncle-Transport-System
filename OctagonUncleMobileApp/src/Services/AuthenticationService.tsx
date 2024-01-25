@@ -92,8 +92,8 @@ export function SessionProvider(props: any) {
           });
         },
         verifyOtp: async (
-          email: string,
           otp: string,
+          email: string,
           callback: (error: any, result: any) => void,
         ) => {
           await GetOtp(otp, email, (error, result) => {

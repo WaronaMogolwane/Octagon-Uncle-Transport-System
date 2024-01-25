@@ -63,17 +63,8 @@ const SignUpScreen = ({route, navigation}: any) => {
     initialValues: registerInitialValues,
     validationSchema: registerSchema,
     onSubmit: async (values, {resetForm}) => {
-      const newUser: User = new User(
-        undefined,
-        formik.values.email,
-        formik.values.password,
-        formik.values.cellphone,
-        undefined,
-        undefined,
-        userRole,
-      );
       if (formik.isValid) {
-        if (userRole == 1) {
+        if (userRole == 1 && !isEmailVerified) {
           await emailOtp(formik.values.email, (error: any, result: any) => {
             if (error) {
               console.error(error);
@@ -83,13 +74,7 @@ const SignUpScreen = ({route, navigation}: any) => {
             }
           });
         } else {
-          await signUp(newUser, (error: any, result: any) => {
-            if (error) {
-              console.error(error);
-            } else {
-              ShowToast();
-            }
-          });
+          await SignUpNewUser();
         }
       }
     },
@@ -133,9 +118,32 @@ const SignUpScreen = ({route, navigation}: any) => {
         if (error) {
           console.warn(error);
         } else {
+          ShowToast();
+          setIsEmailVerified(true);
+          setShowModal(false);
+          SignUpNewUser();
         }
       },
     );
+  };
+  const SignUpNewUser: any = async () => {
+    const newUser: User = new User(
+      undefined,
+      formik.values.email,
+      formik.values.password,
+      formik.values.cellphone,
+      undefined,
+      undefined,
+      userRole,
+    );
+
+    await signUp(newUser, (error: any, result: any) => {
+      if (error) {
+        console.error(error);
+      } else {
+        ShowToast();
+      }
+    });
   };
 
   return (

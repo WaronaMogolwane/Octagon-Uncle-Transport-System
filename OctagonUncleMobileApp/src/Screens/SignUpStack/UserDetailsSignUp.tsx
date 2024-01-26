@@ -7,11 +7,11 @@ import {
   VStack,
   useToast,
   Toast,
+  ScrollView,
 } from '@gluestack-ui/themed';
 import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
-import {ScrollView} from 'react-native-gesture-handler';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {UserDetail} from '../../Models/UserDetail';
 import {AddUserDetail} from '../../Controllers/UserDetailController';

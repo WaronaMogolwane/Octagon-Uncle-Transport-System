@@ -3,7 +3,7 @@ import {CustomFormControlInput} from '../CustomFormInput';
 import {CustomButton1} from '../Buttons';
 import {SignInFormProps} from '../../Models/FormControlProps';
 
-export function SignInForm(props: SignInFormProps) {
+export const SignInForm = (props: SignInFormProps) => {
   return (
     <View>
       <Heading mb="$3">Sign In</Heading>
@@ -34,4 +34,4 @@ export function SignInForm(props: SignInFormProps) {
       </VStack>
     </View>
   );
-}
+};

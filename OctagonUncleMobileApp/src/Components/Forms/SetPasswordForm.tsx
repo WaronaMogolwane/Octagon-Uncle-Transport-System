@@ -13,7 +13,7 @@ export const SetPasswordForm = (props: SetPasswordFormProps) => {
       <VStack>
         <CustomFormControlInput
           labelText="Password"
-          placeHolder="password"
+          placeHolder="Password"
           isInvalid={props.passwordIsInvalid}
           isRequired={true}
           type="password"
@@ -24,14 +24,14 @@ export const SetPasswordForm = (props: SetPasswordFormProps) => {
         />
         <CustomFormControlInput
           labelText="Confirm Password"
-          placeHolder="password"
-          isInvalid={props.passwordIsInvalid}
+          placeHolder="Password"
+          isInvalid={props.confirmPasswordIsInvalid}
           isRequired={true}
           type="password"
-          onChangeText={props.passwordOnChangeText}
-          errorText={props.passwordErrorText}
-          onBlur={props.passwordOnBlur}
-          value={props.passwordValue}
+          onChangeText={props.confirmPasswordOnChangeText}
+          errorText={props.confirmPasswordErrorText}
+          onBlur={props.confirmPasswordOnBlur}
+          value={props.confirmPasswordValue}
         />
         <CustomButton1
           title="Save password"

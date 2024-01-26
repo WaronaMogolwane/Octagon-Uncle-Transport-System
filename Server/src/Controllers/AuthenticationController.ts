@@ -17,12 +17,13 @@ export const CheckIfUserExists = async (req: any, res: any, next: any) => {
 };
 export const RegisterUser = async (req: any, res: any, next: any) => {
   let newUser = new User(
+
     randomUUID(),
     req.body.Email,
     req.body.Password,
     req.body.Cellphone,
-    req.body.Status,
-    req.body.LastLogin,
+    null,
+    null,
     req.body.UserRole
   );
 
@@ -85,7 +86,7 @@ export const VerifyOtp = async (req, res, next) => {
       )
     }
     else {
-      if (result.rows) {
+      if (result.rows[0]) {
         let otpExpireDate = new Date(result.rows[0].otp_expire_date);
         if (IsOtpVaid(otpExpireDate)) {
           res.status(201).send("OTP verified.");

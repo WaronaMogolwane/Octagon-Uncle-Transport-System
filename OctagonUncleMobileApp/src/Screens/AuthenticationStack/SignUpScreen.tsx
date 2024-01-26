@@ -1,216 +1,201 @@
-import {StyleSheet} from 'react-native';
-import {
-  UserSignUp,
-  UserSignIn,
-  UserForgotPassword,
-  UserSetPassword,
-  UserVerifyEmail,
-} from '../../Controllers/AuthenticationController';
-import {CustomFormControlInput} from '../../Components/CustomFormInput';
-import {useState, useEffect, useRef} from 'react';
-import {FormStyles, ThemeStyles} from '../../Stylesheets/GlobalStyles';
-import {
-  GluestackUIProvider,
-  Text,
-  Box,
-  FormControlLabel,
-  FormControl,
-  FormControlLabelText,
-  FormControlHelper,
-  FormControlHelperText,
-  FormControlError,
-  FormControlErrorIcon,
-  FormControlErrorText,
-  AlertCircleIcon,
-  Input,
-  InputField,
-  Button,
-  ButtonText,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalFooter,
-  ModalHeader,
-  ModalContent,
-  Heading,
-  Icon,
-  CloseIcon,
-  Image,
-} from '@gluestack-ui/themed';
-import {config} from '@gluestack-ui/config';
+import {useContext, useState} from 'react';
+import {useFormik} from 'formik';
+import * as yup from 'yup';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {View, GestureResponderEvent} from 'react-native';
+import {SignUpForm} from '../../Components/Forms/SignUpForm';
+import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
+import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {UserSignUp} from '../../Controllers/AuthenticationController';
+import {User} from '../../Models/UserModel';
+import {useStorageState} from '../../Services/StorageStateService';
+import {
+  Toast,
+  ToastDescription,
+  ToastTitle,
+  VStack,
+  useToast,
+} from '@gluestack-ui/themed';
+import {AuthContext} from '../../Services/AuthenticationService';
 
-const SignUpScreen = () => {
-  const ref = useRef(null);
+const SignUpScreen = ({route, navigation}: any) => {
+  const {userRole} = route.params;
   const [showModal, setShowModal] = useState(false);
+  const {signIn, session, signUp, emailOtp, verifyOtp}: any =
+    useContext(AuthContext);
+  const toast = useToast();
+
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [role, setRole] = useState('');
-  const [inputs, setInputs] = useState({
-    firstName: '',
-    lastName: '',
+
+  const phoneRegExp: RegExp =
+    /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/;
+  const passwordExp: RegExp =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+
+  const registerSchema = yup.object().shape({
+    password: yup
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .matches(
+        passwordExp,
+        'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
+      )
+      .required('Password is required'),
+    confirmPassword: yup
+      .string()
+      .oneOf([yup.ref('password')], 'Passwords must match'),
+    email: yup.string().email('Invalid email').required('Email is required'),
+    cellphone: yup
+      .string()
+      .matches(phoneRegExp, 'Phone number is not valid')
+      .required('Cellphone is required'),
+    otp: yup.string(),
+  });
+  const registerInitialValues = {
+    password: '',
+    confirmPassword: '',
+    email: '',
     cellphone: '',
-    IdNumber: '',
+    otp: '',
+  };
+  const formik = useFormik({
+    initialValues: registerInitialValues,
+    validationSchema: registerSchema,
+    onSubmit: async (values, {resetForm}) => {
+      if (formik.isValid) {
+        if (userRole == 1 && !isEmailVerified) {
+          await emailOtp(formik.values.email, (error: any, result: any) => {
+            if (error) {
+              console.error(error);
+            } else {
+              console.log(result.data);
+              setShowModal(true);
+            }
+          });
+        } else {
+          await SignUpNewUser();
+        }
+      }
+    },
   });
 
-  const handleOnChange = (text: any, input: any) => {
-    setInputs(prevState => ({...prevState, [input]: text}));
+  const GoToUserDetailsSignUp = () => {
+    navigation.navigate('User Details Sign Up');
+  };
+  const ShowToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="success" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Success</ToastTitle>
+              <ToastDescription>Email successfully verified.</ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const SendOtp = async () => {
+    await emailOtp(formik.values.email, (error: any, result: any) => {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log(result.data);
+      }
+    });
+  };
+
+  const VerifyOtp = async () => {
+    verifyOtp(
+      formik.values.otp,
+      formik.values.email,
+      (error: any, result: any) => {
+        if (error) {
+          console.warn(error);
+        } else {
+          ShowToast();
+          setIsEmailVerified(true);
+          setShowModal(false);
+          SignUpNewUser();
+        }
+      },
+    );
+  };
+  const SignUpNewUser: any = async () => {
+    const newUser: User = new User(
+      undefined,
+      formik.values.email,
+      formik.values.password,
+      formik.values.cellphone,
+      undefined,
+      undefined,
+      userRole,
+    );
+
+    await signUp(newUser, (error: any, result: any) => {
+      if (error) {
+        console.error(error);
+      } else {
+        ShowToast();
+      }
+    });
   };
 
   return (
     <SafeAreaView style={ThemeStyles.container}>
-      <Box>
-        <CustomFormControlInput
-          labelText="New password"
-          placeHolder="Password"
-          value={formik.values?.password}
-          type="password"
-          isRequired={true}
-          errorText={formik?.errors?.password}
-          isInvalid={!!formik.errors.password}
-          onChangeText={formik.handleChange('password')}
+      <View>
+        <SignUpForm
+          emailIsInvalid={!!formik.errors.email}
+          emailOnChangeText={formik.handleChange('email')}
+          emailErrorText={formik?.errors?.email}
+          emailOnBlur={formik.handleBlur('email')}
+          emailValue={formik.values?.email}
+          passwordIsInvalid={!!formik.errors.password}
+          passwordOnChangeText={formik.handleChange('password')}
+          passwordErrorText={formik?.errors?.password}
+          passwordOnBlur={formik.handleBlur('password')}
+          passwordValue={formik.values?.password}
+          cellphoneErrorText={formik?.errors?.cellphone}
+          cellphoneIsInvalid={!!formik.errors.cellphone}
+          cellphoneOnBlur={formik.handleBlur('cellphone')}
+          cellphoneOnChangeText={formik.handleChange('cellphone')}
+          cellphoneValue={formik.values?.cellphone}
+          confirmPasswordIsInvalid={!!formik.errors.confirmPassword}
+          confirmPasswordOnChangeText={formik.handleChange('confirmPassword')}
+          confirmPasswordErrorText={formik?.errors?.confirmPassword}
+          confirmPasswordOnBlur={formik.handleBlur('confirmPassword')}
+          confirmPasswordValue={formik.values?.confirmPassword}
+          signUpButtonOnPress={
+            formik.handleSubmit as (
+              values:
+                | GestureResponderEvent
+                | React.FormEvent<HTMLFormElement>
+                | undefined,
+            ) => void
+          }
         />
-        <CustomFormControlInput
-          labelText="Confirm password"
-          placeHolder="Password"
-          value={formik.values?.confirmPassword}
-          type="password"
-          isRequired={true}
-          errorText={formik?.errors?.confirmPassword}
-          isInvalid={!!formik.errors.confirmPassword}
-          onChangeText={formik.handleChange('confirmPassword')}
-        />
-        {isEmailVerified ? (
-          <FormControl>
-            <Button bg="$darkBlue600">
-              <ButtonText fontSize="$sm" fontWeight="$medium">
-                Next
-              </ButtonText>
-            </Button>
-          </FormControl>
-        ) : (
-          <FormControl>
-            <Button
-              bg="$darkBlue600"
-              onPress={() => setShowModal(true)}
-              ref={ref}>
-              <ButtonText fontSize="$sm" fontWeight="$medium">
-                Confirm
-              </ButtonText>
-            </Button>
-          </FormControl>
-        )}
-      </Box>
-      <Modal
-        isOpen={showModal}
-        onClose={() => {
+      </View>
+      <VerifyEmailModal
+        ShowModal={showModal}
+        ToEmailAddress={formik.values.email}
+        VerifyOtpButtonOnPress={() => {
+          VerifyOtp();
+        }}
+        CloseOtpModalButtonOnPress={() => {
           setShowModal(false);
-        }}>
-        <ModalBackdrop />
-        <ModalContent>
-          <ModalHeader>
-            <Heading size="lg">Cellphone verification</Heading>
-            <ModalCloseButton>
-              <Icon as={CloseIcon} />
-            </ModalCloseButton>
-          </ModalHeader>
-          <ModalBody>
-            <Text>Enter the OTP sent to {}</Text>
-            <Input
-              variant="outline"
-              size="md"
-              isDisabled={false}
-              isInvalid={false}
-              isReadOnly={false}>
-              <InputField placeholder="Enter Text here" />
-            </Input>
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              variant="outline"
-              size="sm"
-              action="secondary"
-              mr="$3"
-              onPress={() => {
-                setShowModal(false);
-              }}>
-              <ButtonText>Cancel</ButtonText>
-            </Button>
-            <Button
-              size="sm"
-              action="positive"
-              borderWidth="$0"
-              onPress={() => {
-                setShowModal(false);
-                setIsEmailVerified(true);
-              }}>
-              <ButtonText>Explore</ButtonText>
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+        }}
+        otpIsInvalid={!!formik.errors.otp}
+        otpOnChangeText={formik.handleChange('otp')}
+        otpErrorText={formik?.errors?.otp}
+        otpOnBlur={formik.handleBlur('otp')}
+        otpValue={formik.values?.otp}
+      />
     </SafeAreaView>
   );
-
-  const userAuthentication = {
-    SignUp: async (userEmail: string, userPassword: string) => {
-      await UserSignUp(userEmail, userPassword)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-    SignIn: async (userEmail: string, userPassword: string) => {
-      await UserSignIn(userEmail, userPassword)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-    ForgotPassword: async (userEmail: string) => {
-      await UserForgotPassword(userEmail)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-    SetPassword: async (userPassword: string) => {
-      await UserSetPassword(userPassword)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-    VerifyEmail: async () => {
-      await UserVerifyEmail()
-        .then(response => {
-          console.log(response);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    },
-  };
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    button: {
-      fontSize: 16,
-      marginVertical: 16,
-    },
-  });
 };
 export default SignUpScreen;

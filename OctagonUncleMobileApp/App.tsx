@@ -1,35 +1,13 @@
-import React, {useContext} from 'react';
-import {
-  Button,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-import {createDrawerNavigator} from '@react-navigation/drawer';
+import React from 'react';
+import {useColorScheme} from 'react-native';
 import 'react-native-gesture-handler';
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import {NavigationContainer} from '@react-navigation/native';
-import {
-  AuthContext,
-  SessionProvider,
-  useSession,
-} from './src/Services/AuthenticationService';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {SessionProvider} from './src/Services/AuthenticationService';
 import AppNav from './src/Navigation/AppNavigation';
 import {GluestackUIProvider} from '@gluestack-ui/themed';
 import {config} from '@gluestack-ui/config';
 function App(): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
@@ -41,5 +19,4 @@ function App(): JSX.Element {
     </SessionProvider>
   );
 }
-
 export default App;

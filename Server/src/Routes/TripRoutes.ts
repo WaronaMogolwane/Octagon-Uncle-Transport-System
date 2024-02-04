@@ -6,6 +6,7 @@ import {
   GetUpcomingTripsForParent,
   UpdateTripDetails,
   UpdateTripPassengerStatus,
+  UpdateTripEndTrip,
 } from "../Controllers/TripController";
 
 const router = Router();
@@ -19,6 +20,7 @@ router.post(
   GetPastTripsForParent,
   async (req, res, next) => {}
 );
+
 router.post(
   "/get-upcoming-trips-for-parent",
   GetUpcomingTripsForParent,
@@ -30,6 +32,8 @@ router.patch(
   UpdateTripPassengerStatus,
   async (req, res, next) => {}
 );
+
+router.patch("/end-trip", UpdateTripEndTrip, async (req, res, next) => {});
 
 router.patch("/update-trip", UpdateTripDetails, async (req, res, next) => {});
 

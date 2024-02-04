@@ -1,66 +1,67 @@
 import {
-  AddTripToDatabase,
-  GetTripFromDatabase,
-  GetPastTripsParentFromDatabase,
+  AddTripToDB,
+  GetTripFromDB,
+  GetPastTripsParentFromDB,
   GetAllTripsForBusinessFromDatabase,
   DeleteTripFromDatabase,
-  UpdateTripInDatabase,
-  GetUpcomingTripsParentFromDatabase,
-  GetPastTripsDriverFromDatabase,
-  GetUpcomingTripsDriverFromDatabase,
+  UpdateTripInDB,
+  GetUpcomingTripsParentFromDB,
+  GetPastTripsDriverFromDB,
+  GetUpcomingTripsDriverFromDB,
   UpdatePassengerStatusInDB,
+  EndTripInDB,
 } from '../Data/TripDAL';
 import {Passenger} from '../Models/Passenger';
 import {Trip} from '../Models/Trip';
 
 export const AddTrip = async (trip: Trip) => {
-  await AddTripToDatabase(trip);
+  await AddTripToDB(trip);
 };
 
 export const GetTrip = async (tripId: string) => {
-  return await GetTripFromDatabase(tripId);
+  return await GetTripFromDB(tripId);
 };
 
 export const GetUpcomingTripsForClient = async (
   ParentId: string,
   businessId: string,
 ) => {
-  return await GetUpcomingTripsParentFromDatabase(ParentId, businessId);
+  return await GetUpcomingTripsParentFromDB(ParentId, businessId);
 };
 
 export const GetPastTripsForClient = async (
   ParentId: string,
   businessId: string,
 ) => {
-  return await GetPastTripsParentFromDatabase(ParentId, businessId);
+  return await GetPastTripsParentFromDB(ParentId, businessId);
 };
 
 export const GetUpcomingTripsForDriver = async (
   ParentId: string,
   businessId: string,
 ) => {
-  return await GetUpcomingTripsDriverFromDatabase(ParentId, businessId);
+  return await GetUpcomingTripsDriverFromDB(ParentId, businessId);
 };
 
 export const GetPastTripsForDriver = async (
   ParentId: string,
   businessId: string,
 ) => {
-  return await GetPastTripsDriverFromDatabase(ParentId, businessId);
+  return await GetPastTripsDriverFromDB(ParentId, businessId);
 };
 
 export const GetUpcomingTripsForTransporter = async (
   ParentId: string,
   businessId: string,
 ) => {
-  return await GetUpcomingTripsParentFromDatabase(ParentId, businessId);
+  return await GetUpcomingTripsParentFromDB(ParentId, businessId);
 };
 
 export const GetPastTripsForTransporter = async (
   ParentId: string,
   businessId: string,
 ) => {
-  return await GetPastTripsParentFromDatabase(ParentId, businessId);
+  return await GetPastTripsParentFromDB(ParentId, businessId);
 };
 
 export const GetAllTripsForBusiness = async (businessId: string) => {
@@ -72,7 +73,7 @@ export const DeleteTrip = async (tripId: string) => {
 };
 
 export const UpdateTrip = async (trip: Trip) => {
-  await UpdateTripInDatabase(trip);
+  await UpdateTripInDB(trip);
 };
 
 export const UpdatePassengerStatus = async (
@@ -80,4 +81,8 @@ export const UpdatePassengerStatus = async (
   tripId: string,
 ) => {
   return UpdatePassengerStatusInDB(passengers, tripId);
+};
+
+export const EndTrip = async (tripId: string) => {
+  return await EndTripInDB(tripId);
 };

@@ -7,6 +7,7 @@ import {
   GetPastTripsByBusinessIdAndParentId,
   GetUpcomingTripsByBusinessIdAndParentId,
   UpdateTripPassengers,
+  UpdateTripIsCompleted,
 } from "../Models/TripModel";
 import { FilterRows } from "../Services/FilterService";
 import { TripPassengerStatus } from "../Classes/TripPassengerStatus";
@@ -112,6 +113,25 @@ export const UpdateTripPassengerStatus = async (
     } else {
       res.status(200).json({
         TripPassengerUpdated: true,
+        result: result.rows[0],
+      });
+    }
+  });
+};
+
+export const UpdateTripEndTrip = async (req: any, res: any, next: any) => {
+  let tripId = req.body.trip.TripId;
+
+  await UpdateTripIsCompleted(tripId, (error, result) => {
+    if (error) {
+      let err: any = {
+        status: 400,
+        message: error.message,
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        TripEnded: true,
         result: result.rows[0],
       });
     }

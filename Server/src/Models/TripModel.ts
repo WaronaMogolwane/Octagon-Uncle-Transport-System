@@ -78,7 +78,7 @@ export const UpdateTripPassengers = async (
 ) => {
   console.log(trip);
   await DbPool.query(
-    `CALL public.update_trip_passenger_status($1::text,$2::json)`,
+    `CALL public.sp_update_trip_passenger_status($1::text,$2::json)`,
     [trip.tripId, JSON.stringify(trip.passenger)],
     (err, res) => {
       if (err) {
@@ -114,6 +114,23 @@ export const GetUpcomingTripsByBusinessIdAndParentId = async (
   await DbPool.query(
     "select * from public.fn_get_upcoming_trips($1::text);",
     [businessId],
+    (err, res) => {
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, res);
+      }
+    }
+  );
+};
+
+export const UpdateTripIsCompleted = async (
+  tripId: any,
+  callback: (error, result) => void
+) => {
+  await DbPool.query(
+    `CALL public.sp_update_trip_iscompleted($1::text)`,
+    [tripId],
     (err, res) => {
       if (err) {
         callback(err, null);

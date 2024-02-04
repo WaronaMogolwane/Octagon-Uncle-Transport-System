@@ -4,7 +4,7 @@ import {ConvertDate} from '../Services/DataConverterService';
 import {SERVER_HOST, SERVER_PORT} from '@env';
 import {Passenger} from '../Models/Passenger';
 
-export const AddTripToDatabase = async (trip: Trip) => {
+export const AddTripToDB = async (trip: Trip) => {
   await axios
     .post(`${SERVER_HOST}:${SERVER_PORT}/trip/add-trip`, {
       trip: {
@@ -25,7 +25,7 @@ export const AddTripToDatabase = async (trip: Trip) => {
     });
 };
 
-export const GetTripFromDatabase = async (tripId: string) => {
+export const GetTripFromDB = async (tripId: string) => {
   let res: any;
   await axios
     .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-trip`, {
@@ -57,7 +57,7 @@ export const GetTripFromDatabase = async (tripId: string) => {
   return res;
 };
 
-export const GetUpcomingTripsParentFromDatabase = async (
+export const GetUpcomingTripsParentFromDB = async (
   parentId: string,
   businessId: string,
 ) => {
@@ -99,7 +99,7 @@ export const GetUpcomingTripsParentFromDatabase = async (
   return result;
 };
 
-export const GetPastTripsParentFromDatabase = async (
+export const GetPastTripsParentFromDB = async (
   parentId: string,
   businessId: string,
 ) => {
@@ -141,7 +141,7 @@ export const GetPastTripsParentFromDatabase = async (
   return result;
 };
 
-export const GetUpcomingTripsDriverFromDatabase = async (
+export const GetUpcomingTripsDriverFromDB = async (
   parentId: string,
   businessId: string,
 ) => {
@@ -184,7 +184,7 @@ export const GetUpcomingTripsDriverFromDatabase = async (
   return result;
 };
 
-export const GetPastTripsDriverFromDatabase = async (
+export const GetPastTripsDriverFromDB = async (
   parentId: string,
   businessId: string,
 ) => {
@@ -232,7 +232,7 @@ export const GetAllTripsForBusinessFromDatabase = async (
   let res: any;
 };
 
-export const UpdateTripInDatabase = async (trip: Trip) => {
+export const UpdateTripInDB = async (trip: Trip) => {
   let statusCode: any;
   let data: any;
 
@@ -287,7 +287,26 @@ export const UpdatePassengerStatusInDB = async (
   return [data, statusCode];
 };
 
-export const GetAllUserDetailsFromDatabase = async () => {};
+export const EndTripInDB = async (tripId: string) => {
+  let statusCode: any;
+  let data: any;
+
+  await axios
+    .patch(`${SERVER_HOST}:${SERVER_PORT}/trip/end-trip`, {
+      trip: {
+        TripId: tripId,
+      },
+    })
+    .then((response: any) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: any) => {
+      console.log(error);
+    });
+
+  return [data, statusCode];
+};
 
 export const DeleteTripFromDatabase = async (uid: string) => {};
 

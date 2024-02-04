@@ -4,6 +4,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {TripCardParent} from '../../Components/TripCardParent';
 import {
+  EndTrip,
   GetPastTripsForClient,
   GetPastTripsForDriver,
   GetPastTripsForTransporter,
@@ -24,12 +25,16 @@ const TripsScreen = ({navigation}: any) => {
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
   const role: number = 2;
 
+  // let passengerTotal: number = 0;
+  // let passengerTripId: string;
+
   const [UpcomingTripList, setUpcomingTripList] = useState([]);
   const [PastTripList, setPastTripList] = useState([]);
   const [refreshingUpcomingTrips, setRefreshingUpcomingTrips] =
     React.useState(false);
   const [refreshingPastTrips, setRefreshingPastTrips] = React.useState(false);
   const [statusCode, setStatusCode] = useState(true);
+  //const [passengerCount, setPassengerCount] = useState(0);
 
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
@@ -66,6 +71,18 @@ const TripsScreen = ({navigation}: any) => {
     }, 2000);
   }, []);
 
+  // useEffect(() => {
+  //   if (passengerCount == passengerTotal) {
+  //     //EndTrip(passengerTripId);
+  //   }
+
+  //   return () => {
+  //     if (passengerCount == passengerTotal) {
+  //       setPassengerCount(0);
+  //     }
+  //   };
+  // }, [passengerCount]);
+
   const changeTripStatus = async (
     tripId: string,
     passengerId: string,
@@ -74,6 +91,15 @@ const TripsScreen = ({navigation}: any) => {
     await GetTrip(tripId).then((trip: any) => {
       let pArray = [...trip.passenger];
       let nArray: Passenger[] = [];
+
+      let passengerCount = 0;
+
+      let passengerTotal = pArray.length;
+      //let passengerTripId = tripId;
+
+      // if (status == 2) {
+      //   setPassengerCount(passengerCount + 1);
+      // }
 
       pArray.forEach((item: any) => {
         if (item.PassengerId == passengerId) {
@@ -93,7 +119,14 @@ const TripsScreen = ({navigation}: any) => {
         } else {
           nArray.push(item);
         }
+
+        if (item.TripStatus == 2) {
+          passengerCount++;
+        }
       });
+      if (passengerCount == passengerTotal) {
+        EndTrip(tripId);
+      }
 
       UpdatePassengerStatus(nArray, tripId).then(response => {
         getUpcomingTrips().then(() => {
@@ -169,7 +202,7 @@ const TripsScreen = ({navigation}: any) => {
         changeTripStatus(itemData.tripId, itemData.passengerId, 2);
       }}
       handleDropoff={() => {
-        changeTripStatus(itemData.tripId, itemData.passengerId, 0);
+        changeTripStatus(itemData.tripId, itemData.passengerId, 3);
       }}
       handleAbsentPassenger={() => {
         changeTripStatus(itemData.tripId, itemData.passengerId, 1);

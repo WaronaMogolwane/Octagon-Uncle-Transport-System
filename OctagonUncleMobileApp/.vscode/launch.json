@@ -18,6 +18,26 @@
       "request": "launch",
       "platform": "android",
       "isDynamic": true
+    },
+    {
+      "name": "Build Release APK LINUX",
+      "request": "launch",
+      "runtimeArgs": ["run-script", "build-release-apk-lin"],
+      "runtimeExecutable": "npm",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Build Release APK WIN",
+      "request": "launch",
+      "runtimeArgs": ["run-script", "build-release-apk-win"],
+      "runtimeExecutable": "npm",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     }
   ]
 }

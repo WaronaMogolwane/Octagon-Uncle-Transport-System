@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "458001025307",
+    "project_id": "octagon-uncle",
+    "storage_bucket": "octagon-uncle.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:458001025307:android:6d6bb4db25d5137b77ebbe",
+        "android_client_info": {
+          "package_name": "com.octagonunclemobileapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC22cFq9HE-iUzD_kPujb1AXtvvVZ5VPdQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

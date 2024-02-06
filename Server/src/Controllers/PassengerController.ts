@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 import { Passenger } from "../Classes/Passenger";
 import {
   InsertPassenger,
-  GetAllPassengersByPayerId,
+  GetAllPassengersByParentId as GetAllPassengersByParentId,
   GetAllPassengersByBusinessId,
   GetPassengerByPassengerId,
   UpdatePassenger,
@@ -16,7 +16,7 @@ export const AddPassenger = async (req: any, res: any, next: any) => {
     req.body.passenger.Age,
     req.body.passenger.HomeAddress,
     req.body.passenger.DestinationAddress,
-    req.body.passenger.PayerId,
+    req.body.passenger.ParentId,
     req.body.passenger.BusinessId
   );
   await InsertPassenger(newPassenger, (error, result) => {
@@ -69,7 +69,7 @@ export const UpdatePassengerDetail = async (req: any, res: any, next: any) => {
     req.body.passenger.Age,
     req.body.passenger.HomeAddress,
     req.body.passenger.DestinationAddress,
-    req.body.passenger.PayerId,
+    req.body.passenger.ParentId,
     req.body.passenger.BusinessId
   );
   await UpdatePassenger(passenger, (error, result) => {
@@ -88,10 +88,10 @@ export const UpdatePassengerDetail = async (req: any, res: any, next: any) => {
   });
 };
 
-export const GetPassengersByPayer = async (req: any, res: any, next: any) => {
-  let payerId = req.body.passenger.PayerId;
+export const GetPassengersByParent = async (req: any, res: any, next: any) => {
+  let parentId = req.body.passenger.ParentId;
 
-  await GetAllPassengersByPayerId(payerId, (error, result) => {
+  await GetAllPassengersByParentId(parentId, (error, result) => {
     if (error) {
       let err: any = {
         status: 400,

@@ -5,7 +5,7 @@ import HomeScreen from '../Screens/AppDrawer/HomeScreen';
 import TripsScreen from '../Screens/AppDrawer/TripsScreen';
 import PaymentsScreen from '../Screens/AppDrawer/PaymentsScreen';
 import ManageVehiclesScreen from '../Screens/AppDrawer/ManageVehiclesScreen';
-import ManageDriversScreen from '../Screens/AppDrawer/ManageDriversScreen';
+import ManageDriversScreen from '../Screens/AppDrawer/ManageDrivers/ManageDriversScreen';
 import ManageClientsScreen from '../Screens/AppDrawer/ManageClientsScreen';
 import ProfileScreen from '../Screens/AppDrawer/ProfileScreen';
 import UserDetailSignUp from '../Screens/SignUpStack/UserDetailsSignUp';

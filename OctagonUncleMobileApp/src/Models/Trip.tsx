@@ -7,6 +7,7 @@ export class Trip {
   driverId?: string;
   date?: Date;
   time?: string;
+  isCompleted?: boolean;
 
   constructor(
     tripId?: string,
@@ -16,7 +17,8 @@ export class Trip {
     businesId?: string,
     driverId?: string,
     date?: Date,
-    time?: string
+    time?: string,
+    isCompleted?: boolean,
   ) {
     this.tripId = tripId;
     this.registrationNumber = registrationNumber;
@@ -26,5 +28,6 @@ export class Trip {
     this.driverId = driverId;
     this.date = date;
     this.time = time;
+    this.isCompleted = isCompleted;
   }
 }

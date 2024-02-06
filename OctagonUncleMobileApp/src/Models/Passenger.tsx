@@ -1,21 +1,39 @@
 export class Passenger {
-  passengerId: String;
-  firstName: String;
-  lastName: String;
-  sex: String;
-  age: Number;
+  PassengerId: String;
+  FirstName: String;
+  LastName: String;
+  Age: Number;
+  HomeAddress: String;
+  DestinationAddress: String;
+  ParentId: String;
+  BusinessId: String;
+  TripStatus?: String;
+  PickUpTIme?: String;
+  DropOffTime?: String;
 
   constructor(
-    childId: String,
-    firstName: String,
-    lastName: String,
-    age: Number,
-    sex: String
+    PassengerId: String,
+    FirstName: String,
+    LastName: String,
+    Age: Number,
+    HomeAddress: String,
+    DestinationAddress: String,
+    ParentId: String,
+    BusinessId: String,
+    TripStatus?: String,
+    PickUpTIme?: String,
+    DropOffTime?: String,
   ) {
-    this.passengerId = childId;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.age = age;
-    this.sex = sex;
+    this.PassengerId = PassengerId;
+    this.FirstName = FirstName;
+    this.LastName = LastName;
+    this.Age = Age;
+    this.HomeAddress = HomeAddress;
+    this.DestinationAddress = DestinationAddress;
+    this.ParentId = ParentId;
+    this.BusinessId = BusinessId;
+    this.TripStatus = TripStatus;
+    this.PickUpTIme = PickUpTIme;
+    this.DropOffTime = DropOffTime;
   }
 }

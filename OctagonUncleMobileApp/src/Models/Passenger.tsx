@@ -8,6 +8,8 @@ export class Passenger {
   ParentId: String;
   BusinessId: String;
   TripStatus?: String;
+  PickUpTIme?: String;
+  DropOffTime?: String;
 
   constructor(
     PassengerId: String,
@@ -19,6 +21,8 @@ export class Passenger {
     ParentId: String,
     BusinessId: String,
     TripStatus?: String,
+    PickUpTIme?: String,
+    DropOffTime?: String,
   ) {
     this.PassengerId = PassengerId;
     this.FirstName = FirstName;
@@ -29,5 +33,7 @@ export class Passenger {
     this.ParentId = ParentId;
     this.BusinessId = BusinessId;
     this.TripStatus = TripStatus;
+    this.PickUpTIme = PickUpTIme;
+    this.DropOffTime = DropOffTime;
   }
 }

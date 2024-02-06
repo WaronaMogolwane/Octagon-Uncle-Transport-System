@@ -1,5 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, FlatList, RefreshControl, View} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  GestureResponderEvent,
+  RefreshControl,
+  View,
+} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {TripCardParent} from '../../Components/TripCardParent';
@@ -14,9 +20,11 @@ import {
   GetUpcomingTripsForTransporter,
   UpdatePassengerStatus,
 } from '../../Controllers/TripController';
-import {TripCardDriver} from '../../Components/TripCardDriver';
+import {TripCardDriverSwipable} from '../../Components/TripCardDriverSwipable';
 import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
 import {Passenger} from '../../Models/Passenger';
+import {TripCardDriver} from '../../Components/TripCardDriver';
+import {getTime} from 'date-fns';
 
 const TripsScreen = ({navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
@@ -25,16 +33,12 @@ const TripsScreen = ({navigation}: any) => {
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
   const role: number = 2;
 
-  // let passengerTotal: number = 0;
-  // let passengerTripId: string;
-
   const [UpcomingTripList, setUpcomingTripList] = useState([]);
   const [PastTripList, setPastTripList] = useState([]);
   const [refreshingUpcomingTrips, setRefreshingUpcomingTrips] =
     React.useState(false);
   const [refreshingPastTrips, setRefreshingPastTrips] = React.useState(false);
   const [statusCode, setStatusCode] = useState(true);
-  //const [passengerCount, setPassengerCount] = useState(0);
 
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
@@ -71,37 +75,24 @@ const TripsScreen = ({navigation}: any) => {
     }, 2000);
   }, []);
 
-  // useEffect(() => {
-  //   if (passengerCount == passengerTotal) {
-  //     //EndTrip(passengerTripId);
-  //   }
-
-  //   return () => {
-  //     if (passengerCount == passengerTotal) {
-  //       setPassengerCount(0);
-  //     }
-  //   };
-  // }, [passengerCount]);
-
   const changeTripStatus = async (
     tripId: string,
     passengerId: string,
     status: number,
   ) => {
     await GetTrip(tripId).then((trip: any) => {
+      const now = new Date();
+      let time = `${now.getHours()}:${now.getMinutes()}`;
       let pArray = [...trip.passenger];
       let nArray: Passenger[] = [];
 
       let passengerCount = 0;
-
       let passengerTotal = pArray.length;
-      //let passengerTripId = tripId;
-
-      // if (status == 2) {
-      //   setPassengerCount(passengerCount + 1);
-      // }
 
       pArray.forEach((item: any) => {
+        let pickUpTime = item.PickUpTime;
+        let dropOffTime = item.DropOffTime;
+
         if (item.PassengerId == passengerId) {
           let updatedPassenger = new Passenger(
             item.PassengerId,
@@ -113,6 +104,8 @@ const TripsScreen = ({navigation}: any) => {
             item.ParentId,
             item.BusinessId,
             String(status),
+            status == 2 ? time : pickUpTime,
+            status == 3 ? time : dropOffTime,
           );
 
           nArray.push(updatedPassenger);
@@ -120,10 +113,11 @@ const TripsScreen = ({navigation}: any) => {
           nArray.push(item);
         }
 
-        if (item.TripStatus == 2) {
+        if (item.TripStatus == 3 || item.TripStatus == 1) {
           passengerCount++;
         }
       });
+
       if (passengerCount == passengerTotal) {
         EndTrip(tripId);
       }
@@ -191,8 +185,8 @@ const TripsScreen = ({navigation}: any) => {
     />
   );
 
-  const renderItemComponentDriver = (itemData: any) => (
-    <TripCardDriver
+  const renderItemComponentDriverSwipable = (itemData: any) => (
+    <TripCardDriverSwipable
       passengerName={itemData.passengerName}
       pickUpTime={itemData.pickUpTime}
       pickUpDate={itemData.pickUpDate}
@@ -207,6 +201,17 @@ const TripsScreen = ({navigation}: any) => {
       handleAbsentPassenger={() => {
         changeTripStatus(itemData.tripId, itemData.passengerId, 1);
       }}
+    />
+  );
+
+  const renderItemComponentDriver = (itemData: any) => (
+    <TripCardDriver
+      passengerName={itemData.passengerName}
+      pickUpTime={itemData.pickUpTime}
+      pickUpDate={itemData.pickUpDate}
+      pickUpLocation={itemData.pickUpLocation}
+      tripStatus={itemData.tripStatus}
+      dropOffTime={itemData.dropOffTime}
     />
   );
 
@@ -244,7 +249,7 @@ const TripsScreen = ({navigation}: any) => {
           <FlatList
             data={UpcomingTripList}
             extraData={statusCode}
-            renderItem={({item}) => renderItemComponentDriver(item)}
+            renderItem={({item}) => renderItemComponentDriverSwipable(item)}
             refreshControl={
               <RefreshControl
                 refreshing={refreshingUpcomingTrips}

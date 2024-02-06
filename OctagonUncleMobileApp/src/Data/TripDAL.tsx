@@ -193,7 +193,7 @@ export const GetPastTripsDriverFromDB = async (
   let trip = {};
 
   await axios
-    .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-past-trip-for-parent`, {
+    .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-past-trip-for-driver`, {
       trip: {
         BusinessId: businessId,
         ParentId: parentId,
@@ -206,7 +206,8 @@ export const GetPastTripsDriverFromDB = async (
         trip = {
           tripId: data.TripId,
           driverName: data.FirstName + ' ' + data.LastName,
-          pickUpTime: data.Time,
+          pickUpTime: data.Passenger.PickUpTime,
+          dropOffTime: data.Passenger.DropOffTime,
           pickUpDate: ConvertDate(data.Date),
           passengerName: data.Passenger.FirstName,
           pickUpLocation: data.Passenger.HomeAddress,

@@ -1,10 +1,10 @@
-export const FilterRows = async (rows: any[], payerId: string) => {
+export const FilterRows = async (rows: any[], parentId: string) => {
   let result = [];
 
   for (let x = 0; x < rows.length; x++) {
     let passenger = [...rows[x].passenger];
     for (let y = 0; y < passenger.length; y++) {
-      if (passenger[y].PayerId == payerId) {
+      if (passenger[y].ParentId == parentId) {
         let res = {
           TripId: rows[x].trip_id,
           RegistrationNumber: rows[x].registrationnumber,

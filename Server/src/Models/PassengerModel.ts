@@ -16,7 +16,7 @@ export const InsertPassenger = async (
       passenger.age,
       passenger.homeAddress,
       passenger.destinationAddress,
-      passenger.payerId,
+      passenger.parentId,
       passenger.businessId,
     ],
     (err, res) => {
@@ -87,13 +87,13 @@ export const GetAllPassengersByBusinessId = async (
   );
 };
 
-export const GetAllPassengersByPayerId = async (
-  payerId: string,
+export const GetAllPassengersByParentId = async (
+  ParentId: string,
   callback: (error, result) => void
 ) => {
   await DbPool.query(
-    "select * from public.fn_get_passengers_by_payer_id($1::text);",
-    [payerId],
+    "select * from public.fn_get_passengers_by_parent_id($1::text);",
+    [ParentId],
     (err, res) => {
       if (err) {
         callback(err, null);

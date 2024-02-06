@@ -12,3 +12,30 @@ export type VerifyOtpModalProps = {
     VerifyOtpButtonOnPress: () => void;
     CloseOtpModalButtonOnPress: () => void;
 };
+export type InvitationModalProps = {
+    ShowModal: boolean;
+    firstNameIsInvalid: boolean;
+    firstNameOnChangeText: (e: string | ChangeEvent<any>) => void;
+    firstNameErrorText: string | undefined;
+    firstNameOnBlur: (e: any) => void;
+    firstNameValue: string;
+    lastNameIsInvalid: boolean;
+    lastNameOnChangeText: (e: string | ChangeEvent<any>) => void;
+    lastNameErrorText: string | undefined;
+    lastNameOnBlur: (e: any) => void;
+    lastNameValue: string;
+    emailIsInvalid: boolean;
+    emailOnChangeText: (e: string | ChangeEvent<any>) => void;
+    emailErrorText: string | undefined;
+    emailOnBlur: (e: any) => void;
+    emailValue: string;
+    idNumberIsInvalid: boolean;
+    idNumberOnChangeText: (e: string | ChangeEvent<any>) => void;
+    idNumberErrorText: string | undefined;
+    idNumberOnBlur: (e: any) => void;
+    idNumberValue: string;
+    SendInviteOnPress: (
+        values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
+    ) => void;
+    CloseOtpModalButtonOnPress: () => void;
+};

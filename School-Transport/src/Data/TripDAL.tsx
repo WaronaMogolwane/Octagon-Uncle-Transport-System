@@ -56,13 +56,13 @@ export const GetTripFromDatabase = async (tripId: string) => {
 };
 
 export const GetAllTripsForClientFromDatabase = async (
-  payerId: string,
+  ParentId: string,
   businessId: string
 ) => {
   let res: any;
   await axios.post("http://192.168.3.57:9999/user-profile/get-user-details", {
     userDetails: {
-      UserId: payerId,
+      UserId: ParentId,
     },
   });
   // .then((response: any) => {

@@ -65,8 +65,8 @@ export const GetUserByEmail = async (x: any) => {
   return true;
 }
 export const InsertUserInvitation = async (userInvitation: UserInvitation, callback: (error, result) => void) => {
-  DbPool.query('CALL public.sp_insert_invitation_code($1::text,$2::text,$3::text)',
-    [userInvitation.businessId, userInvitation.invitationCode, userInvitation.userRole],
+  DbPool.query('CALL public.sp_insert_invitation_code($1::text, $2::text, $3::text, $4::text,$5::text)',
+    [userInvitation.businessId, userInvitation.firstName, userInvitation.lastName, userInvitation.invitationCode, userInvitation.userRole],
     (err, res) => {
       if (err) {
         callback(err, null);

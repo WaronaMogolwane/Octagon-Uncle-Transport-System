@@ -5,95 +5,21 @@ import {
   Animated,
   GestureResponderEvent,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import React, {useState} from 'react';
+
 import {TripCardDriverStyles} from '../Stylesheets/GlobalStyles';
 
 type tripCardProps = {
   passengerName: string;
+  dropOffTime: string;
   pickUpTime: string;
   pickUpDate: string;
   pickUpLocation: string;
   tripStatus: number;
-  handlePickup: (
-    values:
-      | GestureResponderEvent
-      | React.FormEvent<HTMLFormElement>
-      | undefined,
-  ) => void;
-  handleDropoff: (
-    values:
-      | GestureResponderEvent
-      | React.FormEvent<HTMLFormElement>
-      | undefined,
-  ) => void;
-  handleAbsentPassenger: (
-    values:
-      | GestureResponderEvent
-      | React.FormEvent<HTMLFormElement>
-      | undefined,
-  ) => void;
 };
 
 export const TripCardDriver = (props: tripCardProps) => {
   const [isPickedUp, setIsPickedUp] = useState(false);
-
-  const changeBool = () => {
-    setIsPickedUp(true);
-  };
-
-  const leftSwipe = (progress: any, dragX: any) => {
-    const scale = dragX.interpolate({
-      inputRange: [0, 100],
-      outputRange: [0, 1],
-      extrapolate: 'clamp',
-    });
-
-    return (
-      <TouchableOpacity
-        onPress={props.handleAbsentPassenger}
-        activeOpacity={0.6}>
-        <View style={TripCardDriverStyles.absentBox}>
-          <Animated.Text style={{transform: [{scale: scale}]}}>
-            Absent
-          </Animated.Text>
-        </View>
-      </TouchableOpacity>
-    );
-  };
-
-  const rightSwipe = (progress: any, dragX: any) => {
-    const scale = dragX.interpolate({
-      inputRange: [0, 100],
-      outputRange: [1, 0],
-      extrapolate: 'clamp',
-    });
-
-    if (isPickedUp == false) {
-      return (
-        <TouchableOpacity
-          onPressOut={changeBool}
-          onPress={props.handlePickup}
-          activeOpacity={0.6}>
-          <View style={TripCardDriverStyles.pickUpBox}>
-            <Animated.Text style={{transform: [{scale: scale}]}}>
-              Pick-up
-            </Animated.Text>
-          </View>
-        </TouchableOpacity>
-      );
-    } else {
-      return (
-        <TouchableOpacity onPress={props.handleDropoff} activeOpacity={0.6}>
-          <View style={TripCardDriverStyles.pickUpBox}>
-            <Animated.Text style={{transform: [{scale: scale}]}}>
-              Drop-off
-            </Animated.Text>
-          </View>
-        </TouchableOpacity>
-      );
-    }
-  };
 
   const tripStatus = () => {
     if (props.tripStatus == 0) {
@@ -108,32 +34,35 @@ export const TripCardDriver = (props: tripCardProps) => {
   };
 
   return (
-    <Swipeable renderLeftActions={leftSwipe} renderRightActions={rightSwipe}>
-      <View style={TripCardDriverStyles.cardBorder}>
-        <View style={TripCardDriverStyles.cardContainer}>{tripStatus()}</View>
-        <View style={TripCardDriverStyles.cardContainer}>
-          <View style={{marginEnd: 5}}>
-            <Text style={TripCardDriverStyles.cardText}>Passenger:</Text>
-          </View>
-          <View>
-            <Text>{props.passengerName}</Text>
-          </View>
-        </View>
-        <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Pickup Time:</Text>
-          <Text style={{marginEnd: 20}}>{props.pickUpTime}</Text>
-        </View>
-        <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Pickup Date:</Text>
-          <Text>{props.pickUpDate}</Text>
-        </View>
-        <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Location:</Text>
+    <View style={TripCardDriverStyles.cardBorder}>
+      <View style={TripCardDriverStyles.cardContainer}>{tripStatus()}</View>
+      <View style={TripCardDriverStyles.cardContainer}>
+        <View style={{marginEnd: 5}}>
+          <Text style={TripCardDriverStyles.cardText}>Passenger:</Text>
         </View>
         <View>
-          <Text>{props.pickUpLocation}</Text>
+          <Text>{props.passengerName}</Text>
         </View>
       </View>
-    </Swipeable>
+      <View style={TripCardDriverStyles.cardContainer}>
+        <Text style={TripCardDriverStyles.cardText}>Pickup Time:</Text>
+        <Text style={{marginEnd: 20}}>{props.pickUpTime}</Text>
+      </View>
+      <View style={TripCardDriverStyles.cardContainer}>
+        <Text style={TripCardDriverStyles.cardText}>Dropoff Time:</Text>
+        <Text style={{marginEnd: 20}}>{props.dropOffTime}</Text>
+      </View>
+
+      <View style={TripCardDriverStyles.cardContainer}>
+        <Text style={TripCardDriverStyles.cardText}>Pickup Date:</Text>
+        <Text>{props.pickUpDate}</Text>
+      </View>
+      <View style={TripCardDriverStyles.cardContainer}>
+        <Text style={TripCardDriverStyles.cardText}>Location:</Text>
+      </View>
+      <View>
+        <Text>{props.pickUpLocation}</Text>
+      </View>
+    </View>
   );
 };

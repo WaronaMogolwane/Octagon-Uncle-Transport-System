@@ -7,6 +7,7 @@ import {
   UpdateTripDetails,
   UpdateTripPassengerStatus,
   UpdateTripEndTrip,
+  GetPastTripsForDriver,
 } from "../Controllers/TripController";
 
 const router = Router();
@@ -18,6 +19,12 @@ router.post("/get-trip", GetTrip, async (req, res, next) => {});
 router.post(
   "/get-past-trip-for-parent",
   GetPastTripsForParent,
+  async (req, res, next) => {}
+);
+
+router.post(
+  "/get-past-trip-for-driver",
+  GetPastTripsForDriver,
   async (req, res, next) => {}
 );
 

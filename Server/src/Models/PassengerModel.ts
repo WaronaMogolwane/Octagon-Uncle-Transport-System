@@ -10,7 +10,7 @@ export const InsertPassenger = async (
   DbPool.query(
     {
       sql: "call InsertNewPassenger(?,?,?,?,?,?,?,?)",
-      timeout: 40000, // 40s
+      timeout: 40000,
       values: [
         passenger.passenger_id,
         passenger.firstName,
@@ -39,7 +39,7 @@ export const GetPassengerByPassengerId = async (
   DbPool.query(
     {
       sql: "call GetPassenger(?)",
-      timeout: 40000, // 40s
+      timeout: 40000,
       values: [passengerId],
     },
     function (error, results, fields) {
@@ -57,15 +57,18 @@ export const UpdatePassenger = async (
   callback: (error, result) => void
 ) => {
   DbPool.query(
-    `CALL UpdatePassenger(?,?,?,?,?,?)`,
-    [
-      passenger.passenger_id,
-      passenger.firstName,
-      passenger.lastName,
-      passenger.age,
-      passenger.homeAddress,
-      passenger.destinationAddress,
-    ],
+    {
+      sql: "CALL UpdatePassenger(?,?,?,?,?,?)",
+      timeout: 40000,
+      values: [
+        passenger.passenger_id,
+        passenger.firstName,
+        passenger.lastName,
+        passenger.age,
+        passenger.homeAddress,
+        passenger.destinationAddress,
+      ],
+    },
     (err, res) => {
       if (err) {
         callback(err, null);
@@ -83,7 +86,7 @@ export const GetAllPassengersByBusinessId = async (
   DbPool.query(
     {
       sql: "call GetPassengerByBusinessId(?)",
-      timeout: 40000, // 40s
+      timeout: 40000,
       values: [businessId],
     },
     function (error, results, fields) {
@@ -103,7 +106,7 @@ export const GetAllPassengersByParentId = async (
   DbPool.query(
     {
       sql: "call GetPassengerByParentId(?)",
-      timeout: 40000, // 40s
+      timeout: 40000,
       values: [ParentId],
     },
     function (error, results, fields) {

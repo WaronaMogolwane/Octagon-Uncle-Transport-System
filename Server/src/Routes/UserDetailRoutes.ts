@@ -8,7 +8,7 @@ const router = Router();
 
 router.post("/add-user-details", AddUserDetail, async (req, res, next) => {});
 
-router.get("/get-user-details", GetUserDetail, async (req, res, next) => {});
+router.post("/get-user-details", GetUserDetail, async (req, res, next) => {});
 
 router.patch(
   "/update-user-details",

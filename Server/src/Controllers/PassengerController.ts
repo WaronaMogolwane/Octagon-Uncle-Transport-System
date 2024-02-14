@@ -62,7 +62,6 @@ export const GetPassenger = async (req: any, res: any, next: any) => {
         RecordRetrieved: true,
         result: result[0],
       });
-      console.log(result);
     }
   });
 };
@@ -119,7 +118,7 @@ export const GetPassengersByParent = async (req: any, res: any, next: any) => {
     } else {
       res.status(200).json({
         RecordRetrieved: true,
-        result: result.rows,
+        result: result[0],
       });
     }
   });
@@ -148,7 +147,7 @@ export const GetPassengersByBusiness = async (
     } else {
       res.status(200).json({
         RecordRetrieved: true,
-        result: result.rows,
+        result: result[0],
       });
     }
   });

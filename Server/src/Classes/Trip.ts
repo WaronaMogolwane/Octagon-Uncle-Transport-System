@@ -1,30 +1,30 @@
 export class Trip {
   tripId?: string;
-  registrationNumber?: string;
-  passenger?: any[];
-  vehicleId?: string;
-  businesId?: string;
-  driverId?: string;
+  passengerId?: string;
+  driverVehicleLinkingId?: string;
   date?: Date;
-  time?: string;
+  pickUpTime?: string;
+  dropOffTime?: string;
+  isCompleted?: boolean;
+  tripStatus?: number;
 
   constructor(
     tripId?: string,
-    registrationNumber?: string,
-    passenger?: any[],
-    vehicleId?: string,
-    businesId?: string,
-    driverId?: string,
+    passengerId?: string,
+    driverVehicleLinkingId?: string,
     date?: Date,
-    time?: string
+    pickUpTime?: string,
+    dropOffTime?: string,
+    isCompleted?: boolean,
+    tripStatus?: number
   ) {
     this.tripId = tripId;
-    this.registrationNumber = registrationNumber;
-    this.passenger = passenger;
-    this.vehicleId = vehicleId;
-    this.businesId = businesId;
-    this.driverId = driverId;
+    this.passengerId = passengerId;
+    this.driverVehicleLinkingId = driverVehicleLinkingId;
     this.date = date;
-    this.time = time;
+    this.pickUpTime = pickUpTime;
+    this.dropOffTime = dropOffTime;
+    this.isCompleted = isCompleted;
+    this.tripStatus = tripStatus;
   }
 }

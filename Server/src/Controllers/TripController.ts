@@ -15,13 +15,13 @@ import { TripPassengerStatus } from "../Classes/TripPassengerStatus";
 export const AddTrip = async (req: any, res: any, next: any) => {
   let newTrip = new Trip(
     randomUUID(),
-    req.body.trip.RegistrationNumber,
-    [...req.body.trip.Passengers],
-    req.body.trip.VehicleId,
-    req.body.trip.BusinessId,
-    req.body.trip.DriverId,
+    req.body.trip.PassengerId,
+    req.body.trip.DriverVehicleLinkingId,
     req.body.trip.Date,
-    req.body.trip.Time
+    req.body.trip.PickUpTime,
+    req.body.trip.DropOffTime,
+    req.body.trip.IsCompleted,
+    req.body.trip.TripStatus
   );
 
   await InsertTrip(newTrip, (error, result) => {
@@ -34,7 +34,7 @@ export const AddTrip = async (req: any, res: any, next: any) => {
     } else {
       res.status(200).json({
         TripCreated: true,
-        result: result.rows[0],
+        result: result[0],
       });
     }
   });
@@ -68,13 +68,13 @@ export const GetTrip = async (req: any, res: any, next: any) => {
 export const UpdateTripDetails = async (req: any, res: any, next: any) => {
   let updatedTrip = new Trip(
     req.body.trip.TripId,
-    req.body.trip.RegistrationNumber,
-    [...req.body.trip.Passengers],
-    req.body.trip.VehicleId,
-    req.body.trip.BusinessId,
-    req.body.trip.DriverId,
+    req.body.trip.PassengerId,
+    req.body.trip.DriverVehicleLinkingId,
     req.body.trip.Date,
-    req.body.trip.Time
+    req.body.trip.PickUpTime,
+    req.body.trip.DropOffTime,
+    req.body.trip.IsCompleted,
+    req.body.trip.TripStatus
   );
   await UpdateTrip(updatedTrip, (error, result) => {
     if (error) {

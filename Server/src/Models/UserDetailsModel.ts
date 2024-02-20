@@ -7,7 +7,6 @@ export const InsertUserDetail = async (
   userDetail: UserDetail,
   callback: (error, result) => void
 ) => {
-  console.log(userDetail);
   DbPool.query(
     {
       sql: "CALL InsertNewUserDetail(?,?,?,?,?,?,?,?,?,?,?);",

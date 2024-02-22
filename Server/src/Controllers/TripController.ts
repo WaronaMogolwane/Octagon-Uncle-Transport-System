@@ -6,10 +6,10 @@ import {
   UpdateTrip,
   GetPastTripsByParentId,
   GetUpcomingTripsByParentId,
-  UpdateTripPassengers,
-  UpdateTripIsCompleted,
+  UpdateTripStatus,
+  UpdateTripIsCompleted as EndTrip,
 } from "../Models/TripModel";
-import { TripPassengerStatus } from "../Classes/TripPassengerStatus";
+import { TripStatus } from "../Classes/TripStatus";
 
 export const AddTrip = async (req: any, res: any, next: any) => {
   const convertedDate = req.body.trip.Date;
@@ -33,6 +33,12 @@ export const AddTrip = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
     } else {
       res.status(200).json({
         TripCreated: true,
@@ -52,7 +58,7 @@ export const GetTrip = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
-    } else if (result.rowCount == 0) {
+    } else if (result[0] == "") {
       let err: any = {
         status: 405,
         message: "Record not found",
@@ -88,6 +94,12 @@ export const UpdateTripDetails = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
     } else {
       res.status(200).json({
         TripUpdated: true,
@@ -102,20 +114,27 @@ export const UpdateTripPassengerStatus = async (
   res: any,
   next: any
 ) => {
-  const updatedPassenger = new TripPassengerStatus(req.body.trip.TripId, [
-    ...req.body.trip.Passenger,
-  ]);
+  const tripStatus = new TripStatus(
+    req.body.trip.TripId,
+    req.body.trip.TripStatus
+  );
 
-  await UpdateTripPassengers(updatedPassenger, (error, result) => {
+  await UpdateTripStatus(tripStatus, (error, result) => {
     if (error) {
       let err: any = {
         status: 400,
         message: error.message,
       };
       next(err);
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
     } else {
       res.status(200).json({
-        TripPassengerUpdated: true,
+        TripStatusUpdated: true,
         result: result[0],
       });
     }
@@ -125,11 +144,17 @@ export const UpdateTripPassengerStatus = async (
 export const UpdateTripEndTrip = async (req: any, res: any, next: any) => {
   let tripId = req.body.trip.TripId;
 
-  await UpdateTripIsCompleted(tripId, (error, result) => {
+  await EndTrip(tripId, (error, result) => {
     if (error) {
       let err: any = {
         status: 400,
         message: error.message,
+      };
+      next(err);
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
       };
       next(err);
     } else {

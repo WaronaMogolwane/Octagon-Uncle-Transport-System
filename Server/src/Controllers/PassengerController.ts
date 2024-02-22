@@ -109,7 +109,7 @@ export const GetPassengersByParent = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
-    } else if (result.rowCount == 0) {
+    } else if (result[0] == "") {
       let err: any = {
         status: 405,
         message: "Record not found",
@@ -138,7 +138,7 @@ export const GetPassengersByBusiness = async (
         message: error.message,
       };
       next(err);
-    } else if (result.rowCount == 0) {
+    } else if (result[0] == "") {
       let err: any = {
         status: 405,
         message: "Record not found",

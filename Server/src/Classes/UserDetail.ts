@@ -2,6 +2,7 @@ export class UserDetail {
   userDetailId?: string;
   firstName?: string;
   lastName?: string;
+  cellphone?: string;
   addressLine1?: string;
   addressLine2?: string;
   suburb?: string;
@@ -14,6 +15,7 @@ export class UserDetail {
     userDetailId?: string,
     firstName?: string,
     lastName?: string,
+    cellphone?: string,
     addressLine1?: string,
     addressLine2?: string,
     suburb?: string,
@@ -25,6 +27,7 @@ export class UserDetail {
     this.userDetailId = userDetailId;
     this.firstName = firstName;
     this.lastName = lastName;
+    this.cellphone = cellphone;
     this.addressLine1 = addressLine1;
     this.addressLine2 = addressLine2;
     this.suburb = suburb;

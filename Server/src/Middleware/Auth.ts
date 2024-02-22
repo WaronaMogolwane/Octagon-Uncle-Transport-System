@@ -32,7 +32,7 @@ export const AuthenticateJWT = (req: any, res: any, next: any) => {
 };
 
 export const CreateJWT = (req: any, res: any, next: any) => {
-  let successMessage = req.body.message;
+  let successMessage = "User successfully created";
   let payload =
   {
     id: req.body.email,

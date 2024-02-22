@@ -49,8 +49,16 @@ export const GetUserByEmailPassword = async (user: UserCredentials, callback: (e
     })
 }
 export const InsertNewUser = async (user: User, callback: (error, result) => void) => {
-  DbPool.query('CALL public.sp_insert_new_user($1::text,$2::text,$3::text,$4::text,$5::integer)',
-    [user.userId, user.email, user.password, user.cellphone, user.userRole],
+  DbPool.query({
+    sql: "CALL InsertNewUser(?,?,?,?)",
+    timeout: 40000,
+    values: [
+      user.userId,
+      user.email,
+      user.password,
+      user.userRole
+    ],
+  },
     (err, res) => {
       //
       if (err) {

@@ -7,6 +7,7 @@ import { Email } from "../Classes/Email";
 import { UserCredentials } from '../Classes/UserCredentials';
 import { CreateOtpEmailHtml, SendEmail } from '../Models/EmailModel';
 import { UserInvitation } from '../Classes/UserInvitation';
+import { ErrorResponse } from '../Classes/ErrorResponse';
 
 export const CheckIfUserExists = async (req: any, res: any, next: any) => {
   if (await GetUserByEmail(req.body.userDetails.Email)) {
@@ -16,27 +17,21 @@ export const CheckIfUserExists = async (req: any, res: any, next: any) => {
   }
 };
 export const RegisterUser = async (req: any, res: any, next: any) => {
-  let newUser = new User(
-
-    randomUUID(),
-    req.body.Email,
-    req.body.Password,
-    req.body.Cellphone,
-    null,
-    null,
-    req.body.UserRole
-  );
-
+  const newUser: User = {
+    userId: randomUUID(),
+    email: req.body.Email,
+    password: req.body.Password,
+    userRole: req.body.UserRole
+  };
   await InsertNewUser(newUser, (error, result) => {
     if (error) {
-      let err: any = {
+      let err: ErrorResponse = {
         status: 400,
         message: error.message
       }
       next(err);
     }
     else {
-      req.body.message = "User successfully created.";
       next();
     }
   }

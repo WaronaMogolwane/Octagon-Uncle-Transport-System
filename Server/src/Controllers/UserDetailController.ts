@@ -28,6 +28,12 @@ export const AddUserDetail = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
     } else {
       res.status(200).json({
         UserCreated: true,
@@ -46,10 +52,10 @@ export const GetUserDetail = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
-    } else if (result.rowCount == 0) {
+    } else if (result.affectedRows == 0) {
       let err: any = {
-        status: 405,
-        message: "Record not found",
+        status: 499,
+        message: "Something went wrong",
       };
       next(err);
     } else {

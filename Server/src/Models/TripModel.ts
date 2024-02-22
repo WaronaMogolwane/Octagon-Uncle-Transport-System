@@ -36,43 +36,49 @@ export const GetTripById = async (
   tripId: string,
   callback: (error, result) => void
 ) => {
-  // await DbPool.query(
-  //   "select * from fn_get_trip($1::text);",
-  //   [tripId],
-  //   (err, res) => {
-  //     if (err) {
-  //       callback(err, null);
-  //     } else {
-  //       callback(null, res);
-  //     }
-  //   }
-  // );
+  DbPool.query(
+    {
+      sql: "CALL GetTrip(?);",
+      timeout: 40000,
+      values: [tripId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
 };
 
 export const UpdateTrip = async (
   trip: Trip,
   callback: (error, result) => void
 ) => {
-  // await DbPool.query(
-  //   `CALL public.sp_update_trip($1::text,$2::text,$3::json,$4::text,$5::text,$6::text,$7::date,$8::text)`,
-  //   [
-  //     trip.tripId,
-  //     trip.registrationNumber,
-  //     JSON.stringify(trip.passenger),
-  //     trip.vehicleId,
-  //     trip.businesId,
-  //     trip.driverId,
-  //     trip.date,
-  //     trip.time,
-  //   ],
-  //   (err, res) => {
-  //     if (err) {
-  //       callback(err, null);
-  //     } else {
-  //       callback(null, res);
-  //     }
-  //   }
-  // );
+  DbPool.query(
+    {
+      sql: "CALL UpdateTrip(?,?,?,?,?,?,?,?);",
+      timeout: 40000,
+      values: [
+        trip.tripId,
+        trip.passengerId,
+        trip.driverVehicleLinkingId,
+        trip.date,
+        trip.pickUpTime,
+        trip.dropOffTime,
+        trip.isCompleted,
+        trip.tripStatus,
+      ],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
 };
 
 export const UpdateTripPassengers = async (
@@ -93,35 +99,41 @@ export const UpdateTripPassengers = async (
   // );
 };
 
-export const GetPastTripsByBusinessIdAndParentId = async (
-  businessId: string,
+export const GetPastTripsByParentId = async (
+  parentId: string,
   callback: (error, result) => void
 ) => {
-  await DbPool.query(
-    "select * from public.fn_get_past_trips($1::text);",
-    [businessId],
-    (err, res) => {
-      if (err) {
-        callback(err, null);
+  DbPool.query(
+    {
+      sql: "CALL GetPastTripsForParent(?);",
+      timeout: 40000,
+      values: [parentId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
       } else {
-        callback(null, res);
+        callback(null, results);
       }
     }
   );
 };
 
-export const GetUpcomingTripsByBusinessIdAndParentId = async (
-  businessId: string,
+export const GetUpcomingTripsByParentId = async (
+  parentId: string,
   callback: (error, result) => void
 ) => {
-  await DbPool.query(
-    "select * from public.fn_get_upcoming_trips($1::text);",
-    [businessId],
-    (err, res) => {
-      if (err) {
-        callback(err, null);
+  DbPool.query(
+    {
+      sql: "CALL GetFutureTripsForParent(?);",
+      timeout: 40000,
+      values: [parentId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
       } else {
-        callback(null, res);
+        callback(null, results);
       }
     }
   );

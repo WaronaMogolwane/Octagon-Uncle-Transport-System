@@ -1,21 +1,17 @@
-import dotenv from "dotenv";
-import { Client, Pool } from "pg";
+import mysql from "mysql2";
 
-const dotEnv = dotenv.config();
-export const DbClient = new Client({
-  connectionString: process.env.PSQL_CONNECTION_STRING,
-});
-export const DbConnect = async () => {
-  await DbClient.connect();
-};
-export const EndConnection = async () => {
-  await DbClient.end();
-};
+const host = process.env.HOST;
+const dbUser = process.env.DB_USER;
+const dbPassword = process.env.DB_PASSWORD;
+const databaseName = process.env.DATABASE;
 
-export const DbPool = new Pool({
-  connectionString: process.env.PSQL_CONNECTION_STRING,
-  max: 5,
-  connectionTimeoutMillis: 2000,
-  idleTimeoutMillis: 2000,
-  allowExitOnIdle: false,
+export const DbPool = mysql.createPool({
+  host: host,
+  user: dbUser,
+  password: dbPassword,
+  database: databaseName,
+  waitForConnections: true,
+  multipleStatements: true,
+  connectionLimit: 10,
+  queueLimit: 0,
 });

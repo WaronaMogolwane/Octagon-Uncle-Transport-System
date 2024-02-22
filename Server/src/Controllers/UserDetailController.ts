@@ -12,6 +12,7 @@ export const AddUserDetail = async (req: any, res: any, next: any) => {
     randomUUID(),
     req.body.userDetail.FirstName,
     req.body.userDetail.LastName,
+    req.body.userDetail.Cellphone,
     req.body.userDetail.AddressLine1,
     req.body.userDetail.AddressLine2,
     req.body.userDetail.Surburb,
@@ -27,17 +28,23 @@ export const AddUserDetail = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
     } else {
       res.status(200).json({
         UserCreated: true,
-        result: result.rows[0],
+        result: result[0],
       });
     }
   });
 };
 
 export const GetUserDetail = async (req: any, res: any, next: any) => {
-  let userId = req.body.userDetails.UserId;
+  let userId = req.body.userDetails.UserDetailId;
   await GetUserDetailByUserId(userId, (error, result) => {
     if (error) {
       let err: any = {
@@ -45,16 +52,16 @@ export const GetUserDetail = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
-    } else if (result.rowCount == 0) {
+    } else if (result.affectedRows == 0) {
       let err: any = {
-        status: 405,
-        message: "Record not found",
+        status: 499,
+        message: "Something went wrong",
       };
       next(err);
     } else {
       res.status(200).json({
         RecordRetrieved: true,
-        result: result.rows[0],
+        result: result[0],
       });
     }
   });
@@ -66,9 +73,10 @@ export const UpdateUserPersonalDetail = async (
   next: any
 ) => {
   let userDetail = new UserDetail(
-    req.body.userDetail.userDetailId,
+    req.body.userDetail.UserDetailId,
     req.body.userDetail.FirstName,
     req.body.userDetail.LastName,
+    req.body.userDetail.Cellphone,
     req.body.userDetail.AddressLine1,
     req.body.userDetail.AddressLine2,
     req.body.userDetail.Surburb,
@@ -84,10 +92,16 @@ export const UpdateUserPersonalDetail = async (
         message: error.message,
       };
       next(err);
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
     } else {
       res.status(200).json({
         UserDetailUpdated: true,
-        result: result.rows[0],
+        result: result.affectedRows,
       });
     }
   });

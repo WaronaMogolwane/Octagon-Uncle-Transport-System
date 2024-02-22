@@ -2,7 +2,7 @@ export class Passenger {
   passenger_id?: string;
   firstName?: string;
   lastName?: string;
-  age?: string;
+  age?: number;
   homeAddress?: string;
   destinationAddress?: string;
   parentId?: string;
@@ -12,7 +12,7 @@ export class Passenger {
     passenger_id?: string,
     firstName?: string,
     lastName?: string,
-    age?: string,
+    age?: number,
     homeaddress?: string,
     destinationaddress?: string,
     parentId?: string,

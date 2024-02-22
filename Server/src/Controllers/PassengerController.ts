@@ -26,10 +26,16 @@ export const AddPassenger = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
     } else {
       res.status(200).json({
         PassengerCreated: true,
-        result: result.rows[0],
+        result: result.affectedRows,
       });
     }
   });
@@ -45,7 +51,7 @@ export const GetPassenger = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
-    } else if (result.rowCount == 0) {
+    } else if (result[0] == "") {
       let err: any = {
         status: 405,
         message: "Record not found",
@@ -54,9 +60,8 @@ export const GetPassenger = async (req: any, res: any, next: any) => {
     } else {
       res.status(200).json({
         RecordRetrieved: true,
-        result: result.rows[0],
+        result: result[0],
       });
-      console.log(result);
     }
   });
 };
@@ -79,10 +84,16 @@ export const UpdatePassengerDetail = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
     } else {
       res.status(200).json({
         UserDetailUpdated: true,
-        result: result.rows[0],
+        result: result.affectedRows,
       });
     }
   });
@@ -98,7 +109,7 @@ export const GetPassengersByParent = async (req: any, res: any, next: any) => {
         message: error.message,
       };
       next(err);
-    } else if (result.rowCount == 0) {
+    } else if (result[0] == "") {
       let err: any = {
         status: 405,
         message: "Record not found",
@@ -107,7 +118,7 @@ export const GetPassengersByParent = async (req: any, res: any, next: any) => {
     } else {
       res.status(200).json({
         RecordRetrieved: true,
-        result: result.rows,
+        result: result[0],
       });
     }
   });
@@ -127,7 +138,7 @@ export const GetPassengersByBusiness = async (
         message: error.message,
       };
       next(err);
-    } else if (result.rowCount == 0) {
+    } else if (result[0] == "") {
       let err: any = {
         status: 405,
         message: "Record not found",
@@ -136,7 +147,7 @@ export const GetPassengersByBusiness = async (
     } else {
       res.status(200).json({
         RecordRetrieved: true,
-        result: result.rows,
+        result: result[0],
       });
     }
   });

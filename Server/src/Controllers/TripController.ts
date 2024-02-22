@@ -160,7 +160,7 @@ export const GetPastTripsForParent = async (req: any, res: any, next: any) => {
       } */ else {
       res.status(200).json({
         RecordRetrieved: true,
-        result: result,
+        result: result[0],
       });
     }
   });
@@ -185,7 +185,7 @@ export const GetPastTripsForDriver = async (req: any, res: any, next: any) => {
       } */ else {
       res.status(200).json({
         RecordRetrieved: true,
-        result: result,
+        result: result[0],
       });
     }
   });
@@ -214,7 +214,7 @@ export const GetUpcomingTripsForParent = async (
       } */ else {
       res.status(200).json({
         RecordRetrieved: true,
-        result: result,
+        result: result[0],
       });
     }
   });

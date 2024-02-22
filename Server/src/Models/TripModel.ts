@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import { DbPool } from "../Services/DatabaseService";
 import { Trip } from "../Classes/Trip";
+import { TripStatus } from "../Classes/TripStatus";
 dotenv.config();
 
 export const InsertTrip = async (
@@ -81,22 +82,24 @@ export const UpdateTrip = async (
   );
 };
 
-export const UpdateTripPassengers = async (
-  trip: any,
+export const UpdateTripStatus = async (
+  tripStatus: TripStatus,
   callback: (error, result) => void
 ) => {
-  // console.log(trip);
-  // await DbPool.query(
-  //   `CALL public.sp_update_trip_passenger_status($1::text,$2::json)`,
-  //   [trip.tripId, JSON.stringify(trip.passenger)],
-  //   (err, res) => {
-  //     if (err) {
-  //       callback(err, null);
-  //     } else {
-  //       callback(null, res);
-  //     }
-  //   }
-  // );
+  DbPool.query(
+    {
+      sql: "CALL UpdateTripStatus(?,?);",
+      timeout: 40000,
+      values: [tripStatus.tripId, tripStatus.tripStatus],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
 };
 
 export const GetPastTripsByParentId = async (
@@ -140,17 +143,20 @@ export const GetUpcomingTripsByParentId = async (
 };
 
 export const UpdateTripIsCompleted = async (
-  tripId: any,
+  tripId: string,
   callback: (error, result) => void
 ) => {
-  await DbPool.query(
-    `CALL public.sp_update_trip_iscompleted($1::text)`,
-    [tripId],
-    (err, res) => {
-      if (err) {
-        callback(err, null);
+  DbPool.query(
+    {
+      sql: "CALL UpdateTripEndTrip(?);",
+      timeout: 40000,
+      values: [tripId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
       } else {
-        callback(null, res);
+        callback(null, results);
       }
     }
   );

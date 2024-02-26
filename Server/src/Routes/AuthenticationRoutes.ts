@@ -26,7 +26,7 @@ router.post("/verify-otp", VerifyOtp, async (req, res) => { });
 
 router.post("/create-invitation", SendUserInvitation, (req, res) => { });
 
-router.post("/verify-invitation", VerifyUserInvitation, async (req, res) => {
+router.get("/verify-invitation", VerifyUserInvitation, async (req, res) => {
 });
 
 router.get("/", (req, res) => { });

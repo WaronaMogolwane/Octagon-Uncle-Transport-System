@@ -140,4 +140,43 @@ export const IsUserInvitationValid = (userInvitationExpireDate: Date) => {
     return true;
   } else return false;
 };
+export const UpdateOtpToUsed = async (email: string, otp: string, callback: (error, result) => void) => {
+  DbPool.query({
+    sql: "CALL UpdateOtpToUsed(?,?)",
+    timeout: 40000,
+    values: [
+      email,
+      otp
+    ]
+  },
+    (err, res) => {
+
+      if (err) {
+        callback(err, null);
+      }
+      else {
+        callback(null, res);
+      }
+    })
+}
+export const UpdateUserInvitationToUsed = async (userInvitation: UserInvitation, callback: (error, result) => void) => {
+  DbPool.query({
+    sql: "CALL UpdateUserInvitationToUsed(?,?)",
+    timeout: 40000,
+    values: [
+      userInvitation.userEmail,
+      userInvitation.invitationCode
+    ]
+  },
+    (err, res) => {
+
+      if (err) {
+        callback(err, null);
+      }
+      else {
+        callback(null, res);
+      }
+    })
+}
+
 

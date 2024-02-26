@@ -9,7 +9,7 @@ import { ErrorResponse } from "../Classes/ErrorResponse";
 
 export const InsertOtp = async (email: string, otp: string, callback: (error, result) => void) => {
   DbPool.query({
-    sql: "CALL InsertNewUserOtp(?,?)",
+    sql: "CALL InsertUserOtp(?,?)",
     timeout: 40000,
     values: [
       email,

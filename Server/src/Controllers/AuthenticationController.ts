@@ -1,4 +1,4 @@
-import { GetOtp, GetUserByEmailPassword, GetUserInvitation, InsertUserInvitation, IsUserInvitationValid, } from '../Models/AuthenticationModel';
+import { GetOtp, GetUserByEmailPassword, GetUserInvitation, InsertUserInvitation, IsUserInvitationValid, UpdateOtpToUsed, } from '../Models/AuthenticationModel';
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
 import { GetUserByEmail, InsertNewUser, InsertOtp } from "../Models/AuthenticationModel";
@@ -79,7 +79,7 @@ export const VerifyOtp = async (req, res, next) => {
   let errorResponse: ErrorResponse;
   let email: string = req.body.email;
   let otp: string = req.body.otp;
-  await GetOtp(email, otp, (error, result) => {
+  await GetOtp(email, otp, async (error, result) => {
     if (error) {
       errorResponse = {
         message: error,
@@ -91,7 +91,18 @@ export const VerifyOtp = async (req, res, next) => {
       if (result[0][0]) {
         let otpExpireDate = new Date(result[0][0].OtpExpireDate);
         if (IsOtpVaid(otpExpireDate)) {
-          res.status(201).send("OTP verified.");
+          await UpdateOtpToUsed(email, otp, (error, result) => {
+            if (error) {
+              errorResponse = {
+                message: error,
+                status: error.message
+              }
+              next(errorResponse);
+            }
+            else {
+              res.status(201).send("OTP verified.");
+            }
+          })
         } else {
           res.status(400).send("OTP expired.");
         }

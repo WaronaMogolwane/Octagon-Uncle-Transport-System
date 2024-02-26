@@ -4,11 +4,18 @@ import { User } from "../Classes/User";
 import { DbPool } from "../Services/DatabaseService";
 import { UserCredentials } from "../Classes/UserCredentials";
 import { UserInvitation } from "../Classes/UserInvitation";
+import { ErrorResponse } from "../Classes/ErrorResponse";
 
 
-export const InsertOtp = async (userId: string, email: string, otp: string, callback: (error, result) => void) => {
-  DbPool.query('CALL public.sp_insert_otp($1::text,$2::text,$3::text)',
-    [userId, email, otp],
+export const InsertOtp = async (email: string, otp: string, callback: (error, result) => void) => {
+  DbPool.query({
+    sql: "CALL InsertNewUserOtp(?,?)",
+    timeout: 40000,
+    values: [
+      email,
+      otp
+    ],
+  },
     (err, res) => {
       //console.log(err ? err : res.rows[0].message) // Hello World!
       //
@@ -21,8 +28,14 @@ export const InsertOtp = async (userId: string, email: string, otp: string, call
     })
 }
 export const GetOtp = async (email: string, otp: string, callback: (error, result) => void) => {
-  DbPool.query('SELECT * from public.fn_verify_otp($1::text,$2::text)',
-    [email, otp],
+  DbPool.query({
+    sql: "CALL GetUserOtp(?,?)",
+    timeout: 40000,
+    values: [
+      email,
+      otp
+    ]
+  },
     (err, res) => {
 
       if (err) {
@@ -34,14 +47,23 @@ export const GetOtp = async (email: string, otp: string, callback: (error, resul
     })
 }
 export const GetUserByEmailPassword = async (user: UserCredentials, callback: (error, result) => void) => {
-  DbPool.query('SELECT * FROM public.fn_user_login($1::text,$2::text)',
-    [user.email, user.password],
+  DbPool.query({
+    sql: "CALL GetUserByEmailPassword(?,?)",
+    timeout: 40000,
+    values: [
+      user.email,
+      user.password,
+    ],
+  },
     (err: any, res: any) => {
       if (err) {
         callback(err, null);
       }
-      if (!res.rows[0]) {
-        callback("No user found.", null);
+      if (!res[0][0]) {
+        let error: ErrorResponse = {
+          message: "No user found."
+        }
+        callback(error, null);
       }
       else {
         callback(null, res);
@@ -73,8 +95,18 @@ export const GetUserByEmail = async (x: any) => {
   return true;
 }
 export const InsertUserInvitation = async (userInvitation: UserInvitation, callback: (error, result) => void) => {
-  DbPool.query('CALL public.sp_insert_invitation_code($1::text, $2::text, $3::text, $4::text,$5::text)',
-    [userInvitation.businessId, userInvitation.firstName, userInvitation.lastName, userInvitation.invitationCode, userInvitation.userRole],
+  DbPool.query({
+    sql: "CALL InsertUserInvitation(?,?,?,?,?,?)",
+    timeout: 40000,
+    values: [
+      userInvitation.businessId,
+      userInvitation.invitationCode,
+      userInvitation.userRole,
+      userInvitation.userEmail,
+      userInvitation.firstName,
+      userInvitation.lastName
+    ],
+  },
     (err, res) => {
       if (err) {
         callback(err, null);
@@ -85,8 +117,14 @@ export const InsertUserInvitation = async (userInvitation: UserInvitation, callb
     })
 }
 export const GetUserInvitation = async (invitationCode: string, userRole: string, callback: (error, result) => void) => {
-  DbPool.query('SELECT * FROM public.fn_verify_invitation_code($1::text,$2::text)',
-    [invitationCode, userRole],
+  DbPool.query({
+    sql: "CALL GetUserInvitation(?,?)",
+    timeout: 40000,
+    values: [
+      invitationCode,
+      userRole
+    ],
+  },
     (err, res) => {
 
       if (err) {

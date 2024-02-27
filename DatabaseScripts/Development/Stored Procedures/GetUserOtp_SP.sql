@@ -1,11 +1,13 @@
 DELIMITER $$
-CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetUserOtp`(in _Email varchar(100), in _Otp varchar(5))
+CREATE DEFINER=`sqladmin`@`%` PROCEDURE `InsertUserOtp`(in _Email varchar(50), in _Otp varchar(5))
 BEGIN
-	    SELECT *
-	    FROM UserOtp
-	    WHERE
-	        Otp = _Otp
-	        AND Email = _Email
-            AND IsUsed = 0;
+INSERT INTO UserOtp
+(Email, Otp, DateCreated, OtpExpireDate)
+VALUES
+(_Email, _Otp, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())
+ON DUPLICATE KEY
+UPDATE `Otp` = _OTP,
+`DateCreated` = CURRENT_TIMESTAMP(),
+`OtpExpireDate` = CURRENT_TIMESTAMP();
 END$$
 DELIMITER ;

@@ -1,11 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {
-  Alert,
-  FlatList,
-  GestureResponderEvent,
-  RefreshControl,
-  View,
-} from 'react-native';
+import {FlatList, RefreshControl, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {TripCardParent} from '../../Components/TripCardParent';
@@ -24,14 +18,13 @@ import {TripCardDriverSwipable} from '../../Components/TripCardDriverSwipable';
 import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
 import {Passenger} from '../../Models/Passenger';
 import {TripCardDriver} from '../../Components/TripCardDriver';
-import {getTime} from 'date-fns';
 
 const TripsScreen = ({navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
 
   const parentId = 'c7728615-394f-466b-833e-ea9dd60ba836';
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  const role: number = 2;
+  const role: number = 1;
 
   const [UpcomingTripList, setUpcomingTripList] = useState([]);
   const [PastTripList, setPastTripList] = useState([]);
@@ -181,7 +174,7 @@ const TripsScreen = ({navigation}: any) => {
       pickUpDate={itemData.pickUpDate}
       passengerName={itemData.passengerName}
       pickUpLocation={itemData.pickUpLocation}
-      isSuccess={itemData.isSuccess}
+      tripStatus={itemData.tripStatus}
     />
   );
 
@@ -222,7 +215,7 @@ const TripsScreen = ({navigation}: any) => {
       pickUpDate={itemData.pickUpDate}
       passengerName={itemData.passengerName}
       pickUpLocation={itemData.pickUpLocation}
-      isSuccess={itemData.isSuccess}
+      tripStatus={itemData.isSuccess}
     />
   );
 

@@ -78,12 +78,13 @@ export const GetUpcomingTripsParentFromDB = async (
       res.forEach(data => {
         trip = {
           tripId: data.TripId,
-          driverName: data.FirstName + ' ' + data.LastName,
-          pickUpTime: data.Time,
+          driverName: data.DriverFirstName + ' ' + data.DriverLastName,
+          pickUpTime: data.PickUpTime,
           pickUpDate: ConvertDate(data.Date),
-          passengerName: data.Passenger.FirstName,
-          pickUpLocation: data.Passenger.HomeAddress,
-          tripStatus: Number(data.Passenger.Success),
+          passengerName: data.PassengerFirstName + ' ' + data.PassengerLastName,
+          pickUpLocation: data.HomeAddress,
+          dropoffLocation: data.DestinationAddress,
+          tripStatus: Number(data.TripStatus),
         };
 
         tripData.push(trip);
@@ -120,12 +121,14 @@ export const GetPastTripsParentFromDB = async (
       res.forEach(data => {
         trip = {
           tripId: data.TripId,
-          driverName: data.FirstName + ' ' + data.LastName,
-          pickUpTime: data.Time,
+          driverName: data.DriverFirstName + ' ' + data.DriverLastName,
+          pickUpTime: data.PickUpTime,
+          dropoffTime: data.DropoffTime,
           pickUpDate: ConvertDate(data.Date),
-          passengerName: data.Passenger.FirstName,
-          pickUpLocation: data.Passenger.HomeAddress,
-          tripStatus: Number(data.Passenger.Success),
+          passengerName: data.PassengerFirstName + ' ' + data.PassengerLastName,
+          pickUpLocation: data.HomeAddress,
+          dropoffLocation: data.DestinationAddress,
+          tripStatus: Number(data.TripStatus),
         };
 
         tripData.push(trip);
@@ -205,13 +208,13 @@ export const GetPastTripsDriverFromDB = async (
       res.forEach(data => {
         trip = {
           tripId: data.TripId,
-          driverName: data.FirstName + ' ' + data.LastName,
-          pickUpTime: data.Passenger.PickUpTime,
-          dropOffTime: data.Passenger.DropOffTime,
+          driverName: data.DriverFirstName + ' ' + data.DriverLastName,
+          pickUpTime: data.PickUpTime,
           pickUpDate: ConvertDate(data.Date),
-          passengerName: data.Passenger.FirstName,
-          pickUpLocation: data.Passenger.HomeAddress,
-          tripStatus: Number(data.Passenger.Success),
+          passengerName: data.PassengerFirstName + ' ' + data.PassengerLastName,
+          pickUpLocation: data.HomeAddress,
+          dropoffLocation: data.DestinationAddress,
+          tripStatus: Number(data.TripStatus),
         };
 
         tripData.push(trip);

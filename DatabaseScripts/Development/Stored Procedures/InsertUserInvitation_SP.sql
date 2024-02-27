@@ -4,6 +4,10 @@ BEGIN
 INSERT INTO `UserInvitation`
 (BusinessId, InvitationCode, UserRole, Email, FirstName, LastName)
 VALUES
-( _BusinessId, _InvitationCode, _UserRole,_Email, _FirstName, _LastName);
+( _BusinessId, _InvitationCode, _UserRole,_Email, _FirstName, _LastName)
+ON DUPLICATE KEY
+UPDATE `Otp` = _OTP,
+`DateCreated` = CURRENT_TIMESTAMP(),
+`ExpiryDate` = CURRENT_TIMESTAMP();
 END$$
 DELIMITER ;

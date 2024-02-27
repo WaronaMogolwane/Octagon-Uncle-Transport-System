@@ -1,4 +1,4 @@
-import { GetOtp, GetUserByEmailPassword, GetUserInvitation, InsertUserInvitation, IsUserInvitationValid, } from '../Models/AuthenticationModel';
+import { GetOtp, GetUserByEmailPassword, GetUserInvitation, InsertUserInvitation, IsUserInvitationValid, UpdateOtpToUsed, } from '../Models/AuthenticationModel';
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
 import { GetUserByEmail, InsertNewUser, InsertOtp } from "../Models/AuthenticationModel";
@@ -7,7 +7,8 @@ import { Email } from "../Classes/Email";
 import { UserCredentials } from '../Classes/UserCredentials';
 import { CreateOtpEmailHtml, SendEmail } from '../Models/EmailModel';
 import { UserInvitation } from '../Classes/UserInvitation';
-
+import { ErrorResponse } from '../Classes/ErrorResponse';
+let errorResponse: ErrorResponse
 export const CheckIfUserExists = async (req: any, res: any, next: any) => {
   if (await GetUserByEmail(req.body.userDetails.Email)) {
     res.status(400).send("User account already exists");
@@ -16,27 +17,22 @@ export const CheckIfUserExists = async (req: any, res: any, next: any) => {
   }
 };
 export const RegisterUser = async (req: any, res: any, next: any) => {
-  let newUser = new User(
-
-    randomUUID(),
-    req.body.Email,
-    req.body.Password,
-    req.body.Cellphone,
-    null,
-    null,
-    req.body.UserRole
-  );
-
+  const newUser: User = {
+    userId: randomUUID(),
+    email: req.body.Email,
+    password: req.body.Password,
+    userRole: req.body.UserRole
+  };
   await InsertNewUser(newUser, (error, result) => {
     if (error) {
-      let err: any = {
+      let err: ErrorResponse = {
         status: 400,
         message: error.message
       }
       next(err);
     }
     else {
-      req.body.message = "User successfully created.";
+      req.body.successMessage = "User successfully created.";
       next();
     }
   }
@@ -54,55 +50,64 @@ export const SendEmailOtp = async (req: any, res: any, next: any) => {
     emailMessage: message,
     emailHtml: CreateOtpEmailHtml(userDetails.firtName, message, otp)
   }
-  InsertOtp(userDetails.userId, userDetails.email, otp, (error, result) => {
-    if (error) {
-      next(error);
+  InsertOtp(userDetails.email, otp, (err, result) => {
+    let errorResponse: ErrorResponse;
+    if (err) {
+      errorResponse = {
+        status: 400,
+        message: err.message
+      }
+      next(errorResponse);
     }
     else {
       SendEmail(emailData).then(
         (value) => {
-          res.status(200).json({
-            OtpSent: true,
-            Message: value
-          });
+          res.status(200).send("OTP sent.");
         },
         (error) => {
-          next(error);
+          errorResponse = {
+            status: error.responseCode || 500,
+            message: error.response || "Mail Server Error: " + error
+          }
+          next(errorResponse);
         }
       );
     }
   })
 }
 export const VerifyOtp = async (req, res, next) => {
+  let errorResponse: ErrorResponse;
   let email: string = req.body.email;
   let otp: string = req.body.otp;
-  await GetOtp(email, otp, (error, result) => {
+  await GetOtp(email, otp, async (error, result) => {
     if (error) {
-      next(
-        {
-          message: error,
-          status: 400
-        }
-      )
+      errorResponse = {
+        message: error,
+        status: error.message
+      }
+      next(errorResponse);
     }
     else {
-      if (result.rows[0]) {
-        let otpExpireDate = new Date(result.rows[0].otp_expire_date);
+      if (result[0][0]) {
+        let otpExpireDate = new Date(result[0][0].OtpExpireDate);
         if (IsOtpVaid(otpExpireDate)) {
-          res.status(201).send("OTP verified.");
+          await UpdateOtpToUsed(email, otp, (error, result) => {
+            if (error) {
+              errorResponse = {
+                message: error,
+                status: error.message
+              }
+              next(errorResponse);
+            }
+            else {
+              res.status(201).send("OTP verified.");
+            }
+          })
         } else {
-          res.status(400).send({
-            message: "OTP expired.",
-            status: 400
-          }
-          );
+          res.status(400).send("OTP expired.");
         }
       } else {
-        res.status(400).send({
-          message: "OTP does not exist.",
-          status: 400
-        }
-        );
+        res.status(400).send("OTP does not exist.");
       }
     }
   });
@@ -114,15 +119,15 @@ export const UserLogin = async (req, res, next) => {
   };
   await GetUserByEmailPassword(userLogin, (error, result) => {
     if (error) {
-      next({
-        message: error,
-        status: 400
-      });
+      next(new ErrorResponse(400, error.message));
     }
     else {
-      if (result.rows) {
-        req.body.message = "User successfully logged in.";
+      if (result[0][0]) {
+        req.body.successMessage = "User successfully logged in.";
         next();
+      }
+      else {
+        res.status(400).send(new ErrorResponse(400, "User not found."));
       }
     }
   });
@@ -132,16 +137,15 @@ export const VerifyUserInvitation = async (req, res, next) => {
   const userRole: string = req.body.userRole;
   await GetUserInvitation(invitationCode, userRole, (error, result) => {
     if (error) {
-      next(
-        {
-          message: error,
-          status: 400
-        }
-      )
+      errorResponse = {
+        message: error,
+        status: error.message
+      }
+      next(errorResponse);
     }
     else {
-      if (result.rowCount) {
-        let userInvitationExpireDate = new Date(result.rows[0].expirydate);
+      if (result[0][0]) {
+        let userInvitationExpireDate = new Date(result[0][0].ExpiryDate);
         if (IsUserInvitationValid(userInvitationExpireDate)) {
           res.status(201).send("User invitation verified.");
         } else {
@@ -181,15 +185,16 @@ export const SendUserInvitation = async (req: any, res: any, next: any) => {
   }
   InsertUserInvitation(userInviation, (error, result) => {
     if (error) {
-      next(error);
+      errorResponse = {
+        status: 400,
+        message: error.message
+      }
+      next(errorResponse);
     }
     else {
       SendEmail(emailData).then(
         (value) => {
-          res.status(200).json({
-            OtpSent: true,
-            Message: value
-          });
+          res.status(200).send("User invitation sent.");
         },
         (error) => {
           next(error);

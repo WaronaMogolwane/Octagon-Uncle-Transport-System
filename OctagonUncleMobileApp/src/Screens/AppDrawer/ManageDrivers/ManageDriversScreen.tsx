@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {TripCard} from '../../../Components/TripCard';
+import {TripCardDriverSwipable} from '../../../Components/TripCardDriverSwipable';
 import {
   Button,
   Text,
@@ -163,13 +163,21 @@ const ManageDriversScreen = ({navigation}: any) => {
   };
 
   const renderItemComponent = (itemData: any) => (
-    <TripCard
-      driverName={itemData.driverName}
+    <TripCardDriverSwipable
+      passengerName={itemData.passengerName}
       pickUpTime={itemData.pickUpTime}
       pickUpDate={itemData.pickUpDate}
-      passengerName={itemData.passengerName}
       pickUpLocation={itemData.pickUpLocation}
-      isSuccess={itemData.isSuccess}
+      tripStatus={itemData.tripStatus}
+      handlePickup={() => {
+        //changeTripStatus(itemData.tripId, itemData.passengerId, 2);
+      }}
+      handleDropoff={() => {
+        //changeTripStatus(itemData.tripId, itemData.passengerId, 3);
+      }}
+      handleAbsentPassenger={() => {
+        //changeTripStatus(itemData.tripId, itemData.passengerId, 1);
+      }}
     />
   );
 

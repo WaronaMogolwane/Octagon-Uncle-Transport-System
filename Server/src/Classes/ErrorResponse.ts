@@ -1,5 +1,5 @@
 export class ErrorResponse {
-  status: number;
+  status?: number;
   message: string;
 
   constructor(status: number, message: string) {

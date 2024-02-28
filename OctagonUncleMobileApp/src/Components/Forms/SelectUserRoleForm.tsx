@@ -23,7 +23,7 @@ import {
   SignInFormProps,
 } from '../../Models/FormControlProps';
 
-const SelectUserRoleForm = (props: SelectUserRoleFormProps) => {
+export const SelectUserRoleForm = (props: SelectUserRoleFormProps) => {
   return (
     <View>
       <FormControl>
@@ -63,5 +63,3 @@ const SelectUserRoleForm = (props: SelectUserRoleFormProps) => {
     </View>
   );
 };
-
-export default SelectUserRoleForm;

@@ -1,11 +1,24 @@
-export class UserInvitationModel {
-    invitationCode: string;
-    userRole: string;
+export class UserInvitation {
+    businessId: string
+    invitationCode: string
+    firstName: string
+    lastName: string
+    userEmail: string
+    userRole: string
+
     constructor(
+        businessId: string,
         invitationCode: string,
-        userRole: string,
+        firstName: string,
+        lastName: string,
+        userEmail: string,
+        userRole: string
     ) {
-        this.invitationCode = invitationCode;
+        this.businessId = businessId,
+            this.invitationCode = invitationCode;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userEmail = userEmail;
         this.userRole = userRole;
     }
 }

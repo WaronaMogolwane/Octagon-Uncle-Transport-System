@@ -115,7 +115,6 @@ const ManageDriversScreen = ({navigation}: any) => {
     validationSchema: addDriverSchema,
 
     onSubmit: values => {
-      console.log('hello');
       if (formik.isValid) {
         setShowInvitationModal(false);
         setShowAlertDialog(true);

@@ -33,10 +33,10 @@ import {
   CustomButton2,
   CustomButton3,
 } from '../../Components/Buttons';
-import SelectUserRoleForm from '../../Components/Forms/SelectUserRoleForm';
+import {SelectUserRoleForm} from '../../Components/Forms/SelectUserRoleForm';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
 import {UserVerifyEmail} from '../../Controllers/AuthenticationController';
-import {UserInvitationModel} from '../../Models/UserInvitation';
+import {UserInvitation} from '../../Models/UserInvitation';
 import {useStorageState} from '../../Services/StorageStateService';
 
 const SelectUserRoleScreen = ({navigation}: any) => {
@@ -80,21 +80,21 @@ const SelectUserRoleScreen = ({navigation}: any) => {
   };
 
   const EmailVerification = async () => {
-    const userInvitation: UserInvitationModel = new UserInvitationModel(
+    await UserVerifyEmail(
       formik.values.otp,
-      formik.values.selectedUserRole,
-    );
-    await UserVerifyEmail(userInvitation, (error: any, result: any) => {
-      if (formik.isValid) {
-        if (error) {
-          console.log(error);
-        } else if (result) {
-          setShowModal(false);
-          ShowToast();
-          GoToSignUpPage(formik.values.selectedUserRole);
+      Number(formik.values.selectedUserRole),
+      (error: any, result: any) => {
+        if (formik.isValid) {
+          if (error) {
+            console.log(error);
+          } else if (result) {
+            setShowModal(false);
+            ShowToast();
+            GoToSignUpPage(formik.values.selectedUserRole);
+          }
         }
-      }
-    });
+      },
+    );
   };
 
   const ShowToast = () => {
@@ -118,7 +118,7 @@ const SelectUserRoleScreen = ({navigation}: any) => {
   return (
     <SafeAreaView style={ThemeStyles.container}>
       <SelectUserRoleForm
-        userRoleSelectValue={formik.values?.selectedUserRole}
+        userRoleSelectValue={formik.values?.selectedUserRole.toString()}
         userRoleSelectOnChangeText={formik.handleChange('selectedUserRole')}
         userRoleSelectIsInvalid={!!formik.errors.selectedUserRole}
         userRoleSelectErrorText={formik?.errors?.selectedUserRole}

@@ -5,12 +5,13 @@ import {
   Animated,
   GestureResponderEvent,
 } from 'react-native';
-import React, {useState} from 'react';
+import React from 'react';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {TripCardDriverStyles} from '../Stylesheets/GlobalStyles';
 
 type tripCardSwipableProps = {
   passengerName: string;
+  dropOffTime: string;
   pickUpTime: string;
   pickUpDate: string;
   pickUpLocation: string;
@@ -36,12 +37,6 @@ type tripCardSwipableProps = {
 };
 
 export const TripCardDriverSwipable = (props: tripCardSwipableProps) => {
-  //const [isPickedUp, setIsPickedUp] = useState(false);
-
-  const changeBool = () => {
-    //setIsPickedUp(true);
-  };
-
   const leftSwipe = (progress: any, dragX: any) => {
     const scale = dragX.interpolate({
       inputRange: [0, 100],
@@ -100,6 +95,8 @@ export const TripCardDriverSwipable = (props: tripCardSwipableProps) => {
         <Text style={TripCardDriverStyles.unCompletedTrip}>Uncompleted</Text>
       );
     } else if (props.tripStatus == 2) {
+      return <Text style={TripCardDriverStyles.pickedUp}>Picked Up</Text>;
+    } else if (props.tripStatus == 3) {
       return <Text style={TripCardDriverStyles.completedTrip}>Completed</Text>;
     }
   };
@@ -116,14 +113,24 @@ export const TripCardDriverSwipable = (props: tripCardSwipableProps) => {
             <Text>{props.passengerName}</Text>
           </View>
         </View>
-        <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Pickup Time:</Text>
-          <Text style={{marginEnd: 20}}>{props.pickUpTime}</Text>
-        </View>
-        <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Pickup Date:</Text>
-          <Text>{props.pickUpDate}</Text>
-        </View>
+
+        {props.pickUpTime == '' ||
+        props.pickUpTime == undefined ||
+        props.pickUpTime == null ? null : (
+          <View style={TripCardDriverStyles.cardContainer}>
+            <Text style={TripCardDriverStyles.cardText}>Pickup Time:</Text>
+            <Text style={{marginEnd: 20}}>{props.pickUpTime}</Text>
+          </View>
+        )}
+        {props.dropOffTime == '' ||
+        props.dropOffTime == undefined ||
+        props.dropOffTime == null ? null : (
+          <View style={TripCardDriverStyles.cardContainer}>
+            <Text style={TripCardDriverStyles.cardText}>Dropoff Time:</Text>
+            <Text style={{marginEnd: 20}}>{props.dropOffTime}</Text>
+          </View>
+        )}
+
         <View style={TripCardDriverStyles.cardContainer}>
           <Text style={TripCardDriverStyles.cardText}>Location:</Text>
         </View>

@@ -142,6 +142,86 @@ export const GetUpcomingTripsByParentId = async (
   );
 };
 
+export const GetUpcomingTripsByDriverId = async (
+  driverId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetFutureTripsForDriver(?);",
+      timeout: 40000,
+      values: [driverId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const GetPastTripsByDriverId = async (
+  driverId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetPastTripsForDriver(?);",
+      timeout: 40000,
+      values: [driverId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const GetUpcomingTripsByBusinessId = async (
+  businessId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetFutureTripsForBusiness(?);",
+      timeout: 40000,
+      values: [businessId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const GetPastTripsByBusinessId = async (
+  businessId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetPastTripsForBusiness(?);",
+      timeout: 40000,
+      values: [businessId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
 export const UpdateTripIsCompleted = async (
   tripId: string,
   callback: (error, result) => void
@@ -149,6 +229,46 @@ export const UpdateTripIsCompleted = async (
   DbPool.query(
     {
       sql: "CALL UpdateTripEndTrip(?);",
+      timeout: 40000,
+      values: [tripId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const UpdateTripSetPickUpTime = async (
+  tripId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL UpdateTripPickUpTime(?);",
+      timeout: 40000,
+      values: [tripId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const UpdateTripSetDropOffTime = async (
+  tripId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL UpdateTripDropOffTime(?);",
       timeout: 40000,
       values: [tripId],
     },

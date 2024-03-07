@@ -8,9 +8,12 @@ export function ConvertDate(dateString: string) {
 }
 
 export function SplitTimeString(dateTime: string) {
-  let time = dateTime.split(' ')[1];
+  if (dateTime != null || dateTime == '') {
+    let time = dateTime.split(' ')[1];
+    let formattedTime = `${time.split(':')[0]}:${time.split(':')[1]}`;
 
-  let formattedTime = `${time.split(':')[0]}:${time.split(':')[1]}`;
-
-  return formattedTime;
+    return formattedTime;
+  } else {
+    return null;
+  }
 }

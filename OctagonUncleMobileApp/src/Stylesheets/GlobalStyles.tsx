@@ -41,6 +41,10 @@ export const TripCardDriverStyles = StyleSheet.create({
     color: COLORS.red,
     fontWeight: 'bold',
   },
+  pickedUp: {
+    color: COLORS.darkBlue,
+    fontWeight: 'bold',
+  },
   pickUpBox: {
     backgroundColor: 'green',
     justifyContent: 'center',

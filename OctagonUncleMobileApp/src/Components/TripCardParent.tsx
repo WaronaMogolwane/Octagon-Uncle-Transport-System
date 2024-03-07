@@ -6,6 +6,7 @@ import {TripCardParentStyles} from '../Stylesheets/GlobalStyles';
 type tripCardProps = {
   driverName: string;
   pickUpTime: string;
+  dropOffTime: string;
   pickUpDate: string;
   passengerName: string;
   pickUpLocation: string;
@@ -38,10 +39,22 @@ export const TripCardParent = (props: tripCardProps) => {
           <Text>{props.driverName}</Text>
         </View>
       </View>
-      <View style={TripCardParentStyles.cardContainer}>
-        <Text style={TripCardParentStyles.cardText}>Pickup Time:</Text>
-        <Text style={{marginEnd: 20}}>{props.pickUpTime}</Text>
-      </View>
+      {props.pickUpTime == '' ||
+      props.pickUpTime == undefined ||
+      props.pickUpTime == null ? null : (
+        <View style={TripCardParentStyles.cardContainer}>
+          <Text style={TripCardParentStyles.cardText}>Pickup Time:</Text>
+          <Text style={{marginEnd: 20}}>{props.pickUpTime}</Text>
+        </View>
+      )}
+      {props.dropOffTime == '' ||
+      props.dropOffTime == undefined ||
+      props.dropOffTime == null ? null : (
+        <View style={TripCardParentStyles.cardContainer}>
+          <Text style={TripCardParentStyles.cardText}>Dropoff Time:</Text>
+          <Text style={{marginEnd: 20}}>{props.dropOffTime}</Text>
+        </View>
+      )}
       <View style={TripCardParentStyles.cardContainer}>
         <Text style={TripCardParentStyles.cardText}>Pickup Date:</Text>
         <Text>{props.pickUpDate}</Text>

@@ -8,23 +8,25 @@ import {
   GetPastTripsForClient,
   GetPastTripsForDriver,
   GetPastTripsForTransporter,
-  GetTrip,
   GetUpcomingTripsForClient,
   GetUpcomingTripsForDriver,
   GetUpcomingTripsForTransporter,
+  SetTripDropOffPickUpTime as SetDropOffTime,
+  SetTripPickUpTime,
   UpdatePassengerStatus,
 } from '../../Controllers/TripController';
 import {TripCardDriverSwipable} from '../../Components/TripCardDriverSwipable';
 import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
-import {Passenger} from '../../Models/Passenger';
 import {TripCardDriver} from '../../Components/TripCardDriver';
+import {useToast, Toast, ToastTitle} from '@gluestack-ui/themed';
 
 const TripsScreen = ({navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
 
   const parentId = 'c7728615-394f-466b-833e-ea9dd60ba836';
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  const role: number = 1;
+  const driverId = '001a514b-17f3-4fe0-adfc-92c2d578c601';
+  const role: number = 2;
 
   const [UpcomingTripList, setUpcomingTripList] = useState([]);
   const [PastTripList, setPastTripList] = useState([]);
@@ -68,102 +70,99 @@ const TripsScreen = ({navigation}: any) => {
     }, 2000);
   }, []);
 
-  const changeTripStatus = async (
-    tripId: string,
-    passengerId: string,
-    status: number,
-  ) => {
-    await GetTrip(tripId).then((trip: any) => {
-      const now = new Date();
-      let time = `${now.getHours()}:${now.getMinutes()}`;
-      let pArray = [...trip.passenger];
-      let nArray: Passenger[] = [];
+  const showToast = () => {
+    const toast = useToast();
 
-      let passengerCount = 0;
-      let passengerTotal = pArray.length;
-
-      pArray.forEach((item: any) => {
-        let pickUpTime = item.PickUpTime;
-        let dropOffTime = item.DropOffTime;
-
-        if (item.PassengerId == passengerId) {
-          let updatedPassenger = new Passenger(
-            item.PassengerId,
-            item.FirstName,
-            item.LastName,
-            item.Age,
-            item.HomeAddress,
-            item.DestinationAddress,
-            item.ParentId,
-            item.BusinessId,
-            String(status),
-            status == 2 ? time : pickUpTime,
-            status == 3 ? time : dropOffTime,
-          );
-
-          nArray.push(updatedPassenger);
-        } else {
-          nArray.push(item);
-        }
-
-        if (item.TripStatus == 3 || item.TripStatus == 1) {
-          passengerCount++;
-        }
-      });
-
-      if (passengerCount == passengerTotal) {
-        EndTrip(tripId);
-      }
-
-      UpdatePassengerStatus(nArray, tripId).then(response => {
-        getUpcomingTrips().then(() => {
-          //setStatusCode(!statusCode);
-        });
-        getPastTrips().then(() => {
-          //setStatusCode(!statusCode);
-        });
-        setStatusCode(!statusCode);
-      });
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        return (
+          <Toast nativeID={id} variant="accent" action="error">
+            <ToastTitle>Something went wrong, please try again</ToastTitle>
+          </Toast>
+        );
+      },
     });
+  };
+
+  const changeTripStatus = async (tripId: string, tripStatus: number) => {
+    if (tripStatus == 1) {
+      await UpdatePassengerStatus(tripId, tripStatus).then(result => {
+        if (result[1] == 200) {
+          EndTrip(tripId).then(result => {
+            if (result[1] == 200) {
+              getUpcomingTrips();
+              getPastTrips();
+              setStatusCode(!statusCode);
+            } else {
+              showToast();
+            }
+          });
+        }
+      });
+    } else if (tripStatus == 2) {
+      await SetTripPickUpTime(tripId).then(result => {
+        if (result[1] == 200) {
+          UpdatePassengerStatus(tripId, tripStatus).then(result => {
+            if (result[1] == 200) {
+              getUpcomingTrips();
+              getPastTrips();
+              setStatusCode(!statusCode);
+            } else {
+              showToast();
+            }
+          });
+        }
+      });
+    } else if (tripStatus == 3) {
+      await SetDropOffTime(tripId).then(result => {
+        if (result[1] == 200) {
+          UpdatePassengerStatus(tripId, tripStatus).then(result2 => {});
+          EndTrip(tripId).then(result3 => {
+            if (result3[1] == 200) {
+              getUpcomingTrips();
+              getPastTrips();
+              setStatusCode(!statusCode);
+            } else {
+              showToast();
+            }
+          });
+        } else {
+          showToast();
+        }
+      });
+    }
   };
 
   const getUpcomingTrips = async () => {
     if (role == 1) {
-      return await GetUpcomingTripsForClient(parentId, businessId).then(
-        trip => {
-          setUpcomingTripList(trip);
-        },
-      );
+      return await GetUpcomingTripsForClient(parentId).then(trip => {
+        setUpcomingTripList(trip);
+      });
     } else if (role == 2) {
-      return await GetUpcomingTripsForDriver(parentId, businessId).then(
-        trip => {
-          setUpcomingTripList(trip);
-        },
-      );
+      return await GetUpcomingTripsForDriver(driverId).then(trip => {
+        setUpcomingTripList(trip);
+      });
     } else if (role == 3) {
-      return await GetUpcomingTripsForTransporter(parentId, businessId).then(
-        trip => {
-          setUpcomingTripList(trip);
-        },
-      );
+      return await GetUpcomingTripsForTransporter(businessId).then(trip => {
+        setUpcomingTripList(trip);
+      });
     }
   };
 
   const getPastTrips = async () => {
     if (role == 1) {
-      return await GetPastTripsForClient(parentId, businessId).then(trip => {
+      return await GetPastTripsForClient(parentId).then(trip => {
         setPastTripList(trip);
       });
     } else if (role == 2) {
-      return await GetPastTripsForDriver(parentId, businessId).then(trip => {
+      return await GetPastTripsForDriver(driverId).then(trip => {
         setPastTripList(trip);
       });
     } else if (role == 3) {
-      return await GetPastTripsForTransporter(parentId, businessId).then(
-        trip => {
-          setPastTripList(trip);
-        },
-      );
+      return await GetPastTripsForTransporter(businessId).then(trip => {
+        setPastTripList(trip);
+      });
     }
   };
 
@@ -175,6 +174,7 @@ const TripsScreen = ({navigation}: any) => {
       passengerName={itemData.passengerName}
       pickUpLocation={itemData.pickUpLocation}
       tripStatus={itemData.tripStatus}
+      dropOffTime={itemData.dropoffTime}
     />
   );
 
@@ -185,14 +185,15 @@ const TripsScreen = ({navigation}: any) => {
       pickUpDate={itemData.pickUpDate}
       pickUpLocation={itemData.pickUpLocation}
       tripStatus={itemData.tripStatus}
+      dropOffTime={itemData.dropOffTime}
       handlePickup={() => {
-        changeTripStatus(itemData.tripId, itemData.passengerId, 2);
+        changeTripStatus(itemData.tripId, 2);
       }}
       handleDropoff={() => {
-        changeTripStatus(itemData.tripId, itemData.passengerId, 3);
+        changeTripStatus(itemData.tripId, 3);
       }}
       handleAbsentPassenger={() => {
-        changeTripStatus(itemData.tripId, itemData.passengerId, 1);
+        changeTripStatus(itemData.tripId, 1);
       }}
     />
   );
@@ -216,6 +217,7 @@ const TripsScreen = ({navigation}: any) => {
       passengerName={itemData.passengerName}
       pickUpLocation={itemData.pickUpLocation}
       tripStatus={itemData.isSuccess}
+      dropOffTime={itemData.dropOffTime}
     />
   );
 

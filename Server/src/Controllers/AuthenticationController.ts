@@ -1,4 +1,4 @@
-import { GetOtp, GetUserByEmailPassword, GetUserInvitation, InsertUserInvitation, IsUserInvitationValid, UpdateOtpToUsed, } from '../Models/AuthenticationModel';
+import { GetInvitationsByBusinessIdUserRole, GetOtp, GetUserByEmailPassword, GetUserInvitation, InsertUserInvitation, IsUserInvitationValid, UpdateOtpToUsed, } from '../Models/AuthenticationModel';
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
 import { GetUserByEmail, InsertNewUser, InsertOtp } from "../Models/AuthenticationModel";
@@ -202,4 +202,21 @@ export const SendUserInvitation = async (req: any, res: any, next: any) => {
       );
     }
   })
+}
+export const GetPendingInvitations = async (req, res, next) => {
+  let businessId = req.query.businessId;
+  let userRole = req.query.userRole;
+  await GetInvitationsByBusinessIdUserRole(businessId, userRole, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(400, error.message));
+    }
+    else {
+      if (result[0]) {
+        res.status(200).send(result[0]);
+      }
+      else {
+        res.status(400).send(new ErrorResponse(400, "No pending invitations found."));
+      }
+    }
+  });
 }

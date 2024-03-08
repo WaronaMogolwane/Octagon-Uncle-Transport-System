@@ -232,13 +232,11 @@ export const InsertUserInvitation = async (
 ) => {
   await axios
     .post(`${SERVER_HOST}:${SERVER_PORT}/auth/create-invitation`, {
-      userDetails: {
-        businessId: userInvitation.businessId,
-        firstName: userInvitation.firstName,
-        lastName: userInvitation.lastName,
-        userEmail: userInvitation.userEmail,
-        userRole: userInvitation.userRole,
-      },
+      businessId: userInvitation.businessId,
+      firstName: userInvitation.firstName,
+      lastName: userInvitation.lastName,
+      userEmail: userInvitation.userEmail,
+      userRole: userInvitation.userRole,
     })
     .then((response: any) => {
       callback(null, response);
@@ -256,6 +254,25 @@ export const VerifyUserInvitation = async (
     .post(`${SERVER_HOST}:${SERVER_PORT}/auth/verify-invitation`, {
       invitationCode: invitationCode,
       userRole: userRole,
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
+};
+export const GetPendingDriversByBusinessId = async (
+  businessId: string,
+  userRole: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/auth/get-pending-invitations`, {
+      params: {
+        businessId: businessId,
+        userRole: userRole,
+      },
     })
     .then((response: any) => {
       callback(null, response);

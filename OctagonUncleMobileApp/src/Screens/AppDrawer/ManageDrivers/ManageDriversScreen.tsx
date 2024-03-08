@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
-  FlatList,
   GestureResponderEvent,
   RefreshControl,
   StyleSheet,
@@ -10,6 +9,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {TripCardDriverSwipable} from '../../../Components/TripCardDriverSwipable';
 import {
+  Box,
+  FlatList,
   Button,
   Text,
   Fab,
@@ -31,8 +32,15 @@ import {
 import InvitationModal from '../../../Components/Modals/InvitationModal';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
-
+import {
+  AuthContext,
+  GetPendingDriversByBusinessId,
+} from '../../../Services/AuthenticationService';
+import {UserInvitation} from '../../../Models/UserInvitation';
+import DriverListCard from '../../../Components/Cards/DriverListCard';
 const ManageDriversScreen = ({navigation}: any) => {
+  const {createUserInvitation, session}: any = useContext(AuthContext);
+
   const [DriversList, setDriversList] = useState([]);
   const [PendingDriversList, setPendingDriversList] = useState([]);
   const [refreshingDriverss, setRefreshingDriverss] = React.useState(false);
@@ -69,16 +77,20 @@ const ManageDriversScreen = ({navigation}: any) => {
     getPendingDrivers();
   }, []);
 
-  const getDriverss = async () => {
-    // return await GetDriverssForClient(payerId, businessId).then(trip => {
-    //   setDriversList(trip);
-    // });
-  };
+  const getDriverss = async () => {};
 
   const getPendingDrivers = async () => {
-    // return await GetPendingDriversForClient(payerId, businessId).then(trip => {
-    //   setPendingDriversList(trip);
-    // });
+    return await GetPendingDriversByBusinessId(
+      businessId,
+      '2',
+      (error: any, result: any) => {
+        if (error) {
+          console.error(error.response.data);
+        } else {
+          setPendingDriversList(result.data);
+        }
+      },
+    );
   };
 
   const addDriverSchema = yup.object().shape({
@@ -93,31 +105,39 @@ const ManageDriversScreen = ({navigation}: any) => {
       .max(50, 'Last name too Long!')
       .required('Required'),
     email: yup.string().email('Invalid email').required('Email is required'),
-    idNumber: yup
-      .string()
-      .length(13, 'ID number is too short')
-      .matches(
-        southAfricanIdRegex,
-        'Please enter a valid South African ID number.',
-      )
-      .required('Required'),
   });
 
   const registerAddDriverValues = {
     firstName: '',
     lastName: '',
     email: '',
-    idNumber: '',
   };
 
   const formik = useFormik({
     initialValues: registerAddDriverValues,
     validationSchema: addDriverSchema,
 
-    onSubmit: values => {
+    onSubmit: async values => {
+      let userInvitation: UserInvitation = {
+        businessId: businessId,
+        invitationCode: '',
+        firstName: formik.values.firstName,
+        lastName: formik.values.lastName,
+        userEmail: formik.values.email,
+        userRole: '2',
+      };
       if (formik.isValid) {
-        setShowInvitationModal(false);
-        setShowAlertDialog(true);
+        await createUserInvitation(
+          userInvitation,
+          (error: any, result: any) => {
+            if (error) {
+              console.error(error);
+            } else {
+              setShowInvitationModal(false);
+              setShowAlertDialog(true);
+            }
+          },
+        );
       }
     },
   });
@@ -146,7 +166,15 @@ const ManageDriversScreen = ({navigation}: any) => {
       <View style={{flex: 1}}>
         <FlatList
           data={PendingDriversList}
-          renderItem={({item}) => renderItemComponent(item)}
+          renderItem={({item}) => (
+            <Item
+              firstName={item.FirstName}
+              lastName={item.LastName}
+              email={item.Email}
+              expiryDate={item.ExpiryDate}
+            />
+          )}
+          keyExtractor={item => item.UserInvitationId}
           refreshControl={
             <RefreshControl
               refreshing={refreshingPendingDrivers}
@@ -162,22 +190,7 @@ const ManageDriversScreen = ({navigation}: any) => {
   };
 
   const renderItemComponent = (itemData: any) => (
-    <TripCardDriverSwipable
-      passengerName={itemData.passengerName}
-      pickUpTime={itemData.pickUpTime}
-      pickUpDate={itemData.pickUpDate}
-      pickUpLocation={itemData.pickUpLocation}
-      tripStatus={itemData.tripStatus}
-      handlePickup={() => {
-        //changeTripStatus(itemData.tripId, itemData.passengerId, 2);
-      }}
-      handleDropoff={() => {
-        //changeTripStatus(itemData.tripId, itemData.passengerId, 3);
-      }}
-      handleAbsentPassenger={() => {
-        //changeTripStatus(itemData.tripId, itemData.passengerId, 1);
-      }}
-    />
+    <Text>{itemData.firstName}</Text>
   );
 
   const InvitationAlert = () => {
@@ -257,11 +270,6 @@ const ManageDriversScreen = ({navigation}: any) => {
         emailErrorText={formik?.errors?.email}
         emailOnBlur={formik.handleBlur('email')}
         emailValue={formik.values?.email}
-        idNumberIsInvalid={!!formik.errors.idNumber}
-        idNumberOnChangeText={formik.handleChange('idNumber')}
-        idNumberErrorText={formik?.errors?.idNumber}
-        idNumberOnBlur={formik.handleBlur('idNumber')}
-        idNumberValue={formik.values?.idNumber}
         ShowModal={showInvitationModal}
         SendInviteOnPress={
           formik.handleSubmit as (
@@ -281,12 +289,37 @@ const ManageDriversScreen = ({navigation}: any) => {
   );
 };
 
-const styles = StyleSheet.create({
-  cardContainer: {
-    flexDirection: 'row',
-    padding: 2,
-    textAlign: 'center',
+const DATA = [
+  {
+    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+    title: 'First Item',
   },
-});
+  {
+    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+    title: 'Second Item',
+  },
+  {
+    id: '58694a0f-3da1-471f-bd96-145571e29d72',
+    title: 'Third Item',
+  },
+];
+
+type ItemProps = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  expiryDate: Date;
+};
+
+const Item = ({firstName, lastName, email, expiryDate}: ItemProps) => (
+  <View>
+    <DriverListCard
+      firstName={firstName}
+      lastName={lastName}
+      email={email}
+      expiryDate={expiryDate}
+    />
+  </View>
+);
 
 export default ManageDriversScreen;

@@ -6,6 +6,7 @@ import {
   GetUserDetailByUserId,
   UpdateUserDetail,
 } from "../Models/UserDetailsModel";
+import { ErrorResponse } from "../Classes/ErrorResponse";
 
 export const AddUserDetail = async (req: any, res: any, next: any) => {
   let newUserDetail = new UserDetail(
@@ -23,11 +24,7 @@ export const AddUserDetail = async (req: any, res: any, next: any) => {
   );
   await InsertUserDetail(newUserDetail, (error, result) => {
     if (error) {
-      let err: any = {
-        status: 400,
-        message: error.message,
-      };
-      next(err);
+      next(new ErrorResponse(501, error.message));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -47,11 +44,7 @@ export const GetUserDetail = async (req: any, res: any, next: any) => {
   let userId = req.body.userDetails.UserDetailId;
   await GetUserDetailByUserId(userId, (error, result) => {
     if (error) {
-      let err: any = {
-        status: 400,
-        message: error.message,
-      };
-      next(err);
+      next(new ErrorResponse(501, error.message));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -87,11 +80,7 @@ export const UpdateUserPersonalDetail = async (
   );
   await UpdateUserDetail(userDetail, (error, result) => {
     if (error) {
-      let err: any = {
-        status: 400,
-        message: error.message,
-      };
-      next(err);
+      next(new ErrorResponse(501, error.message));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,

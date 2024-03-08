@@ -2,6 +2,7 @@
 import Router from 'express-promise-router'
 import {
   CheckIfUserExists,
+  GetPendingInvitations,
   RegisterUser,
   SendEmailOtp,
   SendUserInvitation,
@@ -27,6 +28,8 @@ router.post("/verify-otp", VerifyOtp, async (req, res) => { });
 router.post("/create-invitation", SendUserInvitation, (req, res) => { });
 
 router.post("/verify-invitation", VerifyUserInvitation, async (req, res) => {
+});
+router.get("/get-pending-invitations", GetPendingInvitations, async (req, res) => {
 });
 
 router.get("/", (req, res) => { });

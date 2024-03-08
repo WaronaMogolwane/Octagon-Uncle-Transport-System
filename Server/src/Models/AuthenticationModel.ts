@@ -178,5 +178,62 @@ export const UpdateUserInvitationToUsed = async (userInvitation: UserInvitation,
       }
     })
 }
+export const GetInvitationsByBusinessIdUserRole = async (businessId: string, userRole: string, callback: (error, result) => void) => {
+  DbPool.query({
+    sql: "CALL GetInvitationsByBusinessIdUserRole(?,?)",
+    timeout: 40000,
+    values: [
+      businessId,
+      userRole
+    ],
+  },
+    (err, res) => {
+
+      if (err) {
+        callback(err, null);
+      }
+      else {
+        callback(null, res);
+      }
+    })
+}
+export const GetDriversByBusinessId = async (businessId: string, callback: (error, result) => void) => {
+  DbPool.query({
+    sql: "CALL GetDriversByBusinessId(?)",
+    timeout: 40000,
+    values: [
+      businessId
+    ],
+  },
+    (err, res) => {
+
+      if (err) {
+        callback(err, null);
+      }
+      else {
+        callback(null, res);
+      }
+    })
+}
+
+export const GetParentsByBusinessId = async (businessId: string, callback: (error, result) => void) => {
+  DbPool.query({
+    sql: "CALL GetParentsByBusinessId(?)",
+    timeout: 40000,
+    values: [
+      businessId
+    ],
+  },
+    (err, res) => {
+
+      if (err) {
+        callback(err, null);
+      }
+      else {
+        callback(null, res);
+      }
+    })
+}
+
 
 

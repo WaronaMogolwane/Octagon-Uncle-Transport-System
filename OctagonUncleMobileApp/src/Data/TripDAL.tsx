@@ -153,7 +153,7 @@ export const GetUpcomingTripsDriverFromDB = async (driverId: string) => {
       res.forEach(data => {
         trip = {
           tripId: data.TripId,
-          passengerId: data.PassengerId,
+          passengerId: data.PassengerUserId,
           passengerName: data.PassengerFirstName + ' ' + data.PassengerLastName,
           pickUpTime: SplitTimeString(data.PickUpTime),
           dropOffUpTime: SplitTimeString(data.DropoffTime),
@@ -193,7 +193,7 @@ export const GetPastTripsDriverFromDB = async (driverId: string) => {
       res.forEach(data => {
         trip = {
           tripId: data.TripId,
-          passengerId: data.PassengerId,
+          passengerId: data.PassengerUserId,
           passengerName: data.PassengerFirstName + ' ' + data.PassengerLastName,
           pickUpTime: SplitTimeString(data.PickUpTime),
           dropOffTime: SplitTimeString(data.DropoffTime),

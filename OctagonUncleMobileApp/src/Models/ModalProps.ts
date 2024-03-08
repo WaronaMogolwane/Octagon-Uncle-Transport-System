@@ -29,11 +29,6 @@ export type InvitationModalProps = {
     emailErrorText: string | undefined;
     emailOnBlur: (e: any) => void;
     emailValue: string;
-    idNumberIsInvalid: boolean;
-    idNumberOnChangeText: (e: string | ChangeEvent<any>) => void;
-    idNumberErrorText: string | undefined;
-    idNumberOnBlur: (e: any) => void;
-    idNumberValue: string;
     SendInviteOnPress: (
         values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
     ) => void;

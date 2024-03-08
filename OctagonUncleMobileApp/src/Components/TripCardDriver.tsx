@@ -19,8 +19,6 @@ type tripCardProps = {
 };
 
 export const TripCardDriver = (props: tripCardProps) => {
-  const [isPickedUp, setIsPickedUp] = useState(false);
-
   const tripStatus = () => {
     if (props.tripStatus == 0) {
       return null;
@@ -29,6 +27,8 @@ export const TripCardDriver = (props: tripCardProps) => {
         <Text style={TripCardDriverStyles.unCompletedTrip}>Uncompleted</Text>
       );
     } else if (props.tripStatus == 2) {
+      return <Text style={TripCardDriverStyles.pickedUp}>Picked Up</Text>;
+    } else if (props.tripStatus == 3) {
       return <Text style={TripCardDriverStyles.completedTrip}>Completed</Text>;
     }
   };
@@ -44,17 +44,24 @@ export const TripCardDriver = (props: tripCardProps) => {
           <Text>{props.passengerName}</Text>
         </View>
       </View>
+      {props.pickUpTime == '' ||
+      props.pickUpTime == undefined ||
+      props.pickUpTime == null ? null : (
+        <View style={TripCardDriverStyles.cardContainer}>
+          <Text style={TripCardDriverStyles.cardText}>Pickup Time: </Text>
+          <Text style={{marginEnd: 20}}>{props.pickUpTime}</Text>
+        </View>
+      )}
+      {props.pickUpTime == '' ||
+      props.pickUpTime == undefined ||
+      props.pickUpTime == null ? null : (
+        <View style={TripCardDriverStyles.cardContainer}>
+          <Text style={TripCardDriverStyles.cardText}>Dropoff Time: </Text>
+          <Text style={{marginEnd: 20}}>{props.dropOffTime}</Text>
+        </View>
+      )}
       <View style={TripCardDriverStyles.cardContainer}>
-        <Text style={TripCardDriverStyles.cardText}>Pickup Time:</Text>
-        <Text style={{marginEnd: 20}}>{props.pickUpTime}</Text>
-      </View>
-      <View style={TripCardDriverStyles.cardContainer}>
-        <Text style={TripCardDriverStyles.cardText}>Dropoff Time:</Text>
-        <Text style={{marginEnd: 20}}>{props.dropOffTime}</Text>
-      </View>
-
-      <View style={TripCardDriverStyles.cardContainer}>
-        <Text style={TripCardDriverStyles.cardText}>Pickup Date:</Text>
+        <Text style={TripCardDriverStyles.cardText}>Pickup Date: </Text>
         <Text>{props.pickUpDate}</Text>
       </View>
       <View style={TripCardDriverStyles.cardContainer}>

@@ -65,7 +65,7 @@ const TripsScreen = ({navigation}: any) => {
         });
     }, 2000);
 
-    //setRefreshingUpcomingTrips(false);
+    setRefreshingUpcomingTrips(false);
   }, []);
 
   useEffect(() => {

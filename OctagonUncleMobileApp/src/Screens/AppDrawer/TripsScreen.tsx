@@ -25,7 +25,7 @@ const TripsScreen = ({navigation}: any) => {
 
   const parentId = 'c7728615-394f-466b-833e-ea9dd60ba836';
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  const driverId = '001a514b-17f3-4fe0-adfc-92c2d578c601';
+  const driverId = '201a514b-17f3-4fe0-adfc-92c2d578c601';
   const role: number = 2;
 
   const [UpcomingTripList, setUpcomingTripList] = useState([]);
@@ -40,11 +40,15 @@ const TripsScreen = ({navigation}: any) => {
 
     setTimeout(() => {
       setRefreshingUpcomingTrips(true);
-      getPastTrips();
-      setRefreshingUpcomingTrips(false);
+      getPastTrips()
+        .then(() => {
+          setRefreshingPastTrips(false);
+        })
+        .catch(() => {
+          setRefreshingPastTrips(false);
+        });
     }, 2000);
-
-    //setRefreshingPastTrips(false);
+    setRefreshingPastTrips(false);
   }, []);
 
   const onRefreshUpcomingTrips = React.useCallback(() => {
@@ -52,8 +56,13 @@ const TripsScreen = ({navigation}: any) => {
 
     setTimeout(() => {
       setRefreshingUpcomingTrips(true);
-      getUpcomingTrips();
-      setRefreshingUpcomingTrips(false);
+      getUpcomingTrips()
+        .then(() => {
+          setRefreshingUpcomingTrips(false);
+        })
+        .catch(() => {
+          setRefreshingUpcomingTrips(false);
+        });
     }, 2000);
 
     //setRefreshingUpcomingTrips(false);

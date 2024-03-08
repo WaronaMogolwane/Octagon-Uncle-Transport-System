@@ -1,8 +1,8 @@
 export class TripStatus {
   tripId?: string;
-  tripStatus?: string;
+  tripStatus?: number;
 
-  constructor(tripId?: string, tripStatus?: string) {
+  constructor(tripId?: string, tripStatus?: number) {
     this.tripId = tripId;
     this.tripStatus = tripStatus;
   }

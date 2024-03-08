@@ -77,7 +77,7 @@ export const TripCardDriverSwipable = (props: tripCardSwipableProps) => {
     } else if (props.tripStatus == 2) {
       return (
         <TouchableOpacity onPress={props.handleDropoff} activeOpacity={0.6}>
-          <View style={TripCardDriverStyles.pickUpBox}>
+          <View style={TripCardDriverStyles.dropOffBox}>
             <Animated.Text style={{transform: [{scale: scale}]}}>
               Drop-off
             </Animated.Text>
@@ -113,7 +113,6 @@ export const TripCardDriverSwipable = (props: tripCardSwipableProps) => {
             <Text>{props.passengerName}</Text>
           </View>
         </View>
-
         {props.pickUpTime == '' ||
         props.pickUpTime == undefined ||
         props.pickUpTime == null ? null : (

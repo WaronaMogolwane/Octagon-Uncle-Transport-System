@@ -34,7 +34,7 @@ import * as yup from 'yup';
 import {useFormik} from 'formik';
 import {
   AuthContext,
-  GetPendingDriversByBusinessId,
+  GetInvitationsByBusinessIdUserRole,
 } from '../../../Services/AuthenticationService';
 import {UserInvitation} from '../../../Models/UserInvitation';
 import DriverListCard from '../../../Components/Cards/DriverListCard';
@@ -80,7 +80,7 @@ const ManageDriversScreen = ({navigation}: any) => {
   const getDriverss = async () => {};
 
   const getPendingDrivers = async () => {
-    return await GetPendingDriversByBusinessId(
+    return await GetInvitationsByBusinessIdUserRole(
       businessId,
       '2',
       (error: any, result: any) => {

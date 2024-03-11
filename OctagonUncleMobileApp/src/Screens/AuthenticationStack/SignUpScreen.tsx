@@ -19,7 +19,7 @@ import {
 import {AuthContext} from '../../Services/AuthenticationService';
 
 const SignUpScreen = ({route, navigation}: any) => {
-  const {userRole} = route.params;
+  const {userRole, businessId} = route.params;
   const [showModal, setShowModal] = useState(false);
   const {signIn, session, signUp, emailOtp, verifyOtp}: any =
     useContext(AuthContext);
@@ -46,17 +46,12 @@ const SignUpScreen = ({route, navigation}: any) => {
       .string()
       .oneOf([yup.ref('password')], 'Passwords must match'),
     email: yup.string().email('Invalid email').required('Email is required'),
-    cellphone: yup
-      .string()
-      .matches(phoneRegExp, 'Phone number is not valid')
-      .required('Cellphone is required'),
     otp: yup.string(),
   });
   const registerInitialValues = {
     password: '',
     confirmPassword: '',
     email: '',
-    cellphone: '',
     otp: '',
   };
   const formik = useFormik({
@@ -127,15 +122,12 @@ const SignUpScreen = ({route, navigation}: any) => {
     );
   };
   const SignUpNewUser: any = async () => {
-    const newUser: User = new User(
-      undefined,
-      formik.values.email,
-      formik.values.password,
-      formik.values.cellphone,
-      undefined,
-      undefined,
-      userRole,
-    );
+    const newUser: User = {
+      email: formik.values.email,
+      password: formik.values.password,
+      businessId: businessId,
+      userRole: userRole,
+    };
 
     await signUp(newUser, (error: any, result: any) => {
       if (error) {
@@ -160,11 +152,6 @@ const SignUpScreen = ({route, navigation}: any) => {
           passwordErrorText={formik?.errors?.password}
           passwordOnBlur={formik.handleBlur('password')}
           passwordValue={formik.values?.password}
-          cellphoneErrorText={formik?.errors?.cellphone}
-          cellphoneIsInvalid={!!formik.errors.cellphone}
-          cellphoneOnBlur={formik.handleBlur('cellphone')}
-          cellphoneOnChangeText={formik.handleChange('cellphone')}
-          cellphoneValue={formik.values?.cellphone}
           confirmPasswordIsInvalid={!!formik.errors.confirmPassword}
           confirmPasswordOnChangeText={formik.handleChange('confirmPassword')}
           confirmPasswordErrorText={formik?.errors?.confirmPassword}

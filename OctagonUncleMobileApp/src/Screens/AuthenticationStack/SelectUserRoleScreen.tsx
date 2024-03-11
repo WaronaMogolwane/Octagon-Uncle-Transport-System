@@ -75,8 +75,11 @@ const SelectUserRoleScreen = ({navigation}: any) => {
       }
     },
   });
-  const GoToSignUpPage = (userRole: string) => {
-    navigation.navigate('Sign Up', {userRole: formik.values.selectedUserRole});
+  const GoToSignUpPage = (userRole: string, businessId: string) => {
+    navigation.navigate('Sign Up', {
+      userRole: userRole,
+      businessId: businessId,
+    });
   };
 
   const EmailVerification = async () => {
@@ -90,7 +93,10 @@ const SelectUserRoleScreen = ({navigation}: any) => {
           } else if (result) {
             setShowModal(false);
             ShowToast();
-            GoToSignUpPage(formik.values.selectedUserRole);
+            GoToSignUpPage(
+              formik.values.selectedUserRole,
+              result.Data.BusinessId,
+            );
           }
         }
       },

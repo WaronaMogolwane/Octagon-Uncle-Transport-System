@@ -4,10 +4,15 @@ import {
   GetTrip,
   GetPastTripsForParent,
   GetUpcomingTripsForParent,
-  UpdateTripDetails,
+  UpdateTripDetail,
   UpdateTripPassengerStatus,
   UpdateTripEndTrip,
   GetPastTripsForDriver,
+  GetUpcomingTripsForDriver,
+  UpdateTripDropOffTime,
+  UpdateTripPickUpTime,
+  GetPastTripsForBusiness,
+  GetUpcomingTripsForBusiness,
 } from "../Controllers/TripController";
 
 const router = Router();
@@ -29,8 +34,26 @@ router.post(
 );
 
 router.post(
+  "/get-past-trip-for-business",
+  GetPastTripsForBusiness,
+  async (req, res, next) => {}
+);
+
+router.post(
+  "/get-upcoming-trip-for-driver",
+  GetUpcomingTripsForDriver,
+  async (req, res, next) => {}
+);
+
+router.post(
   "/get-upcoming-trips-for-parent",
   GetUpcomingTripsForParent,
+  async (req, res, next) => {}
+);
+
+router.post(
+  "/get-upcoming-trips-for-business",
+  GetUpcomingTripsForBusiness,
   async (req, res, next) => {}
 );
 
@@ -40,8 +63,20 @@ router.patch(
   async (req, res, next) => {}
 );
 
+router.patch(
+  "/update-trip-pickup-time",
+  UpdateTripPickUpTime,
+  async (req, res, next) => {}
+);
+
+router.patch(
+  "/update-trip-dropoff-time",
+  UpdateTripDropOffTime,
+  async (req, res, next) => {}
+);
+
 router.patch("/end-trip", UpdateTripEndTrip, async (req, res, next) => {});
 
-router.patch("/update-trip", UpdateTripDetails, async (req, res, next) => {});
+router.patch("/update-trip", UpdateTripDetail, async (req, res, next) => {});
 
 export default router;

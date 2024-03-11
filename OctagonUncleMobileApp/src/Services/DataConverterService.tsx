@@ -6,3 +6,19 @@ export function ConvertDate(dateString: string) {
 
   return date;
 }
+
+export function SplitTimeString(dateTime: string) {
+  if (
+    dateTime == null ||
+    dateTime == '' ||
+    dateTime == undefined ||
+    dateTime == 'null'
+  ) {
+    return null;
+  } else {
+    let time = dateTime.split(' ')[1];
+    let formattedTime = `${time.split(':')[0]}:${time.split(':')[1]}`;
+
+    return formattedTime;
+  }
+}

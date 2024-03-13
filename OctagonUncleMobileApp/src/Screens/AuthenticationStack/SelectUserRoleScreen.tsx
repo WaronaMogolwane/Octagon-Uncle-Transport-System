@@ -70,7 +70,7 @@ const SelectUserRoleScreen = ({navigation}: any) => {
         if (selectedUserRole === '2' || selectedUserRole === '3') {
           setShowModal(true);
         } else if (selectedUserRole === '1') {
-          GoToSignUpPage(values.selectedUserRole);
+          GoToSignUpPage(values.selectedUserRole, '');
         }
       }
     },

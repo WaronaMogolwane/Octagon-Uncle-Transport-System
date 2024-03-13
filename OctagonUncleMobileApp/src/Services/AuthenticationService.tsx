@@ -263,6 +263,10 @@ export const VerifyUserInvitation = async (
       callback(error, null);
     });
 };
+
+/**
+ * Returns a list of pending incitations. @param businessID string @param userRole number
+ */
 export const GetInvitationsByBusinessIdUserRole = async (
   businessId: string,
   userRole: string,
@@ -273,6 +277,26 @@ export const GetInvitationsByBusinessIdUserRole = async (
       params: {
         businessId: businessId,
         userRole: userRole,
+      },
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
+};
+export const DeleteUserInvitation = async (
+  userInvitationId: string,
+  userRole: number,
+  callback: (error: any, result: any) => void,
+) => {
+  console.log(userInvitationId, userRole);
+  await axios
+    .delete(`${SERVER_HOST}:${SERVER_PORT}/auth/delete-user-invitation`, {
+      data: {
+        UserInvitationId: userInvitationId,
+        UserRole: userRole,
       },
     })
     .then((response: any) => {

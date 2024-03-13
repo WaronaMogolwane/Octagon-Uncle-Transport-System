@@ -23,31 +23,40 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogCloseButton,
   ButtonText,
   CheckCircleIcon,
   HStack,
   Heading,
   Icon,
+  ButtonGroup,
+  CloseIcon,
 } from '@gluestack-ui/themed';
 import InvitationModal from '../../../Components/Modals/InvitationModal';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
 import {
   AuthContext,
+  DeleteUserInvitation,
   GetInvitationsByBusinessIdUserRole,
 } from '../../../Services/AuthenticationService';
 import {UserInvitation} from '../../../Models/UserInvitation';
 import DriverListCard from '../../../Components/Cards/DriverListCard';
+
 const ManageDriversScreen = ({navigation}: any) => {
   const {createUserInvitation, session}: any = useContext(AuthContext);
 
+  const [CurrentInvitationId, setCurrentInvitationId] = useState('');
+  const [CurrentInvitationFullName, setCurrentInvitationFullName] =
+    useState('');
   const [DriversList, setDriversList] = useState([]);
   const [PendingDriversList, setPendingDriversList] = useState([]);
   const [refreshingDriverss, setRefreshingDriverss] = React.useState(false);
   const [refreshingPendingDrivers, setRefreshingPendingDrivers] =
     React.useState(false);
   const [showAlertDialog, setShowAlertDialog] = React.useState(false);
-
+  const [showRemoveInviteAlertDialog, setShowRemoveInviteAlertDialog] =
+    React.useState(false);
   const onRefreshPendingDrivers = React.useCallback(() => {
     setRefreshingPendingDrivers(true);
 
@@ -133,6 +142,7 @@ const ManageDriversScreen = ({navigation}: any) => {
             if (error) {
               console.error(error);
             } else {
+              getPendingDrivers();
               setShowInvitationModal(false);
               setShowAlertDialog(true);
             }
@@ -166,15 +176,24 @@ const ManageDriversScreen = ({navigation}: any) => {
       <View style={{flex: 1}}>
         <FlatList
           data={PendingDriversList}
-          renderItem={({item}) => (
-            <Item
+          extraData={PendingDriversList}
+          renderItem={({item}: any) => (
+            <DriverListCard
               firstName={item.FirstName}
               lastName={item.LastName}
               email={item.Email}
               expiryDate={item.ExpiryDate}
+              removeButtonOnPress={() => {
+                setCurrentInvitationId;
+                setCurrentInvitationId(item.UserInvitationId);
+                setCurrentInvitationFullName(
+                  item.FirstName + ' ' + item.LastName,
+                );
+                setShowRemoveInviteAlertDialog(true);
+              }}
             />
           )}
-          keyExtractor={item => item.UserInvitationId}
+          keyExtractor={(item: any) => item.UserInvitationId}
           refreshControl={
             <RefreshControl
               refreshing={refreshingPendingDrivers}
@@ -188,7 +207,53 @@ const ManageDriversScreen = ({navigation}: any) => {
   const ShowInvitationModal = () => {
     setShowInvitationModal(true);
   };
-
+  const RemoveAlert = () => {
+    return (
+      <AlertDialog
+        isOpen={showRemoveInviteAlertDialog}
+        onClose={() => {
+          setShowRemoveInviteAlertDialog(false);
+        }}>
+        <AlertDialogBackdrop />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <Heading size="lg">Delete invitation</Heading>
+            <AlertDialogCloseButton>
+              <Icon as={CloseIcon} />
+            </AlertDialogCloseButton>
+          </AlertDialogHeader>
+          <AlertDialogBody>
+            <Text size="sm">
+              Are you sure you want to delete {CurrentInvitationFullName}'s
+              invitation? This invitation will be permanently removed and cannot
+              be undone. A new invitation will have to created.
+            </Text>
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <ButtonGroup space="lg">
+              <Button
+                variant="outline"
+                action="secondary"
+                onPress={() => {
+                  setShowRemoveInviteAlertDialog(false);
+                }}>
+                <ButtonText>Cancel</ButtonText>
+              </Button>
+              <Button
+                bg="$error600"
+                action="negative"
+                onPress={() => {
+                  RemoveInvitation(CurrentInvitationId);
+                  setShowRemoveInviteAlertDialog(false);
+                }}>
+                <ButtonText>Delete</ButtonText>
+              </Button>
+            </ButtonGroup>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  };
   const renderItemComponent = (itemData: any) => (
     <Text>{itemData.firstName}</Text>
   );
@@ -225,6 +290,7 @@ const ManageDriversScreen = ({navigation}: any) => {
               action="secondary"
               mr={3}
               onPress={() => {
+                formik.resetForm();
                 setShowAlertDialog(false);
               }}>
               <ButtonText>Okay</ButtonText>
@@ -243,11 +309,25 @@ const ManageDriversScreen = ({navigation}: any) => {
         isHovered={false}
         isDisabled={false}
         isPressed={false}>
-        <FabIcon as={AddIcon} mr="$3" />
+        <FabIcon as={AddIcon} />
         <FabLabel>Invite driver</FabLabel>
       </Fab>
     );
   };
+
+  const RemoveInvitation = async (invitationId: string) => {
+    await DeleteUserInvitation(invitationId, 2, (error: any, result: any) => {
+      if (error) {
+        setRefreshingPendingDrivers(false);
+        console.error(error.response.data);
+      } else {
+        getPendingDrivers();
+        setRefreshingPendingDrivers(false);
+        console.log(result);
+      }
+    });
+  };
+
   return (
     <NavigationContainer independent={true}>
       <Tab.Navigator>
@@ -285,41 +365,9 @@ const ManageDriversScreen = ({navigation}: any) => {
       />
       <InviteDriverFab />
       <InvitationAlert />
+      <RemoveAlert />
     </NavigationContainer>
   );
 };
-
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-  },
-];
-
-type ItemProps = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  expiryDate: Date;
-};
-
-const Item = ({firstName, lastName, email, expiryDate}: ItemProps) => (
-  <View>
-    <DriverListCard
-      firstName={firstName}
-      lastName={lastName}
-      email={email}
-      expiryDate={expiryDate}
-    />
-  </View>
-);
 
 export default ManageDriversScreen;

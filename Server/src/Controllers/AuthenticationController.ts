@@ -7,6 +7,7 @@ import {
   UpdateOtpToUsed,
   InsertUserBusinessLink,
   GetInvitationsByBusinessIdUserRole,
+  DeleteUserInvitation,
 } from "../Models/AuthenticationModel";
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
@@ -68,12 +69,12 @@ export const SendEmailOtp = async (req: any, res: any, next: any) => {
   const message =
     "Thank you for choosing Octagon Uncle. Use the following OTP to complete your Sign Up procedures.";
   let emailData: Email = {
-    fromName: "Octagona Uncle Transport",
+    fromName: "Octagona Uncle",
     fromAddress: process.env.OTP_FROM_ADDRESS,
     toAddress: userDetails.email,
-    subject: "Octagon Uncle OTP",
+    subject: "Your otp is: " + otp,
     emailMessage: message,
-    emailHtml: CreateOtpEmailHtml(userDetails.firtName, message, otp),
+    emailHtml: CreateOtpEmailHtml(userDetails.firstName, message, otp),
   };
   InsertOtp(userDetails.email, otp, (err, result) => {
     let errorResponse: ErrorResponse;
@@ -239,6 +240,23 @@ export const GetPendingInvitations = async (req, res, next) => {
       }
       else {
         res.status(400).send(new ErrorResponse(400, "No pending invitations found."));
+      }
+    }
+  });
+}
+export const RemoveUserInvitation = async (req, res, next) => {
+  let userInviteId = req.body.UserInvitationId;
+  let userRole = req.body.UserRole;
+  await DeleteUserInvitation(userInviteId, userRole, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(400, error.message));
+    }
+    else {
+      if (result.affectedRows !== 0) {
+        res.status(200).send("User invitation deleted.");
+      }
+      else {
+        res.status(400).send(new ErrorResponse(400, "User invitation not found."));
       }
     }
   });

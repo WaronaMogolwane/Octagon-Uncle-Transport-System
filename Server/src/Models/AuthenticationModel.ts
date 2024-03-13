@@ -261,6 +261,24 @@ export const GetParentsByBusinessId = async (businessId: string, callback: (erro
       }
     })
 }
+export const DeleteUserInvitation = async (userInvitationId: string, userRole: number, callback: (error: any, result: any) => void) => {
+  DbPool.query({
+    sql: "CALL DeleteUserInvitation(?,?)",
+    timeout: 40000,
+    values: [
+      userInvitationId,
+      userRole
+    ],
+  },
+    (err, res) => {
+      if (err) {
+        callback(err, null);
+      }
+      else {
+        callback(null, res);
+      }
+    })
+}
 
 
 

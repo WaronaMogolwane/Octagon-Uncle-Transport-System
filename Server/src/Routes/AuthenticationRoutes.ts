@@ -4,6 +4,7 @@ import {
   CheckIfUserExists,
   GetPendingInvitations,
   RegisterUser,
+  RemoveUserInvitation,
   SendEmailOtp,
   SendUserInvitation,
   UserLogin,
@@ -30,6 +31,8 @@ router.post("/create-invitation", SendUserInvitation, (req, res) => { });
 router.post("/verify-invitation", VerifyUserInvitation, async (req, res) => {
 });
 router.get("/get-pending-invitations", GetPendingInvitations, async (req, res) => {
+});
+router.delete("/delete-user-invitation", RemoveUserInvitation, async (req, res) => {
 });
 
 router.get("/", (req, res) => { });

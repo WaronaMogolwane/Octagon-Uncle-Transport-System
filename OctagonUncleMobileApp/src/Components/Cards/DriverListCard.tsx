@@ -21,17 +21,19 @@ import {
   View,
 } from '@gluestack-ui/themed';
 import {CustomButton1, CustomButton3} from '../Buttons';
+import {GestureResponderEvent} from 'react-native';
 
-const DriverListCard = ({
-  firstName,
-  lastName,
-  email,
-  expiryDate,
-}: {
+const DriverListCard = (props: {
   firstName: string;
   lastName: string;
   email: string;
   expiryDate: Date;
+  removeButtonOnPress: (
+    values:
+      | GestureResponderEvent
+      | React.FormEvent<HTMLFormElement>
+      | undefined,
+  ) => void;
 }) => {
   return (
     <Box
@@ -42,7 +44,8 @@ const DriverListCard = ({
       borderWidth={1}
       sx={{
         borderColor: '$trueGray300',
-        bg: '$trueGray100',
+        backgroundColor: '#ffffffbd',
+
         _dark: {
           bg: '#071117',
           borderColor: '$borderDark800',
@@ -55,7 +58,7 @@ const DriverListCard = ({
         justifyContent="center"
         sx={{
           borderBottomColor: '$trueGray300',
-          bg: '$trueGray50',
+          backgroundColor: '#ffffff40',
           _dark: {
             borderBottomColor: '$borderDark800',
             bg: '#0C0E12',
@@ -64,17 +67,17 @@ const DriverListCard = ({
         <View style={{flexDirection: 'row'}}>
           <View style={{width: '75%'}}>
             <Heading mb="$1" size="sm">
-              {firstName + ' ' + lastName}
+              {props.firstName + ' ' + props.lastName}
             </Heading>
-            <Text size="xs">{email}</Text>
+            <Text size="xs">{props.email}</Text>
             <Text size="xs">
-              {'Expiry date: ' + new Date(expiryDate).toDateString()}
+              {'Expiry date: ' + new Date(props.expiryDate).toDateString()}
             </Text>
           </View>
           <View>
             <CustomButton3
               title="Remove"
-              onPress={() => {}}
+              onPress={props.removeButtonOnPress}
               action="negative"
             />
           </View>

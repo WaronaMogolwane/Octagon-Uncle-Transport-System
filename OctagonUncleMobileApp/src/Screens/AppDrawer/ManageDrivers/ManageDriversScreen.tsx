@@ -38,12 +38,18 @@ import {useFormik} from 'formik';
 import {
   AuthContext,
   DeleteUserInvitation,
+  GetDriversByBusinessId,
   GetInvitationsByBusinessIdUserRole,
 } from '../../../Services/AuthenticationService';
 import {UserInvitation} from '../../../Models/UserInvitation';
-import DriverListCard from '../../../Components/Cards/DriverListCard';
+import {
+  PendingDriverListCard,
+  DriverListCard,
+} from '../../../Components/Cards/DriverListCard';
+import DriverDetailsModal from '../../../Components/Modals/DriverDetailsModal';
+import {Vehicle} from '../../../Models/VehicleModel';
 
-const ManageDriversScreen = ({navigation}: any) => {
+const ManageDriverscreen = ({navigation}: any) => {
   const {createUserInvitation, session}: any = useContext(AuthContext);
 
   const [CurrentInvitationId, setCurrentInvitationId] = useState('');
@@ -51,7 +57,7 @@ const ManageDriversScreen = ({navigation}: any) => {
     useState('');
   const [DriversList, setDriversList] = useState([]);
   const [PendingDriversList, setPendingDriversList] = useState([]);
-  const [refreshingDriverss, setRefreshingDriverss] = React.useState(false);
+  const [refreshingDrivers, setRefreshingDrivers] = React.useState(false);
   const [refreshingPendingDrivers, setRefreshingPendingDrivers] =
     React.useState(false);
   const [showAlertDialog, setShowAlertDialog] = React.useState(false);
@@ -67,14 +73,21 @@ const ManageDriversScreen = ({navigation}: any) => {
   }, []);
 
   const onRefreshDrivers = React.useCallback(() => {
-    setRefreshingDriverss(true);
+    setRefreshingDrivers(true);
 
     setTimeout(() => {
-      getDriverss();
+      getDrivers();
     }, 2000);
-    setRefreshingDriverss(false);
+    setRefreshingDrivers(false);
   }, []);
   const [showInvitationModal, setShowInvitationModal] = useState(false);
+  const [currentDriver, setCurrentDriver] = useState({
+    FirstName: '',
+    LastName: '',
+    Email: '',
+    RegistrationNumber: '',
+  });
+  const [showDriverDetailsModal, setShowDriverDetailsModal] = useState(false);
 
   const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836';
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
@@ -82,11 +95,22 @@ const ManageDriversScreen = ({navigation}: any) => {
     /(([0-9]{2})(0|1)([0-9])([0-3])([0-9]))([ ]?)(([0-9]{4})([ ]?)([0-1][8]([ ]?)[0-9]))/;
 
   useEffect(() => {
-    getDriverss();
+    getDrivers();
     getPendingDrivers();
   }, []);
 
-  const getDriverss = async () => {};
+  const getDrivers = async () => {
+    return await GetDriversByBusinessId(
+      businessId,
+      (error: any, result: any) => {
+        if (error) {
+          console.error(error.response.data);
+        } else {
+          setDriversList(result.data);
+        }
+      },
+    );
+  };
 
   const getPendingDrivers = async () => {
     return await GetInvitationsByBusinessIdUserRole(
@@ -154,15 +178,28 @@ const ManageDriversScreen = ({navigation}: any) => {
 
   const Tab = createMaterialTopTabNavigator();
 
-  function ActiveDriversScreen() {
+  function Driverscreen() {
     return (
       <View style={{flex: 1}}>
         <FlatList
           data={DriversList}
-          renderItem={({item}) => renderItemComponent(item)}
+          extraData={DriversList}
+          renderItem={({item}: any) => (
+            <DriverListCard
+              firstName={item.FirstName}
+              lastName={item.LastName}
+              email={item.Email}
+              vehicleLicenseNumber={item.RegistrationNumber}
+              handleDriverCardPress={() => {
+                setCurrentDriver(item);
+                setShowDriverDetailsModal(true);
+              }}
+            />
+          )}
+          keyExtractor={(item: any) => item.UserId}
           refreshControl={
             <RefreshControl
-              refreshing={refreshingDriverss}
+              refreshing={refreshingDrivers}
               onRefresh={onRefreshDrivers}
             />
           }
@@ -171,14 +208,14 @@ const ManageDriversScreen = ({navigation}: any) => {
     );
   }
 
-  function PendingDriversScreen() {
+  function PendingDriverscreen() {
     return (
       <View style={{flex: 1}}>
         <FlatList
           data={PendingDriversList}
           extraData={PendingDriversList}
           renderItem={({item}: any) => (
-            <DriverListCard
+            <PendingDriverListCard
               firstName={item.FirstName}
               lastName={item.LastName}
               email={item.Email}
@@ -331,8 +368,8 @@ const ManageDriversScreen = ({navigation}: any) => {
   return (
     <NavigationContainer independent={true}>
       <Tab.Navigator>
-        <Tab.Screen name="Drivers" component={ActiveDriversScreen} />
-        <Tab.Screen name="Pending Drivers" component={PendingDriversScreen} />
+        <Tab.Screen name="Drivers" component={Driverscreen} />
+        <Tab.Screen name="Pending Drivers" component={PendingDriverscreen} />
       </Tab.Navigator>
       <InvitationModal
         firstNameIsInvalid={!!formik.errors.firstName}
@@ -363,6 +400,30 @@ const ManageDriversScreen = ({navigation}: any) => {
           setShowInvitationModal(false);
         }}
       />
+      <DriverDetailsModal
+        profilePictureUrl="https://www.english-heritage.org.uk/siteassets/home/learn/histories/black-history/cunningham-hub-item-image.jpg"
+        firstNameIsInvalid={!!formik.errors.firstName}
+        firstNameOnChangeText={formik.handleChange('firstName')}
+        firstNameErrorText={formik?.errors?.firstName}
+        firstNameOnBlur={formik.handleBlur('firstName')}
+        firstNameValue={currentDriver.FirstName}
+        lastNameIsInvalid={!!formik.errors.lastName}
+        lastNameOnChangeText={formik.handleChange('lastName')}
+        lastNameErrorText={formik?.errors?.lastName}
+        lastNameOnBlur={formik.handleBlur('lastName')}
+        lastNameValue={currentDriver.LastName}
+        emailIsInvalid={!!formik.errors.email}
+        emailOnChangeText={formik.handleChange('email')}
+        emailErrorText={formik?.errors?.email}
+        emailOnBlur={formik.handleBlur('email')}
+        emailValue={currentDriver.Email}
+        vehicleLicenseNumber={currentDriver.RegistrationNumber}
+        ShowModal={showDriverDetailsModal}
+        HandleRemoveDriver={() => {}}
+        CloseOtpModalButtonOnPress={() => {
+          setShowDriverDetailsModal(false);
+        }}
+      />
       <InviteDriverFab />
       <InvitationAlert />
       <RemoveAlert />
@@ -370,4 +431,4 @@ const ManageDriversScreen = ({navigation}: any) => {
   );
 };
 
-export default ManageDriversScreen;
+export default ManageDriverscreen;

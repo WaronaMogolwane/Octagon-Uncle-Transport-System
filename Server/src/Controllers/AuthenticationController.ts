@@ -8,6 +8,7 @@ import {
   InsertUserBusinessLink,
   GetInvitationsByBusinessIdUserRole,
   DeleteUserInvitation,
+  GetDriversByBusinessId,
 } from "../Models/AuthenticationModel";
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
@@ -47,7 +48,6 @@ export const RegisterUser = async (req: any, res: any, next: any) => {
       };
       next(err);
     } else {
-      console.log(newUser.businessId);
       await InsertUserBusinessLink(
         newUser.userId,
         newUser.businessId,
@@ -240,6 +240,22 @@ export const GetPendingInvitations = async (req, res, next) => {
       }
       else {
         res.status(400).send(new ErrorResponse(400, "No pending invitations found."));
+      }
+    }
+  });
+}
+export const GetBusinessDrivers = async (req, res, next) => {
+  let businessId = req.query.businessId;
+  await GetDriversByBusinessId(businessId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(400, error.message));
+    }
+    else {
+      if (result[0]) {
+        res.status(200).send(result[0]);
+      }
+      else {
+        res.status(400).send(new ErrorResponse(400, "No drivers found."));
       }
     }
   });

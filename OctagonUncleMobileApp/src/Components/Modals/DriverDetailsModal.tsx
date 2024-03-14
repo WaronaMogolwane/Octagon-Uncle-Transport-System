@@ -21,11 +21,13 @@ import {
   Button,
   Modal,
   Image,
+  EditIcon,
 } from '@gluestack-ui/themed';
 import {
   DriverDetailsModalProps,
   VerifyOtpModalProps,
 } from '../../Models/ModalProps';
+import VehicleSelect from '../Cards/Select/VehicleSelect';
 
 const DriverDetailsModal = (props: DriverDetailsModalProps) => {
   return (
@@ -34,9 +36,9 @@ const DriverDetailsModal = (props: DriverDetailsModalProps) => {
         isOpen={props.ShowModal}
         onClose={props.CloseOtpModalButtonOnPress}>
         <ModalBackdrop />
-        <ModalContent>
+        <ModalContent backgroundColor="#fff">
           <ModalHeader>
-            <Heading size="lg">Invite Driver</Heading>
+            <Heading size="lg">Manage Driver</Heading>
             <ModalCloseButton>
               <Icon as={CloseIcon} />
             </ModalCloseButton>
@@ -46,6 +48,12 @@ const DriverDetailsModal = (props: DriverDetailsModalProps) => {
               source={props.profilePictureUrl}
               alt="Profile picture image."
             />
+            <View>
+              <Text>Current Vehicle: {props.vehicleLicenseNumber}</Text>
+              <VehicleSelect />
+              <Icon as={EditIcon} size="lg" ml="auto" color="$darkred" />
+            </View>
+
             <CustomFormControlInput
               labelText="First Name"
               placeHolder="First Name"
@@ -82,7 +90,6 @@ const DriverDetailsModal = (props: DriverDetailsModalProps) => {
               value={props.emailValue}
               isDisabled={true}
             />
-            <Text>Current Vehicle: {props.vehicleLicenseNumber}</Text>
           </ModalBody>
           <ModalFooter>
             <Button

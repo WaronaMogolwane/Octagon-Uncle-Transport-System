@@ -69,7 +69,7 @@ export const SendEmailOtp = async (req: any, res: any, next: any) => {
   const message =
     "Thank you for choosing Octagon Uncle. Use the following OTP to complete your Sign Up procedures.";
   let emailData: Email = {
-    fromName: "Octagona Uncle",
+    fromName: "Octagona Uncle OTP",
     fromAddress: process.env.OTP_FROM_ADDRESS,
     toAddress: userDetails.email,
     subject: "Your otp is: " + otp,
@@ -197,10 +197,10 @@ export const SendUserInvitation = async (req: any, res: any, next: any) => {
   const message =
     "Thank you for choosing Octagon Uncle. Use the following Invitation Code to sign up.";
   let emailData: Email = {
-    fromName: "Octagona Uncle Transport",
+    fromName: "Octagona Uncle Invitation",
     fromAddress: process.env.OTP_FROM_ADDRESS,
     toAddress: userInviation.userEmail,
-    subject: "Octagon Uncle Invitation Code",
+    subject: "Your invitation code is: " + userInviation.invitationCode,
     emailMessage: message,
     emailHtml: CreateOtpEmailHtml(
       userInviation.firstName,

@@ -1,4 +1,3 @@
-import {View, Text} from 'react-native';
 import React, {useContext} from 'react';
 import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
 import {CustomButton1} from '../../Components/Buttons';

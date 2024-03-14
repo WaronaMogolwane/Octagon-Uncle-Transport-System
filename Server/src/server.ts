@@ -6,6 +6,7 @@ import authRoute from "./Routes/AuthenticationRoutes";
 import userProfileRoute from "./Routes/UserDetailRoutes";
 import passengerRoute from "./Routes/PassengerRoutes";
 import tripRoute from "./Routes/TripRoutes";
+import vehicleRoute from "./Routes/VehicleRoutes";
 import { AuthenticateJWT } from "./Middleware/Auth";
 import ErrorHandler from "./Middleware/ErrorHandler";
 
@@ -21,6 +22,7 @@ app.use("/auth", authRoute);
 app.use("/user-profile", userProfileRoute);
 app.use("/passenger", passengerRoute);
 app.use("/trip", tripRoute);
+app.use("/vehicle", vehicleRoute);
 
 app.listen(PORT, function () {
   console.log(`Server is live on Port ${PORT}`);

@@ -48,12 +48,31 @@ import {
 } from '../../../Components/Cards/DriverListCard';
 import DriverDetailsModal from '../../../Components/Modals/DriverDetailsModal';
 import {Vehicle} from '../../../Models/VehicleModel';
-import {PendingDriverscreen} from './PendingDriversScreen';
-import {DriversScreen} from './DriversScreen';
+const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
-const ManageDriverscreen = ({navigation}: any) => {
+export const DriversScreen = () => {
   const {createUserInvitation, session}: any = useContext(AuthContext);
+
+  const [CurrentInvitationId, setCurrentInvitationId] = useState('');
+  const [CurrentInvitationFullName, setCurrentInvitationFullName] =
+    useState('');
+  const [DriversList, setDriversList] = useState([]);
+  const [PendingDriversList, setPendingDriversList] = useState([]);
+  const [refreshingDrivers, setRefreshingDrivers] = React.useState(false);
+  const [refreshingPendingDrivers, setRefreshingPendingDrivers] =
+    React.useState(false);
   const [showAlertDialog, setShowAlertDialog] = React.useState(false);
+  const [showRemoveInviteAlertDialog, setShowRemoveInviteAlertDialog] =
+    React.useState(false);
+
+  const onRefreshDrivers = React.useCallback(() => {
+    setRefreshingDrivers(true);
+
+    setTimeout(() => {
+      GetDrivers();
+    }, 2000);
+    setRefreshingDrivers(false);
+  }, []);
   const [showInvitationModal, setShowInvitationModal] = useState(false);
   const [currentDriver, setCurrentDriver] = useState({
     FirstName: '',
@@ -102,117 +121,52 @@ const ManageDriverscreen = ({navigation}: any) => {
         userRole: '2',
       };
       if (formik.isValid) {
-        await createUserInvitation(
-          userInvitation,
-          (error: any, result: any) => {
-            if (error) {
-              console.error(error);
-            } else {
-              setShowInvitationModal(false);
-              setShowAlertDialog(true);
-            }
-          },
-        );
       }
     },
   });
 
-  const Tab = createMaterialTopTabNavigator();
+  const GetDrivers = async () => {
+    return await GetDriversByBusinessId(
+      businessId,
+      (error: any, result: any) => {
+        if (error) {
+          console.error(error.response.data);
+        } else {
+          setDriversList(result.data);
+        }
+      },
+    );
+  };
 
-  const ShowInvitationModal = () => {
-    setShowInvitationModal(true);
-  };
-  const InvitationAlert = () => {
-    return (
-      <AlertDialog
-        isOpen={showAlertDialog}
-        onClose={() => {
-          setShowAlertDialog(false);
-        }}>
-        <AlertDialogBackdrop />
-        <AlertDialogContent>
-          <AlertDialogHeader borderBottomWidth={0}>
-            <HStack space="sm" alignItems="center">
-              <Icon
-                as={CheckCircleIcon}
-                color="green"
-                //$dark-color="$success300"
-              />
-              <Heading size="lg">Invitation sent!</Heading>
-            </HStack>
-          </AlertDialogHeader>
-          <AlertDialogBody>
-            <Text size="sm">
-              An invite code has been sent to {formik.values.email}. This invite
-              will expire after 7 days.
-            </Text>
-          </AlertDialogBody>
-          <AlertDialogFooter borderTopWidth={0}>
-            <Button
-              variant="outline"
-              size="sm"
-              action="secondary"
-              mr={3}
-              onPress={() => {
-                formik.resetForm();
-                setShowAlertDialog(false);
-              }}>
-              <ButtonText>Okay</ButtonText>
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    );
-  };
-  const InviteDriverFab = () => {
-    return (
-      <Fab
-        onPress={ShowInvitationModal}
-        size="sm"
-        placement="bottom right"
-        isHovered={false}
-        isDisabled={false}
-        isPressed={false}>
-        <FabIcon as={AddIcon} />
-        <FabLabel>Invite driver</FabLabel>
-      </Fab>
-    );
-  };
+  useEffect(() => {
+    GetDrivers();
+  }, []);
 
   return (
-    <NavigationContainer independent={true}>
-      <Tab.Navigator>
-        <Tab.Screen name="Drivers" component={DriversScreen} />
-        <Tab.Screen name="Pending Drivers" component={PendingDriverscreen} />
-      </Tab.Navigator>
-      <InvitationModal
-        firstNameIsInvalid={!!formik.errors.firstName}
-        firstNameOnChangeText={formik.handleChange('firstName')}
-        firstNameErrorText={formik?.errors?.firstName}
-        firstNameOnBlur={formik.handleBlur('firstName')}
-        firstNameValue={formik.values?.firstName}
-        lastNameIsInvalid={!!formik.errors.lastName}
-        lastNameOnChangeText={formik.handleChange('lastName')}
-        lastNameErrorText={formik?.errors?.lastName}
-        lastNameOnBlur={formik.handleBlur('lastName')}
-        lastNameValue={formik.values?.lastName}
-        emailIsInvalid={!!formik.errors.email}
-        emailOnChangeText={formik.handleChange('email')}
-        emailErrorText={formik?.errors?.email}
-        emailOnBlur={formik.handleBlur('email')}
-        emailValue={formik.values?.email}
-        ShowModal={showInvitationModal}
-        SendInviteOnPress={
-          formik.handleSubmit as (
-            values:
-              | GestureResponderEvent
-              | React.FormEvent<HTMLFormElement>
-              | undefined,
-          ) => void
+    <View style={{flex: 1}}>
+      <FlatList
+        mt="$3"
+        data={DriversList}
+        extraData={DriversList}
+        renderItem={({item}: any) => (
+          <DriverListCard
+            firstName={item.FirstName}
+            lastName={item.LastName}
+            email={item.Email}
+            vehicleLicenseNumber={item.RegistrationNumber}
+            handleDriverCardPress={() => {
+              setCurrentDriver(item);
+              setShowDriverDetailsModal(true);
+            }}
+          />
+        )}
+        keyExtractor={(item: any) => item.UserId}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshingDrivers}
+            onRefresh={onRefreshDrivers}
+          />
         }
-        CloseOtpModalButtonOnPress={() => {
-          setShowInvitationModal(false);
-        }}
       />
       <DriverDetailsModal
         profilePictureUrl="https://media.licdn.com/dms/image/C4D03AQFotIRK58pRNA/profile-displayphoto-shrink_200_200/0/1525163555622?e=2147483647&v=beta&t=lvummEevyaevcll0SjNg8UvthCNqz05ate3HonR4zfc"
@@ -238,10 +192,6 @@ const ManageDriverscreen = ({navigation}: any) => {
           setShowDriverDetailsModal(false);
         }}
       />
-      <InviteDriverFab />
-      <InvitationAlert />
-    </NavigationContainer>
+    </View>
   );
 };
-
-export default ManageDriverscreen;

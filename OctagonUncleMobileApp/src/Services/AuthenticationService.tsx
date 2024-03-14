@@ -306,3 +306,20 @@ export const DeleteUserInvitation = async (
       callback(error, null);
     });
 };
+export const GetDriversByBusinessId = async (
+  businessId: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/auth/get-business-drivers`, {
+      params: {
+        businessId: businessId,
+      },
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
+};

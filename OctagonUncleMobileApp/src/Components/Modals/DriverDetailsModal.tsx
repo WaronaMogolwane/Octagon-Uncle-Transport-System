@@ -22,6 +22,14 @@ import {
   Modal,
   Image,
   EditIcon,
+  AlertDialog,
+  AlertDialogBackdrop,
+  AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  ButtonGroup,
 } from '@gluestack-ui/themed';
 import {
   DriverDetailsModalProps,
@@ -29,7 +37,81 @@ import {
 } from '../../Models/ModalProps';
 import VehicleSelect from '../Cards/Select/VehicleSelect';
 
-const DriverDetailsModal = (props: DriverDetailsModalProps) => {
+const data: any = [
+  // {label: 'BHD842GP', value: '1'},
+  // {label: 'Item 2', value: '2'},
+  // {label: 'Item 3', value: '3'},
+  // {label: 'Item 4', value: '4'},
+  // {label: 'Item 5', value: '5'},
+  // {label: 'Item 6', value: '6'},
+  // {label: 'Item 7', value: '7'},
+  // {label: 'Item 8', value: '8'},
+];
+
+const ManageDriverModal = (props: DriverDetailsModalProps) => {
+  const [showRemoveDriverDialog, setShowRemoveDriverDialog] =
+    React.useState(false);
+  function RemoveDriver(driverId: string) {
+    //throw new Error('Function not implemented.');
+  }
+  const RemoveDriverAlert = () => {
+    return (
+      <AlertDialog
+        isOpen={showRemoveDriverDialog}
+        onClose={() => {
+          setShowRemoveDriverDialog(false);
+        }}>
+        <AlertDialogBackdrop />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <Heading size="lg">Remove driver</Heading>
+            <AlertDialogCloseButton>
+              <Icon as={CloseIcon} />
+            </AlertDialogCloseButton>
+          </AlertDialogHeader>
+          <AlertDialogBody>
+            <Text size="sm">
+              Are you sure you want to remove{' '}
+              {props.firstNameValue + ' ' + props.lastNameValue} as your driver?
+              Any vehicle linked to this driver will have to be linked to
+              another driver.
+            </Text>
+            <Text size="sm" highlight={true}>
+              Enter{' "'}
+              {props.firstNameValue + ' ' + props.lastNameValue}" to remove the driver.
+            </Text>
+            <CustomFormControlInput
+              placeHolder={props.firstNameValue + ' ' + props.lastNameValue}
+              isRequired={false}
+              isInvalid={false}
+            />
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <ButtonGroup space="lg">
+              <Button
+                variant="outline"
+                action="secondary"
+                onPress={() => {
+                  setShowRemoveDriverDialog(false);
+                }}>
+                <ButtonText>Cancel</ButtonText>
+              </Button>
+              <Button
+                bg="$error600"
+                action="negative"
+                onPress={() => {
+                  RemoveDriver('');
+                  setShowRemoveDriverDialog(false);
+                }}>
+                <ButtonText>Remove</ButtonText>
+              </Button>
+            </ButtonGroup>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  };
+
   return (
     <View>
       <Modal
@@ -48,11 +130,10 @@ const DriverDetailsModal = (props: DriverDetailsModalProps) => {
               source={props.profilePictureUrl}
               alt="Profile picture image."
             />
-            <View>
-              <Text>Current Vehicle: {props.vehicleLicenseNumber}</Text>
-              <VehicleSelect />
-              <Icon as={EditIcon} size="lg" ml="auto" color="$darkred" />
-            </View>
+            <VehicleSelect
+              data={data.length ? data : null}
+              currentVehicle={''}
+            />
 
             <CustomFormControlInput
               labelText="First Name"
@@ -95,23 +176,29 @@ const DriverDetailsModal = (props: DriverDetailsModalProps) => {
             <Button
               variant="outline"
               size="sm"
-              action="secondary"
-              mr="$3"
-              onPress={props.CloseOtpModalButtonOnPress}>
-              <ButtonText>Cancel</ButtonText>
-            </Button>
-            <Button
-              size="sm"
               action="negative"
               borderWidth="$0"
-              onPress={props.HandleRemoveDriver}>
+              // onPress={props.HandleRemoveDriver}>
+              onPress={() => {
+                setShowRemoveDriverDialog(true);
+              }}>
               <ButtonText>Remove driver</ButtonText>
+            </Button>
+            <Button
+              variant="solid"
+              size="sm"
+              action="primary"
+              mr="$3"
+              // onPress={props.CloseOtpModalButtonOnPress}>
+              onPress={() => {}}>
+              <ButtonText>Save</ButtonText>
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
+      <RemoveDriverAlert />
     </View>
   );
 };
 
-export default DriverDetailsModal;
+export default ManageDriverModal;

@@ -1,49 +1,41 @@
 import React, {useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
-// import AntDesign from '@expo/vector-icons/AntDesign';
 
-const data = [
-  {label: 'BHD842GP', value: '1'},
-  {label: 'Item 2', value: '2'},
-  {label: 'Item 3', value: '3'},
-  {label: 'Item 4', value: '4'},
-  {label: 'Item 5', value: '5'},
-  {label: 'Item 6', value: '6'},
-  {label: 'Item 7', value: '7'},
-  {label: 'Item 8', value: '8'},
-];
+type VehicleSelectProps = {
+  data:
+    | {
+        label: string;
+        value: string;
+      }[]
+    | null;
+  currentVehicle: string;
+};
 
-const VehicleSelect = () => {
-  const [value, setValue] = useState(null);
+const VehicleSelect = (props: VehicleSelectProps) => {
+  const [value, setValue] = useState('');
   const [isFocus, setIsFocus] = useState(false);
-
-  const renderLabel = () => {
-    if (value || isFocus) {
-      return (
-        <Text style={[styles.label, isFocus && {color: 'grey'}]}>
-          Curent Vehichle
-        </Text>
-      );
-    }
-    return null;
-  };
 
   return (
     <View style={styles.container}>
-      {/* {renderLabel()} */}
       <Dropdown
         style={[styles.dropdown, isFocus && {borderColor: 'grey'}]}
         placeholderStyle={styles.placeholderStyle}
         selectedTextStyle={styles.selectedTextStyle}
         inputSearchStyle={styles.inputSearchStyle}
         iconStyle={styles.iconStyle}
-        data={data}
+        data={props.data || [{label: 'No Vehicles available.', value: '1'}]}
         search
         maxHeight={300}
         labelField="label"
         valueField="value"
-        placeholder={!isFocus ? 'No vehicle linked.' : 'Select a vehicle...'}
+        placeholder={
+          !isFocus
+            ? props.currentVehicle
+              ? props.currentVehicle
+              : 'No vehicle linked.'
+            : 'Select a vehicle...'
+        }
         searchPlaceholder="Search..."
         value={value}
         onFocus={() => setIsFocus(true)}

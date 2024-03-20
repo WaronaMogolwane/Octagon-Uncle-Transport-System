@@ -46,7 +46,7 @@ import {
   PendingDriverListCard,
   DriverListCard,
 } from '../../../Components/Cards/DriverListCard';
-import DriverDetailsModal from '../../../Components/Modals/DriverDetailsModal';
+import ManageDriverModal from '../../../Components/Modals/DriverDetailsModal';
 import {Vehicle} from '../../../Models/VehicleModel';
 const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
@@ -168,7 +168,7 @@ export const DriversScreen = () => {
           />
         }
       />
-      <DriverDetailsModal
+      <ManageDriverModal
         profilePictureUrl="https://media.licdn.com/dms/image/C4D03AQFotIRK58pRNA/profile-displayphoto-shrink_200_200/0/1525163555622?e=2147483647&v=beta&t=lvummEevyaevcll0SjNg8UvthCNqz05ate3HonR4zfc"
         firstNameIsInvalid={!!formik.errors.firstName}
         firstNameOnChangeText={formik.handleChange('firstName')}

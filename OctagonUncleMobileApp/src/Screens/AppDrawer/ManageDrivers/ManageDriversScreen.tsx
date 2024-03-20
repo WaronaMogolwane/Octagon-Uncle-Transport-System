@@ -46,7 +46,7 @@ import {
   PendingDriverListCard,
   DriverListCard,
 } from '../../../Components/Cards/DriverListCard';
-import DriverDetailsModal from '../../../Components/Modals/DriverDetailsModal';
+import ManageDriverModal from '../../../Components/Modals/DriverDetailsModal';
 import {Vehicle} from '../../../Models/VehicleModel';
 import {PendingDriverscreen} from './PendingDriversScreen';
 import {DriversScreen} from './DriversScreen';
@@ -63,7 +63,7 @@ const ManageDriverscreen = ({navigation}: any) => {
   });
   const [showDriverDetailsModal, setShowDriverDetailsModal] = useState(false);
 
-  const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836';
+  const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836 ';
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
   const southAfricanIdRegex: RegExp =
     /(([0-9]{2})(0|1)([0-9])([0-3])([0-9]))([ ]?)(([0-9]{4})([ ]?)([0-1][8]([ ]?)[0-9]))/;
@@ -214,7 +214,7 @@ const ManageDriverscreen = ({navigation}: any) => {
           setShowInvitationModal(false);
         }}
       />
-      <DriverDetailsModal
+      <ManageDriverModal
         profilePictureUrl="https://media.licdn.com/dms/image/C4D03AQFotIRK58pRNA/profile-displayphoto-shrink_200_200/0/1525163555622?e=2147483647&v=beta&t=lvummEevyaevcll0SjNg8UvthCNqz05ate3HonR4zfc"
         firstNameIsInvalid={!!formik.errors.firstName}
         firstNameOnChangeText={formik.handleChange('firstName')}

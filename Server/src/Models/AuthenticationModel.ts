@@ -188,14 +188,14 @@ export const UpdateOtpToUsed = async (
   );
 };
 export const UpdateUserInvitationToUsed = async (
-  userInvitation: UserInvitation,
+  invitationCode: string, userRole: string,
   callback: (error, result) => void,
 ) => {
   DbPool.query(
     {
       sql: "CALL UpdateUserInvitationToUsed(?,?)",
       timeout: 40000,
-      values: [userInvitation.userEmail, userInvitation.invitationCode],
+      values: [invitationCode, userRole],
     },
     (err, res) => {
       if (err) {
@@ -279,6 +279,26 @@ export const DeleteUserInvitation = async (userInvitationId: string, userRole: n
       }
     })
 }
+export const UpdateUserToNotActive = async (
+  userId: string,
+  userRole: string,
+  callback: (error, result) => void,
+) => {
+  DbPool.query(
+    {
+      sql: "CALL UpdateUserToNotActive(?,?)",
+      timeout: 40000,
+      values: [userId, userRole],
+    },
+    (err, res) => {
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, res);
+      }
+    },
+  );
+};
 
 
 

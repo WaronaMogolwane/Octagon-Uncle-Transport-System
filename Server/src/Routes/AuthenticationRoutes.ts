@@ -2,6 +2,7 @@
 import Router from 'express-promise-router'
 import {
   CheckIfUserExists,
+  DeactivateUser,
   GetBusinessDrivers,
   GetPendingInvitations,
   RegisterUser,
@@ -18,7 +19,8 @@ const router = Router();
 
 router.post("/register-user", RegisterUser, CreateJWT, async (req, res, next) => {
 });
-
+router.patch("/deactivate-user", DeactivateUser, async (req, res) => {
+});
 router.post("/login", UserLogin, CreateJWT, async (req, res, next) => { });
 
 router.post("/send-email-otp", SendEmailOtp, (req, res) => { });

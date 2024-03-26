@@ -48,6 +48,7 @@ export const AuthContext = React.createContext<{
 } | null>(null);
 
 // This hook can be used to access the user info.
+
 export function useSession() {
   const value = React.useContext(AuthContext);
   if (process.env.NODE_ENV !== 'production') {
@@ -59,7 +60,7 @@ export function useSession() {
   return value;
 }
 
-export function SessionProvider(props: any) {
+export function SessionProvider(props: any, navigation: any) {
   const [[isLoading, session], setSession] = useStorageState('session');
   return (
     <AuthContext.Provider
@@ -90,7 +91,6 @@ export function SessionProvider(props: any) {
             if (error) {
               callback(error, null);
             } else {
-              setSession(result.headers.sessionid);
               callback(null, result);
             }
           });
@@ -315,6 +315,23 @@ export const GetDriversByBusinessId = async (
       params: {
         businessId: businessId,
       },
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
+};
+export const DeleteDriverByUserIdAndRole = async (
+  userId: string,
+  userRole: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .patch(`${SERVER_HOST}:${SERVER_PORT}/auth/deactivate-user`, {
+      UserId: userId,
+      UserRole: userRole,
     })
     .then((response: any) => {
       callback(null, response);

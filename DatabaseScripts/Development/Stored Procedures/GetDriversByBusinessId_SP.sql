@@ -1,10 +1,14 @@
-CREATE PROCEDURE `GetVehicleLinkedToDriver`(IN _DriverId 
-VARCHAR(50)) 
+CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetDriversByBusinessId`(IN _BusinessId VARCHAR(50))
 BEGIN 
-	SELECT Vehicle.VehicleId, Vehicle.RegistrationNumber, Vehicle.Make, Vehicle.Model, Vehicle.VinNumber, Vehicle.EngineNumber, Vehicle.Color, Vehicle.DateCreated, Vehicle.DateModifed, dvl.DriverVehicleLinkingId, dvl.DriverId, dvl.DateAdded
-	FROM `Dev-Octagon-Uncle-Transport`.Vehicle
-	    INNER JOIN DriverVehicleLinking dvl ON dvl.VehicleId = Vehicle.VehicleId
+	SELECT ud.UserId, ubl.BusinessId, ud.FirstName, ud.LastName, User.Email, v.RegistrationNumber
+	FROM
+	    User
+	    INNER JOIN UserBusinessLinking ubl ON ubl.UserId = User.UserId
+	    INNER JOIN UserDetail ud ON ud.UserId = User.UserId
+        INNER JOIN DriverVehicleLinking dvl ON dvl.DriverId = User.UserId
+        INNER JOIN Vehicle v ON v.VehicleId =  dvl.VehicleId
 	WHERE
-	    dvl.IsActive = '1'
-	    AND dvl.DriverId = _DriverId;
+	    User.ActiveStatus = '1'
+	    AND User.UserRole = 2
+        AND ubl.BusinessId = _BusinessId;
 END

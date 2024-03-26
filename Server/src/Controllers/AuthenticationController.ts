@@ -9,6 +9,8 @@ import {
   GetInvitationsByBusinessIdUserRole,
   DeleteUserInvitation,
   GetDriversByBusinessId,
+  UpdateUserInvitationToUsed,
+  UpdateUserToNotActive,
 } from "../Models/AuthenticationModel";
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
@@ -33,8 +35,12 @@ export const CheckIfUserExists = async (req: any, res: any, next: any) => {
 };
 export const RegisterUser = async (req: any, res: any, next: any) => {
   let err: ErrorResponse;
+  let newUserId = randomUUID();
+  if (req.body.UserRole === "1") {
+    req.body.BusinessId = newUserId;
+  }
   const newUser: User = {
-    userId: randomUUID(),
+    userId: newUserId,
     email: req.body.Email,
     password: req.body.Password,
     userRole: req.body.UserRole,
@@ -55,6 +61,7 @@ export const RegisterUser = async (req: any, res: any, next: any) => {
           if (error) {
             next(err);
           } else {
+            req.body.UserId = newUser.userId;
             req.body.successMessage = "User successfully created.";
             next();
           }
@@ -156,7 +163,7 @@ export const UserLogin = async (req, res, next) => {
 export const VerifyUserInvitation = async (req, res, next) => {
   const invitationCode: string = req.body.invitationCode;
   const userRole: string = req.body.userRole;
-  await GetUserInvitation(invitationCode, userRole, (error, result) => {
+  await GetUserInvitation(invitationCode, userRole, async (error, result) => {
     if (error) {
       errorResponse = {
         message: error,
@@ -165,11 +172,23 @@ export const VerifyUserInvitation = async (req, res, next) => {
       next(errorResponse);
     } else {
       if (result[0][0]) {
-        let userInvitationExpireDate = new Date(result[0][0].ExpiryDate);
+        let userInvitation = result[0][0];
+        let userInvitationExpireDate = new Date(userInvitation.ExpiryDate);
         if (IsUserInvitationValid(userInvitationExpireDate)) {
-          res
-            .status(201)
-            .send({ Message: "User invitation verified.", Data: result[0][0] });
+          await UpdateUserInvitationToUsed(invitationCode, userRole, (error, result) => {
+            if (error) {
+              errorResponse = {
+                message: error,
+                status: error.message,
+              };
+              next(errorResponse);
+            }
+            else {
+              res
+                .status(201)
+                .send({ Message: "User invitation verified.", Data: userInvitation });
+            }
+          })
         } else {
           res.status(400).send({
             message: "User invitation expired.",
@@ -273,6 +292,23 @@ export const RemoveUserInvitation = async (req, res, next) => {
       }
       else {
         res.status(400).send(new ErrorResponse(400, "User invitation not found."));
+      }
+    }
+  });
+}
+export const DeactivateUser = async (req, res, next) => {
+  let userId = req.body.UserId;
+  let userRole = req.body.UserRole;
+  await UpdateUserToNotActive(userId, userRole, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(400, error.message));
+    }
+    else {
+      if (result.affectedRows === 1) {
+        res.status(200).send("User Deactivated.");
+      }
+      else {
+        res.status(400).send(new ErrorResponse(400, "User not deactivated. No user found."));
       }
     }
   });

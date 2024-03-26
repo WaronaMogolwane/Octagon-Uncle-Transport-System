@@ -24,17 +24,6 @@ export const SignUpForm = (props: SignUpFormProps) => {
           value={props.emailValue}
         />
         <CustomFormControlInput
-          labelText="Cellphone"
-          placeHolder="Cellphone"
-          isInvalid={props.cellphoneIsInvalid}
-          isRequired={true}
-          type="text"
-          onChangeText={props.cellphoneOnChangeText}
-          errorText={props.cellphoneErrorText}
-          onBlur={props.cellphoneOnBlur}
-          value={props.cellphoneValue}
-        />
-        <CustomFormControlInput
           labelText="Password"
           placeHolder="Password"
           isInvalid={props.passwordIsInvalid}

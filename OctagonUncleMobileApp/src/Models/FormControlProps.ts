@@ -1,16 +1,16 @@
-import { GestureResponderEvent } from "react-native/Libraries/Types/CoreEventTypes";
-import React, { ChangeEvent, useEffect, useState } from "react";
+import {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 
 export type InputProps = {
   isInvalid: boolean;
   isDisabled?: boolean;
   errorText?: string | undefined;
   isRequired: boolean;
-  type: "password" | "text" | undefined;
+  type: 'password' | 'text' | undefined;
   defaultValue?: string;
   placeHolder?: string;
   onBlur?: (e: any) => void;
-  size?: "sm" | "md" | "lg" | undefined;
+  size?: 'sm' | 'md' | 'lg' | undefined;
   labelText?: string;
   helperText?: string;
   value?: string;
@@ -19,7 +19,7 @@ export type InputProps = {
 
 export type ButtonProps = {
   title?: string;
-  size?: "sm" | "md" | "lg" | undefined;
+  size?: 'sm' | 'md' | 'lg' | undefined;
   variant?: string;
   action?: string;
   isDisabled?: boolean;
@@ -27,7 +27,10 @@ export type ButtonProps = {
   buttonText?: string;
   buttonIcon?: any;
   onPress?: (
-    values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
+    values:
+      | GestureResponderEvent
+      | React.FormEvent<HTMLFormElement>
+      | undefined,
   ) => void;
 };
 
@@ -43,7 +46,10 @@ export type SignInFormProps = {
   passwordOnBlur: (e: any) => void;
   passwordValue: string;
   signInButtonOnPress: (
-    values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
+    values:
+      | GestureResponderEvent
+      | React.FormEvent<HTMLFormElement>
+      | undefined,
   ) => void;
 };
 export type SetPasswordFormProps = {
@@ -58,7 +64,10 @@ export type SetPasswordFormProps = {
   confirmPasswordOnBlur: (e: any) => void;
   confirmPasswordValue: string;
   setPasswordButtonOnPress: (
-    values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
+    values:
+      | GestureResponderEvent
+      | React.FormEvent<HTMLFormElement>
+      | undefined,
   ) => void;
 };
 export type SignUpFormProps = {
@@ -77,13 +86,11 @@ export type SignUpFormProps = {
   emailErrorText: string | undefined;
   emailOnBlur: (e: any) => void;
   emailValue: string;
-  cellphoneIsInvalid: boolean;
-  cellphoneOnChangeText: (e: string | ChangeEvent<any>) => void;
-  cellphoneErrorText: string | undefined;
-  cellphoneOnBlur: (e: any) => void;
-  cellphoneValue: string;
   signUpButtonOnPress: (
-    values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
+    values:
+      | GestureResponderEvent
+      | React.FormEvent<HTMLFormElement>
+      | undefined,
   ) => void;
 };
 export type SelectUserRoleFormProps = {
@@ -142,6 +149,9 @@ export type UserDetailsFormProps = {
   postalCodeOnBlur: (e: any) => void;
   postalCodeValue: string;
   submitUserDetails: (
-    values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
+    values:
+      | GestureResponderEvent
+      | React.FormEvent<HTMLFormElement>
+      | undefined,
   ) => void;
 };

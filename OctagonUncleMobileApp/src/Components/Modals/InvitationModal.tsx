@@ -64,17 +64,6 @@ const VerifyEmailModal = (props: InvitationModalProps) => {
               value={props.lastNameValue}
             />
             <CustomFormControlInput
-              labelText="ID number"
-              placeHolder="ID number"
-              isInvalid={props.idNumberIsInvalid}
-              isRequired={true}
-              type="text"
-              onChangeText={props.idNumberOnChangeText}
-              errorText={props.idNumberErrorText}
-              onBlur={props.idNumberOnBlur}
-              value={props.idNumberValue}
-            />
-            <CustomFormControlInput
               labelText="Email"
               placeHolder="Email"
               isInvalid={props.emailIsInvalid}

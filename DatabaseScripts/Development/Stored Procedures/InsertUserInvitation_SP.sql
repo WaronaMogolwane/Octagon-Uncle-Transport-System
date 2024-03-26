@@ -6,7 +6,8 @@ INSERT INTO `UserInvitation`
 VALUES
 ( _BusinessId, _InvitationCode, _UserRole,_Email, _FirstName, _LastName)
 ON DUPLICATE KEY
-UPDATE `Otp` = _OTP,
+UPDATE `InvitationCode` = _InvitationCode,
+`IsUsed` = 0,
 `DateCreated` = CURRENT_TIMESTAMP(),
 `ExpiryDate` = CURRENT_TIMESTAMP();
 END$$

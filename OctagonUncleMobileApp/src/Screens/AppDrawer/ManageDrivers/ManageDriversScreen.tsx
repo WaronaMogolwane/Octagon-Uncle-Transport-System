@@ -50,6 +50,7 @@ import ManageDriverModal from '../../../Components/Modals/DriverDetailsModal';
 import {Vehicle} from '../../../Models/VehicleModel';
 import {PendingDriverscreen} from './PendingDriversScreen';
 import {DriversScreen} from './DriversScreen';
+import {GetDriverInvitation} from '../../../Controllers/DriverController';
 
 const ManageDriverscreen = ({navigation}: any) => {
   const {createUserInvitation, session}: any = useContext(AuthContext);
@@ -81,14 +82,30 @@ const ManageDriverscreen = ({navigation}: any) => {
       .required('Required'),
     email: yup.string().email('Invalid email').required('Email is required'),
   });
-
+  const removeDriverSchema = yup.object().shape({
+    confirmDriverName: yup.string().required('Required'),
+  });
+  const registerRemoveDriverValues = {
+    confirmDriverName: '',
+  };
   const registerAddDriverValues = {
     firstName: '',
     lastName: '',
     email: '',
   };
-
-  const formik = useFormik({
+  const removeDriverFormik = useFormik({
+    initialValues: registerRemoveDriverValues,
+    validationSchema: removeDriverSchema,
+    onSubmit: async values => {
+      // let driverName =
+      console.log(
+        'Hello {0}, your order {1} has been shipped.'.format('John', 10001),
+      );
+      if (removeDriverFormik.isValid && values.confirmDriverName === 'z') {
+      }
+    },
+  });
+  const addDriverFormik = useFormik({
     initialValues: registerAddDriverValues,
     validationSchema: addDriverSchema,
 
@@ -96,12 +113,12 @@ const ManageDriverscreen = ({navigation}: any) => {
       let userInvitation: UserInvitation = {
         businessId: businessId,
         invitationCode: '',
-        firstName: formik.values.firstName,
-        lastName: formik.values.lastName,
-        userEmail: formik.values.email,
+        firstName: addDriverFormik.values.firstName,
+        lastName: addDriverFormik.values.lastName,
+        userEmail: addDriverFormik.values.email,
         userRole: '2',
       };
-      if (formik.isValid) {
+      if (addDriverFormik.isValid) {
         await createUserInvitation(
           userInvitation,
           (error: any, result: any) => {
@@ -110,6 +127,15 @@ const ManageDriverscreen = ({navigation}: any) => {
             } else {
               setShowInvitationModal(false);
               setShowAlertDialog(true);
+              GetDriverInvitation(
+                businessId,
+                '2',
+                (error: any, result: any) => {
+                  if (error) {
+                  } else {
+                  }
+                },
+              );
             }
           },
         );
@@ -143,8 +169,8 @@ const ManageDriverscreen = ({navigation}: any) => {
           </AlertDialogHeader>
           <AlertDialogBody>
             <Text size="sm">
-              An invite code has been sent to {formik.values.email}. This invite
-              will expire after 7 days.
+              An invite code has been sent to {addDriverFormik.values.email}.
+              This invite will expire after 7 days.
             </Text>
           </AlertDialogBody>
           <AlertDialogFooter borderTopWidth={0}>
@@ -154,7 +180,7 @@ const ManageDriverscreen = ({navigation}: any) => {
               action="secondary"
               mr={3}
               onPress={() => {
-                formik.resetForm();
+                addDriverFormik.resetForm();
                 setShowAlertDialog(false);
               }}>
               <ButtonText>Okay</ButtonText>
@@ -186,24 +212,24 @@ const ManageDriverscreen = ({navigation}: any) => {
         <Tab.Screen name="Pending Drivers" component={PendingDriverscreen} />
       </Tab.Navigator>
       <InvitationModal
-        firstNameIsInvalid={!!formik.errors.firstName}
-        firstNameOnChangeText={formik.handleChange('firstName')}
-        firstNameErrorText={formik?.errors?.firstName}
-        firstNameOnBlur={formik.handleBlur('firstName')}
-        firstNameValue={formik.values?.firstName}
-        lastNameIsInvalid={!!formik.errors.lastName}
-        lastNameOnChangeText={formik.handleChange('lastName')}
-        lastNameErrorText={formik?.errors?.lastName}
-        lastNameOnBlur={formik.handleBlur('lastName')}
-        lastNameValue={formik.values?.lastName}
-        emailIsInvalid={!!formik.errors.email}
-        emailOnChangeText={formik.handleChange('email')}
-        emailErrorText={formik?.errors?.email}
-        emailOnBlur={formik.handleBlur('email')}
-        emailValue={formik.values?.email}
+        firstNameIsInvalid={!!addDriverFormik.errors.firstName}
+        firstNameOnChangeText={addDriverFormik.handleChange('firstName')}
+        firstNameErrorText={addDriverFormik?.errors?.firstName}
+        firstNameOnBlur={addDriverFormik.handleBlur('firstName')}
+        firstNameValue={addDriverFormik.values?.firstName}
+        lastNameIsInvalid={!!addDriverFormik.errors.lastName}
+        lastNameOnChangeText={addDriverFormik.handleChange('lastName')}
+        lastNameErrorText={addDriverFormik?.errors?.lastName}
+        lastNameOnBlur={addDriverFormik.handleBlur('lastName')}
+        lastNameValue={addDriverFormik.values?.lastName}
+        emailIsInvalid={!!addDriverFormik.errors.email}
+        emailOnChangeText={addDriverFormik.handleChange('email')}
+        emailErrorText={addDriverFormik?.errors?.email}
+        emailOnBlur={addDriverFormik.handleBlur('email')}
+        emailValue={addDriverFormik.values?.email}
         ShowModal={showInvitationModal}
         SendInviteOnPress={
-          formik.handleSubmit as (
+          addDriverFormik.handleSubmit as (
             values:
               | GestureResponderEvent
               | React.FormEvent<HTMLFormElement>
@@ -212,30 +238,6 @@ const ManageDriverscreen = ({navigation}: any) => {
         }
         CloseOtpModalButtonOnPress={() => {
           setShowInvitationModal(false);
-        }}
-      />
-      <ManageDriverModal
-        profilePictureUrl="https://media.licdn.com/dms/image/C4D03AQFotIRK58pRNA/profile-displayphoto-shrink_200_200/0/1525163555622?e=2147483647&v=beta&t=lvummEevyaevcll0SjNg8UvthCNqz05ate3HonR4zfc"
-        firstNameIsInvalid={!!formik.errors.firstName}
-        firstNameOnChangeText={formik.handleChange('firstName')}
-        firstNameErrorText={formik?.errors?.firstName}
-        firstNameOnBlur={formik.handleBlur('firstName')}
-        firstNameValue={currentDriver.FirstName}
-        lastNameIsInvalid={!!formik.errors.lastName}
-        lastNameOnChangeText={formik.handleChange('lastName')}
-        lastNameErrorText={formik?.errors?.lastName}
-        lastNameOnBlur={formik.handleBlur('lastName')}
-        lastNameValue={currentDriver.LastName}
-        emailIsInvalid={!!formik.errors.email}
-        emailOnChangeText={formik.handleChange('email')}
-        emailErrorText={formik?.errors?.email}
-        emailOnBlur={formik.handleBlur('email')}
-        emailValue={currentDriver.Email}
-        vehicleLicenseNumber={currentDriver.RegistrationNumber}
-        ShowModal={showDriverDetailsModal}
-        HandleRemoveDriver={() => {}}
-        CloseOtpModalButtonOnPress={() => {
-          setShowDriverDetailsModal(false);
         }}
       />
       <InviteDriverFab />

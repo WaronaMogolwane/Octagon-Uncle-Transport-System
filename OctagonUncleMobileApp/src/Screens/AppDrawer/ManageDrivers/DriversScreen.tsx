@@ -1,54 +1,32 @@
-import React, {useContext, useEffect, useState} from 'react';
 import {
-  GestureResponderEvent,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from 'react-native';
-import {NavigationContainer} from '@react-navigation/native';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {TripCardDriverSwipable} from '../../../Components/TripCardDriverSwipable';
-import {
-  Box,
-  FlatList,
-  Button,
-  Text,
-  Fab,
-  FabIcon,
-  AddIcon,
-  FabLabel,
   AlertDialog,
   AlertDialogBackdrop,
   AlertDialogBody,
+  AlertDialogCloseButton,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogCloseButton,
+  Button,
+  ButtonGroup,
   ButtonText,
-  CheckCircleIcon,
-  HStack,
+  CloseIcon,
+  FlatList,
   Heading,
   Icon,
-  ButtonGroup,
-  CloseIcon,
+  Text,
 } from '@gluestack-ui/themed';
-import InvitationModal from '../../../Components/Modals/InvitationModal';
-import * as yup from 'yup';
 import {useFormik} from 'formik';
+import React, {useContext, useEffect, useState} from 'react';
+import {RefreshControl, View} from 'react-native';
+import * as yup from 'yup';
+import {DriverListCard} from '../../../Components/Cards/DriverListCard';
+import {CustomFormControlInput} from '../../../Components/CustomFormInput';
+import ManageDriverModal from '../../../Components/Modals/DriverDetailsModal';
 import {
   AuthContext,
-  DeleteUserInvitation,
+  DeleteDriverByUserIdAndRole,
   GetDriversByBusinessId,
-  GetInvitationsByBusinessIdUserRole,
 } from '../../../Services/AuthenticationService';
-import {UserInvitation} from '../../../Models/UserInvitation';
-import {
-  PendingDriverListCard,
-  DriverListCard,
-} from '../../../Components/Cards/DriverListCard';
-import ManageDriverModal from '../../../Components/Modals/DriverDetailsModal';
-import {Vehicle} from '../../../Models/VehicleModel';
-const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
 export const DriversScreen = () => {
   const {createUserInvitation, session}: any = useContext(AuthContext);
@@ -75,17 +53,17 @@ export const DriversScreen = () => {
   }, []);
   const [showInvitationModal, setShowInvitationModal] = useState(false);
   const [currentDriver, setCurrentDriver] = useState({
+    UserId: '',
     FirstName: '',
     LastName: '',
     Email: '',
     RegistrationNumber: '',
   });
   const [showDriverDetailsModal, setShowDriverDetailsModal] = useState(false);
+  const [showRemoveDriverDialog, setShowRemoveDriverDialog] =
+    React.useState(false);
 
-  const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836';
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  const southAfricanIdRegex: RegExp =
-    /(([0-9]{2})(0|1)([0-9])([0-3])([0-9]))([ ]?)(([0-9]{4})([ ]?)([0-1][8]([ ]?)[0-9]))/;
 
   const addDriverSchema = yup.object().shape({
     firstName: yup
@@ -111,20 +89,22 @@ export const DriversScreen = () => {
     initialValues: registerAddDriverValues,
     validationSchema: addDriverSchema,
 
-    onSubmit: async values => {
-      let userInvitation: UserInvitation = {
-        businessId: businessId,
-        invitationCode: '',
-        firstName: formik.values.firstName,
-        lastName: formik.values.lastName,
-        userEmail: formik.values.email,
-        userRole: '2',
-      };
+    onSubmit: async () => {
       if (formik.isValid) {
       }
     },
   });
-
+  const removeDriverSchema = yup.object().shape({
+    confirmDriverName: yup.string().required('Required'),
+  });
+  const registerRemoveDriverValues = {
+    confirmDriverName: '',
+  };
+  const removeDriverFormik = useFormik({
+    initialValues: registerRemoveDriverValues,
+    validationSchema: removeDriverSchema,
+    onSubmit: async () => {},
+  });
   const GetDrivers = async () => {
     return await GetDriversByBusinessId(
       businessId,
@@ -137,37 +117,129 @@ export const DriversScreen = () => {
       },
     );
   };
+  const RemoveDriverAlert = () => {
+    String.prototype.format = function () {
+      var args = arguments;
+      return this.replace(/{([0-9]+)}/g, function (match, index) {
+        return typeof args[index] == 'undefined' ? match : args[index];
+      });
+    };
+
+    return (
+      <AlertDialog
+        isOpen={showRemoveDriverDialog}
+        onClose={() => {
+          setShowRemoveDriverDialog(false);
+        }}>
+        <AlertDialogBackdrop />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <Heading size="lg">Remove driver</Heading>
+            <AlertDialogCloseButton>
+              <Icon as={CloseIcon} />
+            </AlertDialogCloseButton>
+          </AlertDialogHeader>
+          <AlertDialogBody>
+            <Text size="sm">
+              Are you sure you want to remove
+              {' {0} {1} '.format(
+                currentDriver.FirstName,
+                currentDriver.LastName,
+              )}
+              as your driver? Any vehicle linked to this driver will have to be
+              linked to another driver.
+            </Text>
+            <Text size="sm" highlight={true}>
+              Enter
+              {' "{0} {1}" '.format(
+                currentDriver.FirstName,
+                currentDriver.LastName,
+              )}
+              to remove the driver.
+            </Text>
+            <CustomFormControlInput
+              placeHolder={' {0} {1} '.format(
+                currentDriver.FirstName,
+                currentDriver.LastName,
+              )}
+              isRequired={false}
+              isInvalid={false}
+              type="text"
+            />
+          </AlertDialogBody>
+          <AlertDialogFooter>
+            <ButtonGroup space="lg">
+              <Button
+                variant="outline"
+                action="secondary"
+                onPress={() => {
+                  setShowRemoveDriverDialog(false);
+                }}>
+                <ButtonText>Cancel</ButtonText>
+              </Button>
+              <Button
+                bg="$error600"
+                action="negative"
+                onPress={
+                  () => {
+                    RemoveDriver();
+                  }
+                  //setShowRemoveDriverDialog(false);
+                }>
+                <ButtonText>Remove</ButtonText>
+              </Button>
+            </ButtonGroup>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  };
+  const RemoveDriver = async () => {
+    if (removeDriverFormik.values.confirmDriverName)
+      DeleteDriverByUserIdAndRole(currentDriver.UserId, '2', (error: any) => {
+        if (error) {
+          console.error(error);
+        } else {
+          GetDrivers();
+          setShowRemoveDriverDialog(false);
+          setShowDriverDetailsModal(false);
+        }
+      });
+  };
 
   useEffect(() => {
     GetDrivers();
   }, []);
-
   return (
     <View style={{flex: 1}}>
-      <FlatList
-        mt="$3"
-        data={DriversList}
-        extraData={DriversList}
-        renderItem={({item}: any) => (
-          <DriverListCard
-            firstName={item.FirstName}
-            lastName={item.LastName}
-            email={item.Email}
-            vehicleLicenseNumber={item.RegistrationNumber}
-            handleDriverCardPress={() => {
-              setCurrentDriver(item);
-              setShowDriverDetailsModal(true);
-            }}
-          />
-        )}
-        keyExtractor={(item: any) => item.UserId}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshingDrivers}
-            onRefresh={onRefreshDrivers}
-          />
-        }
-      />
+      {DriversList[0] ? (
+        <FlatList
+          mt="$3"
+          data={DriversList}
+          extraData={DriversList}
+          renderItem={({item}: any) => (
+            <DriverListCard
+              firstName={item.FirstName}
+              lastName={item.LastName}
+              email={item.Email}
+              vehicleLicenseNumber={item.RegistrationNumber}
+              handleDriverCardPress={() => {
+                setCurrentDriver(item);
+                setShowDriverDetailsModal(true);
+              }}
+            />
+          )}
+          keyExtractor={(item: any) => item.UserId}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshingDrivers}
+              onRefresh={onRefreshDrivers}
+            />
+          }
+        />
+      ) : (
+        <Text>You currently have no drivers. Invite a driver.</Text>
+      )}
       <ManageDriverModal
         profilePictureUrl="https://media.licdn.com/dms/image/C4D03AQFotIRK58pRNA/profile-displayphoto-shrink_200_200/0/1525163555622?e=2147483647&v=beta&t=lvummEevyaevcll0SjNg8UvthCNqz05ate3HonR4zfc"
         firstNameIsInvalid={!!formik.errors.firstName}
@@ -187,11 +259,14 @@ export const DriversScreen = () => {
         emailValue={currentDriver.Email}
         vehicleLicenseNumber={currentDriver.RegistrationNumber}
         ShowModal={showDriverDetailsModal}
-        HandleRemoveDriver={() => {}}
+        HandleRemoveDriver={() => {
+          setShowRemoveDriverDialog(true);
+        }}
         CloseOtpModalButtonOnPress={() => {
           setShowDriverDetailsModal(false);
         }}
       />
+      <RemoveDriverAlert />
     </View>
   );
 };

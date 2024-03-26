@@ -1,9 +1,8 @@
-DELIMITER $$
-CREATE DEFINER=`sqladmin`@`%` PROCEDURE `UpdateInvitationCodeToUsed`(in _InvitationCode varchar(100))
+CREATE DEFINER=`sqladmin`@`%` PROCEDURE `UpdateUserInvitationToUsed`(in _InvitationCode varchar(100), in _UserRole tinyint(1))
 BEGIN
-UPDATE InvitationCode  
+UPDATE UserInvitation  
  SET IsUsed = 1
-	WHERE InvitationCodeId  = _InvitationCodeId
+	WHERE InvitationCode  = _InvitationCode
+    AND UserRole = _UserRole
     AND IsUsed = 0;
-END$$
-DELIMITER ;
+END

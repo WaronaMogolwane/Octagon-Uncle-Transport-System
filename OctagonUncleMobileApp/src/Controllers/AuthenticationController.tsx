@@ -1,4 +1,4 @@
-import {UserInvitationModel} from '../Models/UserInvitation';
+import {UserInvitation} from '../Models/UserInvitation';
 import {User} from '../Models/UserModel';
 import {
   CreateUserWithEmailPassword,
@@ -37,10 +37,11 @@ export const UserSetPassword = async (userPassword: string) => {
   return await SetPassword(userPassword);
 };
 export const UserVerifyEmail = async (
-  userInvitation: UserInvitationModel,
+  invitationCode: string,
+  userRole: number,
   callback: (error: any, result: any) => void,
 ) => {
-  await VerifyUserInvitation(userInvitation, (error, result) => {
+  await VerifyUserInvitation(invitationCode, userRole, (error, result) => {
     if (error) {
       callback(error, null);
     } else {

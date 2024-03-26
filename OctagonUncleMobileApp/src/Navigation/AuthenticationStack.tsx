@@ -6,6 +6,7 @@ import ForgotPasswordScreen from '../Screens/AuthenticationStack/ForgotPasswordS
 import SelectUserRoleScreen from '../Screens/AuthenticationStack/SelectUserRoleScreen';
 import SignUpScreen from '../Screens/AuthenticationStack/SignUpScreen';
 import UserDetailsSignUp from '../Screens/SignUpStack/UserDetailsSignUp';
+import PersonalDetailsScreen from '../Screens/AuthenticationStack/PersonalDetailsScreen';
 
 const AuthenticationStack = () => {
   const Stack = createNativeStackNavigator();
@@ -15,7 +16,7 @@ const AuthenticationStack = () => {
       <Stack.Screen name="User Role" component={SelectUserRoleScreen} />
       <Stack.Screen name="Sign Up" component={SignUpScreen} />
       <Stack.Screen name="Forgot Password" component={ForgotPasswordScreen} />
-      <Stack.Screen name="User Details Sign Up" component={UserDetailsSignUp} />
+      <Stack.Screen name="Personal Details" component={PersonalDetailsScreen} />
     </Stack.Navigator>
   );
 };

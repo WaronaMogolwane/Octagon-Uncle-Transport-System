@@ -64,7 +64,6 @@ const SignUpScreen = ({route, navigation}: any) => {
             if (error) {
               console.error(error);
             } else {
-              console.log(result.data);
               setShowModal(true);
             }
           });
@@ -134,6 +133,9 @@ const SignUpScreen = ({route, navigation}: any) => {
         console.error(error);
       } else {
         ShowToast();
+        navigation.navigate('Personal Details', {
+          sessionId: result.headers.sessionid,
+        });
       }
     });
   };

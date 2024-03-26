@@ -22,6 +22,7 @@ import {
   Icon,
   ButtonGroup,
   CloseIcon,
+  ScrollView,
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
@@ -55,7 +56,7 @@ export const PendingDriverscreen = () => {
     setRefreshingPendingDrivers(false);
   }, []);
   const RemoveInvitation = async (invitationId: string) => {
-    await DeleteUserInvitation(invitationId, 2, (error: any, result: any) => {
+    await DeleteUserInvitation(invitationId, 2, (error: any) => {
       if (error) {
         setRefreshingPendingDrivers(false);
         console.error(error.response.data);
@@ -132,33 +133,45 @@ export const PendingDriverscreen = () => {
   }, []);
   return (
     <View style={{flex: 1}}>
-      <FlatList
-        data={PendingDriversList}
-        extraData={PendingDriversList}
-        renderItem={({item}: any) => (
-          <PendingDriverListCard
-            firstName={item.FirstName}
-            lastName={item.LastName}
-            email={item.Email}
-            expiryDate={item.ExpiryDate}
-            removeButtonOnPress={() => {
-              setCurrentInvitationId;
-              setCurrentInvitationId(item.UserInvitationId);
-              setCurrentInvitationFullName(
-                item.FirstName + ' ' + item.LastName,
-              );
-              setShowRemoveInviteAlertDialog(true);
-            }}
-          />
-        )}
-        keyExtractor={(item: any) => item.UserInvitationId}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshingPendingDrivers}
-            onRefresh={onRefreshPendingDrivers}
-          />
-        }
-      />
+      {PendingDriversList[0] ? (
+        <FlatList
+          data={PendingDriversList}
+          extraData={PendingDriversList}
+          renderItem={({item}: any) => (
+            <PendingDriverListCard
+              firstName={item.FirstName}
+              lastName={item.LastName}
+              email={item.Email}
+              expiryDate={item.ExpiryDate}
+              removeButtonOnPress={() => {
+                setCurrentInvitationId;
+                setCurrentInvitationId(item.UserInvitationId);
+                setCurrentInvitationFullName(
+                  item.FirstName + ' ' + item.LastName,
+                );
+                setShowRemoveInviteAlertDialog(true);
+              }}
+            />
+          )}
+          keyExtractor={(item: any) => item.UserInvitationId}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshingPendingDrivers}
+              onRefresh={onRefreshPendingDrivers}
+            />
+          }
+        />
+      ) : (
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshingPendingDrivers}
+              onRefresh={onRefreshPendingDrivers}
+            />
+          }>
+          <Text>You currently have no pending driver invitations.</Text>
+        </ScrollView>
+      )}
       <RemoveAlert />
     </View>
   );

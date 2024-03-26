@@ -49,68 +49,9 @@ const data: any = [
 ];
 
 const ManageDriverModal = (props: DriverDetailsModalProps) => {
-  const [showRemoveDriverDialog, setShowRemoveDriverDialog] =
-    React.useState(false);
   function RemoveDriver(driverId: string) {
     //throw new Error('Function not implemented.');
   }
-  const RemoveDriverAlert = () => {
-    return (
-      <AlertDialog
-        isOpen={showRemoveDriverDialog}
-        onClose={() => {
-          setShowRemoveDriverDialog(false);
-        }}>
-        <AlertDialogBackdrop />
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <Heading size="lg">Remove driver</Heading>
-            <AlertDialogCloseButton>
-              <Icon as={CloseIcon} />
-            </AlertDialogCloseButton>
-          </AlertDialogHeader>
-          <AlertDialogBody>
-            <Text size="sm">
-              Are you sure you want to remove{' '}
-              {props.firstNameValue + ' ' + props.lastNameValue} as your driver?
-              Any vehicle linked to this driver will have to be linked to
-              another driver.
-            </Text>
-            <Text size="sm" highlight={true}>
-              Enter{' "'}
-              {props.firstNameValue + ' ' + props.lastNameValue}" to remove the driver.
-            </Text>
-            <CustomFormControlInput
-              placeHolder={props.firstNameValue + ' ' + props.lastNameValue}
-              isRequired={false}
-              isInvalid={false}
-            />
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <ButtonGroup space="lg">
-              <Button
-                variant="outline"
-                action="secondary"
-                onPress={() => {
-                  setShowRemoveDriverDialog(false);
-                }}>
-                <ButtonText>Cancel</ButtonText>
-              </Button>
-              <Button
-                bg="$error600"
-                action="negative"
-                onPress={() => {
-                  RemoveDriver('');
-                  setShowRemoveDriverDialog(false);
-                }}>
-                <ButtonText>Remove</ButtonText>
-              </Button>
-            </ButtonGroup>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    );
-  };
 
   return (
     <View>
@@ -178,10 +119,7 @@ const ManageDriverModal = (props: DriverDetailsModalProps) => {
               size="sm"
               action="negative"
               borderWidth="$0"
-              // onPress={props.HandleRemoveDriver}>
-              onPress={() => {
-                setShowRemoveDriverDialog(true);
-              }}>
+              onPress={props.HandleRemoveDriver}>
               <ButtonText>Remove driver</ButtonText>
             </Button>
             <Button
@@ -196,7 +134,6 @@ const ManageDriverModal = (props: DriverDetailsModalProps) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <RemoveDriverAlert />
     </View>
   );
 };

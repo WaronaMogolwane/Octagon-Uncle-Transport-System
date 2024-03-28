@@ -7,7 +7,8 @@ import userProfileRoute from "./Routes/UserDetailRoutes";
 import passengerRoute from "./Routes/PassengerRoutes";
 import tripRoute from "./Routes/TripRoutes";
 import vehicleRoute from "./Routes/VehicleRoutes";
-import { AuthenticateJWT } from "./Middleware/Auth";
+import passengerDriverVehicleLinkingRoute from "./Routes/PassengerDriverVehicleLinking";
+
 import ErrorHandler from "./Middleware/ErrorHandler";
 
 const app = express();
@@ -23,6 +24,7 @@ app.use("/user-profile", userProfileRoute);
 app.use("/passenger", passengerRoute);
 app.use("/trip", tripRoute);
 app.use("/vehicle", vehicleRoute);
+app.use("/passengerDriverVehicleLinking", passengerDriverVehicleLinkingRoute);
 
 app.listen(PORT, function () {
   console.log(`Server is live on Port ${PORT}`);

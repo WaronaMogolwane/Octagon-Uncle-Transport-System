@@ -6,6 +6,7 @@ import {
   GetAllPassengersByBusinessId,
   GetPassengerByPassengerId,
   UpdatePassenger,
+  UpdateIsAssigned,
 } from "../Models/PassengerModel";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 
@@ -88,6 +89,31 @@ export const UpdatePassengerDetail = async (req: any, res: any, next: any) => {
   });
 };
 
+export const UpdatePassengerIsAssigned = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  let passengerId = req.query.PassengerId;
+
+  await UpdateIsAssigned(passengerId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        UserDetailUpdated: true,
+        result: result.affectedRows,
+      });
+    }
+  });
+};
+
 export const GetPassengersByParent = async (req: any, res: any, next: any) => {
   let parentId = req.body.passenger.ParentId;
 
@@ -114,7 +140,7 @@ export const GetPassengersByBusiness = async (
   res: any,
   next: any
 ) => {
-  let businessId = req.body.passenger.BusinessId;
+  let businessId = req.query.BusinessId;
 
   await GetAllPassengersByBusinessId(businessId, (error, result) => {
     if (error) {

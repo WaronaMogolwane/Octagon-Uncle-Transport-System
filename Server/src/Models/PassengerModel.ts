@@ -79,6 +79,26 @@ export const UpdatePassenger = async (
   );
 };
 
+export const UpdateIsAssigned = async (
+  passengerId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL UpdatePassengerIsAssigned(?)",
+      timeout: 40000,
+      values: [passengerId],
+    },
+    (err, res) => {
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, res);
+      }
+    }
+  );
+};
+
 export const GetAllPassengersByBusinessId = async (
   businessId: string,
   callback: (error, result) => void

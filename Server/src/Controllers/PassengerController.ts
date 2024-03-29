@@ -94,7 +94,7 @@ export const UpdatePassengerIsAssigned = async (
   res: any,
   next: any
 ) => {
-  let passengerId = req.query.PassengerId;
+  let passengerId = req.body.params.PassengerId;
 
   await UpdateIsAssigned(passengerId, (error, result) => {
     if (error) {

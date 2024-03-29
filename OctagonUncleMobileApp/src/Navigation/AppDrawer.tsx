@@ -10,6 +10,7 @@ import ManageClientsScreen from '../Screens/AppDrawer/ManageClientsScreen';
 import ProfileScreen from '../Screens/AppDrawer/ProfileScreen';
 import UserDetailSignUp from '../Screens/SignUpStack/UserDetailsSignUp';
 import ManageTripsScreen from '../Screens/AppDrawer/ManageTripsScreen';
+import AssignPassengerScreen from '../Screens/AppDrawer/AssignPassengerScreen';
 
 const AppDrawer = () => {
   const Drawer = createDrawerNavigator();
@@ -20,6 +21,10 @@ const AppDrawer = () => {
       <Drawer.Screen name="Payments" component={PaymentsScreen} />
       <Drawer.Screen name="Manage Vehicles" component={ManageVehiclesScreen} />
       <Drawer.Screen name="Manage Trip" component={ManageTripsScreen} />
+      <Drawer.Screen
+        name="Assign Passenger"
+        component={AssignPassengerScreen}
+      />
       <Drawer.Screen name="Manage Drivers" component={ManageDriversScreen} />
       <Drawer.Screen name="Manage Clients" component={ManageClientsScreen} />
       <Drawer.Screen name="Profile" component={UserDetailSignUp} />

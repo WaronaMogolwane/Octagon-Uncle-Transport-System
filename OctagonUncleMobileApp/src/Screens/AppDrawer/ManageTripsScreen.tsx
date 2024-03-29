@@ -1,4 +1,4 @@
-import {FlatList, RefreshControl, Text, View} from 'react-native';
+import {FlatList, RefreshControl} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {VehicleCard} from '../../Components/VehicleCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
@@ -17,7 +17,6 @@ const ManageTripsScreen = ({navigation}: any) => {
 
       GetVehiclesAndDrivers(businessId)
         .then(result => {
-          console.log(result);
           setVehicleList(result);
           setRefreshing(false);
         })
@@ -52,6 +51,11 @@ const ManageTripsScreen = ({navigation}: any) => {
       model={itemData.model}
       color={itemData.color}
       fullName={itemData.fullName}
+      onPress={() => {
+        navigation.navigate('Assign Passenger', {
+          vehicleId: itemData.vehicleId,
+        });
+      }}
     />
   );
 

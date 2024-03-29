@@ -45,3 +45,23 @@ export const GetPassengerDriverVehicleLinkingByBusinessId = async (
     }
   );
 };
+
+export const DeletePassengerDriverVehicleLinking = async (
+  pVLId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL DeletePassengerDriverVehicleLinking(?);",
+      timeout: 40000,
+      values: [pVLId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};

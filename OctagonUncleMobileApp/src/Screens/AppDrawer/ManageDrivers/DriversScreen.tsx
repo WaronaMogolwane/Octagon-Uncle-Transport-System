@@ -14,6 +14,11 @@ import {
   Heading,
   Icon,
   Text,
+  Toast,
+  ToastDescription,
+  ToastTitle,
+  VStack,
+  useToast,
 } from '@gluestack-ui/themed';
 import {useFormik} from 'formik';
 import React, {useContext, useEffect, useState} from 'react';
@@ -27,21 +32,15 @@ import {
   DeleteDriverByUserIdAndRole,
   GetDriversByBusinessId,
 } from '../../../Services/AuthenticationService';
+import RemoveDriverAlert from '../../../Components/Alerts/RemoveDriverAlert';
+import {GestureResponderEvent} from 'react-native';
 
 export const DriversScreen = () => {
   const {createUserInvitation, session}: any = useContext(AuthContext);
 
-  const [CurrentInvitationId, setCurrentInvitationId] = useState('');
-  const [CurrentInvitationFullName, setCurrentInvitationFullName] =
-    useState('');
+  const [confirmRemoveDriverText, setConfirmRemoveDriverText] = useState('');
   const [DriversList, setDriversList] = useState([]);
-  const [PendingDriversList, setPendingDriversList] = useState([]);
   const [refreshingDrivers, setRefreshingDrivers] = React.useState(false);
-  const [refreshingPendingDrivers, setRefreshingPendingDrivers] =
-    React.useState(false);
-  const [showAlertDialog, setShowAlertDialog] = React.useState(false);
-  const [showRemoveInviteAlertDialog, setShowRemoveInviteAlertDialog] =
-    React.useState(false);
 
   const onRefreshDrivers = React.useCallback(() => {
     setRefreshingDrivers(true);
@@ -51,7 +50,6 @@ export const DriversScreen = () => {
     }, 2000);
     setRefreshingDrivers(false);
   }, []);
-  const [showInvitationModal, setShowInvitationModal] = useState(false);
   const [currentDriver, setCurrentDriver] = useState({
     UserId: '',
     FirstName: '',
@@ -62,7 +60,7 @@ export const DriversScreen = () => {
   const [showDriverDetailsModal, setShowDriverDetailsModal] = useState(false);
   const [showRemoveDriverDialog, setShowRemoveDriverDialog] =
     React.useState(false);
-
+  const toast = useToast();
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
   const addDriverSchema = yup.object().shape({
@@ -94,16 +92,38 @@ export const DriversScreen = () => {
       }
     },
   });
-  const removeDriverSchema = yup.object().shape({
-    confirmDriverName: yup.string().required('Required'),
-  });
-  const registerRemoveDriverValues = {
-    confirmDriverName: '',
-  };
+
   const removeDriverFormik = useFormik({
-    initialValues: registerRemoveDriverValues,
-    validationSchema: removeDriverSchema,
-    onSubmit: async () => {},
+    initialValues: {
+      confirmDriverName: '',
+    },
+    validationSchema: yup.object().shape({
+      confirmDriverName: yup.string().required('Required'),
+    }),
+    onSubmit: async () => {
+      if (formik.isValid) {
+        if (
+          removeDriverFormik.values.confirmDriverName ===
+          '{0} {1}'.format(currentDriver.FirstName, currentDriver.LastName)
+        ) {
+          DeleteDriverByUserIdAndRole(
+            currentDriver.UserId,
+            '2',
+            (error: any) => {
+              if (error) {
+                console.error(error);
+                ShowRemoveDriverToast(false);
+              } else {
+                GetDrivers();
+                setShowRemoveDriverDialog(false);
+                setShowDriverDetailsModal(false);
+                ShowRemoveDriverToast(true);
+              }
+            },
+          );
+        }
+      }
+    },
   });
   const GetDrivers = async () => {
     return await GetDriversByBusinessId(
@@ -117,94 +137,30 @@ export const DriversScreen = () => {
       },
     );
   };
-  const RemoveDriverAlert = () => {
-    String.prototype.format = function () {
-      var args = arguments;
-      return this.replace(/{([0-9]+)}/g, function (match, index) {
-        return typeof args[index] == 'undefined' ? match : args[index];
-      });
-    };
-
-    return (
-      <AlertDialog
-        isOpen={showRemoveDriverDialog}
-        onClose={() => {
-          setShowRemoveDriverDialog(false);
-        }}>
-        <AlertDialogBackdrop />
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <Heading size="lg">Remove driver</Heading>
-            <AlertDialogCloseButton>
-              <Icon as={CloseIcon} />
-            </AlertDialogCloseButton>
-          </AlertDialogHeader>
-          <AlertDialogBody>
-            <Text size="sm">
-              Are you sure you want to remove
-              {' {0} {1} '.format(
-                currentDriver.FirstName,
-                currentDriver.LastName,
-              )}
-              as your driver? Any vehicle linked to this driver will have to be
-              linked to another driver.
-            </Text>
-            <Text size="sm" highlight={true}>
-              Enter
-              {' "{0} {1}" '.format(
-                currentDriver.FirstName,
-                currentDriver.LastName,
-              )}
-              to remove the driver.
-            </Text>
-            <CustomFormControlInput
-              placeHolder={' {0} {1} '.format(
-                currentDriver.FirstName,
-                currentDriver.LastName,
-              )}
-              isRequired={false}
-              isInvalid={false}
-              type="text"
-            />
-          </AlertDialogBody>
-          <AlertDialogFooter>
-            <ButtonGroup space="lg">
-              <Button
-                variant="outline"
-                action="secondary"
-                onPress={() => {
-                  setShowRemoveDriverDialog(false);
-                }}>
-                <ButtonText>Cancel</ButtonText>
-              </Button>
-              <Button
-                bg="$error600"
-                action="negative"
-                onPress={
-                  () => {
-                    RemoveDriver();
-                  }
-                  //setShowRemoveDriverDialog(false);
-                }>
-                <ButtonText>Remove</ButtonText>
-              </Button>
-            </ButtonGroup>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    );
-  };
-  const RemoveDriver = async () => {
-    if (removeDriverFormik.values.confirmDriverName)
-      DeleteDriverByUserIdAndRole(currentDriver.UserId, '2', (error: any) => {
-        if (error) {
-          console.error(error);
-        } else {
-          GetDrivers();
-          setShowRemoveDriverDialog(false);
-          setShowDriverDetailsModal(false);
-        }
-      });
+  const ShowRemoveDriverToast = (isSuccess: boolean) => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return isSuccess ? (
+          <Toast nativeID={toastId} action="success" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Success</ToastTitle>
+              <ToastDescription>Driver successfully removed..</ToastDescription>
+            </VStack>
+          </Toast>
+        ) : (
+          <Toast nativeID={toastId} action="error" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Failed</ToastTitle>
+              <ToastDescription>
+                An error has occurred. The driver was not removed
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
   };
 
   useEffect(() => {
@@ -259,14 +215,36 @@ export const DriversScreen = () => {
         emailValue={currentDriver.Email}
         vehicleLicenseNumber={currentDriver.RegistrationNumber}
         ShowModal={showDriverDetailsModal}
-        HandleRemoveDriver={() => {
+        OpenRemoveDriverAlert={() => {
           setShowRemoveDriverDialog(true);
         }}
         CloseOtpModalButtonOnPress={() => {
           setShowDriverDetailsModal(false);
         }}
+        RemoveDriverAlertProps={{
+          RemoveDriverAlertIsOpen: showRemoveDriverDialog,
+          VerifyRemoveIsInvalid: !!removeDriverFormik.errors.confirmDriverName,
+          VerifyRemoveOnChangeText:
+            removeDriverFormik.handleChange('confirmDriverName'),
+          VerifyRemoveErrorText: removeDriverFormik?.errors?.confirmDriverName,
+          VerifyRemoveOnBlur:
+            removeDriverFormik.handleBlur('confirmDriverName'),
+          VerifyRemoveValue: removeDriverFormik.values?.confirmDriverName,
+          RemoveDriverConfirmation: '{0} {1}'.format(
+            currentDriver.FirstName,
+            currentDriver.LastName,
+          ),
+          HandleRemoveDriver: removeDriverFormik.handleSubmit as (
+            values:
+              | GestureResponderEvent
+              | React.FormEvent<HTMLFormElement>
+              | undefined,
+          ) => void,
+          CloseAlertOnPress: () => {
+            setShowRemoveDriverDialog(false);
+          },
+        }}
       />
-      <RemoveDriverAlert />
     </View>
   );
 };

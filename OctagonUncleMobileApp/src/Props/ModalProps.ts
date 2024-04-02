@@ -1,5 +1,6 @@
 import { ChangeEvent } from "react";
 import { GestureResponderEvent } from "react-native";
+import { RemoveDriverAlertProps } from "./RemoveDriverAlertProps";
 
 export type VerifyOtpModalProps = {
     ShowModal: boolean;
@@ -53,8 +54,17 @@ export type DriverDetailsModalProps = {
     emailValue: string;
     profilePictureUrl: string;
     vehicleLicenseNumber: string;
-    HandleRemoveDriver: (
-        values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
-    ) => void;
+    OpenRemoveDriverAlert: () => void;
     CloseOtpModalButtonOnPress: () => void;
+    RemoveDriverAlertProps: RemoveDriverAlertProps;
+    // RemoveDriverAlertIsOpen: boolean;
+    // VerifyRemoveIsInvalid: boolean;
+    // VerifyRemoveOnChangeText: (e: string | ChangeEvent<any>) => void;
+    // VerifyRemoveErrorText: string | undefined;
+    // VerifyRemoveOnBlur: (e: any) => void;
+    // VerifyRemoveValue: string;
+    // HandleRemoveDriver: (
+    //     values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
+    // ) => void;
+    // CloseAlertOnPress: () => void;
 };

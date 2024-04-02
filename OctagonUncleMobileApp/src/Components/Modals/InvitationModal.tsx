@@ -24,7 +24,7 @@ import {
 import {
   InvitationModalProps,
   VerifyOtpModalProps,
-} from '../../Models/ModalProps';
+} from '../../Props/ModalProps';
 
 const VerifyEmailModal = (props: InvitationModalProps) => {
   return (

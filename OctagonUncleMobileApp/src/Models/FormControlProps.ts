@@ -1,5 +1,5 @@
-import {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import { GestureResponderEvent } from 'react-native/Libraries/Types/CoreEventTypes';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 
 export type InputProps = {
   isInvalid: boolean;

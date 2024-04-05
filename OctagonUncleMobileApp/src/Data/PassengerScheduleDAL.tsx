@@ -21,6 +21,7 @@ export const AddPassengerScheduleToDB = async (
           Saturday: passengerSchedule.saturday,
           Sunday: passengerSchedule.sunday,
           PassengerId: passengerSchedule.passengerId,
+          VehicleId: passengerSchedule.vehicleId,
         },
       },
     )

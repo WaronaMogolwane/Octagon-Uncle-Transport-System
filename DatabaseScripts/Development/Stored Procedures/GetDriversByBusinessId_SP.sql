@@ -5,8 +5,8 @@ BEGIN
 	    User
 	    INNER JOIN UserBusinessLinking ubl ON ubl.UserId = User.UserId
 	    INNER JOIN UserDetail ud ON ud.UserId = User.UserId
-        INNER JOIN DriverVehicleLinking dvl ON dvl.DriverId = User.UserId
-        INNER JOIN Vehicle v ON v.VehicleId =  dvl.VehicleId
+        LEFT JOIN DriverVehicleLinking dvl ON dvl.DriverId = User.UserId
+        LEFT JOIN Vehicle v ON v.VehicleId =  dvl.VehicleId
 	WHERE
 	    User.ActiveStatus = '1'
 	    AND User.UserRole = 2

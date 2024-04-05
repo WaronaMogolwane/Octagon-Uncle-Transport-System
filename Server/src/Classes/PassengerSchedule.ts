@@ -8,6 +8,7 @@ export class PassengerSchedule {
   saturday: boolean;
   sunday: boolean;
   passengerId: string;
+  driverVehicleLinkingId: string;
 
   constructor(
     passengerScheduleId: string,
@@ -18,7 +19,8 @@ export class PassengerSchedule {
     friday: boolean,
     saturday: boolean,
     sunday: boolean,
-    passengerId: string
+    passengerId: string,
+    driverVehicleLinkingId: string
   ) {
     this.passengerScheduleId = passengerScheduleId;
     this.monday = monday;
@@ -29,5 +31,6 @@ export class PassengerSchedule {
     this.saturday = saturday;
     this.sunday = sunday;
     this.passengerId = passengerId;
+    this.driverVehicleLinkingId = driverVehicleLinkingId;
   }
 }

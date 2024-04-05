@@ -10,7 +10,6 @@ export const InsertPassengerSchedule = async (
       sql: "CALL InsertNewPassengerSchedule(?,?,?,?,?,?,?,?,?);",
       timeout: 40000,
       values: [
-        passengerSchedule.passengerScheduleId,
         passengerSchedule.monday,
         passengerSchedule.tuesday,
         passengerSchedule.wednesday,
@@ -19,7 +18,26 @@ export const InsertPassengerSchedule = async (
         passengerSchedule.saturday,
         passengerSchedule.sunday,
         passengerSchedule.passengerId,
+        passengerSchedule.driverVehicleLinkingId,
       ],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const AutoInsertPassengerSchedule = async (
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL AutoInsertNewSchedule();",
+      timeout: 40000,
     },
     function (error, results, fields) {
       if (error) {

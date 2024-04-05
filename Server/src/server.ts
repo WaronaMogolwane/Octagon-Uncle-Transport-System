@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
 import express from "express";
+
 import authRoute from "./Routes/AuthenticationRoutes";
 import userProfileRoute from "./Routes/UserDetailRoutes";
 import passengerRoute from "./Routes/PassengerRoutes";
@@ -11,7 +12,11 @@ import passengerDriverVehicleLinkingRoute from "./Routes/PassengerDriverVehicleL
 import passengerScheduleRoute from "./Routes/PassengerScheduleRoutes";
 import driverVehicleLinkingRoute from "./Routes/DriverVehicleLinkingRoutes";
 
+import schedule from "node-schedule";
+
 import ErrorHandler from "./Middleware/ErrorHandler";
+
+import { AutoInsertPassengerSchedule } from "./Models/PassengerScheduleModel";
 
 const app = express();
 
@@ -32,6 +37,18 @@ app.use(
 );
 app.use("/passenger-schedule", passengerScheduleRoute);
 app.use("/driver-vehicle-linking", driverVehicleLinkingRoute);
+
+const job = schedule.scheduleJob("30 * * * * *", function () {
+  AutoInsertPassengerSchedule((error, result) => {
+    if (result) {
+      console.log(result);
+    } else if (error) {
+      console.log(error);
+    } else {
+      console.log("The Schedule ran but it got neither response Nick :(");
+    }
+  });
+});
 
 app.listen(PORT, function () {
   console.log(`Server is live on Port ${PORT}`);

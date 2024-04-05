@@ -138,6 +138,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         saturday,
         sunday,
         value,
+        vehicleId,
       );
 
       console.info(newSchedule);

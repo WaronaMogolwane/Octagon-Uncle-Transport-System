@@ -37,7 +37,7 @@ export const CustomButton3 = (props: ButtonProps) => {
     <Button
       size="sm"
       variant="link"
-      action="primary"
+      action={props.action}
       isDisabled={props.isDisabled}
       isFocusVisible={props.isFocusVisible}
       onPress={props.onPress}>

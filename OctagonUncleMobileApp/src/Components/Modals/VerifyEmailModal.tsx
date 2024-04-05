@@ -21,7 +21,7 @@ import {
   Button,
   Modal,
 } from '@gluestack-ui/themed';
-import {VerifyOtpModalProps} from '../../Models/ModalProps';
+import {VerifyOtpModalProps} from '../../Props/ModalProps';
 
 const VerifyEmailModal = (props: VerifyOtpModalProps) => {
   return (

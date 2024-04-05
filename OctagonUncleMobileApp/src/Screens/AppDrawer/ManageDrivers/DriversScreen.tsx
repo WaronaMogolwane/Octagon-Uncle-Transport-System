@@ -13,6 +13,7 @@ import {
   FlatList,
   Heading,
   Icon,
+  ScrollView,
   Text,
   Toast,
   ToastDescription,
@@ -44,7 +45,6 @@ export const DriversScreen = () => {
 
   const onRefreshDrivers = React.useCallback(() => {
     setRefreshingDrivers(true);
-
     setTimeout(() => {
       GetDrivers();
     }, 2000);
@@ -178,7 +178,11 @@ export const DriversScreen = () => {
               firstName={item.FirstName}
               lastName={item.LastName}
               email={item.Email}
-              vehicleLicenseNumber={item.RegistrationNumber}
+              vehicleLicenseNumber={
+                item.RegistrationNumber
+                  ? item.RegistrationNumber
+                  : 'No vehicle linked.'
+              }
               handleDriverCardPress={() => {
                 setCurrentDriver(item);
                 setShowDriverDetailsModal(true);
@@ -194,7 +198,15 @@ export const DriversScreen = () => {
           }
         />
       ) : (
-        <Text>You currently have no drivers. Invite a driver.</Text>
+        <ScrollView
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshingDrivers}
+              onRefresh={onRefreshDrivers}
+            />
+          }>
+          <Text>You currently have no drivers. Invite a driver.</Text>
+        </ScrollView>
       )}
       <ManageDriverModal
         profilePictureUrl="https://media.licdn.com/dms/image/C4D03AQFotIRK58pRNA/profile-displayphoto-shrink_200_200/0/1525163555622?e=2147483647&v=beta&t=lvummEevyaevcll0SjNg8UvthCNqz05ate3HonR4zfc"

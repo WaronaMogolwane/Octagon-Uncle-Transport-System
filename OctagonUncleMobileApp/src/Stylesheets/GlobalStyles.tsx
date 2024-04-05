@@ -26,6 +26,19 @@ export const FormStyles = StyleSheet.create({
   logo: {
     marginBottom: 32,
   },
+  label: {
+    marginVertical: 5,
+    fontSize: 14,
+    color: COLORS.grey,
+  },
+  inputContainer: {
+    height: 55,
+    backgroundColor: COLORS.light,
+    flexDirection: 'row',
+    paddingHorizontal: 15,
+    borderWidth: 0.5,
+    alignItems: 'center',
+  },
 });
 export const FlatlistStyles = StyleSheet.create({
   container: {

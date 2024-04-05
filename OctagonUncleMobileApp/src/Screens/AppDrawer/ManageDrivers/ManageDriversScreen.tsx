@@ -1,6 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
-  FlatList,
   GestureResponderEvent,
   RefreshControl,
   StyleSheet,
@@ -10,6 +9,8 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {TripCardDriverSwipable} from '../../../Components/TripCardDriverSwipable';
 import {
+  Box,
+  FlatList,
   Button,
   Text,
   Fab,
@@ -22,64 +23,51 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogCloseButton,
   ButtonText,
   CheckCircleIcon,
   HStack,
   Heading,
   Icon,
+  ButtonGroup,
+  CloseIcon,
 } from '@gluestack-ui/themed';
 import InvitationModal from '../../../Components/Modals/InvitationModal';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
+import {
+  AuthContext,
+  DeleteUserInvitation,
+  GetDriversByBusinessId,
+  GetInvitationsByBusinessIdUserRole,
+} from '../../../Services/AuthenticationService';
+import {UserInvitation} from '../../../Models/UserInvitation';
+import {
+  PendingDriverListCard,
+  DriverListCard,
+} from '../../../Components/Cards/DriverListCard';
+import ManageDriverModal from '../../../Components/Modals/DriverDetailsModal';
+import {Vehicle} from '../../../Models/VehicleModel';
+import {PendingDriverscreen} from './PendingDriversScreen';
+import {DriversScreen} from './DriversScreen';
+import {GetDriverInvitation} from '../../../Controllers/DriverController';
 
-const ManageDriversScreen = ({navigation}: any) => {
-  const [DriversList, setDriversList] = useState([]);
-  const [PendingDriversList, setPendingDriversList] = useState([]);
-  const [refreshingDriverss, setRefreshingDriverss] = React.useState(false);
-  const [refreshingPendingDrivers, setRefreshingPendingDrivers] =
-    React.useState(false);
+const ManageDriverscreen = ({navigation}: any) => {
+  const {createUserInvitation, session}: any = useContext(AuthContext);
   const [showAlertDialog, setShowAlertDialog] = React.useState(false);
-
-  const onRefreshPendingDrivers = React.useCallback(() => {
-    setRefreshingPendingDrivers(true);
-
-    setTimeout(() => {
-      getPendingDrivers();
-    }, 2000);
-    setRefreshingPendingDrivers(false);
-  }, []);
-
-  const onRefreshDrivers = React.useCallback(() => {
-    setRefreshingDriverss(true);
-
-    setTimeout(() => {
-      getDriverss();
-    }, 2000);
-    setRefreshingDriverss(false);
-  }, []);
   const [showInvitationModal, setShowInvitationModal] = useState(false);
+  const [currentDriver, setCurrentDriver] = useState({
+    FirstName: '',
+    LastName: '',
+    Email: '',
+    RegistrationNumber: '',
+  });
+  const [showDriverDetailsModal, setShowDriverDetailsModal] = useState(false);
 
-  const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836';
+  const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836 ';
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
   const southAfricanIdRegex: RegExp =
     /(([0-9]{2})(0|1)([0-9])([0-3])([0-9]))([ ]?)(([0-9]{4})([ ]?)([0-1][8]([ ]?)[0-9]))/;
-
-  useEffect(() => {
-    getDriverss();
-    getPendingDrivers();
-  }, []);
-
-  const getDriverss = async () => {
-    // return await GetDriverssForClient(payerId, businessId).then(trip => {
-    //   setDriversList(trip);
-    // });
-  };
-
-  const getPendingDrivers = async () => {
-    // return await GetPendingDriversForClient(payerId, businessId).then(trip => {
-    //   setPendingDriversList(trip);
-    // });
-  };
 
   const addDriverSchema = yup.object().shape({
     firstName: yup
@@ -93,94 +81,73 @@ const ManageDriversScreen = ({navigation}: any) => {
       .max(50, 'Last name too Long!')
       .required('Required'),
     email: yup.string().email('Invalid email').required('Email is required'),
-    idNumber: yup
-      .string()
-      .length(13, 'ID number is too short')
-      .matches(
-        southAfricanIdRegex,
-        'Please enter a valid South African ID number.',
-      )
-      .required('Required'),
   });
-
+  const removeDriverSchema = yup.object().shape({
+    confirmDriverName: yup.string().required('Required'),
+  });
+  const registerRemoveDriverValues = {
+    confirmDriverName: '',
+  };
   const registerAddDriverValues = {
     firstName: '',
     lastName: '',
     email: '',
-    idNumber: '',
   };
-
-  const formik = useFormik({
+  const removeDriverFormik = useFormik({
+    initialValues: registerRemoveDriverValues,
+    validationSchema: removeDriverSchema,
+    onSubmit: async values => {
+      // let driverName =
+      console.log(
+        'Hello {0}, your order {1} has been shipped.'.format('John', 10001),
+      );
+      if (removeDriverFormik.isValid && values.confirmDriverName === 'z') {
+      }
+    },
+  });
+  const addDriverFormik = useFormik({
     initialValues: registerAddDriverValues,
     validationSchema: addDriverSchema,
 
-    onSubmit: values => {
-      console.log('hello');
-      if (formik.isValid) {
-        setShowInvitationModal(false);
-        setShowAlertDialog(true);
+    onSubmit: async values => {
+      let userInvitation: UserInvitation = {
+        businessId: businessId,
+        invitationCode: '',
+        firstName: addDriverFormik.values.firstName,
+        lastName: addDriverFormik.values.lastName,
+        userEmail: addDriverFormik.values.email,
+        userRole: '2',
+      };
+      if (addDriverFormik.isValid) {
+        await createUserInvitation(
+          userInvitation,
+          (error: any, result: any) => {
+            if (error) {
+              console.error(error);
+            } else {
+              setShowInvitationModal(false);
+              setShowAlertDialog(true);
+              GetDriverInvitation(
+                businessId,
+                '2',
+                (error: any, result: any) => {
+                  if (error) {
+                  } else {
+                  }
+                },
+              );
+            }
+          },
+        );
       }
     },
   });
 
   const Tab = createMaterialTopTabNavigator();
 
-  function ActiveDriversScreen() {
-    return (
-      <View style={{flex: 1}}>
-        <FlatList
-          data={DriversList}
-          renderItem={({item}) => renderItemComponent(item)}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshingDriverss}
-              onRefresh={onRefreshDrivers}
-            />
-          }
-        />
-      </View>
-    );
-  }
-
-  function PendingDriversScreen() {
-    return (
-      <View style={{flex: 1}}>
-        <FlatList
-          data={PendingDriversList}
-          renderItem={({item}) => renderItemComponent(item)}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshingPendingDrivers}
-              onRefresh={onRefreshPendingDrivers}
-            />
-          }
-        />
-      </View>
-    );
-  }
   const ShowInvitationModal = () => {
     setShowInvitationModal(true);
   };
-
-  const renderItemComponent = (itemData: any) => (
-    <TripCardDriverSwipable
-      passengerName={itemData.passengerName}
-      pickUpTime={itemData.pickUpTime}
-      pickUpDate={itemData.pickUpDate}
-      pickUpLocation={itemData.pickUpLocation}
-      tripStatus={itemData.tripStatus}
-      handlePickup={() => {
-        //changeTripStatus(itemData.tripId, itemData.passengerId, 2);
-      }}
-      handleDropoff={() => {
-        //changeTripStatus(itemData.tripId, itemData.passengerId, 3);
-      }}
-      handleAbsentPassenger={() => {
-        //changeTripStatus(itemData.tripId, itemData.passengerId, 1);
-      }}
-    />
-  );
-
   const InvitationAlert = () => {
     return (
       <AlertDialog
@@ -202,8 +169,8 @@ const ManageDriversScreen = ({navigation}: any) => {
           </AlertDialogHeader>
           <AlertDialogBody>
             <Text size="sm">
-              An invite code has been sent to {formik.values.email}. This invite
-              will expire after 7 days.
+              An invite code has been sent to {addDriverFormik.values.email}.
+              This invite will expire after 7 days.
             </Text>
           </AlertDialogBody>
           <AlertDialogFooter borderTopWidth={0}>
@@ -213,6 +180,7 @@ const ManageDriversScreen = ({navigation}: any) => {
               action="secondary"
               mr={3}
               onPress={() => {
+                addDriverFormik.resetForm();
                 setShowAlertDialog(false);
               }}>
               <ButtonText>Okay</ButtonText>
@@ -231,41 +199,37 @@ const ManageDriversScreen = ({navigation}: any) => {
         isHovered={false}
         isDisabled={false}
         isPressed={false}>
-        <FabIcon as={AddIcon} mr="$3" />
+        <FabIcon as={AddIcon} />
         <FabLabel>Invite driver</FabLabel>
       </Fab>
     );
   };
+
   return (
     <NavigationContainer independent={true}>
       <Tab.Navigator>
-        <Tab.Screen name="Drivers" component={ActiveDriversScreen} />
-        <Tab.Screen name="Pending Drivers" component={PendingDriversScreen} />
+        <Tab.Screen name="Drivers" component={DriversScreen} />
+        <Tab.Screen name="Pending Drivers" component={PendingDriverscreen} />
       </Tab.Navigator>
       <InvitationModal
-        firstNameIsInvalid={!!formik.errors.firstName}
-        firstNameOnChangeText={formik.handleChange('firstName')}
-        firstNameErrorText={formik?.errors?.firstName}
-        firstNameOnBlur={formik.handleBlur('firstName')}
-        firstNameValue={formik.values?.firstName}
-        lastNameIsInvalid={!!formik.errors.lastName}
-        lastNameOnChangeText={formik.handleChange('lastName')}
-        lastNameErrorText={formik?.errors?.lastName}
-        lastNameOnBlur={formik.handleBlur('lastName')}
-        lastNameValue={formik.values?.lastName}
-        emailIsInvalid={!!formik.errors.email}
-        emailOnChangeText={formik.handleChange('email')}
-        emailErrorText={formik?.errors?.email}
-        emailOnBlur={formik.handleBlur('email')}
-        emailValue={formik.values?.email}
-        idNumberIsInvalid={!!formik.errors.idNumber}
-        idNumberOnChangeText={formik.handleChange('idNumber')}
-        idNumberErrorText={formik?.errors?.idNumber}
-        idNumberOnBlur={formik.handleBlur('idNumber')}
-        idNumberValue={formik.values?.idNumber}
+        firstNameIsInvalid={!!addDriverFormik.errors.firstName}
+        firstNameOnChangeText={addDriverFormik.handleChange('firstName')}
+        firstNameErrorText={addDriverFormik?.errors?.firstName}
+        firstNameOnBlur={addDriverFormik.handleBlur('firstName')}
+        firstNameValue={addDriverFormik.values?.firstName}
+        lastNameIsInvalid={!!addDriverFormik.errors.lastName}
+        lastNameOnChangeText={addDriverFormik.handleChange('lastName')}
+        lastNameErrorText={addDriverFormik?.errors?.lastName}
+        lastNameOnBlur={addDriverFormik.handleBlur('lastName')}
+        lastNameValue={addDriverFormik.values?.lastName}
+        emailIsInvalid={!!addDriverFormik.errors.email}
+        emailOnChangeText={addDriverFormik.handleChange('email')}
+        emailErrorText={addDriverFormik?.errors?.email}
+        emailOnBlur={addDriverFormik.handleBlur('email')}
+        emailValue={addDriverFormik.values?.email}
         ShowModal={showInvitationModal}
         SendInviteOnPress={
-          formik.handleSubmit as (
+          addDriverFormik.handleSubmit as (
             values:
               | GestureResponderEvent
               | React.FormEvent<HTMLFormElement>
@@ -282,12 +246,4 @@ const ManageDriversScreen = ({navigation}: any) => {
   );
 };
 
-const styles = StyleSheet.create({
-  cardContainer: {
-    flexDirection: 'row',
-    padding: 2,
-    textAlign: 'center',
-  },
-});
-
-export default ManageDriversScreen;
+export default ManageDriverscreen;

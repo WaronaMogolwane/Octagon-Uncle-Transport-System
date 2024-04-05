@@ -24,7 +24,7 @@ import {
 import {
   InvitationModalProps,
   VerifyOtpModalProps,
-} from '../../Models/ModalProps';
+} from '../../Props/ModalProps';
 
 const VerifyEmailModal = (props: InvitationModalProps) => {
   return (
@@ -62,17 +62,6 @@ const VerifyEmailModal = (props: InvitationModalProps) => {
               errorText={props.lastNameErrorText}
               onBlur={props.lastNameOnBlur}
               value={props.lastNameValue}
-            />
-            <CustomFormControlInput
-              labelText="ID number"
-              placeHolder="ID number"
-              isInvalid={props.idNumberIsInvalid}
-              isRequired={true}
-              type="text"
-              onChangeText={props.idNumberOnChangeText}
-              errorText={props.idNumberErrorText}
-              onBlur={props.idNumberOnBlur}
-              value={props.idNumberValue}
             />
             <CustomFormControlInput
               labelText="Email"

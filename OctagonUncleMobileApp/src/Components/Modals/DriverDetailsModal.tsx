@@ -34,8 +34,9 @@ import {
 import {
   DriverDetailsModalProps,
   VerifyOtpModalProps,
-} from '../../Models/ModalProps';
+} from '../../Props/ModalProps';
 import VehicleSelect from '../Cards/Select/VehicleSelect';
+import RemoveDriverAlert from '../Alerts/RemoveDriverAlert';
 
 const data: any = [
   // {label: 'BHD842GP', value: '1'},
@@ -49,10 +50,6 @@ const data: any = [
 ];
 
 const ManageDriverModal = (props: DriverDetailsModalProps) => {
-  function RemoveDriver(driverId: string) {
-    //throw new Error('Function not implemented.');
-  }
-
   return (
     <View>
       <Modal
@@ -119,7 +116,7 @@ const ManageDriverModal = (props: DriverDetailsModalProps) => {
               size="sm"
               action="negative"
               borderWidth="$0"
-              onPress={props.HandleRemoveDriver}>
+              onPress={props.OpenRemoveDriverAlert}>
               <ButtonText>Remove driver</ButtonText>
             </Button>
             <Button
@@ -127,13 +124,34 @@ const ManageDriverModal = (props: DriverDetailsModalProps) => {
               size="sm"
               action="primary"
               mr="$3"
-              // onPress={props.CloseOtpModalButtonOnPress}>
-              onPress={() => {}}>
+              onPress={props.CloseOtpModalButtonOnPress}>
+              {/* onPress={() => {}}> */}
               <ButtonText>Save</ButtonText>
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
+      <RemoveDriverAlert
+        VerifyRemoveIsInvalid={
+          props.RemoveDriverAlertProps.VerifyRemoveIsInvalid
+        }
+        VerifyRemoveOnChangeText={
+          props.RemoveDriverAlertProps.VerifyRemoveOnChangeText
+        }
+        VerifyRemoveErrorText={
+          props.RemoveDriverAlertProps.VerifyRemoveErrorText
+        }
+        VerifyRemoveOnBlur={props.RemoveDriverAlertProps.VerifyRemoveOnBlur}
+        VerifyRemoveValue={props.RemoveDriverAlertProps.VerifyRemoveValue}
+        RemoveDriverAlertIsOpen={
+          props.RemoveDriverAlertProps.RemoveDriverAlertIsOpen
+        }
+        HandleRemoveDriver={props.RemoveDriverAlertProps.HandleRemoveDriver}
+        CloseAlertOnPress={props.RemoveDriverAlertProps.CloseAlertOnPress}
+        RemoveDriverConfirmation={
+          props.RemoveDriverAlertProps.RemoveDriverConfirmation
+        }
+      />
     </View>
   );
 };

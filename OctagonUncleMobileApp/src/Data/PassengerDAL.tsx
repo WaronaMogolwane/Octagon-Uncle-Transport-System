@@ -34,6 +34,7 @@ export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
         passsengers = {
           passengerId: data.PassengerId,
           passengerName: `${data.FirstName} ${data.LastName} (${data.Age})`,
+          editedName: `${data.FirstName} ${data.LastName}`,
           age: data.Age,
           homeAddress: data.HomeAddress,
           destinationAddress: data.DestinationAddress,

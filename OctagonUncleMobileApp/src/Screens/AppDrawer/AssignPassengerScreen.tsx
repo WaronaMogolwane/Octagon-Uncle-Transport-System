@@ -18,9 +18,6 @@ import {
   Modal,
   Button,
   ButtonText,
-  ButtonIcon,
-  ButtonSpinner,
-  ButtonGroup,
   ModalBackdrop,
   ModalFooter,
   ModalContent,
@@ -30,21 +27,42 @@ import {
   Icon,
   CloseIcon,
   ModalBody,
+  Checkbox,
+  CheckboxGroup,
+  VStack,
+  CheckboxIndicator,
+  CheckboxIcon,
+  CheckboxLabel,
+  CheckIcon,
 } from '@gluestack-ui/themed';
+import {AddPassengerSchedule} from '../../Controllers/PassengerScheduleController';
+import {PassengerSchedule} from '../../Models/PassengerSchedule';
 
 const AssignPassengerScreen = ({route, navigation}: any) => {
+  const initialState = [''];
+
   const [value, setValue] = useState('');
   const [isFocus, setIsFocus] = useState(false);
   const [passengers, setPassengers] = useState([]);
   const [passengerList, setpassengerList] = useState([]);
-  const [statusCode, setStatusCode] = useState(true);
+  const [statusCode, setStatusCode] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [calender, setCalender] = useState(false);
+  const [values, setValues] = useState(initialState);
 
   const [passengerName, setpassengerName] = useState('');
   const [age, setAge] = useState('');
   const [homeAddress, sethomeAddress] = useState('');
   const [destinationAdress, setdestinationAdress] = useState('');
   const [pDVLId, setPDVLId] = useState('');
+
+  const [monday, setMonday] = useState(false);
+  const [tuesday, setTuesday] = useState(false);
+  const [wednesday, setWednesday] = useState(false);
+  const [thursday, setThursday] = useState(false);
+  const [friday, setFriday] = useState(false);
+  const [saturday, setSaturday] = useState(false);
+  const [sunday, setSunday] = useState(false);
 
   const ref = React.useRef(null);
 
@@ -111,11 +129,28 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         value,
       );
 
+      let newSchedule = new PassengerSchedule(
+        monday,
+        tuesday,
+        wednesday,
+        thursday,
+        friday,
+        saturday,
+        sunday,
+        value,
+      );
+
+      console.info(newSchedule);
+
       await AddPassengerDriverVehicleLinking(newPVL).then((result: any) => {
         if (result == 200) {
           UpdateIsAssigned(value).then((result1: any) => {
             if (result1[1] == 200) {
-              GetPassengers();
+              AddPassengerSchedule(newSchedule).then((result2: any) => {
+                if (result == 200) {
+                  GetPassengers();
+                }
+              });
             }
           });
         }
@@ -176,6 +211,132 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     );
   };
 
+  const showCalender = () => {
+    return (
+      <Modal
+        isOpen={calender}
+        onClose={() => {
+          setValues(initialState);
+          setCalender(false);
+          ClearModalUseState();
+        }}
+        finalFocusRef={ref}>
+        <ModalBackdrop />
+        <ModalContent>
+          <ModalHeader>
+            <Heading size="sm">{passengerName}'s trip schedule</Heading>
+            <ModalCloseButton>
+              <Icon as={CloseIcon} />
+            </ModalCloseButton>
+          </ModalHeader>
+          <ModalBody>
+            <CheckboxGroup
+              value={values}
+              onChange={(keys: any) => {
+                setValues(keys);
+              }}>
+              <VStack space="xl">
+                <Checkbox
+                  value="monday"
+                  onPress={() => {
+                    setMonday(!monday);
+                  }}>
+                  <CheckboxIndicator mr="$2">
+                    <CheckboxIcon as={CheckIcon} />
+                  </CheckboxIndicator>
+                  <CheckboxLabel>Monday</CheckboxLabel>
+                </Checkbox>
+                <Checkbox
+                  value="tuesday"
+                  onPress={() => {
+                    setTuesday(!tuesday);
+                  }}>
+                  <CheckboxIndicator mr="$2">
+                    <CheckboxIcon as={CheckIcon} />
+                  </CheckboxIndicator>
+                  <CheckboxLabel>Tuesday</CheckboxLabel>
+                </Checkbox>
+                <Checkbox
+                  value="wednesday"
+                  onPress={() => {
+                    setWednesday(!wednesday);
+                  }}>
+                  <CheckboxIndicator mr="$2">
+                    <CheckboxIcon as={CheckIcon} />
+                  </CheckboxIndicator>
+                  <CheckboxLabel>Wednseday</CheckboxLabel>
+                </Checkbox>
+                <Checkbox
+                  value="thursday"
+                  onPress={() => {
+                    setThursday(!thursday);
+                  }}>
+                  <CheckboxIndicator mr="$2">
+                    <CheckboxIcon as={CheckIcon} />
+                  </CheckboxIndicator>
+                  <CheckboxLabel>Thursday</CheckboxLabel>
+                </Checkbox>
+                <Checkbox
+                  value="friday"
+                  onPress={() => {
+                    setFriday(!friday);
+                  }}>
+                  <CheckboxIndicator mr="$2">
+                    <CheckboxIcon as={CheckIcon} />
+                  </CheckboxIndicator>
+                  <CheckboxLabel>Friday</CheckboxLabel>
+                </Checkbox>
+                <Checkbox
+                  value="saturday"
+                  onPress={() => {
+                    setSaturday(!saturday);
+                  }}>
+                  <CheckboxIndicator mr="$2">
+                    <CheckboxIcon as={CheckIcon} />
+                  </CheckboxIndicator>
+                  <CheckboxLabel>Saturday</CheckboxLabel>
+                </Checkbox>
+                <Checkbox
+                  value="sunday"
+                  onPress={() => {
+                    setSunday(!sunday);
+                  }}>
+                  <CheckboxIndicator mr="$2">
+                    <CheckboxIcon as={CheckIcon} />
+                  </CheckboxIndicator>
+                  <CheckboxLabel>Sunday</CheckboxLabel>
+                </Checkbox>
+              </VStack>
+            </CheckboxGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              variant="outline"
+              size="sm"
+              action="secondary"
+              mr="$3"
+              onPress={() => {
+                setCalender(false);
+              }}>
+              <ButtonText>Back</ButtonText>
+            </Button>
+            <Button
+              size="sm"
+              action="negative"
+              borderWidth="$0"
+              onPress={() => {
+                PrepareTrip();
+                setValues(initialState);
+                setCalender(false);
+              }}>
+              <ButtonText>Comfirm</ButtonText>
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    );
+  };
+
   return (
     <View style={{flex: 1}}>
       <View>
@@ -199,6 +360,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             onBlur={() => setIsFocus(false)}
             onChange={(item: any) => {
               setValue(item.passengerId);
+              setpassengerName(item.editedName);
               setIsFocus(false);
             }}
             // renderLeftIcon={() => (
@@ -212,11 +374,15 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
           />
         </View>
       </View>
+      <View>{showCalender()}</View>
       <View>
         <CustomButton1
           onPress={() => {
-            PrepareTrip();
-            setValue('');
+            // PrepareTrip();
+            // setValue('');
+            if (value != '') {
+              setCalender(true);
+            }
           }}
           title="Add Passenger"
         />

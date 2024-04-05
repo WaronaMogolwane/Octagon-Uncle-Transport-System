@@ -9,7 +9,7 @@ export const InsertPassengerDriverVehicleLinkingToDB = async (
 
   await axios
     .post(
-      `${SERVER_HOST}:${SERVER_PORT}/passengerDriverVehicleLinking/add-passenger-driver-vehicle-link`,
+      `${SERVER_HOST}:${SERVER_PORT}/passenger-driver-vehicle-linking/add-passenger-driver-vehicle-link`,
       {
         params: {
           VehicleId: pDVL.VehicleId,
@@ -37,7 +37,7 @@ export const GetPassengerDriverVehicleLinkingFromDB = async (
 
   await axios
     .get(
-      `${SERVER_HOST}:${SERVER_PORT}/passengerDriverVehicleLinking/get-passenger-driver-vehicle-link`,
+      `${SERVER_HOST}:${SERVER_PORT}/passenger-driver-vehicle-linking/get-passenger-driver-vehicle-link`,
       {
         params: {
           BusinessId: businessId,
@@ -76,7 +76,7 @@ export const RemovePassengerDriverLinkingFromDB = async (pDVLId: string) => {
 
   await axios
     .delete(
-      `${SERVER_HOST}:${SERVER_PORT}/passengerDriverVehicleLinking/delete-passenger-driver-vehicle-link`,
+      `${SERVER_HOST}:${SERVER_PORT}/passenger-driver-vehicle-linking/delete-passenger-driver-vehicle-link`,
       {
         params: {
           PassengerDriverVehicleLinkingId: pDVLId,

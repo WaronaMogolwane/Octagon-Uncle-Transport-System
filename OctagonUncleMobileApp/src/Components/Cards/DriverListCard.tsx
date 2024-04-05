@@ -120,9 +120,7 @@ export const DriverListCard = (props: {
         <VStack>
           <Heading size="sm"> {props.firstName + ' ' + props.lastName}</Heading>
           <Text size="sm">{props.email}</Text>
-          <Text size="sm">
-            {'License number: ' + props.vehicleLicenseNumber}
-          </Text>
+          <Text size="sm">{'Vehicle: ' + props.vehicleLicenseNumber}</Text>
         </VStack>
       </HStack>
       <Divider my="$3" />

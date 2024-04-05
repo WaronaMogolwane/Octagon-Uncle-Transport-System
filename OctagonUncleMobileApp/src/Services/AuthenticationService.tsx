@@ -4,7 +4,6 @@ import {AuthenticationResponseModel} from '../Models/AuthenticationResponseModel
 import axios from 'axios';
 import {UserSignIn} from '../Controllers/AuthenticationController';
 import {SERVER_HOST, SERVER_PORT} from '@env';
-//import {SERVER_HOST, SERVER_PORT} from '../Const/colors';
 import {UserInvitation} from '../Models/UserInvitation';
 import {User} from '../Models/UserModel';
 
@@ -44,7 +43,9 @@ export const AuthContext = React.createContext<{
     callback: (error: any, result: any) => void,
   ) => void;
   session?: string | null | undefined;
+  authToken?: string | null | undefined;
   isLoading?: boolean;
+  SetSession?: (session: string) => void;
 } | null>(null);
 
 // This hook can be used to access the user info.
@@ -62,6 +63,8 @@ export function useSession() {
 
 export function SessionProvider(props: any, navigation: any) {
   const [[isLoading, session], setSession] = useStorageState('session');
+  const [[tokenIsLoading, authToken], setAuthToken] =
+    useStorageState('authToken');
   return (
     <AuthContext.Provider
       value={{
@@ -91,6 +94,7 @@ export function SessionProvider(props: any, navigation: any) {
             if (error) {
               callback(error, null);
             } else {
+              setAuthToken(result.headers.sessionid);
               callback(null, result);
             }
           });
@@ -134,6 +138,9 @@ export function SessionProvider(props: any, navigation: any) {
               callback(null, result);
             }
           });
+        },
+        SetSession(session: string) {
+          setSession(session);
         },
         session,
         isLoading,

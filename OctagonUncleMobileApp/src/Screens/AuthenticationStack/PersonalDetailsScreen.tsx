@@ -16,16 +16,25 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {UserDetail} from '../../Models/UserDetail';
 import {AddUserDetail} from '../../Controllers/UserDetailController';
 import {CustomButton1} from '../../Components/Buttons';
-import {JWT_SECRET_KEY} from '@env';
-import {JwtPayload, jwtDecode} from 'jwt-decode';
-import {useEffect} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import {decode} from 'base-64';
+import {useStorageState} from '../../Services/StorageStateService';
+import {Auth} from '../../Classes/Auth';
+import {AuthContext} from '../../Services/AuthenticationService';
 global.atob = decode;
 
 export default function PersonalDetailsScreen({route, navigation}: any) {
   const {sessionId} = route.params;
+  const [[tokenIsLoading, authToken], setAuthToken] =
+    useStorageState('authToken');
+  const [[isLoading, session], setSession] = useStorageState('session');
+  const {SetSession}: any = useContext(AuthContext);
+
+  const [auth, setAuth] = useState<Auth>();
+
   const toast = useToast();
-  const userId = 'c7728615-394f-466b-833e-ea9dd60ba836';
+  //const userId = 'c7728615-394f-466b-833e-ea9dd60ba836';
+  const userId = auth?.GetSession().UserId!;
   const userDetailHelper = async (values: any) => {
     let userDetail = new UserDetail(
       '',
@@ -44,9 +53,8 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
       .then((r: any) => {
         if (r == 200) {
           //On success this cofe runs
+          SetSession(authToken!);
           formik.resetForm();
-          //navigation.push('Home');
-          navigation.navigate('Home');
         } else {
           //On faluire this code runs
           toast.show({
@@ -125,16 +133,15 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
     initialValues: userDetailsInitialValues,
     validationSchema: userDetailSchema,
 
-    onSubmit: (values, {resetForm}) => {
-      userDetailHelper(values);
+    onSubmit: async (values, {resetForm}) => {
+      await userDetailHelper(values);
     },
   });
   useEffect(() => {
-    const token = 'eyJ0eXAiO.../// jwt token';
-    const decoded = jwtDecode(sessionId);
-
-    console.log(decoded);
-  }, []);
+    if (authToken !== null) {
+      setAuth(new Auth(authToken?.toString()!));
+    }
+  }, [authToken]);
   return (
     <ScrollView>
       <SafeAreaView style={ThemeStyles.container}>

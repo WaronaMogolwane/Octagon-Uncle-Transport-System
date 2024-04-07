@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import jwt from "jsonwebtoken";
+import { Session } from "../Classes/Session";
 
 const jwtSecret: any = process.env.JWT_SECRET_KEY;
 
@@ -33,11 +34,13 @@ export const AuthenticateJWT = (req: any, res: any, next: any) => {
 
 export const CreateJWT = (req: any, res: any, next: any) => {
   let successMessage = req.body.successMessage;
-  let payload =
-  {
-    id: req.body.email,
-    auth: req.body.password
-  };
+  let payload: Session = {
+    UserId: req.body.UserId,
+    UserRole: req.body.UserRole,
+    Email: req.body.Email,
+    BusinessId: req.body.BusinessId,
+    DateCreated: new Date().toLocaleString()
+  }
   jwt.sign(payload, jwtSecret, (error, token) => {
     if (error) {
       let err: any = {

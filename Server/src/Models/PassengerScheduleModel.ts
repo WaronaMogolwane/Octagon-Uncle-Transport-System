@@ -32,11 +32,24 @@ export const InsertPassengerSchedule = async (
 };
 
 export const AutoInsertPassengerSchedule = async (
+  day: string,
   callback: (error, result) => void
 ) => {
   DbPool.query(
     {
-      sql: "CALL AutoInsertNewSchedule();",
+      sql: `    SET	@_BusinessId = (SELECT 
+        Passenger.BusinessId
+    FROM
+        Passenger
+            INNER JOIN
+        PassengerSchedule ON PassengerSchedule.PassengerId = Passenger.PassengerId
+    WHERE
+        Passenger.PassengerId = PassengerSchedule.PassengerId);
+          
+      INSERT INTO PassengerDriverVehicleLinking (DriverVehicleLinkingId, BusinessId, PassengerId)
+        SELECT DriverVehicleLinkingId, @_BusinessId, PassengerId
+        FROM PassengerSchedule 
+        WHERE ${day} = '1';`,
       timeout: 40000,
     },
     function (error, results, fields) {

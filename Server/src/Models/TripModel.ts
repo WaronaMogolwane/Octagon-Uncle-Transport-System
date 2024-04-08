@@ -33,6 +33,22 @@ export const InsertTrip = async (
   );
 };
 
+export const AutoInsertTrip = async (callback: (error, result) => void) => {
+  DbPool.query(
+    {
+      sql: "CALL AutoInsertNewTrips();",
+      timeout: 40000,
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
 export const GetTripById = async (
   tripId: string,
   callback: (error, result) => void

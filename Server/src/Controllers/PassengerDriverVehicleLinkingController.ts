@@ -13,10 +13,10 @@ export const AddPassengerDriverVehicleLinking = async (
   next: any
 ) => {
   let newPassengerDriverVehicleLinking = new PassengerDriverVehicleLinking(
-    randomUUID(),
     req.body.params.VehicleId,
     req.body.params.BusinessId,
-    req.body.params.PassengerId
+    req.body.params.PassengerId,
+    randomUUID()
   );
 
   await InsertPassengerDriverVehicleLinking(

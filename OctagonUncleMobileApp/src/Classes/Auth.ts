@@ -6,14 +6,12 @@ global.atob = decode;
 
 
 export class Auth {
-    token: string;
 
-    constructor(token: string) {
-        this.token = token;
+    constructor() {
+
     }
 
-    GetSession() {
-        let authToken: any = this.token
+    GetSession(authToken: string) {
         let data: any = this.DecodeSessionToken(authToken);
         let session: Session = {
             UserRole: data.UserRole,
@@ -24,8 +22,22 @@ export class Auth {
         return session;
     }
     GetAuth(authToken: string) {
-        let auth = new Auth(authToken!.toString());
-        return auth;
+        try {
+            this.DecodeSessionToken(authToken)
+            let auth = new Auth();
+            return auth
+        }
+        catch (error) {
+            console.error(error)
+            return null;
+        }
+    }
+    SetAuthentication(authToken: string, auth: Auth | null, setAuth: React.Dispatch<React.SetStateAction<Auth | null>>) {
+        if (authToken !== null) {
+            if (auth === null) {
+                setAuth(new Auth().GetAuth(authToken));
+            }
+        }
     }
 
     private DecodeSessionToken(sessionToken: string): JwtPayload {

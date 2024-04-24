@@ -31,6 +31,36 @@ export const InsertPassengerSchedule = async (
   );
 };
 
+export const UpdatePassengerSchedule = async (
+  passengerSchedule: PassengerSchedule,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL UpdatePassengerSchedule(?,?,?,?,?,?,?,?,?);",
+      timeout: 40000,
+      values: [
+        passengerSchedule.monday,
+        passengerSchedule.tuesday,
+        passengerSchedule.wednesday,
+        passengerSchedule.thursday,
+        passengerSchedule.friday,
+        passengerSchedule.saturday,
+        passengerSchedule.sunday,
+        passengerSchedule.passengerId,
+        Number(passengerSchedule.driverVehicleLinkingId),
+      ],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
 export const AutoInsertPassengerSchedule = async (
   day: string,
   callback: (error, result) => void

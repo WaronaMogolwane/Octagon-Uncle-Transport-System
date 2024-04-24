@@ -1,7 +1,10 @@
 import {FlatList, StyleSheet, Text, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {
+  AssignPassengerScreenStyles,
+  ThemeStyles,
+} from '../../Stylesheets/GlobalStyles';
 import {
   GetAllPassengerForBusiness,
   UpdateIsAssigned,
@@ -34,26 +37,44 @@ import {
   CheckboxIcon,
   CheckboxLabel,
   CheckIcon,
+  Toast,
+  ToastTitle,
+  useToast,
+  ToastDescription,
 } from '@gluestack-ui/themed';
-import {AddPassengerSchedule} from '../../Controllers/PassengerScheduleController';
+import {
+  AddPassengerSchedule,
+  UpdatePassengerSchedule,
+} from '../../Controllers/PassengerScheduleController';
 import {PassengerSchedule} from '../../Models/PassengerSchedule';
+import {Auth} from '../../Classes/Auth';
+import {AuthContext} from '../../Services/AuthenticationService';
+import {useStorageState} from '../../Services/StorageStateService';
 
 const AssignPassengerScreen = ({route, navigation}: any) => {
   const initialState = [''];
 
-  const [value, setValue] = useState('');
+  const [[tokenIsLoading, authToken], setAuthToken] =
+    useStorageState('authToken');
+  const [auth, setAuth] = useState<Auth>();
+
+  const [newPassengerId, setNewPassengerId] = useState('');
   const [isFocus, setIsFocus] = useState(false);
   const [passengers, setPassengers] = useState([]);
   const [passengerList, setpassengerList] = useState([]);
   const [statusCode, setStatusCode] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [calender, setCalender] = useState(false);
+  const [modifyCalender, setModifyCalender] = useState(false);
   const [values, setValues] = useState(initialState);
+
+  const [isDisabled, setIsDisabled] = useState(true);
 
   const [passengerName, setpassengerName] = useState('');
   const [age, setAge] = useState('');
   const [homeAddress, sethomeAddress] = useState('');
   const [destinationAdress, setdestinationAdress] = useState('');
+  const [passengerId, setPassngerId] = useState('');
   const [pDVLId, setPDVLId] = useState('');
 
   const [monday, setMonday] = useState(false);
@@ -65,19 +86,51 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const [sunday, setSunday] = useState(false);
 
   const ref = React.useRef(null);
+  const toast = useToast();
 
-  // const vehicleId = route.params.vehicleId;
-  const vehicleId = '281';
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  const parentId = 'c7728615-394f-466b-833e-ea9dd60ba836';
+  const vehicleId = route.params.vehicleId;
+  //const vehicleId = '281';
+  const businessId = auth?.GetSession().BusinessId!;
+  //const parentId = 'c7728615-394f-466b-833e-ea9dd60ba836';
+
+  useEffect(() => {
+    if (authToken !== null) {
+      setAuth(new Auth(authToken?.toString()!));
+    }
+  }, [authToken]);
 
   useEffect(() => {
     GetPassengers();
   }, []);
 
+  const defaultData: never[] = [];
+
   const GetPassengers = async () => {
     GetAllPassengerForBusiness(businessId).then((response: any) => {
-      setPassengers(response);
+      if (response.code != 'ERR_BAD_REQUEST') {
+        setIsDisabled(false);
+        setPassengers(response);
+      } else {
+        setPassengers(defaultData);
+        setIsDisabled(true);
+        //Toast Notifiaction
+        toast.show({
+          placement: 'top',
+          render: ({id}) => {
+            const toastId = 'toast-' + id;
+            return (
+              <Toast nativeID={toastId} action="attention" variant="solid">
+                <VStack space="xs">
+                  <ToastTitle>Notice</ToastTitle>
+                  <ToastDescription>
+                    There are currently no unassigned passengers
+                  </ToastDescription>
+                </VStack>
+              </Toast>
+            );
+          },
+        });
+      }
     });
     GetPassengerDriverVehicleLinking(businessId).then(passengers => {
       setpassengerList(passengers);
@@ -86,9 +139,13 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   };
 
   const renderLabel = () => {
-    if (value || isFocus) {
+    if (newPassengerId || isFocus) {
       return (
-        <Text style={[styles.label, isFocus && {color: 'blue'}]}>
+        <Text
+          style={[
+            AssignPassengerScreenStyles.label,
+            isFocus && {color: 'blue'},
+          ]}>
           Please select passenger
         </Text>
       );
@@ -102,6 +159,17 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     setpassengerName('');
     setdestinationAdress('');
     setAge('');
+    setPassngerId('');
+  };
+
+  const ClearCalender = () => {
+    setMonday(false);
+    setTuesday(false);
+    setWednesday(false);
+    setThursday(false);
+    setFriday(false);
+    setSaturday(false);
+    setSunday(false);
   };
 
   const renderItemComponentPassengers = (itemData: any) => (
@@ -112,6 +180,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       dropOffLocation={itemData.dropOffLocation}
       onPress={() => {
         setShowModal(true);
+        setPassngerId(itemData.passengerId);
         setPDVLId(itemData.pDVLId);
         sethomeAddress(itemData.pickUpLocation);
         setpassengerName(itemData.fullName);
@@ -122,11 +191,11 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   );
 
   const PrepareTrip = async () => {
-    if (value != '') {
+    if (newPassengerId != '') {
       let newPVL = new PassengerDriverVehicleLinking(
         vehicleId,
         businessId,
-        value,
+        newPassengerId,
       );
 
       let newSchedule = new PassengerSchedule(
@@ -137,15 +206,13 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         friday,
         saturday,
         sunday,
-        value,
+        newPassengerId,
         vehicleId,
       );
 
-      console.info(newSchedule);
-
       await AddPassengerDriverVehicleLinking(newPVL).then((result: any) => {
         if (result == 200) {
-          UpdateIsAssigned(value).then((result1: any) => {
+          UpdateIsAssigned(newPassengerId).then((result1: any) => {
             if (result1[1] == 200) {
               AddPassengerSchedule(newSchedule).then((result2: any) => {
                 if (result == 200) {
@@ -157,6 +224,46 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         }
       });
     }
+  };
+
+  const ModifyCalender = async () => {
+    let newSchedule = new PassengerSchedule(
+      monday,
+      tuesday,
+      wednesday,
+      thursday,
+      friday,
+      saturday,
+      sunday,
+      passengerId,
+      pDVLId,
+    );
+
+    UpdatePassengerSchedule(newSchedule).then((result: any) => {
+      if (result == 200) {
+        ClearCalender();
+        setModifyCalender(false);
+
+        //Toast of Success
+        toast.show({
+          placement: 'top',
+          render: ({id}) => {
+            const toastId = 'toast-' + id;
+            return (
+              <Toast nativeID={toastId} action="success" variant="solid">
+                <VStack space="xs">
+                  <ToastTitle>Update Success</ToastTitle>
+                  <ToastDescription>
+                    The schecdule for {passengerName} has been successfully
+                    updated.
+                  </ToastDescription>
+                </VStack>
+              </Toast>
+            );
+          },
+        });
+      }
+    });
   };
 
   const showPopUp = () => {
@@ -189,8 +296,11 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
               mr="$3"
               onPress={() => {
                 setShowModal(false);
+                ClearCalender();
+                setModifyCalender(true);
+                setCalender(true);
               }}>
-              <ButtonText>View Parent</ButtonText>
+              <ButtonText>Edit Schedule</ButtonText>
             </Button>
             <Button
               size="sm"
@@ -200,6 +310,8 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                 RemovePassengerDriverLinking(pDVLId).then(response => {
                   if (response == 200) {
                     GetPassengers();
+                    ClearModalUseState();
+                    ClearCalender;
                     setShowModal(false);
                   }
                 });
@@ -218,8 +330,8 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         isOpen={calender}
         onClose={() => {
           setValues(initialState);
-          setCalender(false);
           ClearModalUseState();
+          setCalender(false);
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />
@@ -323,10 +435,14 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             </Button>
             <Button
               size="sm"
-              action="negative"
+              action="positive"
               borderWidth="$0"
               onPress={() => {
-                PrepareTrip();
+                if (modifyCalender == true) {
+                  ModifyCalender();
+                } else {
+                  PrepareTrip();
+                }
                 setValues(initialState);
                 setCalender(false);
               }}>
@@ -341,32 +457,36 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   return (
     <View style={{flex: 1}}>
       <View>
-        <View style={styles.container}>
+        <View style={AssignPassengerScreenStyles.container}>
           {renderLabel()}
           <Dropdown
-            style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
-            placeholderStyle={styles.placeholderStyle}
-            selectedTextStyle={styles.selectedTextStyle}
-            inputSearchStyle={styles.inputSearchStyle}
-            iconStyle={styles.iconStyle}
+            style={[
+              AssignPassengerScreenStyles.dropdown,
+              isFocus && {borderColor: 'blue'},
+            ]}
+            placeholderStyle={AssignPassengerScreenStyles.placeholderStyle}
+            selectedTextStyle={AssignPassengerScreenStyles.selectedTextStyle}
+            inputSearchStyle={AssignPassengerScreenStyles.inputSearchStyle}
+            iconStyle={AssignPassengerScreenStyles.iconStyle}
             data={passengers}
             search
+            disable={isDisabled}
             maxHeight={300}
             labelField="passengerName"
             valueField="passengerId"
             placeholder={!isFocus ? 'Select passenger' : '...'}
             searchPlaceholder="Search..."
-            value={value}
+            value={newPassengerId}
             onFocus={() => setIsFocus(true)}
             onBlur={() => setIsFocus(false)}
             onChange={(item: any) => {
-              setValue(item.passengerId);
+              setNewPassengerId(item.passengerId);
               setpassengerName(item.editedName);
               setIsFocus(false);
             }}
             // renderLeftIcon={() => (
             //   <AntDesign
-            //     style={styles.icon}
+            //     style={AssignPassengerScreenStyles.icon}
             //     color={isFocus ? 'blue' : 'black'}
             //     name="Safety"
             //     size={20}
@@ -381,7 +501,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
           onPress={() => {
             // PrepareTrip();
             // setValue('');
-            if (value != '') {
+            if (newPassengerId != '') {
               setCalender(true);
             }
           }}
@@ -401,43 +521,3 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
 };
 
 export default AssignPassengerScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-    padding: 16,
-  },
-  dropdown: {
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 0.5,
-    borderRadius: 8,
-    paddingHorizontal: 8,
-  },
-  icon: {
-    marginRight: 5,
-  },
-  label: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    left: 22,
-    top: 8,
-    zIndex: 999,
-    paddingHorizontal: 8,
-    fontSize: 14,
-  },
-  placeholderStyle: {
-    fontSize: 16,
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-  },
-  iconStyle: {
-    width: 20,
-    height: 20,
-  },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
-  },
-});

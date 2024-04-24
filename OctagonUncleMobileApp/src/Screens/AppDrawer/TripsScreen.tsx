@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, RefreshControl, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
@@ -25,23 +25,37 @@ import {
   Fab,
   FabIcon,
   FabLabel,
-  AddIcon,
+  ArrowLeftIcon,
+  Text,
 } from '@gluestack-ui/themed';
 import {VehicleCard} from '../../Components/VehicleCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
 import {GetDriverId} from '../../Controllers/DriverVehicleLinkingController.tsx';
+import {Auth} from '../../Classes/Auth';
+import {useStorageState} from '../../Services/StorageStateService';
+import {AuthContext} from '../../Services/AuthenticationService';
 
 const TripsScreen = ({navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
 
-  //const userId = 'c7728615-394f-466b-833e-ea9dd60ba836'; //Parent userId
-  //const userId = 'w8728321-394f-466b-833e-ea9dd60ba000'; //Business userId
-  //let userId = '201a514b-17f3-4fe0-adfc-92c2d578c601';  //Driiver userId
-  const role: number = 1;
-  //const tempSessionProvider = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  const tempSessionProvider = 'c7728615-394f-466b-833e-ea9dd60ba836';
+  const [[tokenIsLoading, authToken], setAuthToken] =
+    useStorageState('authToken');
+  const [[isLoading, session], setSession] = useStorageState('session');
+  const {SetSession}: any = useContext(AuthContext);
 
-  const [userId, setUserId] = useState(tempSessionProvider);
+  const [auth, setAuth] = useState<Auth>();
+
+  //const userId = auth?.GetSession().UserId!;
+  //const role: number = Number(auth?.GetSession().UserRole!);
+
+  //let userId = auth?.GetSession().UserId!;
+  //let role: number = Number(auth?.GetSession().UserRole);
+  //61e30437-3130-4b42-8a4f-
+
+  const [userId, setUserId] = useState('');
+  const [role, setRole] = useState(0);
+
+  const [tempUserId, setTempUserId] = useState(userId);
 
   const [tempRole, setTempRole] = useState(role);
 
@@ -57,10 +71,12 @@ const TripsScreen = ({navigation}: any) => {
   const [vehicleList, setVehicleList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const [showFab, setShowFab] = useState(false);
+  const [showNoFutureTripText, setShowNoFutureTripText] = useState(false);
+  const [showNoPastTripText, setShowNoPastTripText] = useState(false);
 
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
+    setShowNoPastTripText(false);
 
     setTimeout(() => {
       setRefreshingUpcomingTrips(true);
@@ -76,6 +92,7 @@ const TripsScreen = ({navigation}: any) => {
   }, []);
 
   const onRefreshUpcomingTrips = React.useCallback(() => {
+    setShowNoFutureTripText(false);
     setRefreshingUpcomingTrips(true);
 
     setTimeout(() => {
@@ -98,7 +115,7 @@ const TripsScreen = ({navigation}: any) => {
     setTimeout(() => {
       //setRefreshing(true);
 
-      GetVehiclesAndDrivers(userId)
+      GetVehiclesAndDrivers(tempUserId)
         .then(result => {
           setVehicleList(result);
           setRefreshing(false);
@@ -112,20 +129,27 @@ const TripsScreen = ({navigation}: any) => {
   }, []);
 
   useEffect(() => {
-    setRefreshingUpcomingTrips(true);
+    if (authToken !== null) {
+      setAuth(new Auth(authToken?.toString()!));
 
-    if (tempRole != 3) {
+      setUserId(auth?.GetSession().UserId!);
+      setRole(Number(auth?.GetSession().UserRole!));
+    }
+  }, [authToken]);
+
+  useEffect(() => {
+    setRefreshingUpcomingTrips(true);
+    if (tempRole != 1) {
       setTimeout(() => {
         GetUpcomingTrips();
         GetPastTrips();
-
         setRefreshingUpcomingTrips(false);
       }, 2000);
     } else {
       setTimeout(() => {
         setRefreshing(true);
 
-        GetVehiclesAndDrivers(userId)
+        GetVehiclesAndDrivers(tempUserId)
           .then(result => {
             setVehicleList(result);
             setRefreshing(false);
@@ -135,8 +159,18 @@ const TripsScreen = ({navigation}: any) => {
           });
       }, 2000);
     }
-  }, [tempRole]);
+  }, [tempRole, userId, role]);
 
+  //Empty flatlist text is defined
+  const EmtpyFlatListText = () => {
+    return (
+      <View>
+        <Text>You currently have no trips.</Text>
+      </View>
+    );
+  };
+
+  //This is where the Toast is defined
   const ShowToast = () => {
     const toast = useToast();
 
@@ -152,6 +186,7 @@ const TripsScreen = ({navigation}: any) => {
     });
   };
 
+  //Changes the status from the Driver's perspective
   const ChangeTripStatus = async (tripId: string, tripStatus: number) => {
     if (tripStatus == 1) {
       await UpdatePassengerStatus(tripId, tripStatus).then(result => {
@@ -201,44 +236,75 @@ const TripsScreen = ({navigation}: any) => {
     }
   };
 
+  //Gets all upcoming Trips for all roles
   const GetUpcomingTrips = async () => {
-    if (tempRole == 1) {
-      return await GetUpcomingTripsForClient(userId).then(trip => {
-        setUpcomingTripList(trip);
-      });
-    } else if (tempRole == 2) {
-      return await GetUpcomingTripsForDriver(userId).then(trip => {
-        setUpcomingTripList(trip);
+    if (tempRole == 2) {
+      return await GetUpcomingTripsForClient(tempUserId).then(trip => {
+        if (trip.length == 0) {
+          setShowNoFutureTripText(true);
+        } else {
+          setUpcomingTripList(trip);
+        }
       });
     } else if (tempRole == 3) {
-      return await GetUpcomingTripsForTransporter(userId).then(trip => {
-        setUpcomingTripList(trip);
+      return await GetUpcomingTripsForDriver(tempUserId).then(trip => {
+        if (trip.length == 0) {
+          setShowNoFutureTripText(true);
+        } else {
+          setUpcomingTripList(trip);
+        }
+      });
+    } else if (tempRole == 1) {
+      return await GetUpcomingTripsForTransporter(tempUserId).then(trip => {
+        if (trip.length == 0) {
+          setShowNoFutureTripText(true);
+        } else {
+          setUpcomingTripList(trip);
+        }
       });
     }
   };
 
+  //Gets all past Trips for all roles
   const GetPastTrips = async () => {
-    if (tempRole == 1) {
-      return await GetPastTripsForClient(userId).then(trip => {
-        setPastTripList(trip);
-      });
-    } else if (tempRole == 2) {
-      return await GetPastTripsForDriver(userId).then(trip => {
-        setPastTripList(trip);
+    if (tempRole == 2) {
+      return await GetPastTripsForClient(tempUserId).then(trip => {
+        if (trip.length == 0) {
+          setShowNoPastTripText(true);
+        } else {
+          setPastTripList(trip);
+        }
       });
     } else if (tempRole == 3) {
-      return await GetPastTripsForTransporter(userId).then(trip => {
-        setPastTripList(trip);
+      return await GetPastTripsForDriver(tempUserId).then(trip => {
+        if (trip.length == 0) {
+          setShowNoPastTripText(true);
+        } else {
+          setPastTripList(trip);
+        }
+      });
+    } else if (tempRole == 1) {
+      return await GetPastTripsForTransporter(tempUserId).then(trip => {
+        if (trip.length == 0) {
+          setShowNoPastTripText(true);
+        } else {
+          setPastTripList(trip);
+        }
       });
     }
   };
 
+  //Handles FAB onPress
   const HandleBackFabPress = () => {
-    setUserId(tempSessionProvider);
-    setShowFab(false);
-    setTempRole(role);
+    if (role == 2 || role == 3) {
+      navigation.goBack();
+    } else {
+      setTempUserId(userId);
+      setTempRole(role);
+    }
   };
 
+  //Defines the FAB for all roles
   const GoBackFab = () => {
     return (
       <Fab
@@ -248,12 +314,13 @@ const TripsScreen = ({navigation}: any) => {
         isHovered={false}
         isDisabled={false}
         isPressed={false}>
-        <FabIcon as={AddIcon} mr="$3" />
+        <FabIcon as={ArrowLeftIcon} mr="$1" />
         <FabLabel>Back</FabLabel>
       </Fab>
     );
   };
 
+  //Contains card for Parent
   const renderItemComponentParent = (itemData: any) => (
     <TripCardParent
       driverName={itemData.driverName}
@@ -266,6 +333,7 @@ const TripsScreen = ({navigation}: any) => {
     />
   );
 
+  //Contains for interactive card for driver for upcoming trips
   const renderItemComponentDriverSwipable = (itemData: any) => (
     <TripCardDriverSwipable
       passengerName={itemData.passengerName}
@@ -286,6 +354,7 @@ const TripsScreen = ({navigation}: any) => {
     />
   );
 
+  //Contains card for Driver for past trips
   const renderItemComponentDriver = (itemData: any) => (
     <TripCardDriver
       passengerName={itemData.passengerName}
@@ -297,6 +366,7 @@ const TripsScreen = ({navigation}: any) => {
     />
   );
 
+  //Card defined to select Drivers Linked to Vehicle
   const vehicleSelectorTransporter = (itemData: any) => (
     <VehicleCard
       registrationNumber={itemData.registrationNumber}
@@ -306,14 +376,14 @@ const TripsScreen = ({navigation}: any) => {
       fullName={itemData.fullName}
       onPress={() => {
         GetDriverId(itemData.vehicleId).then((result: any) => {
-          setUserId(result[0].DriverId);
+          setTempUserId(result[0].DriverId);
           setTempRole(2);
-          setShowFab(true);
         });
       }}
     />
   );
 
+  //Card defined for Transporter
   const renderItemComponentTransporter = (itemData: any) => (
     <TripCardDriver
       passengerName={itemData.passengerName}
@@ -325,10 +395,12 @@ const TripsScreen = ({navigation}: any) => {
     />
   );
 
+  //Contains Upcoming Flatlist for all roles
   function FirstRoute() {
-    if (tempRole == 1) {
+    if (tempRole == 2) {
       return (
         <View style={FlatlistStyles.container}>
+          {showNoFutureTripText ? EmtpyFlatListText() : null}
           <FlatList
             data={UpcomingTripList}
             extraData={statusCode}
@@ -342,10 +414,10 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 2) {
+    } else if (tempRole == 3) {
       return (
         <View style={FlatlistStyles.container}>
-          {showFab == true ? GoBackFab() : null}
+          {showNoFutureTripText ? EmtpyFlatListText() : null}
           <FlatList
             data={UpcomingTripList}
             extraData={statusCode}
@@ -359,9 +431,10 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 3) {
+    } else if (tempRole == 1) {
       return (
         <View style={FlatlistStyles.container}>
+          {showNoFutureTripText ? EmtpyFlatListText() : null}
           <FlatList
             data={vehicleList}
             renderItem={({item}) => vehicleSelectorTransporter(item)}
@@ -373,11 +446,12 @@ const TripsScreen = ({navigation}: any) => {
       );
     }
   }
-
+  //Contains Past Flatlist for all roles
   function SecondRoute() {
-    if (tempRole == 1) {
+    if (tempRole == 2) {
       return (
-        <View style={{flex: 1}}>
+        <View style={FlatlistStyles.container}>
+          {showNoPastTripText ? EmtpyFlatListText() : null}
           <FlatList
             data={PastTripList}
             extraData={statusCode}
@@ -391,10 +465,10 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 2) {
+    } else if (tempRole == 3) {
       return (
-        <View style={{flex: 1}}>
-          {showFab == true ? GoBackFab() : null}
+        <View style={FlatlistStyles.container}>
+          {showNoPastTripText ? EmtpyFlatListText() : null}
           <FlatList
             data={PastTripList}
             extraData={statusCode}
@@ -408,9 +482,10 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 3) {
+    } else if (tempRole == 1) {
       return (
-        <View style={{flex: 1}}>
+        <View style={FlatlistStyles.container}>
+          {showNoPastTripText ? EmtpyFlatListText() : null}
           <FlatList
             data={PastTripList}
             extraData={statusCode}
@@ -429,7 +504,8 @@ const TripsScreen = ({navigation}: any) => {
 
   return (
     <NavigationContainer independent={true}>
-      {tempRole != 3 ? (
+      {GoBackFab()}
+      {tempRole != 1 ? (
         <Tab.Navigator>
           <Tab.Screen name="Upcoming Trps" component={FirstRoute} />
           <Tab.Screen name="Past Trips" component={SecondRoute} />

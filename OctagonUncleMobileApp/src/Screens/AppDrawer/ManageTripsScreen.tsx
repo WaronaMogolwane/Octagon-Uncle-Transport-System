@@ -1,10 +1,19 @@
-import {FlatList, RefreshControl} from 'react-native';
+import {FlatList, RefreshControl, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {VehicleCard} from '../../Components/VehicleCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
+import {
+  useToast,
+  Toast,
+  VStack,
+  ToastDescription,
+  ToastTitle,
+} from '@gluestack-ui/themed';
 
 const ManageTripsScreen = ({navigation}: any) => {
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+
+  const toast = useToast();
 
   const [vehicleList, setVehicleList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -29,6 +38,7 @@ const ManageTripsScreen = ({navigation}: any) => {
   }, []);
 
   useEffect(() => {
+    ShowToast();
     setRefreshing(true);
 
     setTimeout(() => {
@@ -43,6 +53,25 @@ const ManageTripsScreen = ({navigation}: any) => {
     }, 2000);
     setRefreshing(false);
   }, []);
+
+  const ShowToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="attention" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Select Vehicle</ToastTitle>
+              <ToastDescription>
+                Please a select a vehicle to contine.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
 
   const renderItemComponentVehicleInfo = (itemData: any) => (
     <VehicleCard
@@ -60,13 +89,16 @@ const ManageTripsScreen = ({navigation}: any) => {
   );
 
   return (
-    <FlatList
-      data={vehicleList}
-      renderItem={({item}) => renderItemComponentVehicleInfo(item)}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-    />
+    <View>
+      {}
+      <FlatList
+        data={vehicleList}
+        renderItem={({item}) => renderItemComponentVehicleInfo(item)}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      />
+    </View>
   );
 };
 

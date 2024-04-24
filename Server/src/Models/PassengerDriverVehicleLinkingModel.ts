@@ -7,14 +7,9 @@ export const InsertPassengerDriverVehicleLinking = async (
 ) => {
   DbPool.query(
     {
-      sql: "CALL InsertNewPassengerDriverVehicleLinking(?,?,?,?);",
+      sql: "CALL InsertNewPassengerDriverVehicleLinking(?,?,?);",
       timeout: 40000,
-      values: [
-        pDVL.passengerDriverVehicleLinking_id,
-        pDVL.vehicle_Id,
-        pDVL.business_Id,
-        pDVL.passenger_Id,
-      ],
+      values: [pDVL.vehicle_Id, pDVL.business_Id, pDVL.passenger_Id],
     },
     function (error, results, fields) {
       if (error) {
@@ -55,6 +50,24 @@ export const DeletePassengerDriverVehicleLinking = async (
       sql: "CALL DeletePassengerDriverVehicleLinking(?);",
       timeout: 40000,
       values: [pVLId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const TruncatePassengerDriverVehicleLinking = async (
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL AutoTruncatePassengerDriverVehicleLinking();",
+      timeout: 40000,
     },
     function (error, results, fields) {
       if (error) {

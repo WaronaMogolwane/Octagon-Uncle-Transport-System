@@ -34,3 +34,36 @@ export const AddPassengerScheduleToDB = async (
 
   return result;
 };
+
+export const UpdatePassengerScheduleToDB = async (
+  passengerSchedule: PassengerSchedule,
+) => {
+  let result: any;
+
+  await axios
+    .patch(
+      `${SERVER_HOST}:${SERVER_PORT}/passenger-schedule/update-passenger-schedule`,
+      {
+        params: {
+          PassengerScheduleId: passengerSchedule.passengerScheduleId,
+          Monday: passengerSchedule.monday,
+          Tuesday: passengerSchedule.tuesday,
+          Wednesday: passengerSchedule.wednesday,
+          Thursday: passengerSchedule.thursday,
+          Friday: passengerSchedule.friday,
+          Saturday: passengerSchedule.saturday,
+          Sunday: passengerSchedule.sunday,
+          PassengerId: passengerSchedule.passengerId,
+          DriverVehicleLinkingId: passengerSchedule.vehicleId,
+        },
+      },
+    )
+    .then((response: any) => {
+      result = response.status;
+    })
+    .catch((error: any) => {
+      result = error;
+    });
+
+  return result;
+};

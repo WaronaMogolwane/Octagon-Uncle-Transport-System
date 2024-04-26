@@ -31,29 +31,14 @@ import {
 import {VehicleCard} from '../../Components/VehicleCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
 import {GetDriverId} from '../../Controllers/DriverVehicleLinkingController.tsx';
-import {Auth} from '../../Classes/Auth';
-import {useStorageState} from '../../Services/StorageStateService';
-import {AuthContext} from '../../Services/AuthenticationService';
+import {useGlobalState} from '../../State';
 
 const TripsScreen = ({navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
 
-  const [[tokenIsLoading, authToken], setAuthToken] =
-    useStorageState('authToken');
-  const [[isLoading, session], setSession] = useStorageState('session');
-  const {SetSession}: any = useContext(AuthContext);
-
-  const [auth, setAuth] = useState<Auth>();
-
-  //const userId = auth?.GetSession().UserId!;
-  //const role: number = Number(auth?.GetSession().UserRole!);
-
-  //let userId = auth?.GetSession().UserId!;
-  //let role: number = Number(auth?.GetSession().UserRole);
-  //61e30437-3130-4b42-8a4f-
-
-  const [userId, setUserId] = useState('');
-  const [role, setRole] = useState(0);
+  const [userId, x] = useGlobalState('userId');
+  const [role, y] = useGlobalState('role');
+  console.log(userId, role);
 
   const [tempUserId, setTempUserId] = useState(userId);
 
@@ -127,15 +112,6 @@ const TripsScreen = ({navigation}: any) => {
 
     setRefreshing(false);
   }, []);
-
-  useEffect(() => {
-    if (authToken !== null) {
-      setAuth(new Auth(authToken?.toString()!));
-
-      setUserId(auth?.GetSession().UserId!);
-      setRole(Number(auth?.GetSession().UserRole!));
-    }
-  }, [authToken]);
 
   useEffect(() => {
     setRefreshingUpcomingTrips(true);

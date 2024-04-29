@@ -22,11 +22,11 @@ const HomeScreen = ({navigation}: any) => {
         'userId',
         `${auth.GetAuth(authToken!)?.GetSession(authToken!).UserId}`,
       );
-      setGlobalState('role', 2);
-      // setGlobalState(
-      //   'role',
-      //   Number(`${auth.GetAuth(authToken!)?.GetSession(authToken!).UserRole}`),
-      // );
+      //setGlobalState('role', 2);
+      setGlobalState(
+        'role',
+        Number(`${auth.GetAuth(authToken!)?.GetSession(authToken!).UserRole}`),
+      );
       setGlobalState(
         'businessId',
         `${auth.GetAuth(authToken!)?.GetSession(authToken!).BusinessId}`,

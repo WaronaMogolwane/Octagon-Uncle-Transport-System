@@ -12,8 +12,8 @@ import {
 import {useGlobalState} from '../../State';
 
 const ManageTripsScreen = ({navigation}: any) => {
-  const businessId = '018f2940-e67c-78f3-8f22-400d7f0672b2';
-  //const [businessId, x] = useGlobalState('businessId');
+  //const businessId = '018f2940-e67c-78f3-8f22-400d7f0672b2';
+  const [businessId, x] = useGlobalState('businessId');
 
   const toast = useToast();
 

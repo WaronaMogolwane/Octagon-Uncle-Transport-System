@@ -9,9 +9,11 @@ import {
   ToastDescription,
   ToastTitle,
 } from '@gluestack-ui/themed';
+import {useGlobalState} from '../../State';
 
 const ManageTripsScreen = ({navigation}: any) => {
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+  const businessId = '018f2940-e67c-78f3-8f22-400d7f0672b2';
+  //const [businessId, x] = useGlobalState('businessId');
 
   const toast = useToast();
 
@@ -90,7 +92,6 @@ const ManageTripsScreen = ({navigation}: any) => {
 
   return (
     <View>
-      {}
       <FlatList
         data={vehicleList}
         renderItem={({item}) => renderItemComponentVehicleInfo(item)}

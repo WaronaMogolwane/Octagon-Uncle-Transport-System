@@ -38,7 +38,6 @@ const TripsScreen = ({navigation}: any) => {
 
   const [userId, x] = useGlobalState('userId');
   const [role, y] = useGlobalState('role');
-  console.log(userId, role);
 
   const [tempUserId, setTempUserId] = useState(userId);
 

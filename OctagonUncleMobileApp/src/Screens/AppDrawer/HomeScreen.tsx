@@ -12,7 +12,6 @@ const HomeScreen = ({navigation}: any) => {
 
   const [[tokenIsLoading, authToken], setAuthToken] =
     useStorageState('authToken');
-  //const [[isLoading, session], setSession] = useStorageState('session');
   const {SetSession}: any = useContext(AuthContext);
   const [auth, setAuth] = useState<Auth | null>(null);
 

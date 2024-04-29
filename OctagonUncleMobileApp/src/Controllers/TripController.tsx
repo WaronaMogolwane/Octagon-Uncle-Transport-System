@@ -40,11 +40,11 @@ export const GetPastTripsForDriver = async (driverId: string) => {
 };
 
 export const GetUpcomingTripsForTransporter = async (businessId: string) => {
-  return await GetUpcomingTripsBusinessFromDB(businessId);
+  return await GetUpcomingTripsDriverFromDB(businessId);
 };
 
 export const GetPastTripsForTransporter = async (businessId: string) => {
-  return await GetPastTripsBusinessFromDB(businessId);
+  return await GetPastTripsDriverFromDB(businessId);
 };
 
 export const UpdateTrip = async (trip: Trip) => {

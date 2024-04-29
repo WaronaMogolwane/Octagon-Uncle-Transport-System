@@ -56,7 +56,7 @@ export const UpdatePassengerScheduleByPassengerId = async (
     req.body.params.PassengerId,
     req.body.params.DriverVehicleLinkingId
   );
-  console.log(newPassengerSchedule);
+
   await UpdatePassengerSchedule(newPassengerSchedule, (error, result) => {
     if (error) {
       next(new ErrorResponse(501, error.message));

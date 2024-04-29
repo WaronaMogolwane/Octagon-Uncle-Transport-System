@@ -90,14 +90,9 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
 
   const vehicleId = route.params.vehicleId;
   //const vehicleId = '281';
-  const businessId = auth?.GetSession().BusinessId!;
+  const businessId = '018f2940-e67c-78f3-8f22-400d7f0672b2';
+  //const [businessId, x] = useGlobalState('businessId');
   //const parentId = 'c7728615-394f-466b-833e-ea9dd60ba836';
-
-  useEffect(() => {
-    if (authToken !== null) {
-      setAuth(new Auth(authToken?.toString()!));
-    }
-  }, [authToken]);
 
   useEffect(() => {
     GetPassengers();
@@ -170,6 +165,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     setFriday(false);
     setSaturday(false);
     setSunday(false);
+    setNewPassengerId('');
   };
 
   const renderItemComponentPassengers = (itemData: any) => (
@@ -331,6 +327,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         onClose={() => {
           setValues(initialState);
           ClearModalUseState();
+          ClearCalender();
           setCalender(false);
         }}
         finalFocusRef={ref}>

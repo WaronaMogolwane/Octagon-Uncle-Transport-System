@@ -50,6 +50,7 @@ import {PassengerSchedule} from '../../Models/PassengerSchedule';
 import {Auth} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {useStorageState} from '../../Services/StorageStateService';
+import {useGlobalState} from '../../State';
 
 const AssignPassengerScreen = ({route, navigation}: any) => {
   const initialState = [''];
@@ -90,8 +91,8 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
 
   const vehicleId = route.params.vehicleId;
   //const vehicleId = '281';
-  const businessId = '018f2940-e67c-78f3-8f22-400d7f0672b2';
-  //const [businessId, x] = useGlobalState('businessId');
+  //const businessId = '018f2940-e67c-78f3-8f22-400d7f0672b2';
+  const [businessId, x] = useGlobalState('businessId');
   //const parentId = 'c7728615-394f-466b-833e-ea9dd60ba836';
 
   useEffect(() => {

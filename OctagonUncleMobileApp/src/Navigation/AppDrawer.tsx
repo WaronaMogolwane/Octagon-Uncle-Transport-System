@@ -21,10 +21,6 @@ const AppDrawer = () => {
       <Drawer.Screen name="Payments" component={PaymentsScreen} />
       <Drawer.Screen name="Manage Vehicles" component={ManageVehiclesScreen} />
       <Drawer.Screen name="Manage Trip" component={ManageTripsScreen} />
-      <Drawer.Screen
-        name="Assign Passenger"
-        component={AssignPassengerScreen}
-      />
       <Drawer.Screen name="Manage Drivers" component={ManageDriversScreen} />
       <Drawer.Screen name="Manage Clients" component={ManageClientsScreen} />
       <Drawer.Screen name="Profile" component={UserDetailSignUp} />

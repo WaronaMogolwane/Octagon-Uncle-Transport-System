@@ -3,16 +3,18 @@ import {
   GetPassengerFromDatabase,
   GetAllPassengerFromDatabase,
   DeletePassengerFromDatabase,
+  GetAllPassengerForBusinessFromDB,
+  UpdateIsAssignedInDB,
   UpdatePassengerInDatabase,
-} from "../Data/PassengerDAL";
-import { Passenger } from "../Models/Passenger";
+} from '../Data/PassengerDAL';
+import {Passenger} from '../Models/Passenger';
 
 export const AddPassenger = async (
   passenger: Passenger,
   uid: string,
-  passengerId: string
+  passengerId: string,
 ) => {
-  await AddPassengerToDatabase(passenger, uid, passengerId);
+  return await AddPassengerToDatabase(passenger, uid, passengerId);
 };
 
 export const GetPassenger = async (passengerId: string, uid: string) => {
@@ -23,6 +25,10 @@ export const GetAllPassenger = async (uid: string) => {
   return await GetAllPassengerFromDatabase(uid);
 };
 
+export const GetAllPassengerForBusiness = async (businessId: string) => {
+  return GetAllPassengerForBusinessFromDB(businessId);
+};
+
 export const DeletePassenger = async (passengerId: string, uid: string) => {
   return await DeletePassengerFromDatabase(passengerId, uid);
 };
@@ -30,7 +36,11 @@ export const DeletePassenger = async (passengerId: string, uid: string) => {
 export const UpdatePassenger = async (
   passenger: Passenger,
   uid: string,
-  passengerId: string
+  passengerId: string,
 ) => {
-  await UpdatePassengerInDatabase(passenger, uid, passengerId);
+  return await UpdatePassengerInDatabase(passenger, uid, passengerId);
+};
+
+export const UpdateIsAssigned = async (passengerId: string) => {
+  return await UpdateIsAssignedInDB(passengerId);
 };

@@ -5,6 +5,7 @@ import {
   GetPassengersByParent,
   GetPassenger,
   UpdatePassengerDetail,
+  UpdatePassengerIsAssigned,
 } from "../Controllers/PassengerController";
 
 const router = Router();
@@ -16,6 +17,12 @@ router.post("/get-passenger", GetPassenger, async (req, res, next) => {});
 router.patch(
   "/update-passenger-details",
   UpdatePassengerDetail,
+  async (req, res, next) => {}
+);
+
+router.patch(
+  "/update-is-assigned",
+  UpdatePassengerIsAssigned,
   async (req, res, next) => {}
 );
 

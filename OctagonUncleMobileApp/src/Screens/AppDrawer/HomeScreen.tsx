@@ -18,19 +18,22 @@ const HomeScreen = ({navigation}: any) => {
   useEffect(() => {
     new Auth().SetAuthentication(authToken!, auth, setAuth);
     if (auth !== null) {
-      setGlobalState(
-        'userId',
-        `${auth.GetAuth(authToken!)?.GetSession(authToken!).UserId}`,
-      );
-      //setGlobalState('role', 2);
-      setGlobalState(
-        'role',
-        Number(`${auth.GetAuth(authToken!)?.GetSession(authToken!).UserRole}`),
-      );
-      setGlobalState(
-        'businessId',
-        `${auth.GetAuth(authToken!)?.GetSession(authToken!).BusinessId}`,
-      );
+      setGlobalState('userId', 'c7728615-394f-466b-833e-ea9dd60ba836');
+      setGlobalState('role', 2);
+      setGlobalState('businessId', 'w8728321-394f-466b-833e-ea9dd60ba000');
+
+      // setGlobalState(
+      //   'userId',
+      //   `${auth.GetAuth(authToken!)?.GetSession(authToken!).UserId}`,
+      // );
+      // setGlobalState(
+      //   'role',
+      //   Number(`${auth.GetAuth(authToken!)?.GetSession(authToken!).UserRole}`),
+      // );
+      // setGlobalState(
+      //   'businessId',
+      //   `${auth.GetAuth(authToken!)?.GetSession(authToken!).BusinessId}`,
+      // );
     }
   }, [authToken, auth]);
   return (

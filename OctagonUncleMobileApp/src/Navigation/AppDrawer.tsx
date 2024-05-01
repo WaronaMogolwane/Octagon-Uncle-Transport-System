@@ -23,6 +23,13 @@ const AppDrawer = () => {
       <Drawer.Screen name="Manage Trip" component={ManageTripsScreen} />
       <Drawer.Screen name="Manage Drivers" component={ManageDriversScreen} />
       <Drawer.Screen name="Manage Clients" component={ManageClientsScreen} />
+      <Drawer.Screen
+        name="Assign Passenger"
+        component={AssignPassengerScreen}
+        options={{
+          drawerItemStyle: {display: 'none'},
+        }}
+      />
       <Drawer.Screen name="Profile" component={UserDetailSignUp} />
     </Drawer.Navigator>
   );

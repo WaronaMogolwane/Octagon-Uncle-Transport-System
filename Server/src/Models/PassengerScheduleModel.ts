@@ -18,7 +18,7 @@ export const InsertPassengerSchedule = async (
         passengerSchedule.saturday,
         passengerSchedule.sunday,
         passengerSchedule.passengerId,
-        passengerSchedule.driverVehicleLinkingId,
+        passengerSchedule.vehicleId,
       ],
     },
     function (error, results, fields) {
@@ -48,7 +48,7 @@ export const UpdatePassengerSchedule = async (
         passengerSchedule.saturday,
         passengerSchedule.sunday,
         passengerSchedule.passengerId,
-        Number(passengerSchedule.driverVehicleLinkingId),
+        passengerSchedule.vehicleId,
       ],
     },
     function (error, results, fields) {

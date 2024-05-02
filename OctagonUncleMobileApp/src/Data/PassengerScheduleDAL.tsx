@@ -54,7 +54,7 @@ export const UpdatePassengerScheduleToDB = async (
           Saturday: passengerSchedule.saturday,
           Sunday: passengerSchedule.sunday,
           PassengerId: passengerSchedule.passengerId,
-          DriverVehicleLinkingId: passengerSchedule.vehicleId,
+          VehicleId: passengerSchedule.vehicleId,
         },
       },
     )

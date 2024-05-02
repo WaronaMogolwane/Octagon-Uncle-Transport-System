@@ -54,7 +54,7 @@ export const UpdatePassengerScheduleByPassengerId = async (
     req.body.params.Saturday,
     req.body.params.Sunday,
     req.body.params.PassengerId,
-    req.body.params.DriverVehicleLinkingId
+    req.body.params.VehicleId
   );
 
   await UpdatePassengerSchedule(newPassengerSchedule, (error, result) => {

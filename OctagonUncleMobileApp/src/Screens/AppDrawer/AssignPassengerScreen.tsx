@@ -233,7 +233,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       saturday,
       sunday,
       passengerId,
-      pDVLId,
+      vehicleId,
     );
 
     UpdatePassengerSchedule(newSchedule).then((result: any) => {
@@ -348,6 +348,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
               }}>
               <VStack space="xl">
                 <Checkbox
+                  aria-label="Monday"
                   value="monday"
                   onPress={() => {
                     setMonday(!monday);
@@ -358,6 +359,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                   <CheckboxLabel>Monday</CheckboxLabel>
                 </Checkbox>
                 <Checkbox
+                  aria-label="Tuesday"
                   value="tuesday"
                   onPress={() => {
                     setTuesday(!tuesday);
@@ -368,6 +370,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                   <CheckboxLabel>Tuesday</CheckboxLabel>
                 </Checkbox>
                 <Checkbox
+                  aria-label="Wednesday"
                   value="wednesday"
                   onPress={() => {
                     setWednesday(!wednesday);
@@ -378,6 +381,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                   <CheckboxLabel>Wednseday</CheckboxLabel>
                 </Checkbox>
                 <Checkbox
+                  aria-label="Thursday"
                   value="thursday"
                   onPress={() => {
                     setThursday(!thursday);
@@ -388,6 +392,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                   <CheckboxLabel>Thursday</CheckboxLabel>
                 </Checkbox>
                 <Checkbox
+                  aria-label="Friday"
                   value="friday"
                   onPress={() => {
                     setFriday(!friday);
@@ -398,6 +403,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                   <CheckboxLabel>Friday</CheckboxLabel>
                 </Checkbox>
                 <Checkbox
+                  aria-label="Saturday"
                   value="saturday"
                   onPress={() => {
                     setSaturday(!saturday);
@@ -408,6 +414,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                   <CheckboxLabel>Saturday</CheckboxLabel>
                 </Checkbox>
                 <Checkbox
+                  aria-label="Sunday"
                   value="sunday"
                   onPress={() => {
                     setSunday(!sunday);

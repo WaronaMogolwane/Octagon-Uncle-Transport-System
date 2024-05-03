@@ -3,6 +3,7 @@ import { PassengerSchedule } from "../Classes/PassengerSchedule";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 import {
   AutoInsertPassengerSchedule,
+  GetPassengerSchedule,
   InsertPassengerSchedule,
   UpdatePassengerSchedule,
 } from "../Models/PassengerScheduleModel";
@@ -34,6 +35,31 @@ export const AddPassengerSchedule = async (req: any, res: any, next: any) => {
       res.status(200).json({
         PassengerCreated: true,
         result: result.affectedRows,
+      });
+    }
+  });
+};
+
+export const GetPassengerScheduleByPassengerId = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  let passengerId = req.query.PassengerId;
+
+  await GetPassengerSchedule(passengerId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else if (result[0] == "") {
+      let err: any = {
+        status: 405,
+        message: "Record not found",
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result[0],
       });
     }
   });

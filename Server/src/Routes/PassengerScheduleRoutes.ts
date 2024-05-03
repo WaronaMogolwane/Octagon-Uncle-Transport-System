@@ -1,6 +1,7 @@
 import Router from "express-promise-router";
 import {
   AddPassengerSchedule,
+  GetPassengerScheduleByPassengerId,
   UpdatePassengerScheduleByPassengerId,
 } from "../Controllers/PassengerScheduleController";
 
@@ -9,6 +10,12 @@ const router = Router();
 router.post(
   "/add-passenger-schedule",
   AddPassengerSchedule,
+  async (req, res, next) => {}
+);
+
+router.get(
+  "/get-passenger-schedule",
+  GetPassengerScheduleByPassengerId,
   async (req, res, next) => {}
 );
 

@@ -31,6 +31,26 @@ export const InsertPassengerSchedule = async (
   );
 };
 
+export const GetPassengerSchedule = async (
+  passengerId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetPassengerSchedule(?);",
+      timeout: 40000,
+      values: [passengerId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
 export const UpdatePassengerSchedule = async (
   passengerSchedule: PassengerSchedule,
   callback: (error, result) => void

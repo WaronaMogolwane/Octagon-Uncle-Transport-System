@@ -33,7 +33,7 @@ export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
       res.forEach(data => {
         passsengers = {
           passengerId: data.PassengerId,
-          passengerName: `${data.FirstName} ${data.LastName} (${data.Age})`,
+          passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
           editedName: `${data.FirstName} ${data.LastName}`,
           age: data.Age,
           homeAddress: data.HomeAddress,

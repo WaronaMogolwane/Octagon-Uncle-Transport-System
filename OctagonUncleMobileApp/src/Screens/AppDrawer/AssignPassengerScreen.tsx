@@ -44,6 +44,7 @@ import {
 } from '@gluestack-ui/themed';
 import {
   AddPassengerSchedule,
+  GetPassengerSchedule,
   UpdatePassengerSchedule,
 } from '../../Controllers/PassengerScheduleController';
 import {PassengerSchedule} from '../../Models/PassengerSchedule';
@@ -176,6 +177,24 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       pickUpLocation={itemData.pickUpLocation}
       dropOffLocation={itemData.dropOffLocation}
       onPress={() => {
+        // GetPassengerSchedule(itemData.passengerId).then((result: any) => {
+        //   result.monday == 1 ? setMonday(true) : setMonday(true);
+        //   result.tuesday == 1 ? setTuesday(true) : setTuesday(false);
+        //   result.wednesday == 1 ? setWednesday(true) : setWednesday(false);
+        //   result.thursday == 1 ? setThursday(true) : setThursday(false);
+        //   result.friday == 1 ? setFriday(true) : setFriday(false);
+        //   result.saturday == 1 ? setSaturday(true) : setSaturday(false);
+        //   result.sunday == 1 ? setSunday(true) : setSunday(false);
+
+        //   setShowModal(true);
+        //   setPassngerId(itemData.passengerId);
+        //   setPDVLId(itemData.pDVLId);
+        //   sethomeAddress(itemData.pickUpLocation);
+        //   setpassengerName(itemData.fullName);
+        //   setdestinationAdress(itemData.dropOffLocation);
+        //   setAge(itemData.age);
+        // });
+
         setShowModal(true);
         setPassngerId(itemData.passengerId);
         setPDVLId(itemData.pDVLId);

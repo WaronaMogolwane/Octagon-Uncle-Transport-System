@@ -9,7 +9,6 @@ import {
   GetAllPassengerForBusiness,
   UpdateIsAssigned,
 } from '../../Controllers/PassengerController';
-import {PassengerCard} from '../../Components/PassengerCard';
 import {CustomButton1} from '../../Components/Buttons';
 import {
   AddPassengerDriverVehicleLinking,
@@ -52,6 +51,7 @@ import {Auth} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {useStorageState} from '../../Services/StorageStateService';
 import {useGlobalState} from '../../State';
+import {PassengerCard} from '../../Components/PassengerCard';
 
 const AssignPassengerScreen = ({route, navigation}: any) => {
   const initialState = [''];

@@ -35,6 +35,10 @@ const HomeScreen = ({navigation}: any) => {
       //   'businessId',
       //   `${auth.GetAuth(authToken!)?.GetSession(authToken!).BusinessId}`,
       // );
+    } else {
+      setGlobalState('userId', '9a7fc15e-a31a-44a5-8d1d-0a9509f7f916');
+      setGlobalState('role', 3);
+      setGlobalState('businessId', 'w8728321-394f-466b-833e-ea9dd60ba000');
     }
   }, [authToken, auth]);
   return (

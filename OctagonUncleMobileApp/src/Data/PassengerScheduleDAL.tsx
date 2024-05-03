@@ -35,6 +35,42 @@ export const AddPassengerScheduleToDB = async (
   return result;
 };
 
+export const GetPassengerScheduleFromDB = async (passengerId: string) => {
+  let res: any;
+  await axios
+    .get(
+      `${SERVER_HOST}:${SERVER_PORT}/passenger-schedule/get-passenger-schedule`,
+      {
+        params: {
+          PassengerId: passengerId,
+        },
+      },
+    )
+    .then((response: any) => {
+      let result = response.data.result;
+
+      let passengerSchedule = new PassengerSchedule(
+        result[0].Monday,
+        result[0].Tuesday,
+        result[0].Wednesday,
+        result[0].Thursday,
+        result[0].Friday,
+        result[0].Saturday,
+        result[0].Sunday,
+        result[0].PassengerId,
+        result[0].DriverVehicleLinkingId,
+        result[0].PassengerScheduleId,
+      );
+
+      res = passengerSchedule;
+    })
+    .catch(error => {
+      console.log(error);
+      res = error;
+    });
+  return res;
+};
+
 export const UpdatePassengerScheduleToDB = async (
   passengerSchedule: PassengerSchedule,
 ) => {

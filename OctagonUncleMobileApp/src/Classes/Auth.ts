@@ -12,7 +12,7 @@ export class Auth {
     }
 
     GetSession(authToken: string) {
-        let data: any = this.DecodeSessionToken(authToken);
+        let data: any = DecodeSessionToken(authToken);
         let session: Session = {
             UserRole: data.UserRole,
             UserId: data.UserId,
@@ -23,7 +23,7 @@ export class Auth {
     }
     GetAuth(authToken: string) {
         try {
-            this.DecodeSessionToken(authToken)
+            DecodeSessionToken(authToken)
             let auth = new Auth();
             return auth
         }
@@ -39,9 +39,53 @@ export class Auth {
             }
         }
     }
-
-    private DecodeSessionToken(sessionToken: string): JwtPayload {
-        const session = jwtDecode(sessionToken);
-        return session;
-    }
 }
+
+const DecodeSessionToken = (sessionToken: string): JwtPayload => {
+    const session = jwtDecode(sessionToken);
+    return session;
+}
+
+const GetBusinessId = (sessionToken: string) => {
+    let data: any = DecodeSessionToken(sessionToken);
+    let session: Session = {
+        UserRole: data.UserRole,
+        UserId: data.UserId,
+        Email: data.Email,
+        BusinessId: data.BusinessId
+    }
+    return session.BusinessId;
+
+}
+const GetEmail = (sessionToken: string) => {
+    let data: any = DecodeSessionToken(sessionToken);
+    let session: Session = {
+        UserRole: data.UserRole,
+        UserId: data.UserId,
+        Email: data.Email,
+        BusinessId: data.BusinessId
+    }
+    return session.Email;
+}
+const GetUserId = (sessionToken: string) => {
+    let data: any = DecodeSessionToken(sessionToken);
+    let session: Session = {
+        UserRole: data.UserRole,
+        UserId: data.UserId,
+        Email: data.Email,
+        BusinessId: data.BusinessId
+    }
+    return session.UserId;
+}
+const GetUserRole = (sessionToken: string) => {
+    let data: any = DecodeSessionToken(sessionToken);
+    let session: Session = {
+        UserRole: data.UserRole,
+        UserId: data.UserId,
+        Email: data.Email,
+        BusinessId: data.BusinessId
+    }
+    return session.UserRole;
+}
+
+export { GetBusinessId, GetEmail, GetUserId, GetUserRole }

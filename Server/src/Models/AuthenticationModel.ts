@@ -242,7 +242,24 @@ export const GetDriversByBusinessId = async (businessId: string, callback: (erro
       }
     })
 }
+export const GetClientsByBusinessId = async (businessId: string, callback: (error, result) => void) => {
+  DbPool.query({
+    sql: "CALL GetClientsByBusinessId(?)",
+    timeout: 40000,
+    values: [
+      businessId
+    ],
+  },
+    (err, res) => {
 
+      if (err) {
+        callback(err, null);
+      }
+      else {
+        callback(null, res);
+      }
+    })
+}
 export const GetParentsByBusinessId = async (businessId: string, callback: (error, result) => void) => {
   DbPool.query({
     sql: "CALL GetParentsByBusinessId(?)",

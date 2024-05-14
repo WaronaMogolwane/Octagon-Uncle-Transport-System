@@ -1,18 +1,5 @@
 import {
-  AlertDialog,
-  AlertDialogBackdrop,
-  AlertDialogBody,
-  AlertDialogCloseButton,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  Button,
-  ButtonGroup,
-  ButtonText,
-  CloseIcon,
   FlatList,
-  Heading,
-  Icon,
   ScrollView,
   Text,
   Toast,
@@ -26,19 +13,21 @@ import React, {useContext, useEffect, useState} from 'react';
 import {RefreshControl, View} from 'react-native';
 import * as yup from 'yup';
 import {DriverListCard} from '../../../Components/Cards/DriverListCard';
-import {CustomFormControlInput} from '../../../Components/CustomFormInput';
 import ManageDriverModal from '../../../Components/Modals/DriverDetailsModal';
 import {
   AuthContext,
   DeleteDriverByUserIdAndRole,
   GetDriversByBusinessId,
 } from '../../../Services/AuthenticationService';
-import RemoveDriverAlert from '../../../Components/Alerts/RemoveDriverAlert';
 import {GestureResponderEvent} from 'react-native';
-
+import {useStorageState} from '../../../Services/StorageStateService';
+import {Auth, GetBusinessId} from '../../../Classes/Auth';
+import {AuthenticationResponseModel} from '../../../Models/AuthenticationResponseModel';
 export const DriversScreen = () => {
-  const {createUserInvitation, session}: any = useContext(AuthContext);
-
+  const auth = new Auth();
+  const [[tokenIsLoading, authToken], setAuthToken] =
+    useStorageState('authToken');
+  const {session, isLoading}: any = useContext(AuthContext);
   const [confirmRemoveDriverText, setConfirmRemoveDriverText] = useState('');
   const [DriversList, setDriversList] = useState([]);
   const [refreshingDrivers, setRefreshingDrivers] = React.useState(false);
@@ -46,7 +35,9 @@ export const DriversScreen = () => {
   const onRefreshDrivers = React.useCallback(() => {
     setRefreshingDrivers(true);
     setTimeout(() => {
-      GetDrivers();
+      try {
+        GetDrivers(GetBusinessId(session));
+      } catch (error) {}
     }, 2000);
     setRefreshingDrivers(false);
   }, []);
@@ -61,7 +52,6 @@ export const DriversScreen = () => {
   const [showRemoveDriverDialog, setShowRemoveDriverDialog] =
     React.useState(false);
   const toast = useToast();
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
   const addDriverSchema = yup.object().shape({
     firstName: yup
@@ -114,7 +104,7 @@ export const DriversScreen = () => {
                 console.error(error);
                 ShowRemoveDriverToast(false);
               } else {
-                GetDrivers();
+                GetDrivers(GetBusinessId(authToken!));
                 setShowRemoveDriverDialog(false);
                 setShowDriverDetailsModal(false);
                 ShowRemoveDriverToast(true);
@@ -125,7 +115,7 @@ export const DriversScreen = () => {
       }
     },
   });
-  const GetDrivers = async () => {
+  const GetDrivers = async (businessId: string) => {
     return await GetDriversByBusinessId(
       businessId,
       (error: any, result: any) => {
@@ -164,8 +154,12 @@ export const DriversScreen = () => {
   };
 
   useEffect(() => {
-    GetDrivers();
-  }, []);
+    if (authToken !== null) {
+      console.log(GetBusinessId(authToken));
+      console.log(authToken);
+      GetDrivers(GetBusinessId(authToken));
+    }
+  }, [authToken]);
   return (
     <View style={{flex: 1}}>
       {DriversList[0] ? (

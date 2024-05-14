@@ -6,15 +6,13 @@ global.atob = decode;
 
 
 export class Auth {
-    token: string;
 
-    constructor(token: string) {
-        this.token = token;
+    constructor() {
+
     }
 
-    GetSession() {
-        let authToken: any = this.token
-        let data: any = this.DecodeSessionToken(authToken);
+    GetSession(authToken: string) {
+        let data: any = DecodeSessionToken(authToken);
         let session: Session = {
             UserRole: data.UserRole,
             UserId: data.UserId,
@@ -24,12 +22,70 @@ export class Auth {
         return session;
     }
     GetAuth(authToken: string) {
-        let auth = new Auth(authToken!.toString());
-        return auth;
+        try {
+            DecodeSessionToken(authToken)
+            let auth = new Auth();
+            return auth
+        }
+        catch (error) {
+            console.error(error)
+            return null;
+        }
     }
-
-    private DecodeSessionToken(sessionToken: string): JwtPayload {
-        const session = jwtDecode(sessionToken);
-        return session;
+    SetAuthentication(authToken: string, auth: Auth | null, setAuth: React.Dispatch<React.SetStateAction<Auth | null>>) {
+        if (authToken !== null) {
+            if (auth === null) {
+                setAuth(new Auth().GetAuth(authToken));
+            }
+        }
     }
 }
+
+const DecodeSessionToken = (sessionToken: string): JwtPayload => {
+    const session = jwtDecode(sessionToken);
+    return session;
+}
+
+const GetBusinessId = (sessionToken: string) => {
+    let data: any = DecodeSessionToken(sessionToken);
+    let session: Session = {
+        UserRole: data.UserRole,
+        UserId: data.UserId,
+        Email: data.Email,
+        BusinessId: data.BusinessId
+    }
+    return session.BusinessId;
+
+}
+const GetEmail = (sessionToken: string) => {
+    let data: any = DecodeSessionToken(sessionToken);
+    let session: Session = {
+        UserRole: data.UserRole,
+        UserId: data.UserId,
+        Email: data.Email,
+        BusinessId: data.BusinessId
+    }
+    return session.Email;
+}
+const GetUserId = (sessionToken: string) => {
+    let data: any = DecodeSessionToken(sessionToken);
+    let session: Session = {
+        UserRole: data.UserRole,
+        UserId: data.UserId,
+        Email: data.Email,
+        BusinessId: data.BusinessId
+    }
+    return session.UserId;
+}
+const GetUserRole = (sessionToken: string) => {
+    let data: any = DecodeSessionToken(sessionToken);
+    let session: Session = {
+        UserRole: data.UserRole,
+        UserId: data.UserId,
+        Email: data.Email,
+        BusinessId: data.BusinessId
+    }
+    return session.UserRole;
+}
+
+export { GetBusinessId, GetEmail, GetUserId, GetUserRole }

@@ -330,7 +330,7 @@ export const GetDriversByBusinessId = async (
       callback(error, null);
     });
 };
-export const DeleteDriverByUserIdAndRole = async (
+export const DeleteUserByUserIdAndRole = async (
   userId: string,
   userRole: string,
   callback: (error: any, result: any) => void,
@@ -339,6 +339,23 @@ export const DeleteDriverByUserIdAndRole = async (
     .patch(`${SERVER_HOST}:${SERVER_PORT}/auth/deactivate-user`, {
       UserId: userId,
       UserRole: userRole,
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
+};
+export const GetClientsByBusinessId = async (
+  businessId: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/auth/get-business-clients`, {
+      params: {
+        businessId: businessId,
+      },
     })
     .then((response: any) => {
       callback(null, response);

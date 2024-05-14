@@ -26,7 +26,7 @@ import {
   VerifyOtpModalProps,
 } from '../../Props/ModalProps';
 
-const VerifyEmailModal = (props: InvitationModalProps) => {
+const DriverInvitationModal = (props: InvitationModalProps) => {
   return (
     <View>
       <Modal
@@ -98,4 +98,4 @@ const VerifyEmailModal = (props: InvitationModalProps) => {
   );
 };
 
-export default VerifyEmailModal;
+export default DriverInvitationModal;

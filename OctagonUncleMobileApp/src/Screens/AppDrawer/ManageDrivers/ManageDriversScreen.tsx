@@ -51,6 +51,7 @@ import {Vehicle} from '../../../Models/VehicleModel';
 import {PendingDriverscreen} from './PendingDriversScreen';
 import {DriversScreen} from './DriversScreen';
 import {GetDriverInvitation} from '../../../Controllers/DriverController';
+import {GetBusinessId} from '../../../Classes/Auth';
 
 const ManageDriverscreen = ({navigation}: any) => {
   const {createUserInvitation, session}: any = useContext(AuthContext);
@@ -63,7 +64,7 @@ const ManageDriverscreen = ({navigation}: any) => {
     RegistrationNumber: '',
   });
   const [showDriverDetailsModal, setShowDriverDetailsModal] = useState(false);
-
+  const [PendingDriversList, setPendingDriversList] = useState([]);
   const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836 ';
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
   const southAfricanIdRegex: RegExp =
@@ -99,7 +100,7 @@ const ManageDriverscreen = ({navigation}: any) => {
     onSubmit: async values => {
       // let driverName =
       console.log(
-        'Hello {0}, your order {1} has been shipped.'.format('John', 10001),
+        'Hello {0}, your order {1} has been shipped.'.format('John', '10001'),
       );
       if (removeDriverFormik.isValid && values.confirmDriverName === 'z') {
       }
@@ -111,7 +112,7 @@ const ManageDriverscreen = ({navigation}: any) => {
 
     onSubmit: async values => {
       let userInvitation: UserInvitation = {
-        businessId: businessId,
+        businessId: GetBusinessId(session),
         invitationCode: '',
         firstName: addDriverFormik.values.firstName,
         lastName: addDriverFormik.values.lastName,
@@ -128,11 +129,12 @@ const ManageDriverscreen = ({navigation}: any) => {
               setShowInvitationModal(false);
               setShowAlertDialog(true);
               GetDriverInvitation(
-                businessId,
+                GetBusinessId(session),
                 '2',
                 (error: any, result: any) => {
                   if (error) {
                   } else {
+                    setPendingDriversList(result.data);
                   }
                 },
               );

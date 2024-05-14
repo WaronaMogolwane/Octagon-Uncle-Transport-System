@@ -21,13 +21,13 @@ import {
 } from '../../../Services/AuthenticationService';
 import {GestureResponderEvent} from 'react-native';
 import {useStorageState} from '../../../Services/StorageStateService';
-import {Auth} from '../../../Classes/Auth';
-
+import {Auth, GetBusinessId} from '../../../Classes/Auth';
+import {AuthenticationResponseModel} from '../../../Models/AuthenticationResponseModel';
 export const DriversScreen = () => {
+  const auth = new Auth();
   const [[tokenIsLoading, authToken], setAuthToken] =
     useStorageState('authToken');
-  const [auth, setAuth] = useState<Auth | null>(null);
-
+  const {session, isLoading}: any = useContext(AuthContext);
   const [confirmRemoveDriverText, setConfirmRemoveDriverText] = useState('');
   const [DriversList, setDriversList] = useState([]);
   const [refreshingDrivers, setRefreshingDrivers] = React.useState(false);
@@ -35,7 +35,9 @@ export const DriversScreen = () => {
   const onRefreshDrivers = React.useCallback(() => {
     setRefreshingDrivers(true);
     setTimeout(() => {
-      GetDrivers();
+      try {
+        GetDrivers(GetBusinessId(session));
+      } catch (error) {}
     }, 2000);
     setRefreshingDrivers(false);
   }, []);
@@ -50,7 +52,6 @@ export const DriversScreen = () => {
   const [showRemoveDriverDialog, setShowRemoveDriverDialog] =
     React.useState(false);
   const toast = useToast();
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
   const addDriverSchema = yup.object().shape({
     firstName: yup
@@ -103,7 +104,7 @@ export const DriversScreen = () => {
                 console.error(error);
                 ShowRemoveDriverToast(false);
               } else {
-                GetDrivers();
+                GetDrivers(GetBusinessId(authToken!));
                 setShowRemoveDriverDialog(false);
                 setShowDriverDetailsModal(false);
                 ShowRemoveDriverToast(true);
@@ -114,7 +115,7 @@ export const DriversScreen = () => {
       }
     },
   });
-  const GetDrivers = async () => {
+  const GetDrivers = async (businessId: string) => {
     return await GetDriversByBusinessId(
       businessId,
       (error: any, result: any) => {
@@ -153,9 +154,12 @@ export const DriversScreen = () => {
   };
 
   useEffect(() => {
-    GetDrivers();
-    new Auth().SetAuthentication(authToken!, auth, setAuth);
-  }, [authToken, auth]);
+    if (authToken !== null) {
+      console.log(GetBusinessId(authToken));
+      console.log(authToken);
+      GetDrivers(GetBusinessId(authToken));
+    }
+  }, [authToken]);
   return (
     <View style={{flex: 1}}>
       {DriversList[0] ? (

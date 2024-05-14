@@ -16,12 +16,16 @@ import {
   Modal,
   Image,
 } from '@gluestack-ui/themed';
-import {DriverDetailsModalProps} from '../../Props/ModalProps';
+import {
+  ClientDetailsModalProps,
+  DriverDetailsModalProps,
+} from '../../Props/ModalProps';
 import VehicleSelect from '../Cards/Select/VehicleSelect';
 import RemoveDriverAlert from '../Alerts/RemoveDriverAlert';
+import RemoveClientAlert from '../Alerts/RemoveClientAlert';
 const [data, setData] = React.useState([]);
 
-const DriverDetailsModal = (props: DriverDetailsModalProps) => {
+const ClientDetailsModal = (props: ClientDetailsModalProps) => {
   return (
     <View>
       <Modal
@@ -30,7 +34,7 @@ const DriverDetailsModal = (props: DriverDetailsModalProps) => {
         <ModalBackdrop />
         <ModalContent backgroundColor="#fff">
           <ModalHeader>
-            <Heading size="lg">Manage Driver</Heading>
+            <Heading size="lg">Manage Client</Heading>
             <ModalCloseButton>
               <Icon as={CloseIcon} />
             </ModalCloseButton>
@@ -39,10 +43,6 @@ const DriverDetailsModal = (props: DriverDetailsModalProps) => {
             <Image
               source={props.profilePictureUrl}
               alt="Profile picture image."
-            />
-            <VehicleSelect
-              data={data.length ? data : null}
-              currentVehicle={''}
             />
 
             <CustomFormControlInput
@@ -88,8 +88,8 @@ const DriverDetailsModal = (props: DriverDetailsModalProps) => {
               size="sm"
               action="negative"
               borderWidth="$0"
-              onPress={props.OpenRemoveDriverAlert}>
-              <ButtonText>Remove driver</ButtonText>
+              onPress={props.OpenRemoveClientAlert}>
+              <ButtonText>Remove client</ButtonText>
             </Button>
             <Button
               variant="solid"
@@ -103,29 +103,29 @@ const DriverDetailsModal = (props: DriverDetailsModalProps) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <RemoveDriverAlert
+      <RemoveClientAlert
         VerifyRemoveIsInvalid={
-          props.RemoveDriverAlertProps.VerifyRemoveIsInvalid
+          props.RemoveClientAlertProps.VerifyRemoveIsInvalid
         }
         VerifyRemoveOnChangeText={
-          props.RemoveDriverAlertProps.VerifyRemoveOnChangeText
+          props.RemoveClientAlertProps.VerifyRemoveOnChangeText
         }
         VerifyRemoveErrorText={
-          props.RemoveDriverAlertProps.VerifyRemoveErrorText
+          props.RemoveClientAlertProps.VerifyRemoveErrorText
         }
-        VerifyRemoveOnBlur={props.RemoveDriverAlertProps.VerifyRemoveOnBlur}
-        VerifyRemoveValue={props.RemoveDriverAlertProps.VerifyRemoveValue}
+        VerifyRemoveOnBlur={props.RemoveClientAlertProps.VerifyRemoveOnBlur}
+        VerifyRemoveValue={props.RemoveClientAlertProps.VerifyRemoveValue}
         RemoveDriverAlertIsOpen={
-          props.RemoveDriverAlertProps.RemoveDriverAlertIsOpen
+          props.RemoveClientAlertProps.RemoveClientAlertIsOpen
         }
-        HandleRemoveDriver={props.RemoveDriverAlertProps.HandleRemoveDriver}
-        CloseAlertOnPress={props.RemoveDriverAlertProps.CloseAlertOnPress}
+        HandleRemoveDriver={props.RemoveClientAlertProps.HandleRemoveClient}
+        CloseAlertOnPress={props.RemoveClientAlertProps.CloseAlertOnPress}
         RemoveDriverConfirmation={
-          props.RemoveDriverAlertProps.RemoveDriverConfirmation
+          props.RemoveClientAlertProps.RemoveClientConfirmation
         }
       />
     </View>
   );
 };
 
-export default DriverDetailsModal;
+export default ClientDetailsModal;

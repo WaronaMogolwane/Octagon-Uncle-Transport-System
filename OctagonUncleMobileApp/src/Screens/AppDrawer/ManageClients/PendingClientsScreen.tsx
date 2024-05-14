@@ -4,10 +4,6 @@ import {
   FlatList,
   Button,
   Text,
-  Fab,
-  FabIcon,
-  AddIcon,
-  FabLabel,
   AlertDialog,
   AlertDialogBackdrop,
   AlertDialogBody,
@@ -16,66 +12,62 @@ import {
   AlertDialogHeader,
   AlertDialogCloseButton,
   ButtonText,
-  CheckCircleIcon,
-  HStack,
   Heading,
   Icon,
   ButtonGroup,
   CloseIcon,
   ScrollView,
 } from '@gluestack-ui/themed';
-import * as yup from 'yup';
-import {useFormik} from 'formik';
 import {
   AuthContext,
   DeleteUserInvitation,
   GetInvitationsByBusinessIdUserRole,
 } from '../../../Services/AuthenticationService';
-import {UserInvitation} from '../../../Models/UserInvitation';
 import {PendingDriverListCard} from '../../../Components/Cards/DriverListCard';
+import {GetBusinessId} from '../../../Classes/Auth';
 const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
-export const PendingDriverscreen = () => {
-  const {createUserInvitation}: any = useContext(AuthContext);
+export const PendingClientsScreen = () => {
+  const {createUserInvitation, session}: any = useContext(AuthContext);
 
   const [CurrentInvitationId, setCurrentInvitationId] = useState('');
   const [CurrentInvitationFullName, setCurrentInvitationFullName] =
     useState('');
-  const [PendingDriversList, setPendingDriversList] = useState([]);
-  const [refreshingPendingDrivers, setRefreshingPendingDrivers] =
+  const [PendingClientsList, setPendingClientsList] = useState([]);
+  const [RefreshingPendingCliients, setRefreshingPendingCliients] =
     React.useState(false);
   const [showAlertDialog, setShowAlertDialog] = React.useState(false);
   const [showRemoveInviteAlertDialog, setShowRemoveInviteAlertDialog] =
     React.useState(false);
-  const onRefreshPendingDrivers = React.useCallback(() => {
-    setRefreshingPendingDrivers(true);
+  const onRefreshPendingClients = React.useCallback(() => {
+    setRefreshingPendingCliients(true);
 
     setTimeout(() => {
-      GetPendingDrivers();
+      GetPendingClients(GetBusinessId(session));
     }, 2000);
-    setRefreshingPendingDrivers(false);
+    setRefreshingPendingCliients(false);
   }, []);
   const RemoveInvitation = async (invitationId: string) => {
-    await DeleteUserInvitation(invitationId, 2, (error: any) => {
+    await DeleteUserInvitation(invitationId, 3, (error: any) => {
       if (error) {
-        setRefreshingPendingDrivers(false);
+        setRefreshingPendingCliients(false);
         console.error(error.response.data);
       } else {
-        GetPendingDrivers();
-        setRefreshingPendingDrivers(false);
+        GetPendingClients(GetBusinessId(session));
+        setRefreshingPendingCliients(false);
       }
     });
   };
 
-  const GetPendingDrivers = async () => {
+  const GetPendingClients = async (businessId: string) => {
     return await GetInvitationsByBusinessIdUserRole(
       businessId,
-      '2',
+      '3',
       (error: any, result: any) => {
         if (error) {
           console.error(error.response.data);
         } else {
-          setPendingDriversList(result.data);
+          setPendingClientsList(result.data);
         }
       },
     );
@@ -129,14 +121,16 @@ export const PendingDriverscreen = () => {
   };
 
   useEffect(() => {
-    GetPendingDrivers();
-  }, []);
+    if (session !== null) {
+      GetPendingClients(GetBusinessId(session));
+    }
+  }, [session]);
   return (
     <View style={{flex: 1}}>
-      {PendingDriversList[0] ? (
+      {PendingClientsList[0] ? (
         <FlatList
-          data={PendingDriversList}
-          extraData={PendingDriversList}
+          data={PendingClientsList}
+          extraData={PendingClientsList}
           renderItem={({item}: any) => (
             <PendingDriverListCard
               firstName={item.FirstName}
@@ -156,8 +150,8 @@ export const PendingDriverscreen = () => {
           keyExtractor={(item: any) => item.UserInvitationId}
           refreshControl={
             <RefreshControl
-              refreshing={refreshingPendingDrivers}
-              onRefresh={onRefreshPendingDrivers}
+              refreshing={RefreshingPendingCliients}
+              onRefresh={onRefreshPendingClients}
             />
           }
         />
@@ -165,8 +159,8 @@ export const PendingDriverscreen = () => {
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={refreshingPendingDrivers}
-              onRefresh={onRefreshPendingDrivers}
+              refreshing={RefreshingPendingCliients}
+              onRefresh={onRefreshPendingClients}
             />
           }>
           <Text>You currently have no pending driver invitations.</Text>

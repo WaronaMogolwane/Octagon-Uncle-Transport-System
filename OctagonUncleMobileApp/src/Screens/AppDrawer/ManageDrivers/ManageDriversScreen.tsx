@@ -32,7 +32,7 @@ import {
   ButtonGroup,
   CloseIcon,
 } from '@gluestack-ui/themed';
-import InvitationModal from '../../../Components/Modals/InvitationModal';
+import InvitationModal from '../../../Components/Modals/DriverInvitationModal';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
 import {
@@ -46,7 +46,7 @@ import {
   PendingDriverListCard,
   DriverListCard,
 } from '../../../Components/Cards/DriverListCard';
-import ManageDriverModal from '../../../Components/Modals/DriverDetailsModal';
+import DriverDetailsModal from '../../../Components/Modals/DriverDetailsModal';
 import {Vehicle} from '../../../Models/VehicleModel';
 import {PendingDriverscreen} from './PendingDriversScreen';
 import {DriversScreen} from './DriversScreen';

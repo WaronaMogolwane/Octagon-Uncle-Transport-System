@@ -13,10 +13,10 @@ import React, {useContext, useEffect, useState} from 'react';
 import {RefreshControl, View} from 'react-native';
 import * as yup from 'yup';
 import {DriverListCard} from '../../../Components/Cards/DriverListCard';
-import ManageDriverModal from '../../../Components/Modals/DriverDetailsModal';
+import DriverDetailsModal from '../../../Components/Modals/DriverDetailsModal';
 import {
   AuthContext,
-  DeleteDriverByUserIdAndRole,
+  DeleteUserByUserIdAndRole,
   GetDriversByBusinessId,
 } from '../../../Services/AuthenticationService';
 import {GestureResponderEvent} from 'react-native';
@@ -96,21 +96,17 @@ export const DriversScreen = () => {
           removeDriverFormik.values.confirmDriverName ===
           '{0} {1}'.format(currentDriver.FirstName, currentDriver.LastName)
         ) {
-          DeleteDriverByUserIdAndRole(
-            currentDriver.UserId,
-            '2',
-            (error: any) => {
-              if (error) {
-                console.error(error);
-                ShowRemoveDriverToast(false);
-              } else {
-                GetDrivers(GetBusinessId(authToken!));
-                setShowRemoveDriverDialog(false);
-                setShowDriverDetailsModal(false);
-                ShowRemoveDriverToast(true);
-              }
-            },
-          );
+          DeleteUserByUserIdAndRole(currentDriver.UserId, '2', (error: any) => {
+            if (error) {
+              console.error(error);
+              ShowRemoveDriverToast(false);
+            } else {
+              GetDrivers(GetBusinessId(authToken!));
+              setShowRemoveDriverDialog(false);
+              setShowDriverDetailsModal(false);
+              ShowRemoveDriverToast(true);
+            }
+          });
         }
       }
     },
@@ -202,7 +198,7 @@ export const DriversScreen = () => {
           <Text>You currently have no drivers. Invite a driver.</Text>
         </ScrollView>
       )}
-      <ManageDriverModal
+      <DriverDetailsModal
         profilePictureUrl="https://media.licdn.com/dms/image/C4D03AQFotIRK58pRNA/profile-displayphoto-shrink_200_200/0/1525163555622?e=2147483647&v=beta&t=lvummEevyaevcll0SjNg8UvthCNqz05ate3HonR4zfc"
         firstNameIsInvalid={!!formik.errors.firstName}
         firstNameOnChangeText={formik.handleChange('firstName')}

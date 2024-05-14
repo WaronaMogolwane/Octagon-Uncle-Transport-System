@@ -4,8 +4,9 @@ import {
   GetClientFromDatabase,
   DeleteClientFromDatabase,
   UpdateClientInDatabase,
-} from "../Data/ClientDAL";
-import { Client } from "../Models/Client";
+} from '../Data/ClientDAL';
+import {Client} from '../Models/Client';
+import {GetInvitationsByBusinessIdUserRole} from '../Services/AuthenticationService';
 
 export const AddClient = async (client: Client, uid: string) => {
   await AddClientToDatabase(client, uid);
@@ -25,4 +26,22 @@ export const DeleteClient = async (uid: string) => {
 
 export const UpdateClient = async (client: Client, uid: string) => {
   await UpdateClientInDatabase(client, uid);
+};
+
+export const GetClientsInvitation = async (
+  businessId: string,
+  userRole: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await GetInvitationsByBusinessIdUserRole(
+    businessId,
+    userRole,
+    (error: any, result: any) => {
+      if (error) {
+        callback(error.response.data, null);
+      } else {
+        callback(null, result.data);
+      }
+    },
+  );
 };

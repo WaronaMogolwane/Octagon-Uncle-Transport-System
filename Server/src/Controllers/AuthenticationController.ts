@@ -11,6 +11,7 @@ import {
   GetDriversByBusinessId,
   UpdateUserInvitationToUsed,
   UpdateUserToNotActive,
+  GetClientsByBusinessId,
 } from "../Models/AuthenticationModel";
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
@@ -279,6 +280,22 @@ export const GetBusinessDrivers = async (req, res, next) => {
     }
   });
 }
+export const GetBusinessClients = async (req, res, next) => {
+  let businessId = req.query.businessId;
+  await GetClientsByBusinessId(businessId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(400, error.message));
+    }
+    else {
+      if (result[0]) {
+        res.status(200).send(result[0]);
+      }
+      else {
+        res.status(400).send(new ErrorResponse(400, "No drivers found."));
+      }
+    }
+  });
+}
 export const RemoveUserInvitation = async (req, res, next) => {
   let userInviteId = req.body.UserInvitationId;
   let userRole = req.body.UserRole;
@@ -313,3 +330,5 @@ export const DeactivateUser = async (req, res, next) => {
     }
   });
 }
+export { GetClientsByBusinessId };
+

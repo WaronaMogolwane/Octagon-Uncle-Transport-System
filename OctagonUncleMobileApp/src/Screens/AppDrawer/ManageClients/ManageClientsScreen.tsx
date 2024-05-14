@@ -1,16 +1,8 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {
-  GestureResponderEvent,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {GestureResponderEvent} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {TripCardDriverSwipable} from '../../../Components/TripCardDriverSwipable';
 import {
-  Box,
-  FlatList,
   Button,
   Text,
   Fab,
@@ -23,34 +15,22 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogCloseButton,
   ButtonText,
   CheckCircleIcon,
   HStack,
   Heading,
   Icon,
-  ButtonGroup,
-  CloseIcon,
 } from '@gluestack-ui/themed';
-import InvitationModal from '../../../Components/Modals/InvitationModal';
+import InvitationModal from '../../../Components/Modals/DriverInvitationModal';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
-import {
-  AuthContext,
-  DeleteUserInvitation,
-  GetDriversByBusinessId,
-  GetInvitationsByBusinessIdUserRole,
-} from '../../../Services/AuthenticationService';
+import {AuthContext} from '../../../Services/AuthenticationService';
 import {UserInvitation} from '../../../Models/UserInvitation';
-import {
-  PendingDriverListCard,
-  DriverListCard,
-} from '../../../Components/Cards/DriverListCard';
-import ManageDriverModal from '../../../Components/Modals/DriverDetailsModal';
-import {Vehicle} from '../../../Models/VehicleModel';
-import {PendingDriverscreen} from './PendingClientsScreen';
-import {DriversScreen} from './ClientsScreen';
+import {ClientsScreen} from './ClientsScreen';
+import {PendingClientsScreen} from './PendingClientsScreen';
 import {GetDriverInvitation} from '../../../Controllers/DriverController';
+import {GetBusinessId} from '../../../Classes/Auth';
+import {GetClientsInvitation} from '../../../Controllers/ClientController';
 
 const ManageClientsScreen = ({navigation}: any) => {
   const {createUserInvitation, session}: any = useContext(AuthContext);
@@ -69,7 +49,7 @@ const ManageClientsScreen = ({navigation}: any) => {
   const southAfricanIdRegex: RegExp =
     /(([0-9]{2})(0|1)([0-9])([0-3])([0-9]))([ ]?)(([0-9]{4})([ ]?)([0-1][8]([ ]?)[0-9]))/;
 
-  const addDriverSchema = yup.object().shape({
+  const addClientSchema = yup.object().shape({
     firstName: yup
       .string()
       .min(2, 'First name too Short!')
@@ -82,50 +62,50 @@ const ManageClientsScreen = ({navigation}: any) => {
       .required('Required'),
     email: yup.string().email('Invalid email').required('Email is required'),
   });
-  const removeDriverSchema = yup.object().shape({
-    confirmDriverName: yup.string().required('Required'),
+  const removeClientSchema = yup.object().shape({
+    confirmClientName: yup.string().required('Required'),
   });
-  const registerRemoveDriverValues = {
-    confirmDriverName: '',
+  const registerRemoveClientValues = {
+    confirmClientName: '',
   };
-  const registerAddDriverValues = {
+  const registerAddClientValues = {
     firstName: '',
     lastName: '',
     email: '',
   };
-  const removeDriverFormik = useFormik({
-    initialValues: registerRemoveDriverValues,
-    validationSchema: removeDriverSchema,
+  const removeCleintFormik = useFormik({
+    initialValues: registerRemoveClientValues,
+    validationSchema: removeClientSchema,
     onSubmit: async values => {
-      if (removeDriverFormik.isValid && values.confirmDriverName === 'z') {
+      if (removeCleintFormik.isValid && values.confirmClientName === 'z') {
       }
     },
   });
-  const addDriverFormik = useFormik({
-    initialValues: registerAddDriverValues,
-    validationSchema: addDriverSchema,
+  const addClientFormik = useFormik({
+    initialValues: registerAddClientValues,
+    validationSchema: addClientSchema,
 
     onSubmit: async values => {
       let userInvitation: UserInvitation = {
-        businessId: businessId,
+        businessId: GetBusinessId(session),
         invitationCode: '',
-        firstName: addDriverFormik.values.firstName,
-        lastName: addDriverFormik.values.lastName,
-        userEmail: addDriverFormik.values.email,
-        userRole: '2',
+        firstName: addClientFormik.values.firstName,
+        lastName: addClientFormik.values.lastName,
+        userEmail: addClientFormik.values.email,
+        userRole: '3',
       };
-      if (addDriverFormik.isValid) {
+      if (addClientFormik.isValid) {
         await createUserInvitation(
           userInvitation,
           (error: any, result: any) => {
             if (error) {
-              console.error(error);
+              console.error(error.response.data);
             } else {
               setShowInvitationModal(false);
               setShowAlertDialog(true);
-              GetDriverInvitation(
-                businessId,
-                '2',
+              GetClientsInvitation(
+                GetBusinessId(session),
+                '3',
                 (error: any, result: any) => {
                   if (error) {
                   } else {
@@ -165,7 +145,7 @@ const ManageClientsScreen = ({navigation}: any) => {
           </AlertDialogHeader>
           <AlertDialogBody>
             <Text size="sm">
-              An invite code has been sent to {addDriverFormik.values.email}.
+              An invite code has been sent to {addClientFormik.values.email}.
               This invite will expire after 7 days.
             </Text>
           </AlertDialogBody>
@@ -176,7 +156,7 @@ const ManageClientsScreen = ({navigation}: any) => {
               action="secondary"
               mr={3}
               onPress={() => {
-                addDriverFormik.resetForm();
+                addClientFormik.resetForm();
                 setShowAlertDialog(false);
               }}>
               <ButtonText>Okay</ButtonText>
@@ -196,7 +176,7 @@ const ManageClientsScreen = ({navigation}: any) => {
         isDisabled={false}
         isPressed={false}>
         <FabIcon as={AddIcon} />
-        <FabLabel>Invite driver</FabLabel>
+        <FabLabel>Invite client</FabLabel>
       </Fab>
     );
   };
@@ -204,28 +184,28 @@ const ManageClientsScreen = ({navigation}: any) => {
   return (
     <NavigationContainer independent={true}>
       <Tab.Navigator>
-        <Tab.Screen name="Drivers" component={DriversScreen} />
-        <Tab.Screen name="Pending Drivers" component={PendingDriverscreen} />
+        <Tab.Screen name="Clients" component={ClientsScreen} />
+        <Tab.Screen name="Pending Clients" component={PendingClientsScreen} />
       </Tab.Navigator>
       <InvitationModal
-        firstNameIsInvalid={!!addDriverFormik.errors.firstName}
-        firstNameOnChangeText={addDriverFormik.handleChange('firstName')}
-        firstNameErrorText={addDriverFormik?.errors?.firstName}
-        firstNameOnBlur={addDriverFormik.handleBlur('firstName')}
-        firstNameValue={addDriverFormik.values?.firstName}
-        lastNameIsInvalid={!!addDriverFormik.errors.lastName}
-        lastNameOnChangeText={addDriverFormik.handleChange('lastName')}
-        lastNameErrorText={addDriverFormik?.errors?.lastName}
-        lastNameOnBlur={addDriverFormik.handleBlur('lastName')}
-        lastNameValue={addDriverFormik.values?.lastName}
-        emailIsInvalid={!!addDriverFormik.errors.email}
-        emailOnChangeText={addDriverFormik.handleChange('email')}
-        emailErrorText={addDriverFormik?.errors?.email}
-        emailOnBlur={addDriverFormik.handleBlur('email')}
-        emailValue={addDriverFormik.values?.email}
+        firstNameIsInvalid={!!addClientFormik.errors.firstName}
+        firstNameOnChangeText={addClientFormik.handleChange('firstName')}
+        firstNameErrorText={addClientFormik?.errors?.firstName}
+        firstNameOnBlur={addClientFormik.handleBlur('firstName')}
+        firstNameValue={addClientFormik.values?.firstName}
+        lastNameIsInvalid={!!addClientFormik.errors.lastName}
+        lastNameOnChangeText={addClientFormik.handleChange('lastName')}
+        lastNameErrorText={addClientFormik?.errors?.lastName}
+        lastNameOnBlur={addClientFormik.handleBlur('lastName')}
+        lastNameValue={addClientFormik.values?.lastName}
+        emailIsInvalid={!!addClientFormik.errors.email}
+        emailOnChangeText={addClientFormik.handleChange('email')}
+        emailErrorText={addClientFormik?.errors?.email}
+        emailOnBlur={addClientFormik.handleBlur('email')}
+        emailValue={addClientFormik.values?.email}
         ShowModal={showInvitationModal}
         SendInviteOnPress={
-          addDriverFormik.handleSubmit as (
+          addClientFormik.handleSubmit as (
             values:
               | GestureResponderEvent
               | React.FormEvent<HTMLFormElement>

@@ -27,43 +27,46 @@ import {RefreshControl, View} from 'react-native';
 import * as yup from 'yup';
 import {DriverListCard} from '../../../Components/Cards/DriverListCard';
 import {CustomFormControlInput} from '../../../Components/CustomFormInput';
-import ManageDriverModal from '../../../Components/Modals/DriverDetailsModal';
+import DriverDetailsModal from '../../../Components/Modals/DriverDetailsModal';
 import {
   AuthContext,
-  DeleteDriverByUserIdAndRole,
-  GetDriversByBusinessId,
+  DeleteUserByUserIdAndRole,
+  GetClientsByBusinessId,
 } from '../../../Services/AuthenticationService';
 import RemoveDriverAlert from '../../../Components/Alerts/RemoveDriverAlert';
 import {GestureResponderEvent} from 'react-native';
+import {GetBusinessId} from '../../../Classes/Auth';
+import ClientDetailsModal from '../../../Components/Modals/ClientDetailsModal';
+import {ClientListCard} from '../../../Components/Cards/ClientListCard';
 
-export const DriversScreen = () => {
+export const ClientsScreen = () => {
   const {createUserInvitation, session}: any = useContext(AuthContext);
 
   const [confirmRemoveDriverText, setConfirmRemoveDriverText] = useState('');
-  const [DriversList, setDriversList] = useState([]);
-  const [refreshingDrivers, setRefreshingDrivers] = React.useState(false);
+  const [ClientsList, setClientsList] = useState([]);
+  const [refreshingClients, setrefreshingClients] = React.useState(false);
 
-  const onRefreshDrivers = React.useCallback(() => {
-    setRefreshingDrivers(true);
+  const onRefreshClients = React.useCallback(() => {
+    setrefreshingClients(true);
     setTimeout(() => {
-      GetDrivers();
+      GetClients(GetBusinessId(session));
     }, 2000);
-    setRefreshingDrivers(false);
+    setrefreshingClients(false);
   }, []);
-  const [currentDriver, setCurrentDriver] = useState({
+  const [currentClient, setcurrentClient] = useState({
     UserId: '',
     FirstName: '',
     LastName: '',
     Email: '',
     RegistrationNumber: '',
   });
-  const [showDriverDetailsModal, setShowDriverDetailsModal] = useState(false);
-  const [showRemoveDriverDialog, setShowRemoveDriverDialog] =
+  const [showClientDetailsModal, setshowClientDetailsModal] = useState(false);
+  const [showRemoveClientDialog, setshowRemoveClientDialog] =
     React.useState(false);
   const toast = useToast();
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
-  const addDriverSchema = yup.object().shape({
+  const addClientSchema = yup.object().shape({
     firstName: yup
       .string()
       .min(2, 'First name too Short!')
@@ -77,15 +80,15 @@ export const DriversScreen = () => {
     email: yup.string().email('Invalid email').required('Email is required'),
   });
 
-  const registerAddDriverValues = {
+  const registerAddClientValues = {
     firstName: '',
     lastName: '',
     email: '',
   };
 
   const formik = useFormik({
-    initialValues: registerAddDriverValues,
-    validationSchema: addDriverSchema,
+    initialValues: registerAddClientValues,
+    validationSchema: addClientSchema,
 
     onSubmit: async () => {
       if (formik.isValid) {
@@ -93,7 +96,7 @@ export const DriversScreen = () => {
     },
   });
 
-  const removeDriverFormik = useFormik({
+  const removeClientFormik = useFormik({
     initialValues: {
       confirmDriverName: '',
     },
@@ -103,41 +106,37 @@ export const DriversScreen = () => {
     onSubmit: async () => {
       if (formik.isValid) {
         if (
-          removeDriverFormik.values.confirmDriverName ===
-          '{0} {1}'.format(currentDriver.FirstName, currentDriver.LastName)
+          removeClientFormik.values.confirmDriverName ===
+          '{0} {1}'.format(currentClient.FirstName, currentClient.LastName)
         ) {
-          DeleteDriverByUserIdAndRole(
-            currentDriver.UserId,
-            '2',
-            (error: any) => {
-              if (error) {
-                console.error(error);
-                ShowRemoveDriverToast(false);
-              } else {
-                GetDrivers();
-                setShowRemoveDriverDialog(false);
-                setShowDriverDetailsModal(false);
-                ShowRemoveDriverToast(true);
-              }
-            },
-          );
+          DeleteUserByUserIdAndRole(currentClient.UserId, '3', (error: any) => {
+            if (error) {
+              console.error(error);
+              ShowRemoveClientToast(false);
+            } else {
+              GetClients(GetBusinessId(session));
+              setshowRemoveClientDialog(false);
+              setshowClientDetailsModal(false);
+              ShowRemoveClientToast(true);
+            }
+          });
         }
       }
     },
   });
-  const GetDrivers = async () => {
-    return await GetDriversByBusinessId(
+  const GetClients = async (businessId: string) => {
+    return await GetClientsByBusinessId(
       businessId,
       (error: any, result: any) => {
         if (error) {
           console.error(error.response.data);
         } else {
-          setDriversList(result.data);
+          setClientsList(result.data);
         }
       },
     );
   };
-  const ShowRemoveDriverToast = (isSuccess: boolean) => {
+  const ShowRemoveClientToast = (isSuccess: boolean) => {
     toast.show({
       placement: 'top',
       render: ({id}) => {
@@ -146,7 +145,7 @@ export const DriversScreen = () => {
           <Toast nativeID={toastId} action="success" variant="solid">
             <VStack space="xs">
               <ToastTitle>Success</ToastTitle>
-              <ToastDescription>Driver successfully removed..</ToastDescription>
+              <ToastDescription>Client successfully removed..</ToastDescription>
             </VStack>
           </Toast>
         ) : (
@@ -154,7 +153,7 @@ export const DriversScreen = () => {
             <VStack space="xs">
               <ToastTitle>Failed</ToastTitle>
               <ToastDescription>
-                An error has occurred. The driver was not removed
+                An error has occurred. The client was not removed
               </ToastDescription>
             </VStack>
           </Toast>
@@ -164,36 +163,38 @@ export const DriversScreen = () => {
   };
 
   useEffect(() => {
-    GetDrivers();
-  }, []);
+    if (session !== null) {
+      GetClients(GetBusinessId(session));
+    }
+  }, [session]);
   return (
     <View style={{flex: 1}}>
-      {DriversList[0] ? (
+      {ClientsList[0] ? (
         <FlatList
           mt="$3"
-          data={DriversList}
-          extraData={DriversList}
+          data={ClientsList}
+          extraData={ClientsList}
           renderItem={({item}: any) => (
-            <DriverListCard
+            <ClientListCard
               firstName={item.FirstName}
               lastName={item.LastName}
               email={item.Email}
-              vehicleLicenseNumber={
+              numberOfPassengers={
                 item.RegistrationNumber
-                  ? item.RegistrationNumber
-                  : 'No vehicle linked.'
+                  ? item.NumberOfPassengers
+                  : 'No passengers added.'
               }
               handleDriverCardPress={() => {
-                setCurrentDriver(item);
-                setShowDriverDetailsModal(true);
+                setcurrentClient(item);
+                setshowClientDetailsModal(true);
               }}
             />
           )}
           keyExtractor={(item: any) => item.UserId}
           refreshControl={
             <RefreshControl
-              refreshing={refreshingDrivers}
-              onRefresh={onRefreshDrivers}
+              refreshing={refreshingClients}
+              onRefresh={onRefreshClients}
             />
           }
         />
@@ -201,59 +202,59 @@ export const DriversScreen = () => {
         <ScrollView
           refreshControl={
             <RefreshControl
-              refreshing={refreshingDrivers}
-              onRefresh={onRefreshDrivers}
+              refreshing={refreshingClients}
+              onRefresh={onRefreshClients}
             />
           }>
-          <Text>You currently have no drivers. Invite a driver.</Text>
+          <Text>You currently have no clients. Invite a new client.</Text>
         </ScrollView>
       )}
-      <ManageDriverModal
+      <ClientDetailsModal
         profilePictureUrl="https://media.licdn.com/dms/image/C4D03AQFotIRK58pRNA/profile-displayphoto-shrink_200_200/0/1525163555622?e=2147483647&v=beta&t=lvummEevyaevcll0SjNg8UvthCNqz05ate3HonR4zfc"
         firstNameIsInvalid={!!formik.errors.firstName}
         firstNameOnChangeText={formik.handleChange('firstName')}
         firstNameErrorText={formik?.errors?.firstName}
         firstNameOnBlur={formik.handleBlur('firstName')}
-        firstNameValue={currentDriver.FirstName}
+        firstNameValue={currentClient.FirstName}
         lastNameIsInvalid={!!formik.errors.lastName}
         lastNameOnChangeText={formik.handleChange('lastName')}
         lastNameErrorText={formik?.errors?.lastName}
         lastNameOnBlur={formik.handleBlur('lastName')}
-        lastNameValue={currentDriver.LastName}
+        lastNameValue={currentClient.LastName}
         emailIsInvalid={!!formik.errors.email}
         emailOnChangeText={formik.handleChange('email')}
         emailErrorText={formik?.errors?.email}
         emailOnBlur={formik.handleBlur('email')}
-        emailValue={currentDriver.Email}
-        vehicleLicenseNumber={currentDriver.RegistrationNumber}
-        ShowModal={showDriverDetailsModal}
-        OpenRemoveDriverAlert={() => {
-          setShowRemoveDriverDialog(true);
+        emailValue={currentClient.Email}
+        vehicleLicenseNumber={currentClient.RegistrationNumber}
+        ShowModal={showClientDetailsModal}
+        OpenRemoveClientAlert={() => {
+          setshowRemoveClientDialog(true);
         }}
         CloseOtpModalButtonOnPress={() => {
-          setShowDriverDetailsModal(false);
+          setshowClientDetailsModal(false);
         }}
-        RemoveDriverAlertProps={{
-          RemoveDriverAlertIsOpen: showRemoveDriverDialog,
-          VerifyRemoveIsInvalid: !!removeDriverFormik.errors.confirmDriverName,
+        RemoveClientAlertProps={{
+          RemoveClientAlertIsOpen: showRemoveClientDialog,
+          VerifyRemoveIsInvalid: !!removeClientFormik.errors.confirmDriverName,
           VerifyRemoveOnChangeText:
-            removeDriverFormik.handleChange('confirmDriverName'),
-          VerifyRemoveErrorText: removeDriverFormik?.errors?.confirmDriverName,
+            removeClientFormik.handleChange('confirmDriverName'),
+          VerifyRemoveErrorText: removeClientFormik?.errors?.confirmDriverName,
           VerifyRemoveOnBlur:
-            removeDriverFormik.handleBlur('confirmDriverName'),
-          VerifyRemoveValue: removeDriverFormik.values?.confirmDriverName,
-          RemoveDriverConfirmation: '{0} {1}'.format(
-            currentDriver.FirstName,
-            currentDriver.LastName,
+            removeClientFormik.handleBlur('confirmDriverName'),
+          VerifyRemoveValue: removeClientFormik.values?.confirmDriverName,
+          RemoveClientConfirmation: '{0} {1}'.format(
+            currentClient.FirstName,
+            currentClient.LastName,
           ),
-          HandleRemoveDriver: removeDriverFormik.handleSubmit as (
+          HandleRemoveClient: removeClientFormik.handleSubmit as (
             values:
               | GestureResponderEvent
               | React.FormEvent<HTMLFormElement>
               | undefined,
           ) => void,
           CloseAlertOnPress: () => {
-            setShowRemoveDriverDialog(false);
+            setshowRemoveClientDialog(false);
           },
         }}
       />

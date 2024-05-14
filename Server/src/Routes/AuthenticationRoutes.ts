@@ -4,6 +4,7 @@ import {
   CheckIfUserExists,
   DeactivateUser,
   GetBusinessDrivers,
+  GetBusinessClients,
   GetPendingInvitations,
   RegisterUser,
   RemoveUserInvitation,
@@ -38,6 +39,8 @@ router.get("/get-pending-invitations", GetPendingInvitations, async (req, res) =
 router.delete("/delete-user-invitation", RemoveUserInvitation, async (req, res) => {
 });
 router.get("/get-business-drivers", GetBusinessDrivers, async (req, res) => {
+});
+router.get("/get-business-clients", GetBusinessClients, async (req, res) => {
 });
 router.get("/", (req, res) => { });
 

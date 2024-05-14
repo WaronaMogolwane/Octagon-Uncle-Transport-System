@@ -33,11 +33,15 @@ import {
 } from '../../../Services/AuthenticationService';
 import {UserInvitation} from '../../../Models/UserInvitation';
 import {PendingDriverListCard} from '../../../Components/Cards/DriverListCard';
-const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+import {GetBusinessId} from '../../../Classes/Auth';
+import {useStorageState} from '../../../Services/StorageStateService';
+// const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
 export const PendingDriverscreen = () => {
   const {createUserInvitation}: any = useContext(AuthContext);
-
+  const [[tokenIsLoading, authToken], setAuthToken] =
+    useStorageState('authToken');
+  const {session, isLoading}: any = useContext(AuthContext);
   const [CurrentInvitationId, setCurrentInvitationId] = useState('');
   const [CurrentInvitationFullName, setCurrentInvitationFullName] =
     useState('');
@@ -51,7 +55,10 @@ export const PendingDriverscreen = () => {
     setRefreshingPendingDrivers(true);
 
     setTimeout(() => {
-      GetPendingDrivers();
+      try {
+        GetPendingDrivers(GetBusinessId(session));
+        console.log(PendingDriversList);
+      } catch (error) {}
     }, 2000);
     setRefreshingPendingDrivers(false);
   }, []);
@@ -61,13 +68,13 @@ export const PendingDriverscreen = () => {
         setRefreshingPendingDrivers(false);
         console.error(error.response.data);
       } else {
-        GetPendingDrivers();
+        GetPendingDrivers(GetBusinessId(session));
         setRefreshingPendingDrivers(false);
       }
     });
   };
 
-  const GetPendingDrivers = async () => {
+  const GetPendingDrivers = async (businessId: string) => {
     return await GetInvitationsByBusinessIdUserRole(
       businessId,
       '2',
@@ -129,8 +136,10 @@ export const PendingDriverscreen = () => {
   };
 
   useEffect(() => {
-    GetPendingDrivers();
-  }, []);
+    if (session !== null) {
+      GetPendingDrivers(GetBusinessId(session));
+    }
+  }, [session, PendingDriversList]);
   return (
     <View style={{flex: 1}}>
       {PendingDriversList[0] ? (

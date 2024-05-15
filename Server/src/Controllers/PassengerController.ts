@@ -62,14 +62,14 @@ export const GetPassenger = async (req: any, res: any, next: any) => {
 
 export const UpdatePassengerDetail = async (req: any, res: any, next: any) => {
   let passenger = new Passenger(
-    req.body.passenger.PassengerId,
-    req.body.passenger.FirstName,
-    req.body.passenger.LastName,
-    req.body.passenger.Age,
-    req.body.passenger.HomeAddress,
-    req.body.passenger.DestinationAddress,
-    req.body.passenger.ParentId,
-    req.body.passenger.BusinessId
+    req.body.params.PassengerId,
+    req.body.params.FirstName,
+    req.body.params.LastName,
+    req.body.params.Age,
+    req.body.params.HomeAddress,
+    req.body.params.DestinationAddress,
+    req.body.params.ParentId,
+    req.body.params.BusinessId
   );
   await UpdatePassenger(passenger, (error, result) => {
     if (error) {
@@ -115,7 +115,7 @@ export const UpdatePassengerIsAssigned = async (
 };
 
 export const GetPassengersByParent = async (req: any, res: any, next: any) => {
-  let parentId = req.body.passenger.ParentId;
+  let parentId = req.query.ParentId;
 
   await GetAllPassengersByParentId(parentId, (error, result) => {
     if (error) {

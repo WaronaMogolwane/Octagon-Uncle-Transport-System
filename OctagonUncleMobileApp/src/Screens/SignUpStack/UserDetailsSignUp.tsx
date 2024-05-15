@@ -38,7 +38,7 @@ export default function UserDetailSignUp({navigation}: any) {
     await AddUserDetail(userDetail)
       .then((r: any) => {
         if (r == 200) {
-          //On success this cofe runs
+          //On success this code runs
           formik.resetForm();
           //navigation.push('Home');
           navigation.navigate('Home');
@@ -133,7 +133,7 @@ export default function UserDetailSignUp({navigation}: any) {
             <Image
               size="xl"
               alt="Logo of Company"
-              borderRadius="$lg"
+              $xs-borderRadius="$lg"
               source={{
                 uri: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
               }}

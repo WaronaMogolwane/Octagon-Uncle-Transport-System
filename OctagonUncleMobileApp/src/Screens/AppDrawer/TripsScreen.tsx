@@ -213,7 +213,7 @@ const TripsScreen = ({navigation}: any) => {
 
   //Gets all upcoming Trips for all roles
   const GetUpcomingTrips = async () => {
-    if (tempRole == 2) {
+    if (tempRole == 3) {
       return await GetUpcomingTripsForClient(tempUserId).then(trip => {
         if (trip.length == 0) {
           setShowNoFutureTripText(true);
@@ -221,7 +221,7 @@ const TripsScreen = ({navigation}: any) => {
           setUpcomingTripList(trip);
         }
       });
-    } else if (tempRole == 3) {
+    } else if (tempRole == 2) {
       return await GetUpcomingTripsForDriver(tempUserId).then(trip => {
         if (trip.length == 0) {
           setShowNoFutureTripText(true);
@@ -242,7 +242,7 @@ const TripsScreen = ({navigation}: any) => {
 
   //Gets all past Trips for all roles
   const GetPastTrips = async () => {
-    if (tempRole == 2) {
+    if (tempRole == 3) {
       return await GetPastTripsForClient(tempUserId).then(trip => {
         if (trip.length == 0) {
           setShowNoPastTripText(true);
@@ -250,7 +250,7 @@ const TripsScreen = ({navigation}: any) => {
           setPastTripList(trip);
         }
       });
-    } else if (tempRole == 3) {
+    } else if (tempRole == 2) {
       return await GetPastTripsForDriver(tempUserId).then(trip => {
         if (trip.length == 0) {
           setShowNoPastTripText(true);
@@ -372,7 +372,7 @@ const TripsScreen = ({navigation}: any) => {
 
   //Contains Upcoming Flatlist for all roles
   function FirstRoute() {
-    if (tempRole == 2) {
+    if (tempRole == 3) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoFutureTripText ? EmtpyFlatListText() : null}
@@ -389,7 +389,7 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 3) {
+    } else if (tempRole == 2) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoFutureTripText ? EmtpyFlatListText() : null}
@@ -423,7 +423,7 @@ const TripsScreen = ({navigation}: any) => {
   }
   //Contains Past Flatlist for all roles
   function SecondRoute() {
-    if (tempRole == 2) {
+    if (tempRole == 3) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoPastTripText ? EmtpyFlatListText() : null}
@@ -440,7 +440,7 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 3) {
+    } else if (tempRole == 2) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoPastTripText ? EmtpyFlatListText() : null}

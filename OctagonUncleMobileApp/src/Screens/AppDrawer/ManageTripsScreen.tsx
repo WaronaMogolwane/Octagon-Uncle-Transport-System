@@ -1,6 +1,6 @@
 import {FlatList, RefreshControl, View} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {VehicleCard} from '../../Components/VehicleCard';
+import React, {useContext, useEffect, useState} from 'react';
+import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
 import {
   useToast,
@@ -10,10 +10,18 @@ import {
   ToastTitle,
 } from '@gluestack-ui/themed';
 import {useGlobalState} from '../../State';
+import {GetBusinessId} from '../../Classes/Auth';
+import {AuthContext} from '../../Services/AuthenticationService';
 
 const ManageTripsScreen = ({navigation}: any) => {
+  const {createUserInvitation, session}: any = useContext(AuthContext);
+
   //const businessId = '018f2940-e67c-78f3-8f22-400d7f0672b2';
-  const [businessId, x] = useGlobalState('businessId');
+  //const [businessId, x] = useGlobalState('businessId');
+  const businessId =
+    GetBusinessId(session) == null
+      ? '018f2940-e67c-78f3-8f22-400d7f0672b2'
+      : GetBusinessId(session);
 
   const toast = useToast();
 

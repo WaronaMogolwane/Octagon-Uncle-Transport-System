@@ -1,6 +1,6 @@
 import {FlatList, RefreshControl} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {VehicleCard} from '../../Components/VehicleCard';
+import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
 
 const TripTransporter = ({navigation}: any) => {

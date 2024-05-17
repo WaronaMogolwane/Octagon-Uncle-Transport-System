@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {TripCardDriverSwipable} from '../../../Components/TripCardDriverSwipable';
+import {TripCardDriverSwipable} from '../../../Components/Cards/TripListCardForDriverSwipable';
 import {
   Box,
   FlatList,

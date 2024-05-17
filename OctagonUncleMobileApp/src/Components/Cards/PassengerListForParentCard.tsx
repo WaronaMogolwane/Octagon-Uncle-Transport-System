@@ -5,8 +5,8 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import COLORS from '../Const/colors';
-import {TripCardParentStyles} from '../Stylesheets/GlobalStyles';
+import COLORS from '../../Const/colors';
+import {TripCardParentStyles} from '../../Stylesheets/GlobalStyles';
 
 type PassengerParentCardCardProps = {
   firstName: string;

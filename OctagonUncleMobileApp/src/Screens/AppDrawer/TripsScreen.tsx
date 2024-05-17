@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, RefreshControl, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {TripCardParent} from '../../Components/TripCardParent';
+import {TripCardParent} from '../../Components/Cards/TripListForParentCard';
 import {
   EndTrip,
   GetPastTripsForClient,
@@ -15,9 +15,9 @@ import {
   SetTripPickUpTime,
   UpdatePassengerStatus,
 } from '../../Controllers/TripController';
-import {TripCardDriverSwipable} from '../../Components/TripCardDriverSwipable';
+import {TripCardDriverSwipable} from '../../Components/Cards/TripListCardForDriverSwipable';
 import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
-import {TripCardDriver} from '../../Components/TripCardDriver';
+import {TripCardDriver} from '../../Components/Cards/TripListCardForDriver';
 import {
   useToast,
   Toast,
@@ -28,16 +28,23 @@ import {
   ArrowLeftIcon,
   Text,
 } from '@gluestack-ui/themed';
-import {VehicleCard} from '../../Components/VehicleCard';
+import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
 import {GetDriverId} from '../../Controllers/DriverVehicleLinkingController.tsx';
 import {useGlobalState} from '../../State';
+import {AuthContext} from '../../Services/AuthenticationService';
+import {GetUserId, GetUserRole} from '../../Classes/Auth';
 
 const TripsScreen = ({navigation}: any) => {
+  const {createUserInvitation, session}: any = useContext(AuthContext);
+
   const Tab = createMaterialTopTabNavigator();
 
-  const [userId, x] = useGlobalState('userId');
-  const [role, y] = useGlobalState('role');
+  const userId =
+    GetUserId(session) == null
+      ? 'c7728615-394f-466b-833e-ea9dd60ba836'
+      : GetUserId(session);
+  const role = GetUserRole(session) == null ? 2 : Number(GetUserRole(session));
 
   const [tempUserId, setTempUserId] = useState(userId);
 
@@ -482,7 +489,7 @@ const TripsScreen = ({navigation}: any) => {
       {GoBackFab()}
       {tempRole != 1 ? (
         <Tab.Navigator>
-          <Tab.Screen name="Upcoming Trps" component={FirstRoute} />
+          <Tab.Screen name="Upcoming Trips" component={FirstRoute} />
           <Tab.Screen name="Past Trips" component={SecondRoute} />
         </Tab.Navigator>
       ) : (

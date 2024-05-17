@@ -2,10 +2,12 @@ import {
   AddPassengerToDatabase,
   GetPassengerFromDatabase,
   DeletePassengerFromDatabase,
-  GetAllPassengerForBusinessFromDB,
+  GetActivePassengerForBusinessFromDB,
   UpdateIsAssignedInDB,
   UpdatePassengerInDatabase,
   GetParentPassengersFromDB,
+  GetAllPassengerForBusinessFromDB,
+  GetPendingPassengerForBusinessFromDB,
 } from '../Data/PassengerDAL';
 import {Passenger} from '../Models/Passenger';
 
@@ -19,6 +21,14 @@ export const GetPassenger = async (passengerId: string, uid: string) => {
 
 export const GetParentPassengers = async (parentId: string) => {
   return await GetParentPassengersFromDB(parentId);
+};
+
+export const GetAllActivePassengerForBusiness = async (businessId: string) => {
+  return GetActivePassengerForBusinessFromDB(businessId);
+};
+
+export const GetAllPendingPassengerForBusiness = async (businessId: string) => {
+  return GetPendingPassengerForBusinessFromDB(businessId);
 };
 
 export const GetAllPassengerForBusiness = async (businessId: string) => {

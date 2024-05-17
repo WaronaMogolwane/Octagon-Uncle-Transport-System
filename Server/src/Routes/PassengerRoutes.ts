@@ -6,6 +6,8 @@ import {
   GetPassenger,
   UpdatePassengerDetail,
   UpdatePassengerIsAssigned,
+  GetAllPassengersByBusiness,
+  GetPendingPassengersByBusiness,
 } from "../Controllers/PassengerController";
 
 const router = Router();
@@ -38,8 +40,16 @@ router.get(
   async (req, res, next) => {}
 );
 
-// router.delete("/delete-account", (req, res) => { });
-// router.patch("/edit-profile", (req, res) => { });
-// router.get("/profile", (req, res) => { });
+router.get(
+  "/get-all-passengers-for-business",
+  GetAllPassengersByBusiness,
+  async (req, res, next) => {}
+);
+
+router.get(
+  "/get-pending-passengers-for-business",
+  GetPendingPassengersByBusiness,
+  async (req, res, next) => {}
+);
 
 export default router;

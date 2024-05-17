@@ -1,19 +1,22 @@
 import {
   FlatList,
   GestureResponderEvent,
+  RefreshControl,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useGlobalState} from '../../State';
 import {
   AddPassenger,
+  GetAllPassengerForBusiness,
+  GetAllPendingPassengerForBusiness,
   GetParentPassengers,
   UpdatePassenger,
 } from '../../Controllers/PassengerController';
 import {CustomButton1} from '../../Components/Buttons';
-import {PassengerParentCard} from '../../Components/PassengerParentCard';
+import {PassengerParentCard} from '../../Components/Cards/PassengerListForParentCard';
 import {
   Modal,
   ModalBackdrop,
@@ -34,20 +37,34 @@ import {
   ToastDescription,
   ToastTitle,
   VStack,
+  Fab,
+  FabLabel,
+  FabIcon,
+  ArrowLeftIcon,
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
 import {AddPassengerForm} from '../../Components/Forms/AddPassengerForm';
 import {Passenger} from '../../Models/Passenger';
 import {CustomFormControlInput} from '../../Components/CustomFormInput';
+import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
+import {NavigationContainer} from '@react-navigation/native';
+import {GetUserId, GetUserRole} from '../../Classes/Auth';
+import {AuthContext} from '../../Services/AuthenticationService';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {TripCardDriver} from '../../Components/Cards/TripListCardForDriver';
+import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
+import {TripCardParent} from '../../Components/Cards/TripListForParentCard';
+import {TripCardDriverSwipable} from '../../Components/Cards/TripListCardForDriverSwipable';
+import PassengerListAllCard from '../../Components/Cards/PassngerListForTransporterCard';
+import PassengerListPendingCard from '../../Components/Cards/PassengerListPendingCard';
 
 const ManagePassengerScreen = ({navigation}: any) => {
-  //   const [userId, x] = useGlobalState('userId');
-  //   const [role, y] = useGlobalState('role');
-  //   const [businessId, z] = useGlobalState('businessId');
+  const {createUserInvitation, session}: any = useContext(AuthContext);
+
+  const Tab = createMaterialTopTabNavigator();
 
   const [passengerList, setPassengerList] = useState([]);
-  const [statusCode, setStatusCode] = useState(false);
   const [showPModal, setShowPModal] = useState(false);
   const [showCard, setShowCard] = useState(false);
   const [update, setUpdate] = useState(false);
@@ -58,26 +75,102 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [age, setAge] = useState('');
   const [homeAddress, setHomeAddress] = useState('');
   const [destinationAddress, setDestinationAddress] = useState('');
-  //const [isActive, setIsActive] = useState('');
   const [isActiveText, setIsActiveText] = useState('');
 
   const ref = React.useRef(null);
   const toast = useToast();
 
+  const [allPassengers, setAllPassengers] = useState([]);
+  const [allPendingPassengers, setPendingPassengers] = useState([]);
+
+  const [statusCode, setStatusCode] = useState(true);
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const [noPassenger, setNoPassenger] = useState(false);
+  const [noPendingPassenger, setNoPendingPassenger] = useState(false);
+
+  // const userId =
+  //   GetUserId(session) == null
+  //     ? 'c7728615-394f-466b-833e-ea9dd60ba836'
+  //     : GetUserId(session);
+  // const businessId =
+  //   GetUserId(session) == null
+  //     ? 'w8728321-394f-466b-833e-ea9dd60ba000'
+  //     : GetUserId(session);
+  // const role = GetUserRole(session) == null ? 2 : Number(GetUserRole(session));
+
   const userId = 'c7728615-394f-466b-833e-ea9dd60ba836';
-  const role = 3;
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+  const role: number = 3;
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+
+    setTimeout(() => {
+      GetPassengers();
+    }, 2000);
+
+    setRefreshing(false);
+  }, []);
 
   useEffect(() => {
     GetPassengers();
   }, []);
 
   const GetPassengers = async () => {
-    await GetParentPassengers(userId).then((result: any) => {
-      setPassengerList(result);
-      setStatusCode(!statusCode);
-    });
+    if (role == 1) {
+      //Transporter
+      await GetAllPassengerForBusiness(businessId).then((result: any) => {
+        if (result.length != 0) {
+          setNoPassenger(false);
+          setAllPassengers(result);
+          setStatusCode(!statusCode);
+        } else {
+          setNoPassenger(true);
+        }
+      });
+      await GetAllPendingPassengerForBusiness(businessId).then(
+        (result: any) => {
+          if (result.length != 0) {
+            setNoPendingPassenger(false);
+            setPendingPassengers(result);
+            setStatusCode(!statusCode);
+          } else {
+            setNoPendingPassenger(true);
+          }
+        },
+      );
+    } else if (role == 3) {
+      //Parent
+      await GetParentPassengers(userId).then((result: any) => {
+        if (result.length != 0) {
+          setNoPassenger(false);
+          setPassengerList(result);
+          setStatusCode(!statusCode);
+        } else {
+          setNoPassenger(true);
+        }
+      });
+    }
   };
+
+  const renderItemComponentAllPassengers = (itemData: any) => (
+    <PassengerListAllCard
+      passengerName={itemData.passengerName}
+      pickUpLocation={itemData.pickUpLocation}
+      isActive={itemData.isActive}
+      onPress={() => {}}
+    />
+  );
+
+  const renderItemComponentPendingPassengers = (itemData: any) => (
+    <PassengerListPendingCard
+      passengerName={itemData.passengerName}
+      pickUpLocation={itemData.pickUpLocation}
+      isActive={itemData.isActive}
+      onPress={() => {}}
+    />
+  );
 
   const UpdatePassengerDetails = async (values: any) => {
     const updatePassenger = new Passenger(
@@ -472,33 +565,136 @@ const ManagePassengerScreen = ({navigation}: any) => {
     },
   });
 
+  //Empty flatlist text is defined
+  const EmtpyFlatListText = () => {
+    return (
+      <View>
+        <Text>You currently have no trips.</Text>
+      </View>
+    );
+  };
+
+  //Empty flatlist text is defined
+  const EmtpyPassengerFlatListText = () => {
+    return (
+      <View>
+        <Text>You currently have no trips.</Text>
+      </View>
+    );
+  };
+
+  //This is where the Toast is defined
+  const ShowToast = () => {
+    const toast = useToast();
+
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        return (
+          <Toast nativeID={id} variant="accent" action="error">
+            <ToastTitle>Something went wrong, please try again</ToastTitle>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  //Handles FAB onPress
+  const HandleBackFabPress = () => {
+    navigation.goBack();
+  };
+
+  //Defines the FAB
+  const GoBackFab = () => {
+    return (
+      <Fab
+        onPress={HandleBackFabPress}
+        size="sm"
+        placement="bottom right"
+        isHovered={false}
+        isDisabled={false}
+        isPressed={false}>
+        <FabIcon as={ArrowLeftIcon} mr="$1" />
+        <FabLabel>Back</FabLabel>
+      </Fab>
+    );
+  };
+
+  //Contains Upcoming Flatlist for all roles
+  function FirstRoute() {
+    return (
+      <View style={{flex: 1}}>
+        <View style={FlatlistStyles.container}>
+          {noPassenger ? EmtpyFlatListText() : null}
+          <FlatList
+            data={allPassengers}
+            extraData={statusCode}
+            renderItem={({item}) => renderItemComponentAllPassengers(item)}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          />
+        </View>
+      </View>
+    );
+  }
+
+  //Contains Past Flatlist for all roles
+  function SecondRoute() {
+    return (
+      <View style={{flex: 1}}>
+        <View style={FlatlistStyles.container}>
+          {noPendingPassenger ? EmtpyPassengerFlatListText() : null}
+          <FlatList
+            data={allPendingPassengers}
+            extraData={statusCode}
+            renderItem={({item}) => renderItemComponentPendingPassengers(item)}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          />
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <View style={{flex: 1}}>
-      <View>
-        <Text>ManagePassengerScreen</Text>
-        {showPassengerCard()}
-      </View>
-      <View>
-        <CustomButton1
-          onPress={() => {
-            setShowPModal(true);
-          }}
-          title="Create Passenger"
-        />
-      </View>
-      <View>{showPopUp()}</View>
-      <View>{showUpdatePopUp()}</View>
-      <View>
-        <FlatList
-          data={passengerList}
-          extraData={statusCode}
-          renderItem={({item}) => renderItemComponentPassengers(item)}
-        />
-      </View>
-    </View>
+    <NavigationContainer independent={true}>
+      {GoBackFab()}
+      {role == 1 ? (
+        <Tab.Navigator>
+          <Tab.Screen name="All Passengers" component={FirstRoute} />
+          <Tab.Screen name="Pending Removals" component={SecondRoute} />
+        </Tab.Navigator>
+      ) : (
+        <View style={{flex: 1}}>
+          <View>
+            <Text>ManagePassengerScreen</Text>
+            {showPassengerCard()}
+          </View>
+          <View>
+            <CustomButton1
+              onPress={() => {
+                setShowPModal(true);
+              }}
+              title="Create Passenger"
+            />
+          </View>
+          <View>{showPopUp()}</View>
+          <View>{showUpdatePopUp()}</View>
+
+          <View>
+            {noPassenger ? EmtpyPassengerFlatListText() : null}
+            <FlatList
+              data={passengerList}
+              extraData={statusCode}
+              renderItem={({item}) => renderItemComponentPassengers(item)}
+            />
+          </View>
+        </View>
+      )}
+    </NavigationContainer>
   );
 };
 
 export default ManagePassengerScreen;
-
-const styles = StyleSheet.create({});

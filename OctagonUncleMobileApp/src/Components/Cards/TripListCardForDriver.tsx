@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 
-import {TripCardDriverStyles} from '../Stylesheets/GlobalStyles';
+import {TripCardDriverStyles} from '../../Stylesheets/GlobalStyles';
 
 type tripCardProps = {
   passengerName: string;

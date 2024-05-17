@@ -6,7 +6,7 @@ import {
   ThemeStyles,
 } from '../../Stylesheets/GlobalStyles';
 import {
-  GetAllPassengerForBusiness,
+  GetAllActivePassengerForBusiness,
   UpdateIsAssigned,
 } from '../../Controllers/PassengerController';
 import {CustomButton1} from '../../Components/Buttons';
@@ -47,18 +47,16 @@ import {
   UpdatePassengerSchedule,
 } from '../../Controllers/PassengerScheduleController';
 import {PassengerSchedule} from '../../Models/PassengerSchedule';
-import {Auth} from '../../Classes/Auth';
+import {Auth, GetBusinessId} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {useStorageState} from '../../Services/StorageStateService';
 import {useGlobalState} from '../../State';
-import {PassengerCard} from '../../Components/PassengerCard';
+import {PassengerCard} from '../../Components/Cards/PassengerListCard';
 
 const AssignPassengerScreen = ({route, navigation}: any) => {
-  const initialState = [''];
+  const {createUserInvitation, session}: any = useContext(AuthContext);
 
-  const [[tokenIsLoading, authToken], setAuthToken] =
-    useStorageState('authToken');
-  const [auth, setAuth] = useState<Auth>();
+  const initialState = [''];
 
   const [newPassengerId, setNewPassengerId] = useState('');
   const [isFocus, setIsFocus] = useState(false);
@@ -91,10 +89,11 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const toast = useToast();
 
   const vehicleId = route.params.vehicleId;
-  //const vehicleId = '281';
-  //const businessId = '018f2940-e67c-78f3-8f22-400d7f0672b2';
-  const [businessId, x] = useGlobalState('businessId');
-  //const parentId = 'c7728615-394f-466b-833e-ea9dd60ba836';
+
+  const businessId =
+    GetBusinessId(session) == null
+      ? '018f2940-e67c-78f3-8f22-400d7f0672b2'
+      : GetBusinessId(session);
 
   useEffect(() => {
     GetPassengers();
@@ -103,7 +102,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const defaultData: never[] = [];
 
   const GetPassengers = async () => {
-    GetAllPassengerForBusiness(businessId).then((response: any) => {
+    GetAllActivePassengerForBusiness(businessId).then((response: any) => {
       if (response.code != 'ERR_BAD_REQUEST') {
         setIsDisabled(false);
         setPassengers(response);

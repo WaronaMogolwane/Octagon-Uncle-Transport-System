@@ -36,7 +36,9 @@ export const GetPassengerFromDatabase = async (
   uid: string,
 ) => {};
 
-export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
+export const GetActivePassengerForBusinessFromDB = async (
+  businessId: string,
+) => {
   let result: any;
   const tripData: {}[] = [];
   let passsengers = {};
@@ -47,6 +49,88 @@ export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
         BusinessId: businessId,
       },
     })
+    .then((response: any) => {
+      let res = [...response.data.result];
+
+      res.forEach(data => {
+        passsengers = {
+          passengerId: data.PassengerId,
+          passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
+          editedName: `${data.FirstName} ${data.LastName}`,
+          age: data.Age,
+          homeAddress: data.HomeAddress,
+          destinationAddress: data.DestinationAddress,
+          parentId: data.ParentId,
+        };
+
+        tripData.push(passsengers);
+      });
+
+      result = tripData;
+    })
+    .catch((error: any) => {
+      result = error;
+    });
+
+  return result;
+};
+
+export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
+  let result: any;
+  const tripData: {}[] = [];
+  let passsengers = {};
+
+  await axios
+    .get(
+      `${SERVER_HOST}:${SERVER_PORT}/passenger/get-all-passengers-for-business`,
+      {
+        params: {
+          BusinessId: businessId,
+        },
+      },
+    )
+    .then((response: any) => {
+      let res = [...response.data.result];
+
+      res.forEach(data => {
+        passsengers = {
+          passengerId: data.PassengerId,
+          passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
+          editedName: `${data.FirstName} ${data.LastName}`,
+          age: data.Age,
+          homeAddress: data.HomeAddress,
+          destinationAddress: data.DestinationAddress,
+          parentId: data.ParentId,
+        };
+
+        tripData.push(passsengers);
+      });
+
+      result = tripData;
+    })
+    .catch((error: any) => {
+      result = error;
+    });
+
+  return result;
+};
+
+export const GetPendingPassengerForBusinessFromDB = async (
+  businessId: string,
+) => {
+  let result: any;
+  const tripData: {}[] = [];
+  let passsengers = {};
+
+  await axios
+    .get(
+      `${SERVER_HOST}:${SERVER_PORT}/passenger/get-pending-passengers-for-business`,
+      {
+        params: {
+          BusinessId: businessId,
+        },
+      },
+    )
     .then((response: any) => {
       let res = [...response.data.result];
 

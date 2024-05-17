@@ -99,7 +99,7 @@ export const UpdateIsAssigned = async (
   );
 };
 
-export const GetAllPassengersByBusinessId = async (
+export const GetActivePassengersByBusinessId = async (
   businessId: string,
   callback: (error, result) => void
 ) => {
@@ -128,6 +128,46 @@ export const GetAllPassengersByParentId = async (
       sql: "call GetPassengerByParentId(?)",
       timeout: 40000,
       values: [ParentId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const GetAllPassengersByBusinessId = async (
+  businessId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "call GetPassengerAllByBusinessId(?)",
+      timeout: 40000,
+      values: [businessId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const GetPendingPassengersByBusinessId = async (
+  businessId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "call GetPassengersPendingForBusiness(?)",
+      timeout: 40000,
+      values: [businessId],
     },
     function (error, results, fields) {
       if (error) {

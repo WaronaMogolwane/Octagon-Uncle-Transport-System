@@ -153,6 +153,10 @@ export const UserLogin = async (req, res, next) => {
       next(new ErrorResponse(400, error.message));
     } else {
       if (result[0][0]) {
+        req.body.UserId = result[0][0].UserId;
+        req.body.BusinessId = result[0][0].BusinessId;
+        req.body.UserRole = result[0][0].UserRole;
+        req.body.Email = result[0][0].Email;
         req.body.successMessage = "User successfully logged in.";
         next();
       } else {

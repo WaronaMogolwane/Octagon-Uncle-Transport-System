@@ -23,7 +23,7 @@ import {
 import VehicleSelect from '../Cards/Select/VehicleSelect';
 import RemoveDriverAlert from '../Alerts/RemoveDriverAlert';
 import RemoveClientAlert from '../Alerts/RemoveClientAlert';
-const [data, setData] = React.useState([]);
+const data: any = [];
 
 const ClientDetailsModal = (props: ClientDetailsModalProps) => {
   return (

@@ -63,7 +63,7 @@ export default function UserDetailSignUp({navigation}: any) {
           });
         }
       })
-      .catch(error => console.log(error));
+      .catch(error => console.error(error));
   };
 
   const userDetailSchema = yup.object().shape({

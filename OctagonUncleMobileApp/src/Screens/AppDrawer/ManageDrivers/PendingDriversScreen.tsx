@@ -4,10 +4,6 @@ import {
   FlatList,
   Button,
   Text,
-  Fab,
-  FabIcon,
-  AddIcon,
-  FabLabel,
   AlertDialog,
   AlertDialogBackdrop,
   AlertDialogBody,
@@ -16,49 +12,40 @@ import {
   AlertDialogHeader,
   AlertDialogCloseButton,
   ButtonText,
-  CheckCircleIcon,
-  HStack,
   Heading,
   Icon,
   ButtonGroup,
   CloseIcon,
   ScrollView,
 } from '@gluestack-ui/themed';
-import * as yup from 'yup';
-import {useFormik} from 'formik';
 import {
   AuthContext,
   DeleteUserInvitation,
   GetInvitationsByBusinessIdUserRole,
 } from '../../../Services/AuthenticationService';
-import {UserInvitation} from '../../../Models/UserInvitation';
 import {PendingDriverListCard} from '../../../Components/Cards/DriverListCard';
-import {GetBusinessId} from '../../../Classes/Auth';
-import {useStorageState} from '../../../Services/StorageStateService';
-// const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+import {Auth} from '../../../Classes/Auth';
 
 export const PendingDriverscreen = () => {
-  const {createUserInvitation}: any = useContext(AuthContext);
-  const [[tokenIsLoading, authToken], setAuthToken] =
-    useStorageState('authToken');
   const {session, isLoading}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
   const [CurrentInvitationId, setCurrentInvitationId] = useState('');
   const [CurrentInvitationFullName, setCurrentInvitationFullName] =
     useState('');
   const [PendingDriversList, setPendingDriversList] = useState([]);
   const [refreshingPendingDrivers, setRefreshingPendingDrivers] =
-    React.useState(false);
-  const [showAlertDialog, setShowAlertDialog] = React.useState(false);
+    useState(false);
   const [showRemoveInviteAlertDialog, setShowRemoveInviteAlertDialog] =
-    React.useState(false);
+    useState(false);
   const onRefreshPendingDrivers = React.useCallback(() => {
     setRefreshingPendingDrivers(true);
 
     setTimeout(() => {
       try {
-        GetPendingDrivers(GetBusinessId(session));
-        console.log(PendingDriversList);
-      } catch (error) {}
+        GetPendingDrivers(auth.GetBusinessId());
+      } catch (error) {
+        console.error(error);
+      }
     }, 2000);
     setRefreshingPendingDrivers(false);
   }, []);
@@ -68,7 +55,7 @@ export const PendingDriverscreen = () => {
         setRefreshingPendingDrivers(false);
         console.error(error.response.data);
       } else {
-        GetPendingDrivers(GetBusinessId(session));
+        GetPendingDrivers(auth.GetBusinessId());
         setRefreshingPendingDrivers(false);
       }
     });
@@ -137,9 +124,9 @@ export const PendingDriverscreen = () => {
 
   useEffect(() => {
     if (session !== null) {
-      GetPendingDrivers(GetBusinessId(session));
+      GetPendingDrivers(auth.GetBusinessId());
     }
-  }, [session, PendingDriversList]);
+  }, [session]);
   return (
     <View style={{flex: 1}}>
       {PendingDriversList[0] ? (
@@ -153,7 +140,6 @@ export const PendingDriverscreen = () => {
               email={item.Email}
               expiryDate={item.ExpiryDate}
               removeButtonOnPress={() => {
-                setCurrentInvitationId;
                 setCurrentInvitationId(item.UserInvitationId);
                 setCurrentInvitationFullName(
                   item.FirstName + ' ' + item.LastName,

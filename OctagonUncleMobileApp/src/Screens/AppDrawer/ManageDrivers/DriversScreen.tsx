@@ -20,23 +20,17 @@ import {
   GetDriversByBusinessId,
 } from '../../../Services/AuthenticationService';
 import {GestureResponderEvent} from 'react-native';
-import {useStorageState} from '../../../Services/StorageStateService';
-import {Auth, GetBusinessId} from '../../../Classes/Auth';
-import {AuthenticationResponseModel} from '../../../Models/AuthenticationResponseModel';
+import {Auth} from '../../../Classes/Auth';
 export const DriversScreen = () => {
-  const auth = new Auth();
-  const [[tokenIsLoading, authToken], setAuthToken] =
-    useStorageState('authToken');
   const {session, isLoading}: any = useContext(AuthContext);
-  const [confirmRemoveDriverText, setConfirmRemoveDriverText] = useState('');
+  const [auth, setAuth] = useState(new Auth(session));
   const [DriversList, setDriversList] = useState([]);
   const [refreshingDrivers, setRefreshingDrivers] = React.useState(false);
-
   const onRefreshDrivers = React.useCallback(() => {
     setRefreshingDrivers(true);
     setTimeout(() => {
       try {
-        GetDrivers(GetBusinessId(session));
+        GetDrivers(auth.GetBusinessId());
       } catch (error) {}
     }, 2000);
     setRefreshingDrivers(false);
@@ -101,7 +95,7 @@ export const DriversScreen = () => {
               console.error(error);
               ShowRemoveDriverToast(false);
             } else {
-              GetDrivers(GetBusinessId(authToken!));
+              GetDrivers(auth.GetBusinessId());
               setShowRemoveDriverDialog(false);
               setShowDriverDetailsModal(false);
               ShowRemoveDriverToast(true);
@@ -116,7 +110,7 @@ export const DriversScreen = () => {
       businessId,
       (error: any, result: any) => {
         if (error) {
-          console.error(error.response.data);
+          console.error(error);
         } else {
           setDriversList(result.data);
         }
@@ -150,12 +144,8 @@ export const DriversScreen = () => {
   };
 
   useEffect(() => {
-    if (authToken !== null) {
-      console.log(GetBusinessId(authToken));
-      console.log(authToken);
-      GetDrivers(GetBusinessId(authToken));
-    }
-  }, [authToken]);
+    GetDrivers(auth.GetBusinessId());
+  }, [auth]);
   return (
     <View style={{flex: 1}}>
       {DriversList[0] ? (

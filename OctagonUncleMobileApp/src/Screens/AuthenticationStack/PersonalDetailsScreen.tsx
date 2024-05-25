@@ -30,10 +30,10 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
   const [[isLoading, session], setSession] = useStorageState('session');
   const {SetSession}: any = useContext(AuthContext);
 
-  const [auth, setAuth] = useState<Auth | null>(null);
+  const [auth, setAuth] = useState(new Auth(sessionId));
   const toast = useToast();
   //const userId = 'c7728615-394f-466b-833e-ea9dd60ba836';
-  const userId = auth?.GetSession(authToken!).UserId!;
+  const userId = auth.GetUserId();
   const userDetailHelper = async (values: any) => {
     let userDetail = new UserDetail(
       '',
@@ -136,9 +136,6 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
       await userDetailHelper(values);
     },
   });
-  useEffect(() => {
-    new Auth().SetAuthentication(authToken!, auth, setAuth);
-  }, [authToken]);
   return (
     <ScrollView>
       <SafeAreaView style={ThemeStyles.container}>

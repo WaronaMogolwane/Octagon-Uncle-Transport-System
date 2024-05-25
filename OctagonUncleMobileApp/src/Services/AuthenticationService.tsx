@@ -298,7 +298,6 @@ export const DeleteUserInvitation = async (
   userRole: number,
   callback: (error: any, result: any) => void,
 ) => {
-  console.log(userInvitationId, userRole);
   await axios
     .delete(`${SERVER_HOST}:${SERVER_PORT}/auth/delete-user-invitation`, {
       data: {

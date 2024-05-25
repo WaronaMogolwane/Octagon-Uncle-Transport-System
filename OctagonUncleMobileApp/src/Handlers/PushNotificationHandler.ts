@@ -65,7 +65,7 @@ export const ConfigurePushNotifications = () => {
     PushNotification.configure({
         // (optional) Called when Token is generated (iOS and Android)
         onRegister: function (token) {
-            console.info("TOKEN:", token);
+            console.info("PUSH NOTIFICATION TOKEN:", token);
         },
 
         // (required) Called when a remote is received or opened, or local notification is opened
@@ -94,7 +94,7 @@ export const ConfigurePushNotifications = () => {
             // process the action
         },
         onRemoteFetch(notificationData) {
-            console.log("remore fetch" + notificationData);
+            //console.log("remore fetch" + notificationData);
         },
 
 

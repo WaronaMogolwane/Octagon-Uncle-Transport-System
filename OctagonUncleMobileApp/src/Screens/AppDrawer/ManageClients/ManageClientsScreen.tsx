@@ -28,27 +28,15 @@ import {AuthContext} from '../../../Services/AuthenticationService';
 import {UserInvitation} from '../../../Models/UserInvitation';
 import {ClientsScreen} from './ClientsScreen';
 import {PendingClientsScreen} from './PendingClientsScreen';
-import {GetDriverInvitation} from '../../../Controllers/DriverController';
-import {GetBusinessId} from '../../../Classes/Auth';
 import {GetClientsInvitation} from '../../../Controllers/ClientController';
+import {Auth} from '../../../Classes/Auth';
+import ClientInvitationModal from '../../../Components/Modals/ClientInvitationModal';
 
 const ManageClientsScreen = ({navigation}: any) => {
   const {createUserInvitation, session}: any = useContext(AuthContext);
   const [showAlertDialog, setShowAlertDialog] = React.useState(false);
   const [showInvitationModal, setShowInvitationModal] = useState(false);
-  const [currentDriver, setCurrentDriver] = useState({
-    FirstName: '',
-    LastName: '',
-    Email: '',
-    RegistrationNumber: '',
-  });
-  const [showDriverDetailsModal, setShowDriverDetailsModal] = useState(false);
-
-  const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836 ';
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  const southAfricanIdRegex: RegExp =
-    /(([0-9]{2})(0|1)([0-9])([0-3])([0-9]))([ ]?)(([0-9]{4})([ ]?)([0-1][8]([ ]?)[0-9]))/;
-
+  const [auth, setAuth] = useState(new Auth(session));
   const addClientSchema = yup.object().shape({
     firstName: yup
       .string()
@@ -87,7 +75,7 @@ const ManageClientsScreen = ({navigation}: any) => {
 
     onSubmit: async values => {
       let userInvitation: UserInvitation = {
-        businessId: GetBusinessId(session),
+        businessId: auth.GetBusinessId(),
         invitationCode: '',
         firstName: addClientFormik.values.firstName,
         lastName: addClientFormik.values.lastName,
@@ -104,7 +92,7 @@ const ManageClientsScreen = ({navigation}: any) => {
               setShowInvitationModal(false);
               setShowAlertDialog(true);
               GetClientsInvitation(
-                GetBusinessId(session),
+                auth.GetBusinessId(),
                 '3',
                 (error: any, result: any) => {
                   if (error) {
@@ -166,7 +154,7 @@ const ManageClientsScreen = ({navigation}: any) => {
       </AlertDialog>
     );
   };
-  const InviteDriverFab = () => {
+  const InviteClientFab = () => {
     return (
       <Fab
         onPress={ShowInvitationModal}
@@ -187,7 +175,7 @@ const ManageClientsScreen = ({navigation}: any) => {
         <Tab.Screen name="Clients" component={ClientsScreen} />
         <Tab.Screen name="Pending Clients" component={PendingClientsScreen} />
       </Tab.Navigator>
-      <InvitationModal
+      <ClientInvitationModal
         firstNameIsInvalid={!!addClientFormik.errors.firstName}
         firstNameOnChangeText={addClientFormik.handleChange('firstName')}
         firstNameErrorText={addClientFormik?.errors?.firstName}
@@ -216,7 +204,7 @@ const ManageClientsScreen = ({navigation}: any) => {
           setShowInvitationModal(false);
         }}
       />
-      <InviteDriverFab />
+      <InviteClientFab />
       <InvitationAlert />
     </NavigationContainer>
   );

@@ -19,7 +19,7 @@ import {
 import {DriverDetailsModalProps} from '../../Props/ModalProps';
 import VehicleSelect from '../Cards/Select/VehicleSelect';
 import RemoveDriverAlert from '../Alerts/RemoveDriverAlert';
-const [data, setData] = React.useState([]);
+const data: any = [];
 
 const DriverDetailsModal = (props: DriverDetailsModalProps) => {
   return (

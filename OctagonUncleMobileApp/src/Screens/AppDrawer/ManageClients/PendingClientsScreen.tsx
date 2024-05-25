@@ -24,26 +24,24 @@ import {
   GetInvitationsByBusinessIdUserRole,
 } from '../../../Services/AuthenticationService';
 import {PendingDriverListCard} from '../../../Components/Cards/DriverListCard';
-import {GetBusinessId} from '../../../Classes/Auth';
-const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+import {Auth} from '../../../Classes/Auth';
 
 export const PendingClientsScreen = () => {
-  const {createUserInvitation, session}: any = useContext(AuthContext);
-
+  const {session}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
   const [CurrentInvitationId, setCurrentInvitationId] = useState('');
   const [CurrentInvitationFullName, setCurrentInvitationFullName] =
     useState('');
   const [PendingClientsList, setPendingClientsList] = useState([]);
   const [RefreshingPendingCliients, setRefreshingPendingCliients] =
     React.useState(false);
-  const [showAlertDialog, setShowAlertDialog] = React.useState(false);
   const [showRemoveInviteAlertDialog, setShowRemoveInviteAlertDialog] =
     React.useState(false);
   const onRefreshPendingClients = React.useCallback(() => {
     setRefreshingPendingCliients(true);
 
     setTimeout(() => {
-      GetPendingClients(GetBusinessId(session));
+      GetPendingClients(auth.GetBusinessId());
     }, 2000);
     setRefreshingPendingCliients(false);
   }, []);
@@ -53,7 +51,7 @@ export const PendingClientsScreen = () => {
         setRefreshingPendingCliients(false);
         console.error(error.response.data);
       } else {
-        GetPendingClients(GetBusinessId(session));
+        GetPendingClients(auth.GetBusinessId());
         setRefreshingPendingCliients(false);
       }
     });
@@ -122,7 +120,7 @@ export const PendingClientsScreen = () => {
 
   useEffect(() => {
     if (session !== null) {
-      GetPendingClients(GetBusinessId(session));
+      GetPendingClients(auth.GetBusinessId());
     }
   }, [session]);
   return (

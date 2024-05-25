@@ -1,18 +1,5 @@
 import {
-  AlertDialog,
-  AlertDialogBackdrop,
-  AlertDialogBody,
-  AlertDialogCloseButton,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  Button,
-  ButtonGroup,
-  ButtonText,
-  CloseIcon,
   FlatList,
-  Heading,
-  Icon,
   ScrollView,
   Text,
   Toast,
@@ -25,31 +12,26 @@ import {useFormik} from 'formik';
 import React, {useContext, useEffect, useState} from 'react';
 import {RefreshControl, View} from 'react-native';
 import * as yup from 'yup';
-import {DriverListCard} from '../../../Components/Cards/DriverListCard';
-import {CustomFormControlInput} from '../../../Components/CustomFormInput';
-import DriverDetailsModal from '../../../Components/Modals/DriverDetailsModal';
 import {
   AuthContext,
   DeleteUserByUserIdAndRole,
   GetClientsByBusinessId,
 } from '../../../Services/AuthenticationService';
-import RemoveDriverAlert from '../../../Components/Alerts/RemoveDriverAlert';
 import {GestureResponderEvent} from 'react-native';
-import {GetBusinessId} from '../../../Classes/Auth';
 import ClientDetailsModal from '../../../Components/Modals/ClientDetailsModal';
 import {ClientListCard} from '../../../Components/Cards/ClientListCard';
+import {Auth} from '../../../Classes/Auth';
 
 export const ClientsScreen = () => {
-  const {createUserInvitation, session}: any = useContext(AuthContext);
+  const {session}: any = useContext(AuthContext);
 
-  const [confirmRemoveDriverText, setConfirmRemoveDriverText] = useState('');
   const [ClientsList, setClientsList] = useState([]);
   const [refreshingClients, setrefreshingClients] = React.useState(false);
-
+  const [auth, setAuth] = useState(new Auth(session));
   const onRefreshClients = React.useCallback(() => {
     setrefreshingClients(true);
     setTimeout(() => {
-      GetClients(GetBusinessId(session));
+      GetClients(auth.GetBusinessId());
     }, 2000);
     setrefreshingClients(false);
   }, []);
@@ -64,7 +46,6 @@ export const ClientsScreen = () => {
   const [showRemoveClientDialog, setshowRemoveClientDialog] =
     React.useState(false);
   const toast = useToast();
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
   const addClientSchema = yup.object().shape({
     firstName: yup
@@ -114,7 +95,7 @@ export const ClientsScreen = () => {
               console.error(error);
               ShowRemoveClientToast(false);
             } else {
-              GetClients(GetBusinessId(session));
+              GetClients(auth.GetBusinessId());
               setshowRemoveClientDialog(false);
               setshowClientDetailsModal(false);
               ShowRemoveClientToast(true);
@@ -164,7 +145,7 @@ export const ClientsScreen = () => {
 
   useEffect(() => {
     if (session !== null) {
-      GetClients(GetBusinessId(session));
+      GetClients(auth.GetBusinessId());
     }
   }, [session]);
   return (

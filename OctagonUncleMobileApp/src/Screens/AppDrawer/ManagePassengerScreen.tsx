@@ -10,6 +10,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {useGlobalState} from '../../State';
 import {
   AddPassenger,
+  DeletePassenger,
   GetAllPassengerForBusiness,
   GetAllPendingPassengerForBusiness,
   GetParentPassengers,
@@ -30,6 +31,8 @@ import {
   ModalFooter,
   ButtonText,
   Button,
+  ButtonIcon,
+  AddIcon,
   Input,
   InputField,
   useToast,
@@ -41,21 +44,23 @@ import {
   FabLabel,
   FabIcon,
   ArrowLeftIcon,
+  TrashIcon,
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
 import {AddPassengerForm} from '../../Components/Forms/AddPassengerForm';
 import {Passenger} from '../../Models/Passenger';
 import {CustomFormControlInput} from '../../Components/CustomFormInput';
-import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
+import {
+  AssignPassengerScreenStyles,
+  FlatlistStyles,
+  ManagePassengerScreenStyles,
+} from '../../Stylesheets/GlobalStyles';
+import {Dropdown} from 'react-native-element-dropdown';
 import {NavigationContainer} from '@react-navigation/native';
 import {GetUserId, GetUserRole} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {TripCardDriver} from '../../Components/Cards/TripListCardForDriver';
-import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
-import {TripCardParent} from '../../Components/Cards/TripListForParentCard';
-import {TripCardDriverSwipable} from '../../Components/Cards/TripListCardForDriverSwipable';
 import PassengerListAllCard from '../../Components/Cards/PassngerListForTransporterCard';
 import PassengerListPendingCard from '../../Components/Cards/PassengerListPendingCard';
 
@@ -70,15 +75,18 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [update, setUpdate] = useState(false);
 
   const [passengerId, setPassengerId] = useState('');
+  const [parentName, setParentName] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [age, setAge] = useState('');
   const [homeAddress, setHomeAddress] = useState('');
   const [destinationAddress, setDestinationAddress] = useState('');
+  const [isActive, setIsActive] = useState('');
   const [isActiveText, setIsActiveText] = useState('');
 
   const ref = React.useRef(null);
   const toast = useToast();
+  const [isFocus, setIsFocus] = useState(false);
 
   const [allPassengers, setAllPassengers] = useState([]);
   const [allPendingPassengers, setPendingPassengers] = useState([]);
@@ -88,6 +96,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
 
   const [noPassenger, setNoPassenger] = useState(false);
   const [noPendingPassenger, setNoPendingPassenger] = useState(false);
+
+  const [showPassengerSummary, setShowPassengerSummary] = useState(false);
+  const [showButton, setShowButton] = useState(false);
+  const [showreason, setShowReason] = useState(true);
 
   // const userId =
   //   GetUserId(session) == null
@@ -102,6 +114,16 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const userId = 'c7728615-394f-466b-833e-ea9dd60ba836';
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
   const role: number = 3;
+
+  const defaultReasons = [
+    {
+      id: 0,
+      reasonString:
+        'I made an error and need to re-enter the passenger detals.',
+    },
+    {id: 1, reasonString: 'I need to update old informaation'},
+    {id: 2, reasonString: 'other'},
+  ];
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -157,18 +179,39 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const renderItemComponentAllPassengers = (itemData: any) => (
     <PassengerListAllCard
       passengerName={itemData.passengerName}
-      pickUpLocation={itemData.pickUpLocation}
+      pickUpLocation={itemData.homeAddress}
       isActive={itemData.isActive}
-      onPress={() => {}}
+      onPress={() => {
+        setPassengerId(itemData.passengerId);
+        setFirstName(itemData.passengerFirstName);
+        setLastName(itemData.passengerLastName);
+        setAge(itemData.age.toString());
+        setHomeAddress(itemData.homeAddress);
+        setDestinationAddress(itemData.destinationAddress);
+        setParentName(itemData.parentName);
+        setIsActiveText(itemData.isActivetext);
+        setShowPassengerSummary(true);
+      }}
     />
   );
 
   const renderItemComponentPendingPassengers = (itemData: any) => (
     <PassengerListPendingCard
       passengerName={itemData.passengerName}
-      pickUpLocation={itemData.pickUpLocation}
+      parentName={itemData.parentName}
       isActive={itemData.isActive}
-      onPress={() => {}}
+      onPress={() => {
+        setPassengerId(itemData.passengerId);
+        setFirstName(itemData.passengerFirstName);
+        setLastName(itemData.passengerLastName);
+        setAge(itemData.age.toString());
+        setHomeAddress(itemData.homeAddress);
+        setDestinationAddress(itemData.destinationAddress);
+        setParentName(itemData.parentName);
+        setIsActiveText(itemData.isActivetext);
+        setShowPassengerSummary(true);
+        setShowButton(true);
+      }}
     />
   );
 
@@ -259,7 +302,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
     />
   );
 
-  const showPopUp = () => {
+  const showPopUpModal = () => {
     return (
       <Modal
         isOpen={showPModal}
@@ -319,7 +362,226 @@ const ManagePassengerScreen = ({navigation}: any) => {
     );
   };
 
-  const showUpdatePopUp = () => {
+  const showReasonModal = () => {
+    return (
+      <Modal
+        isOpen={showreason}
+        onClose={() => {
+          setShowReason(false);
+        }}
+        finalFocusRef={ref}>
+        <ModalBackdrop />
+        <ModalContent>
+          <ModalHeader>
+            <Heading size="lg">Delete Request</Heading>
+            <ModalCloseButton>
+              <Icon as={CloseIcon} />
+            </ModalCloseButton>
+          </ModalHeader>
+          <ModalBody>
+            <View>
+              <Text>
+                Please selct a the most appropriate reason you are requesting to
+                be deleted.
+              </Text>
+            </View>
+            <View style={{marginTop: 15}}>
+              <Dropdown
+                style={[
+                  AssignPassengerScreenStyles.dropdown,
+                  isFocus && {borderColor: 'blue'},
+                ]}
+                placeholderStyle={AssignPassengerScreenStyles.placeholderStyle}
+                selectedTextStyle={
+                  AssignPassengerScreenStyles.selectedTextStyle
+                }
+                inputSearchStyle={AssignPassengerScreenStyles.inputSearchStyle}
+                iconStyle={AssignPassengerScreenStyles.iconStyle}
+                data={defaultReasons}
+                search
+                maxHeight={300}
+                labelField="reasonString"
+                valueField="id"
+                placeholder={!isFocus ? 'Select reason of deletion' : '...'}
+                searchPlaceholder="Select..."
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
+                onChange={(item: any) => {
+                  // setNewPassengerId(item.passengerId);
+                  // setpassengerName(item.editedName);
+                  console.log(item.reasonString);
+                  setIsFocus(false);
+                }}
+              />
+            </View>
+          </ModalBody>
+          <ModalFooter>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+              }}>
+              <View style={{padding: 5}}>
+                <Button
+                  size="md"
+                  variant="solid"
+                  action="secondary"
+                  isDisabled={false}
+                  isFocusVisible={false}
+                  onPress={() => {
+                    setShowReason(false);
+                  }}>
+                  <ButtonIcon as={ArrowLeftIcon} />
+                  <ButtonText>Back</ButtonText>
+                </Button>
+              </View>
+              <View style={{padding: 5}}>
+                <Button
+                  size="md"
+                  variant="solid"
+                  action="negative"
+                  isDisabled={false}
+                  isFocusVisible={false}
+                  onPress={() => {}}>
+                  <ButtonIcon as={TrashIcon} />
+                  <ButtonText>Delete</ButtonText>
+                </Button>
+              </View>
+            </View>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    );
+  };
+
+  const showPassengerSummaryModal = () => {
+    return (
+      <Modal
+        isOpen={showPassengerSummary}
+        onClose={() => {
+          setShowPassengerSummary(false);
+          setShowButton(false);
+        }}
+        finalFocusRef={ref}>
+        <ModalBackdrop />
+        <ModalContent>
+          <ModalHeader>
+            <Heading size="lg">Passenger Summary</Heading>
+            <ModalCloseButton>
+              <Icon as={CloseIcon} />
+            </ModalCloseButton>
+          </ModalHeader>
+          <ModalBody>
+            <View>
+              <VStack>
+                <CustomFormControlInput
+                  labelText="Parent Name"
+                  isInvalid={false}
+                  isDisabled={true}
+                  type="text"
+                  value={parentName}
+                  isRequired={false}
+                />
+                <CustomFormControlInput
+                  labelText="Child Firstname"
+                  isInvalid={false}
+                  isDisabled={true}
+                  type="text"
+                  value={firstName}
+                  isRequired={false}
+                />
+
+                <CustomFormControlInput
+                  labelText="Child Lastname"
+                  isInvalid={false}
+                  isDisabled={true}
+                  type="text"
+                  value={lastName}
+                  isRequired={false}
+                />
+                <CustomFormControlInput
+                  labelText="Age"
+                  isInvalid={false}
+                  isDisabled={true}
+                  type="text"
+                  value={age}
+                  isRequired={false}
+                />
+                <CustomFormControlInput
+                  labelText="Home Address"
+                  isInvalid={false}
+                  isDisabled={true}
+                  type="text"
+                  value={homeAddress}
+                  isRequired={false}
+                />
+
+                <CustomFormControlInput
+                  labelText="Destination Address"
+                  isInvalid={false}
+                  isDisabled={true}
+                  type="text"
+                  value={destinationAddress}
+                  isRequired={false}
+                />
+
+                <CustomFormControlInput
+                  labelText="Active Status"
+                  isInvalid={false}
+                  isDisabled={true}
+                  type="text"
+                  value={isActiveText}
+                  isRequired={false}
+                />
+
+                {showButton ? (
+                  <CustomButton1
+                    title={'Comfirm'}
+                    onPress={() => {
+                      DeletePassenger(passengerId).then((result: any) => {
+                        if (result[1] == 200) {
+                          GetPassengers();
+                          setShowButton(false);
+                          setShowPassengerSummary(false);
+                        } else {
+                          //Something went wrong
+                          const ShowToast = () => {
+                            toast.show({
+                              placement: 'top',
+                              render: ({id}) => {
+                                const toastId = 'toast-' + id;
+                                return (
+                                  <Toast
+                                    nativeID={toastId}
+                                    action="error"
+                                    variant="solid">
+                                    <VStack space="xs">
+                                      <ToastTitle>
+                                        Something went wrong
+                                      </ToastTitle>
+                                      <ToastDescription>
+                                        Something went wrong please try again.
+                                      </ToastDescription>
+                                    </VStack>
+                                  </Toast>
+                                );
+                              },
+                            });
+                          };
+                        }
+                      });
+                    }}
+                  />
+                ) : null}
+              </VStack>
+            </View>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    );
+  };
+
+  const showUpdatePopUpModal = () => {
     return (
       <Modal
         isOpen={update}
@@ -385,7 +647,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
     );
   };
 
-  const showPassengerCard = () => {
+  const showPassengerCardModal = () => {
     return (
       <Modal
         isOpen={showCard}
@@ -459,13 +721,22 @@ const ManagePassengerScreen = ({navigation}: any) => {
                   // }}
                 />
 
-                <CustomButton1
-                  title={'Edit Passenger'}
-                  onPress={() => {
-                    setUpdate(true);
-                    setShowCard(false);
-                  }}
-                />
+                <View style={{padding: 10}}>
+                  <CustomButton1
+                    title={'Edit Passenger'}
+                    onPress={() => {
+                      setUpdate(true);
+                      setShowCard(false);
+                    }}
+                  />
+                  <CustomButton1
+                    title={'Delete Passenger'}
+                    onPress={() => {
+                      //setUpdate(true);
+                      setShowReason(true);
+                    }}
+                  />
+                </View>
               </VStack>
             </View>
           </ModalBody>
@@ -625,6 +896,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
     return (
       <View style={{flex: 1}}>
         <View style={FlatlistStyles.container}>
+          <View>{showPassengerSummaryModal()}</View>
           {noPassenger ? EmtpyFlatListText() : null}
           <FlatList
             data={allPassengers}
@@ -644,6 +916,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
     return (
       <View style={{flex: 1}}>
         <View style={FlatlistStyles.container}>
+          <View>{showPassengerSummaryModal()}</View>
           {noPendingPassenger ? EmtpyPassengerFlatListText() : null}
           <FlatList
             data={allPendingPassengers}
@@ -669,8 +942,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
       ) : (
         <View style={{flex: 1}}>
           <View>
-            <Text>ManagePassengerScreen</Text>
-            {showPassengerCard()}
+            <Text style={ManagePassengerScreenStyles.headingText}>
+              Add and view your passengers below.
+            </Text>
+            {showPassengerCardModal()}
           </View>
           <View>
             <CustomButton1
@@ -680,9 +955,9 @@ const ManagePassengerScreen = ({navigation}: any) => {
               title="Create Passenger"
             />
           </View>
-          <View>{showPopUp()}</View>
-          <View>{showUpdatePopUp()}</View>
-
+          <View>{showPopUpModal()}</View>
+          <View>{showReasonModal()}</View>
+          <View>{showUpdatePopUpModal()}</View>
           <View>
             {noPassenger ? EmtpyPassengerFlatListText() : null}
             <FlatList

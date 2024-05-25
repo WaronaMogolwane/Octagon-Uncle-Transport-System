@@ -95,12 +95,19 @@ export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
       res.forEach(data => {
         passsengers = {
           passengerId: data.PassengerId,
-          passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
-          editedName: `${data.FirstName} ${data.LastName}`,
+          passengerFirstName: data.PassengerFirstName,
+          passengerLastName: data.PassengerLastName,
+          passengerName: `${data.PassengerFirstName} ${data.PassengerLastName}`,
           age: data.Age,
           homeAddress: data.HomeAddress,
           destinationAddress: data.DestinationAddress,
+          isActive: data.IsActive,
+          isActivetext: data.IsActive == 1 ? 'Active' : 'Not Active',
+          isAssigned: data.IsAssigned,
+          isDeleted: data.IsDeleted,
           parentId: data.ParentId,
+          parentName: `${data.ParentFirstName} ${data.ParentLastName}`,
+          userId: data.UserId,
         };
 
         tripData.push(passsengers);
@@ -137,12 +144,19 @@ export const GetPendingPassengerForBusinessFromDB = async (
       res.forEach(data => {
         passsengers = {
           passengerId: data.PassengerId,
-          passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
-          editedName: `${data.FirstName} ${data.LastName}`,
+          passengerFirstName: data.PassengerFirstName,
+          passengerLastName: data.PassengerLastName,
+          passengerName: `${data.PassengerFirstName} ${data.PassengerLastName}`,
           age: data.Age,
           homeAddress: data.HomeAddress,
           destinationAddress: data.DestinationAddress,
+          isActive: data.IsActive,
+          isActivetext: data.IsActive == 1 ? 'Active' : 'Not Active',
+          isAssigned: data.IsAssigned,
+          isDeleted: data.IsDeleted,
           parentId: data.ParentId,
+          parentName: `${data.ParentFirstName} ${data.ParentLastName}`,
+          userId: data.UserId,
         };
 
         tripData.push(passsengers);
@@ -196,10 +210,26 @@ export const GetParentPassengersFromDB = async (parentId: string) => {
   return result;
 };
 
-export const DeletePassengerFromDatabase = async (
-  passengerId: string,
-  uid: string,
-) => {};
+export const DeletePassengerFromDatabase = async (passengerId: string) => {
+  let statusCode: any;
+  let data: any;
+
+  await axios
+    .delete(`${SERVER_HOST}:${SERVER_PORT}/passenger/delete-passenger`, {
+      params: {
+        PassengerId: passengerId,
+      },
+    })
+    .then((response: any) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: any) => {
+      console.log(error);
+    });
+
+  return [data, statusCode];
+};
 
 export const UpdatePassengerInDatabase = async (passenger: Passenger) => {
   let statusCode: any;

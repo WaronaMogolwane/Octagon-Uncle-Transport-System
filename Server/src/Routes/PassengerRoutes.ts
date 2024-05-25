@@ -8,6 +8,7 @@ import {
   UpdatePassengerIsAssigned,
   GetAllPassengersByBusiness,
   GetPendingPassengersByBusiness,
+  DeletePassenger,
 } from "../Controllers/PassengerController";
 
 const router = Router();
@@ -49,6 +50,12 @@ router.get(
 router.get(
   "/get-pending-passengers-for-business",
   GetPendingPassengersByBusiness,
+  async (req, res, next) => {}
+);
+
+router.delete(
+  "/delete-passenger",
+  DeletePassenger,
   async (req, res, next) => {}
 );
 

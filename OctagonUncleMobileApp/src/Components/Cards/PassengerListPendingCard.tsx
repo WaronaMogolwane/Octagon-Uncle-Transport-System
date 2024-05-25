@@ -13,7 +13,7 @@ import {
 
 type pendingPassengerListCardProps = {
   passengerName: string;
-  pickUpLocation: string;
+  parentName: string;
   isActive: boolean;
   onPress: (
     values:
@@ -27,15 +27,20 @@ const PassengerListPendingCard = (props: pendingPassengerListCardProps) => {
     <TouchableOpacity onPress={props.onPress}>
       <View style={TripCardParentStyles.cardBorder}>
         <View style={TripCardParentStyles.cardContainer}>
-          <Text style={{padding: 1}}>{props.passengerName}</Text>
-          <Text style={{padding: 1}}>({props.pickUpLocation})</Text>
-          {props.isActive ? (
-            <Text style={PassengerListActiveCardStyles.activeText}>Active</Text>
-          ) : (
-            <Text style={PassengerListActiveCardStyles.activeText}>
-              Inactive
-            </Text>
-          )}
+          <View>
+            <Text style={TripCardParentStyles.cardText}>Passenger Name: </Text>
+          </View>
+          <View>
+            <Text style={{padding: 1}}>{props.passengerName}</Text>
+          </View>
+        </View>
+        <View style={TripCardParentStyles.cardContainer}>
+          <View>
+            <Text style={TripCardParentStyles.cardText}>Parent Name: </Text>
+          </View>
+          <View>
+            <Text style={{padding: 1}}>{props.parentName}</Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>

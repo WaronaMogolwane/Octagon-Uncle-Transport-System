@@ -178,3 +178,23 @@ export const GetPendingPassengersByBusinessId = async (
     }
   );
 };
+
+export const DeletePassengerByPassengerId = async (
+  businessId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "call DeletePassenger(?)",
+      timeout: 40000,
+      values: [businessId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};

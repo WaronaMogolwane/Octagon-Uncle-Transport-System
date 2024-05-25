@@ -27,15 +27,38 @@ const PassengerListAllCard = (props: activePassengerListCardProps) => {
     <TouchableOpacity onPress={props.onPress}>
       <View style={TripCardParentStyles.cardBorder}>
         <View style={TripCardParentStyles.cardContainer}>
-          <Text style={{padding: 1}}>{props.passengerName}</Text>
-          <Text style={{padding: 1}}>({props.pickUpLocation})</Text>
-          {props.isActive ? (
-            <Text style={PassengerListActiveCardStyles.activeText}>Active</Text>
-          ) : (
-            <Text style={PassengerListActiveCardStyles.activeText}>
-              Inactive
+          <View>
+            <Text style={TripCardParentStyles.cardText}>Passenger Name: </Text>
+          </View>
+          <View>
+            <Text style={{padding: 1}}>{props.passengerName}</Text>
+          </View>
+        </View>
+        <View style={TripCardParentStyles.cardContainer}>
+          <View>
+            <Text style={TripCardParentStyles.cardText}>
+              Pick-up Location:{' '}
             </Text>
-          )}
+          </View>
+          <View>
+            <Text style={{padding: 1}}>{props.pickUpLocation}</Text>
+          </View>
+        </View>
+        <View style={TripCardParentStyles.cardContainer}>
+          <View>
+            <Text style={TripCardParentStyles.cardText}>Active Status:</Text>
+          </View>
+          <View>
+            {props.isActive ? (
+              <Text style={PassengerListActiveCardStyles.activeText}>
+                Active
+              </Text>
+            ) : (
+              <Text style={PassengerListActiveCardStyles.inactiveText}>
+                Inactive
+              </Text>
+            )}
+          </View>
         </View>
       </View>
     </TouchableOpacity>

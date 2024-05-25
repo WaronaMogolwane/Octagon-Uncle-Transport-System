@@ -1,7 +1,7 @@
 import {
   AddPassengerToDatabase,
   GetPassengerFromDatabase,
-  DeletePassengerFromDatabase,
+  DeletePassengerFromDatabase as DeletePassengerFromDB,
   GetActivePassengerForBusinessFromDB,
   UpdateIsAssignedInDB,
   UpdatePassengerInDatabase,
@@ -35,8 +35,8 @@ export const GetAllPassengerForBusiness = async (businessId: string) => {
   return GetAllPassengerForBusinessFromDB(businessId);
 };
 
-export const DeletePassenger = async (passengerId: string, uid: string) => {
-  return await DeletePassengerFromDatabase(passengerId, uid);
+export const DeletePassenger = async (passengerId: string) => {
+  return await DeletePassengerFromDB(passengerId);
 };
 
 export const UpdatePassenger = async (passenger: Passenger) => {

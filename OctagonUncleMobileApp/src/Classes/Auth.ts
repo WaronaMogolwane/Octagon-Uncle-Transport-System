@@ -4,15 +4,30 @@ import { decode } from "base-64";
 import { useStorageState } from "../Services/StorageStateService";
 global.atob = decode;
 
-
 export class Auth {
-
-    constructor() {
-
+    SessionToken: string;
+    constructor(SessionToken: string) {
+        this.SessionToken = SessionToken;
+    }
+    GetBusinessId = () => {
+        let session: Session = this.GetSession();
+        return session.BusinessId;
+    }
+    GetEmail = () => {
+        let session: Session = this.GetSession();
+        return session.Email;
+    }
+    GetUserId = () => {
+        let session: Session = this.GetSession();
+        return session.UserId;
+    }
+    GetUserRole = () => {
+        let session: Session = this.GetSession();
+        return session.UserRole;
     }
 
-    GetSession(authToken: string) {
-        let data: any = DecodeSessionToken(authToken);
+    private GetSession() {
+        let data: any = this.DecodeSessionToken(this.SessionToken);
         let session: Session = {
             UserRole: data.UserRole,
             UserId: data.UserId,
@@ -21,71 +36,29 @@ export class Auth {
         }
         return session;
     }
-    GetAuth(authToken: string) {
-        try {
-            DecodeSessionToken(authToken)
-            let auth = new Auth();
-            return auth
-        }
-        catch (error) {
-            console.error(error)
-            return null;
-        }
-    }
-    SetAuthentication(authToken: string, auth: Auth | null, setAuth: React.Dispatch<React.SetStateAction<Auth | null>>) {
-        if (authToken !== null) {
-            if (auth === null) {
-                setAuth(new Auth().GetAuth(authToken));
-            }
-        }
-    }
-}
+    // GetAuth(authToken: string) {
+    //     try {
+    //         this.DecodeSessionToken(authToken)
+    //         let auth = new Auth();
+    //         return auth
+    //     }
+    //     catch (error) {
+    //         console.error(error)
+    //         return null;
+    //     }
+    // }
+    // SetAuthentication(authToken: string, auth: Auth | null, setAuth: React.Dispatch<React.SetStateAction<Auth | null>>) {
+    //     if (authToken !== null) {
+    //         if (auth === null) {
+    //             setAuth(new Auth().GetAuth(authToken));
+    //         }
+    //     }
+    // }
 
-const DecodeSessionToken = (sessionToken: string): JwtPayload => {
-    const session = jwtDecode(sessionToken);
-    return session;
-}
 
-const GetBusinessId = (sessionToken: string) => {
-    let data: any = DecodeSessionToken(sessionToken);
-    let session: Session = {
-        UserRole: data.UserRole,
-        UserId: data.UserId,
-        Email: data.Email,
-        BusinessId: data.BusinessId
-    }
-    return session.BusinessId;
 
-}
-const GetEmail = (sessionToken: string) => {
-    let data: any = DecodeSessionToken(sessionToken);
-    let session: Session = {
-        UserRole: data.UserRole,
-        UserId: data.UserId,
-        Email: data.Email,
-        BusinessId: data.BusinessId
+    private DecodeSessionToken = (sessionToken: string): JwtPayload => {
+        const session = jwtDecode(sessionToken);
+        return session;
     }
-    return session.Email;
 }
-const GetUserId = (sessionToken: string) => {
-    let data: any = DecodeSessionToken(sessionToken);
-    let session: Session = {
-        UserRole: data.UserRole,
-        UserId: data.UserId,
-        Email: data.Email,
-        BusinessId: data.BusinessId
-    }
-    return session.UserId;
-}
-const GetUserRole = (sessionToken: string) => {
-    let data: any = DecodeSessionToken(sessionToken);
-    let session: Session = {
-        UserRole: data.UserRole,
-        UserId: data.UserId,
-        Email: data.Email,
-        BusinessId: data.BusinessId
-    }
-    return session.UserRole;
-}
-
-export { GetBusinessId, GetEmail, GetUserId, GetUserRole }

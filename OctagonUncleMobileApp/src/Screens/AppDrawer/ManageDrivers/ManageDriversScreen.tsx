@@ -1,16 +1,8 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {
-  GestureResponderEvent,
-  RefreshControl,
-  StyleSheet,
-  View,
-} from 'react-native';
+import React, {useContext, useState} from 'react';
+import {GestureResponderEvent} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {TripCardDriverSwipable} from '../../../Components/TripCardDriverSwipable';
 import {
-  Box,
-  FlatList,
   Button,
   Text,
   Fab,
@@ -23,52 +15,29 @@ import {
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogCloseButton,
   ButtonText,
   CheckCircleIcon,
   HStack,
   Heading,
   Icon,
-  ButtonGroup,
-  CloseIcon,
 } from '@gluestack-ui/themed';
 import InvitationModal from '../../../Components/Modals/DriverInvitationModal';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
-import {
-  AuthContext,
-  DeleteUserInvitation,
-  GetDriversByBusinessId,
-  GetInvitationsByBusinessIdUserRole,
-} from '../../../Services/AuthenticationService';
+import {AuthContext} from '../../../Services/AuthenticationService';
 import {UserInvitation} from '../../../Models/UserInvitation';
-import {
-  PendingDriverListCard,
-  DriverListCard,
-} from '../../../Components/Cards/DriverListCard';
-import DriverDetailsModal from '../../../Components/Modals/DriverDetailsModal';
-import {Vehicle} from '../../../Models/VehicleModel';
 import {PendingDriverscreen} from './PendingDriversScreen';
 import {DriversScreen} from './DriversScreen';
 import {GetDriverInvitation} from '../../../Controllers/DriverController';
-import {GetBusinessId} from '../../../Classes/Auth';
+import {Auth} from '../../../Classes/Auth';
+import DriverInvitationModal from '../../../Components/Modals/DriverInvitationModal';
 
 const ManageDriverscreen = ({navigation}: any) => {
   const {createUserInvitation, session}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
   const [showAlertDialog, setShowAlertDialog] = React.useState(false);
   const [showInvitationModal, setShowInvitationModal] = useState(false);
-  const [currentDriver, setCurrentDriver] = useState({
-    FirstName: '',
-    LastName: '',
-    Email: '',
-    RegistrationNumber: '',
-  });
-  const [showDriverDetailsModal, setShowDriverDetailsModal] = useState(false);
   const [PendingDriversList, setPendingDriversList] = useState([]);
-  const payerId = 'c7728615-394f-466b-833e-ea9dd60ba836 ';
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  const southAfricanIdRegex: RegExp =
-    /(([0-9]{2})(0|1)([0-9])([0-3])([0-9]))([ ]?)(([0-9]{4})([ ]?)([0-1][8]([ ]?)[0-9]))/;
 
   const addDriverSchema = yup.object().shape({
     firstName: yup
@@ -83,36 +52,18 @@ const ManageDriverscreen = ({navigation}: any) => {
       .required('Required'),
     email: yup.string().email('Invalid email').required('Email is required'),
   });
-  const removeDriverSchema = yup.object().shape({
-    confirmDriverName: yup.string().required('Required'),
-  });
-  const registerRemoveDriverValues = {
-    confirmDriverName: '',
-  };
   const registerAddDriverValues = {
     firstName: '',
     lastName: '',
     email: '',
   };
-  const removeDriverFormik = useFormik({
-    initialValues: registerRemoveDriverValues,
-    validationSchema: removeDriverSchema,
-    onSubmit: async values => {
-      // let driverName =
-      console.log(
-        'Hello {0}, your order {1} has been shipped.'.format('John', '10001'),
-      );
-      if (removeDriverFormik.isValid && values.confirmDriverName === 'z') {
-      }
-    },
-  });
   const addDriverFormik = useFormik({
     initialValues: registerAddDriverValues,
     validationSchema: addDriverSchema,
 
     onSubmit: async values => {
       let userInvitation: UserInvitation = {
-        businessId: GetBusinessId(session),
+        businessId: auth.GetBusinessId(),
         invitationCode: '',
         firstName: addDriverFormik.values.firstName,
         lastName: addDriverFormik.values.lastName,
@@ -129,7 +80,7 @@ const ManageDriverscreen = ({navigation}: any) => {
               setShowInvitationModal(false);
               setShowAlertDialog(true);
               GetDriverInvitation(
-                GetBusinessId(session),
+                auth.GetBusinessId(),
                 '2',
                 (error: any, result: any) => {
                   if (error) {
@@ -213,7 +164,7 @@ const ManageDriverscreen = ({navigation}: any) => {
         <Tab.Screen name="Drivers" component={DriversScreen} />
         <Tab.Screen name="Pending Drivers" component={PendingDriverscreen} />
       </Tab.Navigator>
-      <InvitationModal
+      <DriverInvitationModal
         firstNameIsInvalid={!!addDriverFormik.errors.firstName}
         firstNameOnChangeText={addDriverFormik.handleChange('firstName')}
         firstNameErrorText={addDriverFormik?.errors?.firstName}

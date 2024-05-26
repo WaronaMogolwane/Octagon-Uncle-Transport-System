@@ -26,15 +26,15 @@ String.prototype.format = function () {
   });
 };
 
-const RemoveDriverAlert = (props: RemoveVehicleAlertProps) => {
+const RemoveVehicleAlert = (props: RemoveVehicleAlertProps) => {
   return (
     <AlertDialog
-      isOpen={props.RemoveDriverAlertIsOpen}
+      isOpen={props.RemoveVehicleAlertIsOpen}
       onClose={props.CloseAlertOnPress}>
       <AlertDialogBackdrop />
       <AlertDialogContent>
         <AlertDialogHeader>
-          <Heading size="lg">Remove client</Heading>
+          <Heading size="lg">Remove driver</Heading>
           <AlertDialogCloseButton>
             <Icon as={CloseIcon} />
           </AlertDialogCloseButton>
@@ -42,17 +42,17 @@ const RemoveDriverAlert = (props: RemoveVehicleAlertProps) => {
         <AlertDialogBody>
           <Text size="sm">
             Are you sure you want to remove
-            {' {0} '.format(props.RemoveDriverConfirmation)}
+            {' {0} '.format(props.RemoveVehicleConfirmation)}
             as your driver? Any vehicle linked to this driver will have to be
             linked to another driver.
           </Text>
           <Text size="sm" highlight={true}>
             Enter
-            {' {0} '.format(props.RemoveDriverConfirmation)}
+            {' {0} '.format(props.RemoveVehicleConfirmation)}
             to remove the driver.
           </Text>
           <CustomFormControlInput
-            placeHolder={' {0} '.format(props.RemoveDriverConfirmation)}
+            placeHolder={' {0} '.format(props.RemoveVehicleConfirmation)}
             type="text"
             isInvalid={props.VerifyRemoveIsInvalid}
             onChangeText={props.VerifyRemoveOnChangeText}
@@ -73,7 +73,7 @@ const RemoveDriverAlert = (props: RemoveVehicleAlertProps) => {
             <Button
               bg="$error600"
               action="negative"
-              onPress={props.HandleRemoveDriver}>
+              onPress={props.HandleRemoveVehicle}>
               <ButtonText>Remove</ButtonText>
             </Button>
           </ButtonGroup>
@@ -83,4 +83,4 @@ const RemoveDriverAlert = (props: RemoveVehicleAlertProps) => {
   );
 };
 
-export default RemoveDriverAlert;
+export default RemoveVehicleAlert;

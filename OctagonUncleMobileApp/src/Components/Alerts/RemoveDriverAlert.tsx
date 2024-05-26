@@ -18,7 +18,7 @@ import {
 } from '@gluestack-ui/themed';
 import React from 'react';
 import {CustomFormControlInput} from '../CustomFormInput';
-import {RemoveDriverAlertProps} from '../../Props/RemoveDriverAlertProps';
+import {RemoveVehicleAlertProps} from '../../Props/RemoveDriverAlertProps';
 String.prototype.format = function () {
   var args = arguments;
   return this.replace(/{([0-9]+)}/g, function (match, index) {
@@ -26,7 +26,7 @@ String.prototype.format = function () {
   });
 };
 
-const RemoveDriverAlert = (props: RemoveDriverAlertProps) => {
+const RemoveDriverAlert = (props: RemoveVehicleAlertProps) => {
   return (
     <AlertDialog
       isOpen={props.RemoveDriverAlertIsOpen}

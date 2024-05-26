@@ -4,7 +4,7 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import HomeScreen from '../Screens/AppDrawer/HomeScreen';
 import TripsScreen from '../Screens/AppDrawer/TripsScreen';
 import PaymentsScreen from '../Screens/AppDrawer/PaymentsScreen';
-import ManageVehiclesScreen from '../Screens/AppDrawer/ManageVehiclesScreen';
+import ManageVehiclesScreen from '../Screens/AppDrawer/Vehicles/ManageVehiclesScreen';
 import ManageDriversScreen from '../Screens/AppDrawer/ManageDrivers/ManageDriversScreen';
 import ManageClientsScreen from '../Screens/AppDrawer/ManageClients/ManageClientsScreen';
 import ProfileScreen from '../Screens/AppDrawer/ProfileScreen';

@@ -37,7 +37,7 @@ const SignInScreen = ({navigation}: any) => {
       await signIn(values.email, values.password, (error: any, result: any) => {
         if (formik.isValid) {
           if (error) {
-            console.log(error);
+            console.error(error);
           } else if (result) {
             resetForm();
           }

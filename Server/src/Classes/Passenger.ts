@@ -4,6 +4,10 @@ export class Passenger {
   lastName?: string;
   age?: number;
   homeAddress?: string;
+  suburb?: string;
+  city?: string;
+  province?: string;
+  postalCode?: string;
   destinationAddress?: string;
   parentId?: string;
   businessId?: string;
@@ -14,6 +18,10 @@ export class Passenger {
     lastName?: string,
     age?: number,
     homeaddress?: string,
+    suburb?: string,
+    city?: string,
+    province?: string,
+    postalCode?: string,
     destinationaddress?: string,
     parentId?: string,
     businessId?: string
@@ -22,6 +30,11 @@ export class Passenger {
     this.firstName = firstName;
     this.lastName = lastName;
     this.age = age;
+    this.homeAddress = homeaddress;
+    this.suburb = suburb;
+    this.city = city;
+    this.province = province;
+    this.postalCode = postalCode;
     this.homeAddress = homeaddress;
     this.destinationAddress = destinationaddress;
     this.parentId = parentId;

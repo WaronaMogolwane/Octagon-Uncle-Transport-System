@@ -21,7 +21,9 @@ type tripCardProps = {
 export const TripCardDriver = (props: tripCardProps) => {
   const tripStatus = () => {
     if (props.tripStatus == 0) {
-      return null;
+      return (
+        <Text style={TripCardDriverStyles.unCompletedTrip}>Uncompleted</Text>
+      );
     } else if (props.tripStatus == 1) {
       return (
         <Text style={TripCardDriverStyles.unCompletedTrip}>Uncompleted</Text>

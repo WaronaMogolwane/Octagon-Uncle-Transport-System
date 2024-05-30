@@ -8,6 +8,7 @@ import {
   GetParentPassengersFromDB,
   GetAllPassengerForBusinessFromDB,
   GetPendingPassengerForBusinessFromDB,
+  DeletePassengerRequestFromDB,
 } from '../Data/PassengerDAL';
 import {Passenger} from '../Models/Passenger';
 
@@ -37,6 +38,13 @@ export const GetAllPassengerForBusiness = async (businessId: string) => {
 
 export const DeletePassenger = async (passengerId: string) => {
   return await DeletePassengerFromDB(passengerId);
+};
+
+export const DeletePassengerRequest = async (
+  passengerId: string,
+  reason: string,
+) => {
+  return await DeletePassengerRequestFromDB(passengerId, reason);
 };
 
 export const UpdatePassenger = async (passenger: Passenger) => {

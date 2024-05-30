@@ -9,6 +9,7 @@ import {
   GetAllPassengersByBusiness,
   GetPendingPassengersByBusiness,
   DeletePassenger,
+  DeletePassengerRequest,
 } from "../Controllers/PassengerController";
 
 const router = Router();
@@ -59,4 +60,9 @@ router.delete(
   async (req, res, next) => {}
 );
 
+router.delete(
+  "/request-delete-passenger",
+  DeletePassengerRequest,
+  async (req, res, next) => {}
+);
 export default router;

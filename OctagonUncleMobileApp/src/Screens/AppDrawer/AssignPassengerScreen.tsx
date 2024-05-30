@@ -47,14 +47,13 @@ import {
   UpdatePassengerSchedule,
 } from '../../Controllers/PassengerScheduleController';
 import {PassengerSchedule} from '../../Models/PassengerSchedule';
-import {Auth, GetBusinessId} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
-import {useStorageState} from '../../Services/StorageStateService';
-import {useGlobalState} from '../../State';
 import {PassengerCard} from '../../Components/Cards/PassengerListCard';
+import {Auth} from '../../Classes/Auth';
 
 const AssignPassengerScreen = ({route, navigation}: any) => {
-  const {createUserInvitation, session}: any = useContext(AuthContext);
+  const {session, isLoading}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
 
   const initialState = [''];
 
@@ -89,11 +88,8 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const toast = useToast();
 
   const vehicleId = route.params.vehicleId;
-
-  const businessId =
-    GetBusinessId(session) == null
-      ? '018f2940-e67c-78f3-8f22-400d7f0672b2'
-      : GetBusinessId(session);
+  //const businessId = auth.GetBusinessId();
+  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
   useEffect(() => {
     GetPassengers();
@@ -173,7 +169,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     <PassengerCard
       passengerName={itemData.fullName}
       age={itemData.age}
-      pickUpLocation={itemData.pickUpLocation}
+      pickUpLocation={itemData.suburb}
       dropOffLocation={itemData.dropOffLocation}
       onPress={() => {
         // GetPassengerSchedule(itemData.passengerId).then((result: any) => {
@@ -507,14 +503,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
               setpassengerName(item.editedName);
               setIsFocus(false);
             }}
-            // renderLeftIcon={() => (
-            //   <AntDesign
-            //     style={AssignPassengerScreenStyles.icon}
-            //     color={isFocus ? 'blue' : 'black'}
-            //     name="Safety"
-            //     size={20}
-            //   />
-            // )}
           />
         </View>
       </View>
@@ -522,8 +510,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       <View>
         <CustomButton1
           onPress={() => {
-            // PrepareTrip();
-            // setValue('');
             if (newPassengerId != '') {
               setCalender(true);
             }

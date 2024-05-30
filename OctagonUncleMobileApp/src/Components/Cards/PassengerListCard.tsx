@@ -26,9 +26,28 @@ export const PassengerCard = (props: passengerCardProps) => {
     <TouchableOpacity onPress={props.onPress}>
       <View style={TripCardParentStyles.cardBorder}>
         <View style={TripCardParentStyles.cardContainer}>
-          <Text style={{padding: 1}}>{props.passengerName}</Text>
-          <Text style={{padding: 1}}>({props.age})</Text>
-          <Text style={{padding: 2}}>{props.pickUpLocation}</Text>
+          <View>
+            <Text style={TripCardParentStyles.cardText}>Passenger Name: </Text>
+          </View>
+          <View>
+            <Text style={{padding: 1}}>{props.passengerName}</Text>
+          </View>
+        </View>
+        <View style={TripCardParentStyles.cardContainer}>
+          <View>
+            <Text style={TripCardParentStyles.cardText}>Passenger Age: </Text>
+          </View>
+          <View>
+            <Text style={{padding: 1}}>{props.age}</Text>
+          </View>
+        </View>
+        <View style={TripCardParentStyles.cardContainer}>
+          <View>
+            <Text style={TripCardParentStyles.cardText}>Location: </Text>
+          </View>
+          <View>
+            <Text style={{padding: 2}}>{props.pickUpLocation}</Text>
+          </View>
         </View>
       </View>
     </TouchableOpacity>

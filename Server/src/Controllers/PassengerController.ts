@@ -10,6 +10,7 @@ import {
   GetAllPassengersByBusinessId,
   GetPendingPassengersByBusinessId,
   DeletePassengerByPassengerId,
+  DeletePassengerRequestByPassengerId,
 } from "../Models/PassengerModel";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 
@@ -20,6 +21,10 @@ export const AddPassenger = async (req: any, res: any, next: any) => {
     req.body.passenger.LastName,
     req.body.passenger.Age,
     req.body.passenger.HomeAddress,
+    req.body.passenger.Suburb,
+    req.body.passenger.City,
+    req.body.passenger.Province,
+    req.body.passenger.PostalCode,
     req.body.passenger.DestinationAddress,
     req.body.passenger.ParentId,
     req.body.passenger.BusinessId
@@ -70,6 +75,10 @@ export const UpdatePassengerDetail = async (req: any, res: any, next: any) => {
     req.body.params.LastName,
     req.body.params.Age,
     req.body.params.HomeAddress,
+    req.body.params.Suburb,
+    req.body.params.City,
+    req.body.params.Province,
+    req.body.params.PostalCode,
     req.body.params.DestinationAddress,
     req.body.params.ParentId,
     req.body.params.BusinessId
@@ -217,6 +226,30 @@ export const DeletePassenger = async (req: any, res: any, next: any) => {
   let passengerId = req.query.PassengerId;
 
   await DeletePassengerByPassengerId(passengerId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else if (result[0] == "") {
+      let err: any = {
+        status: 405,
+        message: "Record not found",
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result[0],
+      });
+    }
+  });
+};
+
+export const DeletePassengerRequest = async (req: any, res: any, next: any) => {
+  let deleteRequest = {
+    passengerId: req.query.PassengerId,
+    reason: req.query.Reason,
+  };
+
+  await DeletePassengerRequestByPassengerId(deleteRequest, (error, result) => {
     if (error) {
       next(new ErrorResponse(501, error.message));
     } else if (result[0] == "") {

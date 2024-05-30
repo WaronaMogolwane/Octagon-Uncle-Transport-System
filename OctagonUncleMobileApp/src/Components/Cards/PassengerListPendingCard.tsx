@@ -14,6 +14,7 @@ import {
 type pendingPassengerListCardProps = {
   passengerName: string;
   parentName: string;
+  reason: string;
   isActive: boolean;
   onPress: (
     values:
@@ -40,6 +41,14 @@ const PassengerListPendingCard = (props: pendingPassengerListCardProps) => {
           </View>
           <View>
             <Text style={{padding: 1}}>{props.parentName}</Text>
+          </View>
+        </View>
+        <View style={TripCardParentStyles.cardContainer}>
+          <View>
+            <Text style={TripCardParentStyles.cardText}>Reason: </Text>
+          </View>
+          <View>
+            <Text style={{padding: 1}}>{props.reason}</Text>
           </View>
         </View>
       </View>

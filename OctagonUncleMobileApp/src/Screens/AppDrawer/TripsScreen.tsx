@@ -31,20 +31,19 @@ import {
 import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
 import {GetDriverId} from '../../Controllers/DriverVehicleLinkingController.tsx';
-import {useGlobalState} from '../../State';
 import {AuthContext} from '../../Services/AuthenticationService';
-import {GetUserId, GetUserRole} from '../../Classes/Auth';
+import {Auth} from '../../Classes/Auth';
 
 const TripsScreen = ({navigation}: any) => {
-  const {createUserInvitation, session}: any = useContext(AuthContext);
-
   const Tab = createMaterialTopTabNavigator();
 
-  const userId =
-    GetUserId(session) == null
-      ? 'c7728615-394f-466b-833e-ea9dd60ba836'
-      : GetUserId(session);
-  const role = GetUserRole(session) == null ? 2 : Number(GetUserRole(session));
+  const {session, isLoading}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
+
+  const userId = '9a7fc15e-a31a-44a5-8d1d-0a9509f7f916';
+  const role: number = 2;
+  //const userId = auth.GetUserId();
+  //const role: number = Number(auth.GetUserRole());
 
   const [tempUserId, setTempUserId] = useState(userId);
 

@@ -9,19 +9,15 @@ import {
   ToastDescription,
   ToastTitle,
 } from '@gluestack-ui/themed';
-import {useGlobalState} from '../../State';
-import {GetBusinessId} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
+import {Auth} from '../../Classes/Auth';
 
 const ManageTripsScreen = ({navigation}: any) => {
-  const {createUserInvitation, session}: any = useContext(AuthContext);
+  const {session, isLoading}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
 
-  //const businessId = '018f2940-e67c-78f3-8f22-400d7f0672b2';
-  //const [businessId, x] = useGlobalState('businessId');
-  const businessId =
-    GetBusinessId(session) == null
-      ? '018f2940-e67c-78f3-8f22-400d7f0672b2'
-      : GetBusinessId(session);
+  // const businessId = auth.GetBusinessId();
+  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
   const toast = useToast();
 

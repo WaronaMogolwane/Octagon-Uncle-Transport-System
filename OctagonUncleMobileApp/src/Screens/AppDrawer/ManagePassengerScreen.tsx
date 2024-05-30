@@ -7,10 +7,10 @@ import {
   View,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
-import {useGlobalState} from '../../State';
 import {
   AddPassenger,
   DeletePassenger,
+  DeletePassengerRequest,
   GetAllPassengerForBusiness,
   GetAllPendingPassengerForBusiness,
   GetParentPassengers,
@@ -45,6 +45,7 @@ import {
   FabIcon,
   ArrowLeftIcon,
   TrashIcon,
+  EditIcon,
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
@@ -58,14 +59,15 @@ import {
 } from '../../Stylesheets/GlobalStyles';
 import {Dropdown} from 'react-native-element-dropdown';
 import {NavigationContainer} from '@react-navigation/native';
-import {GetUserId, GetUserRole} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import PassengerListAllCard from '../../Components/Cards/PassngerListForTransporterCard';
 import PassengerListPendingCard from '../../Components/Cards/PassengerListPendingCard';
+import {Auth} from '../../Classes/Auth';
 
 const ManagePassengerScreen = ({navigation}: any) => {
-  const {createUserInvitation, session}: any = useContext(AuthContext);
+  const {session, isLoading}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
 
   const Tab = createMaterialTopTabNavigator();
 
@@ -79,6 +81,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [age, setAge] = useState('');
+  const [suburb, setSuburb] = useState('');
+  const [city, setCity] = useState('');
+  const [province, setProvince] = useState('');
+  const [postalCode, setPostalCode] = useState('');
   const [homeAddress, setHomeAddress] = useState('');
   const [destinationAddress, setDestinationAddress] = useState('');
   const [isActive, setIsActive] = useState('');
@@ -99,30 +105,23 @@ const ManagePassengerScreen = ({navigation}: any) => {
 
   const [showPassengerSummary, setShowPassengerSummary] = useState(false);
   const [showButton, setShowButton] = useState(false);
-  const [showreason, setShowReason] = useState(true);
+  const [showreason, setShowReason] = useState(false);
+  const [reason, setReason] = useState('');
+  const [showOther, setShowOther] = useState(false);
+  const [showReasonField, setShowReasonField] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
 
-  // const userId =
-  //   GetUserId(session) == null
-  //     ? 'c7728615-394f-466b-833e-ea9dd60ba836'
-  //     : GetUserId(session);
-  // const businessId =
-  //   GetUserId(session) == null
-  //     ? 'w8728321-394f-466b-833e-ea9dd60ba000'
-  //     : GetUserId(session);
-  // const role = GetUserRole(session) == null ? 2 : Number(GetUserRole(session));
-
-  const userId = 'c7728615-394f-466b-833e-ea9dd60ba836';
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  const role: number = 3;
+  const userId = auth.GetUserRole();
+  const businessId = auth.GetBusinessId();
+  const role: number = Number(auth.GetUserRole());
 
   const defaultReasons = [
     {
       id: 0,
-      reasonString:
-        'I made an error and need to re-enter the passenger detals.',
+      reasonString: 'Input error.',
     },
-    {id: 1, reasonString: 'I need to update old informaation'},
-    {id: 2, reasonString: 'other'},
+    {id: 1, reasonString: 'Updating old information.'},
+    {id: 2, reasonString: 'Other'},
   ];
 
   const onRefresh = React.useCallback(() => {
@@ -199,6 +198,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
     <PassengerListPendingCard
       passengerName={itemData.passengerName}
       parentName={itemData.parentName}
+      reason={itemData.reason}
       isActive={itemData.isActive}
       onPress={() => {
         setPassengerId(itemData.passengerId);
@@ -210,6 +210,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
         setParentName(itemData.parentName);
         setIsActiveText(itemData.isActivetext);
         setShowPassengerSummary(true);
+        setShowReasonField(true);
         setShowButton(true);
       }}
     />
@@ -222,6 +223,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
       values.lastname != '' ? values.lastname : lastName,
       values.age != '' ? values.age : age,
       values.homeAddress != '' ? values.homeAddress : homeAddress,
+      values.suburb != '' ? values.suburb : suburb,
+      values.city != '' ? values.city : city,
+      values.province != '' ? values.province : province,
+      values.postalCode != '' ? values.postalCode : postalCode,
       values.destinationAddress != ''
         ? values.destinationAddress
         : destinationAddress,
@@ -243,6 +248,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
       values.lastname,
       values.age,
       values.homeAddress,
+      values.suburb,
+      values.city,
+      values.province,
+      values.postalCode,
       values.destinationAddress,
       userId,
       businessId,
@@ -251,24 +260,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
     AddPassenger(newPassenger).then(response => {
       if (response == 200) {
         setShowPModal(false);
+        GetPassengers();
         setStatusCode(!statusCode);
       } else {
-        toast.show({
-          placement: 'top',
-          render: ({id}) => {
-            const toastId = 'toast-' + id;
-            return (
-              <Toast nativeID={toastId} action="error" variant="solid">
-                <VStack space="xs">
-                  <ToastTitle>Error</ToastTitle>
-                  <ToastDescription>
-                    There was an a problem please try again
-                  </ToastDescription>
-                </VStack>
-              </Toast>
-            );
-          },
-        });
+        ShowToast();
       }
     });
   };
@@ -289,6 +284,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
       firstName={itemData.firstName}
       lastName={itemData.lastName}
       isActive={itemData.isActive}
+      isDeleted={itemData.isDeleted}
       onPress={() => {
         setPassengerId(itemData.passengerId);
         setFirstName(itemData.firstName);
@@ -297,6 +293,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
         setHomeAddress(itemData.homeAddress);
         setDestinationAddress(itemData.destinationAddress);
         setIsActiveText(itemData.isActiveText);
+        setIsDeleted(itemData.isDeleted);
         setShowCard(true);
       }}
     />
@@ -347,6 +344,26 @@ const ManagePassengerScreen = ({navigation}: any) => {
               destinationAddressErrorText={formik?.errors?.destinationAddress}
               destinationAddressOnBlur={formik.handleBlur('destinationAddress')}
               destinationAddressValue={formik.values?.destinationAddress}
+              suburbIsInvalid={!!formik.errors.suburb}
+              suburbOnChangeText={formik.handleChange('suburb')}
+              suburbErrorText={formik?.errors?.suburb}
+              suburbOnBlur={formik.handleBlur('suburb')}
+              suburbValue={formik.values?.suburb}
+              cityIsInvalid={!!formik.errors.city}
+              cityOnChangeText={formik.handleChange('city')}
+              cityErrorText={formik?.errors?.city}
+              cityOnBlur={formik.handleBlur('city')}
+              cityValue={formik.values?.city}
+              provinceIsInvalid={!!formik.errors.province}
+              provinceOnChangeText={formik.handleChange('province')}
+              provinceErrorText={formik?.errors?.province}
+              provinceOnBlur={formik.handleBlur('province')}
+              provinceValue={formik.values?.province}
+              postalCodeIsInvalid={!!formik.errors.postalCode}
+              postalCodeOnChangeText={formik.handleChange('postalCode')}
+              postalCodeErrorText={formik?.errors?.postalCode}
+              postalCodeOnBlur={formik.handleBlur('postalCode')}
+              postalCodeValue={formik.values?.postalCode}
               submitPassenger={
                 formik.handleSubmit as (
                   values:
@@ -381,8 +398,8 @@ const ManagePassengerScreen = ({navigation}: any) => {
           <ModalBody>
             <View>
               <Text>
-                Please selct a the most appropriate reason you are requesting to
-                be deleted.
+                Please selct a the most appropriate reason you are requesting{' '}
+                {firstName} to be deleted.
               </Text>
             </View>
             <View style={{marginTop: 15}}>
@@ -398,22 +415,43 @@ const ManagePassengerScreen = ({navigation}: any) => {
                 inputSearchStyle={AssignPassengerScreenStyles.inputSearchStyle}
                 iconStyle={AssignPassengerScreenStyles.iconStyle}
                 data={defaultReasons}
-                search
+                value={reason}
                 maxHeight={300}
                 labelField="reasonString"
-                valueField="id"
+                valueField="reasonString"
                 placeholder={!isFocus ? 'Select reason of deletion' : '...'}
-                searchPlaceholder="Select..."
                 onFocus={() => setIsFocus(true)}
                 onBlur={() => setIsFocus(false)}
                 onChange={(item: any) => {
-                  // setNewPassengerId(item.passengerId);
-                  // setpassengerName(item.editedName);
-                  console.log(item.reasonString);
+                  if (item.id == 2) {
+                    setReason('');
+                    setShowOther(true);
+                  } else {
+                    setShowOther(false);
+                    setReason(item.reasonString);
+                  }
                   setIsFocus(false);
                 }}
               />
             </View>
+            {showOther ? (
+              <View style={{marginTop: 15}}>
+                <View>
+                  <Text>Please enter the reason below.</Text>
+                </View>
+                <View>
+                  <CustomFormControlInput
+                    labelText="Reason"
+                    isInvalid={false}
+                    isDisabled={false}
+                    type="text"
+                    value={reason}
+                    onChangeText={(text: any) => setReason(text)}
+                    isRequired={false}
+                  />
+                </View>
+              </View>
+            ) : null}
           </ModalBody>
           <ModalFooter>
             <View
@@ -442,7 +480,23 @@ const ManagePassengerScreen = ({navigation}: any) => {
                   action="negative"
                   isDisabled={false}
                   isFocusVisible={false}
-                  onPress={() => {}}>
+                  onPress={() => {
+                    DeletePassengerRequest(passengerId, reason).then(
+                      (result: any) => {
+                        if (result[1] == 200) {
+                          GetPassengers();
+                          setShowButton(false);
+                          setShowCard(false);
+                          setShowReason(false);
+
+                          ShowSuccessToast();
+                        } else {
+                          //Something went wrong
+                          ShowToast();
+                        }
+                      },
+                    );
+                  }}>
                   <ButtonIcon as={TrashIcon} />
                   <ButtonText>Delete</ButtonText>
                 </Button>
@@ -461,6 +515,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
         onClose={() => {
           setShowPassengerSummary(false);
           setShowButton(false);
+          setShowReasonField(true);
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />
@@ -534,44 +589,42 @@ const ManagePassengerScreen = ({navigation}: any) => {
                   isRequired={false}
                 />
 
+                {showReasonField ? (
+                  <CustomFormControlInput
+                    labelText="Reason For Passenger Deletion"
+                    isInvalid={false}
+                    isDisabled={true}
+                    type="text"
+                    value={reason}
+                    isRequired={false}
+                  />
+                ) : null}
+
                 {showButton ? (
-                  <CustomButton1
-                    title={'Comfirm'}
+                  <Button
+                    size="md"
+                    variant="solid"
+                    action="negative"
+                    isDisabled={false}
+                    isFocusVisible={false}
                     onPress={() => {
                       DeletePassenger(passengerId).then((result: any) => {
                         if (result[1] == 200) {
                           GetPassengers();
                           setShowButton(false);
                           setShowPassengerSummary(false);
+                          setShowReasonField(true);
+
+                          ShowDeleteToast();
                         } else {
                           //Something went wrong
-                          const ShowToast = () => {
-                            toast.show({
-                              placement: 'top',
-                              render: ({id}) => {
-                                const toastId = 'toast-' + id;
-                                return (
-                                  <Toast
-                                    nativeID={toastId}
-                                    action="error"
-                                    variant="solid">
-                                    <VStack space="xs">
-                                      <ToastTitle>
-                                        Something went wrong
-                                      </ToastTitle>
-                                      <ToastDescription>
-                                        Something went wrong please try again.
-                                      </ToastDescription>
-                                    </VStack>
-                                  </Toast>
-                                );
-                              },
-                            });
-                          };
+                          ShowToast();
                         }
                       });
-                    }}
-                  />
+                    }}>
+                    <ButtonIcon as={TrashIcon} />
+                    <ButtonText>Delete</ButtonText>
+                  </Button>
                 ) : null}
               </VStack>
             </View>
@@ -619,19 +672,33 @@ const ManagePassengerScreen = ({navigation}: any) => {
               homeAddressErrorText={updateFormik?.errors?.homeAddress}
               homeAddressOnBlur={updateFormik.handleBlur('homeAddress')}
               homeAddressValue={updateFormik.values?.homeAddress}
-              destinationAddressIsInvalid={
-                !!updateFormik.errors.destinationAddress
-              }
-              destinationAddressOnChangeText={updateFormik.handleChange(
+              destinationAddressIsInvalid={!!formik.errors.destinationAddress}
+              destinationAddressOnChangeText={formik.handleChange(
                 'destinationAddress',
               )}
-              destinationAddressErrorText={
-                updateFormik?.errors?.destinationAddress
-              }
-              destinationAddressOnBlur={updateFormik.handleBlur(
-                'destinationAddress',
-              )}
-              destinationAddressValue={updateFormik.values?.destinationAddress}
+              destinationAddressErrorText={formik?.errors?.destinationAddress}
+              destinationAddressOnBlur={formik.handleBlur('destinationAddress')}
+              destinationAddressValue={formik.values?.destinationAddress}
+              suburbIsInvalid={!!formik.errors.suburb}
+              suburbOnChangeText={formik.handleChange('suburb')}
+              suburbErrorText={formik?.errors?.suburb}
+              suburbOnBlur={formik.handleBlur('suburb')}
+              suburbValue={formik.values?.suburb}
+              cityIsInvalid={!!formik.errors.city}
+              cityOnChangeText={formik.handleChange('city')}
+              cityErrorText={formik?.errors?.city}
+              cityOnBlur={formik.handleBlur('city')}
+              cityValue={formik.values?.city}
+              provinceIsInvalid={!!formik.errors.province}
+              provinceOnChangeText={formik.handleChange('province')}
+              provinceErrorText={formik?.errors?.province}
+              provinceOnBlur={formik.handleBlur('province')}
+              provinceValue={formik.values?.province}
+              postalCodeIsInvalid={!!formik.errors.postalCode}
+              postalCodeOnChangeText={formik.handleChange('postalCode')}
+              postalCodeErrorText={formik?.errors?.postalCode}
+              postalCodeOnBlur={formik.handleBlur('postalCode')}
+              postalCodeValue={formik.values?.postalCode}
               submitPassenger={
                 updateFormik.handleSubmit as (
                   values:
@@ -716,26 +783,42 @@ const ManagePassengerScreen = ({navigation}: any) => {
                   type="text"
                   value={isActiveText}
                   isRequired={false}
-                  // style={{
-                  //   color: isActiveText == 'Active' ? '#008000' : '#FF0000',
-                  // }}
                 />
 
-                <View style={{padding: 10}}>
-                  <CustomButton1
-                    title={'Edit Passenger'}
-                    onPress={() => {
-                      setUpdate(true);
-                      setShowCard(false);
-                    }}
-                  />
-                  <CustomButton1
-                    title={'Delete Passenger'}
-                    onPress={() => {
-                      //setUpdate(true);
-                      setShowReason(true);
-                    }}
-                  />
+                <View>
+                  <View style={{padding: 5}}>
+                    <Button
+                      size="md"
+                      variant="solid"
+                      action="secondary"
+                      isDisabled={false}
+                      isFocusVisible={false}
+                      onPress={() => {
+                        setUpdate(true);
+                        setShowCard(false);
+                      }}>
+                      <ButtonIcon as={EditIcon} />
+                      <ButtonText>Edit Passenger</ButtonText>
+                    </Button>
+                  </View>
+                  <View style={{padding: 5}}>
+                    <Button
+                      size="md"
+                      variant="solid"
+                      action="negative"
+                      isDisabled={false}
+                      isFocusVisible={false}
+                      onPress={() => {
+                        if (isDeleted) {
+                          showDeletePendingToast();
+                        } else {
+                          setShowReason(true);
+                        }
+                      }}>
+                      <ButtonIcon as={TrashIcon} />
+                      <ButtonText>Delete Passenger</ButtonText>
+                    </Button>
+                  </View>
                 </View>
               </VStack>
             </View>
@@ -750,6 +833,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
     lastname: '',
     age: '',
     homeAddress: '',
+    suburb: '',
+    city: '',
+    province: '',
+    postalCode: '',
     destinationAddress: '',
   };
 
@@ -770,7 +857,6 @@ const ManagePassengerScreen = ({navigation}: any) => {
       .notRequired()
       .min(1)
       .max(100)
-      .required('Required')
       .test(
         'noEOrSign', // type of the validator (should be unique)
         "Number had an 'e' or sign.", // error message
@@ -780,6 +866,26 @@ const ManagePassengerScreen = ({navigation}: any) => {
       .string()
       .min(2, 'Address too Short')
       .max(200, 'Address long')
+      .required('Required'),
+    suburb: yup
+      .string()
+      .min(2, 'Suburb too Short!')
+      .max(50, 'Suburb too  Long!')
+      .required('Required'),
+    city: yup
+      .string()
+      .min(2, 'City too Short!')
+      .max(50, 'City too Long!')
+      .required('Required'),
+    province: yup
+      .string()
+      .min(2, 'Province too Short!')
+      .max(50, 'Province too Long!')
+      .required('Required'),
+    postalcode: yup
+      .string()
+      .min(2, 'Postal code too Short!')
+      .max(4, 'Postal code too Long!')
       .required('Required'),
     destinationAddress: yup
       .string()
@@ -812,6 +918,26 @@ const ManagePassengerScreen = ({navigation}: any) => {
       .string()
       .min(2, 'Address too Short')
       .max(200, 'Address long'),
+    suburb: yup
+      .string()
+      .min(2, 'Suburb too Short!')
+      .max(50, 'Suburb too  Long!')
+      .required('Required'),
+    city: yup
+      .string()
+      .min(2, 'City too Short!')
+      .max(50, 'City too Long!')
+      .required('Required'),
+    province: yup
+      .string()
+      .min(2, 'Province too Short!')
+      .max(50, 'Province too Long!')
+      .required('Required'),
+    postalcode: yup
+      .string()
+      .min(2, 'Postal code too Short!')
+      .max(4, 'Postal code too Long!')
+      .required('Required'),
     destinationAddress: yup
       .string()
       .min(2, 'Address too short')
@@ -854,17 +980,76 @@ const ManagePassengerScreen = ({navigation}: any) => {
     );
   };
 
-  //This is where the Toast is defined
-  const ShowToast = () => {
-    const toast = useToast();
-
+  const ShowDeleteToast = () => {
     toast.show({
       placement: 'top',
       render: ({id}) => {
+        const toastId = 'toast-' + id;
         return (
-          <Toast nativeID={id} variant="accent" action="error">
-            <ToastTitle>Something went wrong, please try again</ToastTitle>
+          <Toast nativeID={toastId} action="success" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Success</ToastTitle>
+              <ToastDescription>
+                Passsenger was deleted successfuly.
+              </ToastDescription>
+            </VStack>
           </Toast>
+        );
+      },
+    });
+  };
+
+  //This is where the Toast is defined
+  const ShowToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="error" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Something went wrong, please try again</ToastTitle>
+              <ToastDescription>
+                Please check your internet connection and try again.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const showDeletePendingToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="error" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Delete Request Pending</ToastTitle>
+              <ToastDescription>
+                Your deletion request has been sent. Please wait for your
+                transporter approve it.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const ShowSuccessToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <VStack space="xs">
+            <Toast nativeID={toastId} action="success" variant="solid">
+              <ToastTitle>Delete request sent successfully</ToastTitle>
+            </Toast>
+          </VStack>
         );
       },
     });
@@ -948,17 +1133,27 @@ const ManagePassengerScreen = ({navigation}: any) => {
             {showPassengerCardModal()}
           </View>
           <View>
-            <CustomButton1
+            <Button
+              size="md"
+              variant="solid"
+              action="secondary"
+              isDisabled={false}
+              isFocusVisible={false}
               onPress={() => {
                 setShowPModal(true);
-              }}
-              title="Create Passenger"
-            />
+
+                //ShowToast();
+                //ShowSuccessToast();
+                //ShowDeleteToast();
+              }}>
+              <ButtonIcon as={AddIcon} />
+              <ButtonText>Create Passenger</ButtonText>
+            </Button>
           </View>
           <View>{showPopUpModal()}</View>
           <View>{showReasonModal()}</View>
           <View>{showUpdatePopUpModal()}</View>
-          <View>
+          <View style={{marginTop: 5, padding: 1}}>
             {noPassenger ? EmtpyPassengerFlatListText() : null}
             <FlatList
               data={passengerList}

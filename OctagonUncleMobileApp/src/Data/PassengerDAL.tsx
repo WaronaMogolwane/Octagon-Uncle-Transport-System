@@ -13,6 +13,10 @@ export const AddPassengerToDatabase = async (passenger: Passenger) => {
         LastName: passenger.LastName,
         Age: passenger.Age,
         HomeAddress: passenger.HomeAddress,
+        Suburb: passenger.Suburb,
+        City: passenger.City,
+        Province: passenger.Province,
+        PostalCode: passenger.PostalCode,
         DestinationAddress: passenger.DestinationAddress,
         ParentId: passenger.ParentId,
         BusinessId: passenger.BusinessId,
@@ -100,6 +104,7 @@ export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
           passengerName: `${data.PassengerFirstName} ${data.PassengerLastName}`,
           age: data.Age,
           homeAddress: data.HomeAddress,
+          suburb: data.Suburb,
           destinationAddress: data.DestinationAddress,
           isActive: data.IsActive,
           isActivetext: data.IsActive == 1 ? 'Active' : 'Not Active',
@@ -157,6 +162,7 @@ export const GetPendingPassengerForBusinessFromDB = async (
           parentId: data.ParentId,
           parentName: `${data.ParentFirstName} ${data.ParentLastName}`,
           userId: data.UserId,
+          reason: data.Reason,
         };
 
         tripData.push(passsengers);
@@ -195,6 +201,7 @@ export const GetParentPassengersFromDB = async (parentId: string) => {
           destinationAddress: data.DestinationAddress,
           isActive: data.IsActive,
           isActiveText: data.IsActive == 1 ? 'Active' : 'Not Active',
+          isDeleted: data.IsDeleted,
         };
 
         tripData.push(passenger);
@@ -231,6 +238,34 @@ export const DeletePassengerFromDatabase = async (passengerId: string) => {
   return [data, statusCode];
 };
 
+export const DeletePassengerRequestFromDB = async (
+  passengerId: string,
+  reason: string,
+) => {
+  let statusCode: any;
+  let data: any;
+
+  await axios
+    .delete(
+      `${SERVER_HOST}:${SERVER_PORT}/passenger/request-delete-passenger`,
+      {
+        params: {
+          PassengerId: passengerId,
+          Reason: reason,
+        },
+      },
+    )
+    .then((response: any) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: any) => {
+      console.log(error);
+    });
+
+  return [data, statusCode];
+};
+
 export const UpdatePassengerInDatabase = async (passenger: Passenger) => {
   let statusCode: any;
   let data: any;
@@ -243,6 +278,10 @@ export const UpdatePassengerInDatabase = async (passenger: Passenger) => {
         LastName: passenger.LastName,
         Age: passenger.Age,
         HomeAddress: passenger.HomeAddress,
+        Suburb: passenger.Suburb,
+        City: passenger.City,
+        Province: passenger.Province,
+        PostalCode: passenger.PostalCode,
         DestinationAddress: passenger.DestinationAddress,
         ParentId: passenger.ParentId,
         BusinessId: passenger.BusinessId,

@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import {TripCardDriverStyles} from '../Stylesheets/GlobalStyles';
+import {TripCardDriverStyles} from '../../Stylesheets/GlobalStyles';
 
 type tripCardSwipableProps = {
   passengerName: string;

@@ -4,6 +4,10 @@ export class Passenger {
   LastName: String;
   Age: Number;
   HomeAddress: String;
+  Suburb: String;
+  City: String;
+  Province: String;
+  PostalCode: String;
   DestinationAddress: String;
   ParentId: String;
   BusinessId: String;
@@ -17,6 +21,10 @@ export class Passenger {
     LastName: String,
     Age: Number,
     HomeAddress: String,
+    Suburb: String,
+    City: String,
+    Province: String,
+    PostalCode: String,
     DestinationAddress: String,
     ParentId: String,
     BusinessId: String,
@@ -29,6 +37,10 @@ export class Passenger {
     this.LastName = LastName;
     this.Age = Age;
     this.HomeAddress = HomeAddress;
+    this.Suburb = Suburb;
+    this.City = City;
+    this.Province = Province;
+    this.PostalCode = PostalCode;
     this.DestinationAddress = DestinationAddress;
     this.ParentId = ParentId;
     this.BusinessId = BusinessId;

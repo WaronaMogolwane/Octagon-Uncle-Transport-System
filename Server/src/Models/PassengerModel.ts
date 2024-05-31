@@ -9,7 +9,7 @@ export const InsertPassenger = async (
 ) => {
   DbPool.query(
     {
-      sql: "call InsertNewPassenger(?,?,?,?,?,?,?,?,?,?,?)",
+      sql: "call InsertNewPassenger(?,?,?,?,?,?,?,?,?,?,?,?)",
       timeout: 40000,
       values: [
         passenger.passenger_id,

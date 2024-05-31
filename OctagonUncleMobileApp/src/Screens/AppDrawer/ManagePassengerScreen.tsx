@@ -97,7 +97,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [allPassengers, setAllPassengers] = useState([]);
   const [allPendingPassengers, setPendingPassengers] = useState([]);
 
-  const [statusCode, setStatusCode] = useState(true);
+  const [statusCode, setStatusCode] = useState(false);
   const [refreshing, setRefreshing] = React.useState(false);
 
   const [noPassenger, setNoPassenger] = useState(false);
@@ -186,6 +186,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
         setLastName(itemData.passengerLastName);
         setAge(itemData.age.toString());
         setHomeAddress(itemData.homeAddress);
+        setPostalCode(itemData.postalCode);
+        setProvince(itemData.province);
+        setCity(itemData.city);
+        setSuburb(itemData.suburb);
         setDestinationAddress(itemData.destinationAddress);
         setParentName(itemData.parentName);
         setIsActiveText(itemData.isActivetext);
@@ -237,6 +241,8 @@ const ManagePassengerScreen = ({navigation}: any) => {
     UpdatePassenger(updatePassenger).then((response: any) => {
       if (response[1] == 200) {
         setUpdate(false);
+        GetPassengers();
+        ClearFields();
       }
     });
   };
@@ -262,6 +268,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
         setShowPModal(false);
         GetPassengers();
         setStatusCode(!statusCode);
+        ClearFields();
       } else {
         ShowToast();
       }
@@ -270,10 +277,13 @@ const ManagePassengerScreen = ({navigation}: any) => {
 
   const ClearFields = async () => {
     setPassengerId('');
-
     setFirstName('');
     setLastName('');
     setAge('');
+    setSuburb('');
+    setCity('');
+    setProvince('');
+    setPostalCode('');
     setHomeAddress('');
     setDestinationAddress('');
     setIsActiveText('');
@@ -316,63 +326,67 @@ const ManagePassengerScreen = ({navigation}: any) => {
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
-            <AddPassengerForm
-              firstNameIsInvalid={!!formik.errors.firstname}
-              firstNameOnChangeText={formik.handleChange('firstname')}
-              firstNameErrorText={formik?.errors?.firstname}
-              firstNameOnBlur={formik.handleBlur('firstname')}
-              firstNameValue={formik.values?.firstname}
-              lastNameIsInvalid={!!formik.errors.lastname}
-              lastNameOnChangeText={formik.handleChange('lastname')}
-              lastNameErrorText={formik?.errors?.lastname}
-              lastNameOnBlur={formik.handleBlur('lastname')}
-              lastNameValue={formik.values?.lastname}
-              ageIsInvalid={!!formik.errors.age}
-              ageOnChangeText={formik.handleChange('age')}
-              ageErrorText={formik?.errors?.age}
-              ageOnBlur={formik.handleBlur('age')}
-              ageValue={formik.values?.age}
-              homeAddressIsInvalid={!!formik.errors.homeAddress}
-              homeAddressOnChangeText={formik.handleChange('homeAddress')}
-              homeAddressErrorText={formik?.errors?.homeAddress}
-              homeAddressOnBlur={formik.handleBlur('homeAddress')}
-              homeAddressValue={formik.values?.homeAddress}
-              destinationAddressIsInvalid={!!formik.errors.destinationAddress}
-              destinationAddressOnChangeText={formik.handleChange(
-                'destinationAddress',
-              )}
-              destinationAddressErrorText={formik?.errors?.destinationAddress}
-              destinationAddressOnBlur={formik.handleBlur('destinationAddress')}
-              destinationAddressValue={formik.values?.destinationAddress}
-              suburbIsInvalid={!!formik.errors.suburb}
-              suburbOnChangeText={formik.handleChange('suburb')}
-              suburbErrorText={formik?.errors?.suburb}
-              suburbOnBlur={formik.handleBlur('suburb')}
-              suburbValue={formik.values?.suburb}
-              cityIsInvalid={!!formik.errors.city}
-              cityOnChangeText={formik.handleChange('city')}
-              cityErrorText={formik?.errors?.city}
-              cityOnBlur={formik.handleBlur('city')}
-              cityValue={formik.values?.city}
-              provinceIsInvalid={!!formik.errors.province}
-              provinceOnChangeText={formik.handleChange('province')}
-              provinceErrorText={formik?.errors?.province}
-              provinceOnBlur={formik.handleBlur('province')}
-              provinceValue={formik.values?.province}
-              postalCodeIsInvalid={!!formik.errors.postalCode}
-              postalCodeOnChangeText={formik.handleChange('postalCode')}
-              postalCodeErrorText={formik?.errors?.postalCode}
-              postalCodeOnBlur={formik.handleBlur('postalCode')}
-              postalCodeValue={formik.values?.postalCode}
-              submitPassenger={
-                formik.handleSubmit as (
-                  values:
-                    | GestureResponderEvent
-                    | React.FormEvent<HTMLFormElement>
-                    | undefined,
-                ) => void
-              }
-            />
+            <View style={{marginBottom: 30}}>
+              <AddPassengerForm
+                firstNameIsInvalid={!!formik.errors.firstname}
+                firstNameOnChangeText={formik.handleChange('firstname')}
+                firstNameErrorText={formik?.errors?.firstname}
+                firstNameOnBlur={formik.handleBlur('firstname')}
+                firstNameValue={formik.values?.firstname}
+                lastNameIsInvalid={!!formik.errors.lastname}
+                lastNameOnChangeText={formik.handleChange('lastname')}
+                lastNameErrorText={formik?.errors?.lastname}
+                lastNameOnBlur={formik.handleBlur('lastname')}
+                lastNameValue={formik.values?.lastname}
+                ageIsInvalid={!!formik.errors.age}
+                ageOnChangeText={formik.handleChange('age')}
+                ageErrorText={formik?.errors?.age}
+                ageOnBlur={formik.handleBlur('age')}
+                ageValue={formik.values?.age}
+                homeAddressIsInvalid={!!formik.errors.homeAddress}
+                homeAddressOnChangeText={formik.handleChange('homeAddress')}
+                homeAddressErrorText={formik?.errors?.homeAddress}
+                homeAddressOnBlur={formik.handleBlur('homeAddress')}
+                homeAddressValue={formik.values?.homeAddress}
+                destinationAddressIsInvalid={!!formik.errors.destinationAddress}
+                destinationAddressOnChangeText={formik.handleChange(
+                  'destinationAddress',
+                )}
+                destinationAddressErrorText={formik?.errors?.destinationAddress}
+                destinationAddressOnBlur={formik.handleBlur(
+                  'destinationAddress',
+                )}
+                destinationAddressValue={formik.values?.destinationAddress}
+                suburbIsInvalid={!!formik.errors.suburb}
+                suburbOnChangeText={formik.handleChange('suburb')}
+                suburbErrorText={formik?.errors?.suburb}
+                suburbOnBlur={formik.handleBlur('suburb')}
+                suburbValue={formik.values?.suburb}
+                cityIsInvalid={!!formik.errors.city}
+                cityOnChangeText={formik.handleChange('city')}
+                cityErrorText={formik?.errors?.city}
+                cityOnBlur={formik.handleBlur('city')}
+                cityValue={formik.values?.city}
+                provinceIsInvalid={!!formik.errors.province}
+                provinceOnChangeText={formik.handleChange('province')}
+                provinceErrorText={formik?.errors?.province}
+                provinceOnBlur={formik.handleBlur('province')}
+                provinceValue={formik.values?.province}
+                postalCodeIsInvalid={!!formik.errors.postalCode}
+                postalCodeOnChangeText={formik.handleChange('postalCode')}
+                postalCodeErrorText={formik?.errors?.postalCode}
+                postalCodeOnBlur={formik.handleBlur('postalCode')}
+                postalCodeValue={formik.values?.postalCode}
+                submitPassenger={
+                  formik.handleSubmit as (
+                    values:
+                      | GestureResponderEvent
+                      | React.FormEvent<HTMLFormElement>
+                      | undefined,
+                  ) => void
+                }
+              />
+            </View>
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -651,63 +665,75 @@ const ManagePassengerScreen = ({navigation}: any) => {
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
-            <AddPassengerForm
-              firstNameIsInvalid={!!updateFormik.errors.firstname}
-              firstNameOnChangeText={updateFormik.handleChange('firstname')}
-              firstNameErrorText={updateFormik?.errors?.firstname}
-              firstNameOnBlur={updateFormik.handleBlur('firstname')}
-              firstNameValue={updateFormik.values?.firstname}
-              lastNameIsInvalid={!!updateFormik.errors.lastname}
-              lastNameOnChangeText={updateFormik.handleChange('lastname')}
-              lastNameErrorText={updateFormik?.errors?.lastname}
-              lastNameOnBlur={updateFormik.handleBlur('lastname')}
-              lastNameValue={updateFormik.values?.lastname}
-              ageIsInvalid={!!updateFormik.errors.age}
-              ageOnChangeText={updateFormik.handleChange('age')}
-              ageErrorText={updateFormik?.errors?.age}
-              ageOnBlur={updateFormik.handleBlur('age')}
-              ageValue={updateFormik.values?.age}
-              homeAddressIsInvalid={!!updateFormik.errors.homeAddress}
-              homeAddressOnChangeText={updateFormik.handleChange('homeAddress')}
-              homeAddressErrorText={updateFormik?.errors?.homeAddress}
-              homeAddressOnBlur={updateFormik.handleBlur('homeAddress')}
-              homeAddressValue={updateFormik.values?.homeAddress}
-              destinationAddressIsInvalid={!!formik.errors.destinationAddress}
-              destinationAddressOnChangeText={formik.handleChange(
-                'destinationAddress',
-              )}
-              destinationAddressErrorText={formik?.errors?.destinationAddress}
-              destinationAddressOnBlur={formik.handleBlur('destinationAddress')}
-              destinationAddressValue={formik.values?.destinationAddress}
-              suburbIsInvalid={!!formik.errors.suburb}
-              suburbOnChangeText={formik.handleChange('suburb')}
-              suburbErrorText={formik?.errors?.suburb}
-              suburbOnBlur={formik.handleBlur('suburb')}
-              suburbValue={formik.values?.suburb}
-              cityIsInvalid={!!formik.errors.city}
-              cityOnChangeText={formik.handleChange('city')}
-              cityErrorText={formik?.errors?.city}
-              cityOnBlur={formik.handleBlur('city')}
-              cityValue={formik.values?.city}
-              provinceIsInvalid={!!formik.errors.province}
-              provinceOnChangeText={formik.handleChange('province')}
-              provinceErrorText={formik?.errors?.province}
-              provinceOnBlur={formik.handleBlur('province')}
-              provinceValue={formik.values?.province}
-              postalCodeIsInvalid={!!formik.errors.postalCode}
-              postalCodeOnChangeText={formik.handleChange('postalCode')}
-              postalCodeErrorText={formik?.errors?.postalCode}
-              postalCodeOnBlur={formik.handleBlur('postalCode')}
-              postalCodeValue={formik.values?.postalCode}
-              submitPassenger={
-                updateFormik.handleSubmit as (
-                  values:
-                    | GestureResponderEvent
-                    | React.FormEvent<HTMLFormElement>
-                    | undefined,
-                ) => void
-              }
-            />
+            <View style={{marginBottom: 30}}>
+              <AddPassengerForm
+                firstNameIsInvalid={!!updateFormik.errors.firstname}
+                firstNameOnChangeText={updateFormik.handleChange('firstname')}
+                firstNameErrorText={updateFormik?.errors?.firstname}
+                firstNameOnBlur={updateFormik.handleBlur('firstname')}
+                firstNameValue={updateFormik.values?.firstname}
+                lastNameIsInvalid={!!updateFormik.errors.lastname}
+                lastNameOnChangeText={updateFormik.handleChange('lastname')}
+                lastNameErrorText={updateFormik?.errors?.lastname}
+                lastNameOnBlur={updateFormik.handleBlur('lastname')}
+                lastNameValue={updateFormik.values?.lastname}
+                ageIsInvalid={!!updateFormik.errors.age}
+                ageOnChangeText={updateFormik.handleChange('age')}
+                ageErrorText={updateFormik?.errors?.age}
+                ageOnBlur={updateFormik.handleBlur('age')}
+                ageValue={updateFormik.values?.age}
+                homeAddressIsInvalid={!!updateFormik.errors.homeAddress}
+                homeAddressOnChangeText={updateFormik.handleChange(
+                  'homeAddress',
+                )}
+                homeAddressErrorText={updateFormik?.errors?.homeAddress}
+                homeAddressOnBlur={updateFormik.handleBlur('homeAddress')}
+                homeAddressValue={updateFormik.values?.homeAddress}
+                destinationAddressIsInvalid={
+                  !!updateFormik.errors.destinationAddress
+                }
+                destinationAddressOnChangeText={updateFormik.handleChange(
+                  'destinationAddress',
+                )}
+                destinationAddressErrorText={
+                  updateFormik?.errors?.destinationAddress
+                }
+                destinationAddressOnBlur={updateFormik.handleBlur(
+                  'destinationAddress',
+                )}
+                destinationAddressValue={
+                  updateFormik.values?.destinationAddress
+                }
+                suburbIsInvalid={!!updateFormik.errors.suburb}
+                suburbOnChangeText={updateFormik.handleChange('suburb')}
+                suburbErrorText={updateFormik?.errors?.suburb}
+                suburbOnBlur={updateFormik.handleBlur('suburb')}
+                suburbValue={updateFormik.values?.suburb}
+                cityIsInvalid={!!updateFormik.errors.city}
+                cityOnChangeText={updateFormik.handleChange('city')}
+                cityErrorText={updateFormik?.errors?.city}
+                cityOnBlur={updateFormik.handleBlur('city')}
+                cityValue={updateFormik.values?.city}
+                provinceIsInvalid={!!updateFormik.errors.province}
+                provinceOnChangeText={updateFormik.handleChange('province')}
+                provinceErrorText={updateFormik?.errors?.province}
+                provinceOnBlur={updateFormik.handleBlur('province')}
+                provinceValue={updateFormik.values?.province}
+                postalCodeIsInvalid={!!updateFormik.errors.postalCode}
+                postalCodeOnChangeText={updateFormik.handleChange('postalCode')}
+                postalCodeErrorText={updateFormik?.errors?.postalCode}
+                postalCodeOnBlur={updateFormik.handleBlur('postalCode')}
+                postalCodeValue={updateFormik.values?.postalCode}
+                submitPassenger={
+                  updateFormik.handleSubmit as (
+                    values:
+                      | GestureResponderEvent
+                      | React.FormEvent<HTMLFormElement>
+                      | undefined,
+                  ) => void
+                }
+              />
+            </View>
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -844,76 +870,12 @@ const ManagePassengerScreen = ({navigation}: any) => {
     firstname: yup
       .string()
       .min(2, 'Firstname too Short!')
-      .max(50, 'Firstname too Long!')
-      .required('Required'),
-    lastname: yup
-      .string()
-      .min(2, 'lastname too Short!')
-      .max(50, 'lastname too Long!')
-      .required('Required'),
-    age: yup
-      .number()
-      .nullable()
-      .notRequired()
-      .min(1)
-      .max(100)
-      .test(
-        'noEOrSign', // type of the validator (should be unique)
-        "Number had an 'e' or sign.", // error message
-        value => typeof value === 'number' && !/[eE+-]/.test(value.toString()),
-      ),
-    homeAddress: yup
-      .string()
-      .min(2, 'Address too Short')
-      .max(200, 'Address long')
-      .required('Required'),
-    suburb: yup
-      .string()
-      .min(2, 'Suburb too Short!')
-      .max(50, 'Suburb too  Long!')
-      .required('Required'),
-    city: yup
-      .string()
-      .min(2, 'City too Short!')
-      .max(50, 'City too Long!')
-      .required('Required'),
-    province: yup
-      .string()
-      .min(2, 'Province too Short!')
-      .max(50, 'Province too Long!')
-      .required('Required'),
-    postalcode: yup
-      .string()
-      .min(2, 'Postal code too Short!')
-      .max(4, 'Postal code too Long!')
-      .required('Required'),
-    destinationAddress: yup
-      .string()
-      .min(2, 'Address too short')
-      .max(200, 'Address too long')
-      .required('Required'),
-  });
-
-  const updatePassengerSchema = yup.object().shape({
-    firstname: yup
-      .string()
-      .min(2, 'Firstname too Short!')
       .max(50, 'Firstname too Long!'),
     lastname: yup
       .string()
       .min(2, 'lastname too Short!')
       .max(50, 'lastname too Long!'),
-    age: yup
-      .number()
-      .nullable()
-      .notRequired()
-      .min(1)
-      .max(100)
-      .test(
-        'noEOrSign', // type of the validator (should be unique)
-        "Number had an 'e' or sign.", // error message
-        value => typeof value === 'number' && !/[eE+-]/.test(value.toString()),
-      ),
+    age: yup.number().nullable().notRequired().min(1).max(100),
     homeAddress: yup
       .string()
       .min(2, 'Address too Short')
@@ -933,7 +895,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
       .min(2, 'Province too Short!')
       .max(50, 'Province too Long!')
       .required('Required'),
-    postalcode: yup
+    postalCode: yup
       .string()
       .min(2, 'Postal code too Short!')
       .max(4, 'Postal code too Long!')
@@ -944,16 +906,51 @@ const ManagePassengerScreen = ({navigation}: any) => {
       .max(200, 'Address too long'),
   });
 
+  const updatePassengerSchema = yup.object().shape({
+    firstname: yup
+      .string()
+      .min(2, 'Firstname too Short!')
+      .max(50, 'Firstname too Long!'),
+    lastname: yup
+      .string()
+      .min(2, 'lastname too Short!')
+      .max(50, 'lastname too Long!'),
+    age: yup.number().nullable().notRequired().min(1).max(100),
+    homeAddress: yup
+      .string()
+      .min(2, 'Address too Short')
+      .max(200, 'Address long'),
+    suburb: yup
+      .string()
+      .min(2, 'Suburb too Short!')
+      .max(50, 'Suburb too  Long!'),
+    city: yup.string().min(2, 'City too Short!').max(50, 'City too Long!'),
+    province: yup
+      .string()
+      .min(2, 'Province too Short!')
+      .max(50, 'Province too Long!'),
+    postalcode: yup
+      .string()
+      .min(2, 'Postal code too Short!')
+      .max(4, 'Postal code too Long!'),
+    destinationAddress: yup
+      .string()
+      .min(2, 'Address too short')
+      .max(200, 'Address too long'),
+  });
+
   const formik = useFormik({
     initialValues: passengerInitialValues,
     validationSchema: passengerSchema,
 
-    onSubmit: (values, {resetForm}) => {
-      CreatePassenger(values);
+    onSubmit: async (values, {resetForm}) => {
+      CreatePassenger(values).finally(() => {
+        resetForm();
+      });
     },
   });
 
-  const updateFormik = useFormik({
+  const updateFormik: any = useFormik({
     initialValues: passengerInitialValues,
     validationSchema: updatePassengerSchema,
 
@@ -1141,10 +1138,6 @@ const ManagePassengerScreen = ({navigation}: any) => {
               isFocusVisible={false}
               onPress={() => {
                 setShowPModal(true);
-
-                //ShowToast();
-                //ShowSuccessToast();
-                //ShowDeleteToast();
               }}>
               <ButtonIcon as={AddIcon} />
               <ButtonText>Create Passenger</ButtonText>

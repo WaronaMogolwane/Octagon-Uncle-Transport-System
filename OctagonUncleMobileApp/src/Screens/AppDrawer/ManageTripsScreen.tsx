@@ -16,8 +16,7 @@ const ManageTripsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
 
-  // const businessId = auth.GetBusinessId();
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+  const businessId = auth.GetBusinessId();
 
   const toast = useToast();
 

@@ -88,8 +88,8 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const toast = useToast();
 
   const vehicleId = route.params.vehicleId;
-  //const businessId = auth.GetBusinessId();
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+
+  const businessId = auth.GetBusinessId();
 
   useEffect(() => {
     GetPassengers();

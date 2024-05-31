@@ -55,7 +55,7 @@ export function AddPassengerForm(props: AddPassengerFormProps) {
         />
 
         <CustomFormControlInput
-          labelText="Home Suburb"
+          labelText="Suburb"
           placeHolder="suburb"
           isInvalid={props.suburbIsInvalid}
           isRequired={false}
@@ -103,15 +103,15 @@ export function AddPassengerForm(props: AddPassengerFormProps) {
         />
 
         <CustomFormControlInput
-          labelText="Home Address"
-          placeHolder="home address"
-          isInvalid={props.homeAddressIsInvalid}
+          labelText="Destination Address"
+          placeHolder="destination address"
+          isInvalid={props.destinationAddressIsInvalid}
           isRequired={false}
           type="text"
-          onChangeText={props.homeAddressOnChangeText}
-          errorText={props.homeAddressErrorText}
-          onBlur={props.homeAddressOnBlur}
-          value={props.homeAddressValue}
+          onChangeText={props.destinationAddressOnChangeText}
+          errorText={props.destinationAddressErrorText}
+          onBlur={props.destinationAddressOnBlur}
+          value={props.destinationAddressValue}
         />
         <CustomButton1 title={'Submit'} onPress={props.submitPassenger} />
       </VStack>

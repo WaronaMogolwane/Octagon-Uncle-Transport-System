@@ -1,5 +1,5 @@
 import {
-  AddPassengerToDatabase,
+  AddPassengerToDB,
   GetPassengerFromDatabase,
   DeletePassengerFromDatabase as DeletePassengerFromDB,
   GetActivePassengerForBusinessFromDB,
@@ -13,7 +13,7 @@ import {
 import {Passenger} from '../Models/Passenger';
 
 export const AddPassenger = async (passenger: Passenger) => {
-  return await AddPassengerToDatabase(passenger);
+  return await AddPassengerToDB(passenger);
 };
 
 export const GetPassenger = async (passengerId: string, uid: string) => {

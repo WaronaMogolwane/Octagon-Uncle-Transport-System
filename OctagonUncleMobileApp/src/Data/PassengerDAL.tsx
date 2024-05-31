@@ -3,7 +3,8 @@ import axios from 'axios';
 import {Passenger} from '../Models/Passenger';
 import {SplitTimeString, ConvertDate} from '../Services/DataConverterService';
 
-export const AddPassengerToDatabase = async (passenger: Passenger) => {
+export const AddPassengerToDB = async (passenger: Passenger) => {
+  console.log(passenger);
   let statusCode: any;
   let data: any;
   await axios

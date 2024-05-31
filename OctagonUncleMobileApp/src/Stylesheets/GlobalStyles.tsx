@@ -176,3 +176,23 @@ export const AssignPassengerScreenStyles = StyleSheet.create({
     fontSize: 16,
   },
 });
+export const PassengerListActiveCardStyles = StyleSheet.create({
+  activeText: {
+    fontWeight: 'bold',
+    color: COLORS.green,
+    marginStart: 5,
+  },
+  inactiveText: {
+    fontWeight: 'bold',
+    color: COLORS.red,
+    marginStart: 5,
+  },
+});
+export const ManagePassengerScreenStyles = StyleSheet.create({
+  headingText: {
+    padding: 10,
+    fontSize: 25,
+    margin: 4,
+    //fontWeight: 'bold',
+  },
+});

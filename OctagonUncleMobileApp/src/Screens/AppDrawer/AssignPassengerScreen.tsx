@@ -6,7 +6,7 @@ import {
   ThemeStyles,
 } from '../../Stylesheets/GlobalStyles';
 import {
-  GetAllPassengerForBusiness,
+  GetAllActivePassengerForBusiness,
   UpdateIsAssigned,
 } from '../../Controllers/PassengerController';
 import {CustomButton1} from '../../Components/Buttons';
@@ -47,18 +47,15 @@ import {
   UpdatePassengerSchedule,
 } from '../../Controllers/PassengerScheduleController';
 import {PassengerSchedule} from '../../Models/PassengerSchedule';
-import {Auth} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
-import {useStorageState} from '../../Services/StorageStateService';
-import {useGlobalState} from '../../State';
-import {PassengerCard} from '../../Components/PassengerCard';
+import {PassengerCard} from '../../Components/Cards/PassengerListCard';
+import {Auth} from '../../Classes/Auth';
 
 const AssignPassengerScreen = ({route, navigation}: any) => {
-  const initialState = [''];
+  const {session, isLoading}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
 
-  const [[tokenIsLoading, authToken], setAuthToken] =
-    useStorageState('authToken');
-  const [auth, setAuth] = useState<Auth>();
+  const initialState = [''];
 
   const [newPassengerId, setNewPassengerId] = useState('');
   const [isFocus, setIsFocus] = useState(false);
@@ -91,10 +88,8 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const toast = useToast();
 
   const vehicleId = route.params.vehicleId;
-  //const vehicleId = '281';
-  //const businessId = '018f2940-e67c-78f3-8f22-400d7f0672b2';
-  const [businessId, x] = useGlobalState('businessId');
-  //const parentId = 'c7728615-394f-466b-833e-ea9dd60ba836';
+
+  const businessId = auth.GetBusinessId();
 
   useEffect(() => {
     GetPassengers();
@@ -103,7 +98,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const defaultData: never[] = [];
 
   const GetPassengers = async () => {
-    GetAllPassengerForBusiness(businessId).then((response: any) => {
+    GetAllActivePassengerForBusiness(businessId).then((response: any) => {
       if (response.code != 'ERR_BAD_REQUEST') {
         setIsDisabled(false);
         setPassengers(response);
@@ -174,7 +169,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     <PassengerCard
       passengerName={itemData.fullName}
       age={itemData.age}
-      pickUpLocation={itemData.pickUpLocation}
+      pickUpLocation={itemData.suburb}
       dropOffLocation={itemData.dropOffLocation}
       onPress={() => {
         // GetPassengerSchedule(itemData.passengerId).then((result: any) => {
@@ -508,14 +503,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
               setpassengerName(item.editedName);
               setIsFocus(false);
             }}
-            // renderLeftIcon={() => (
-            //   <AntDesign
-            //     style={AssignPassengerScreenStyles.icon}
-            //     color={isFocus ? 'blue' : 'black'}
-            //     name="Safety"
-            //     size={20}
-            //   />
-            // )}
           />
         </View>
       </View>
@@ -523,8 +510,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       <View>
         <CustomButton1
           onPress={() => {
-            // PrepareTrip();
-            // setValue('');
             if (newPassengerId != '') {
               setCalender(true);
             }

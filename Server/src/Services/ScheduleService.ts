@@ -13,6 +13,10 @@ export const StartSchedule = () => {
       AutoInsertPassengerSchedule(day, (error, result) => {
         if (result) {
           console.log("Passengers inserted into PDVL table succesfully");
+          console.log(
+            "This job was supposed to run at 1201 but actually ran at " +
+              new Date()
+          );
         }
       });
     }
@@ -22,16 +26,24 @@ export const StartSchedule = () => {
     AutoInsertTrip((error, result) => {
       if (result) {
         console.log("Trips succesfully added to table");
+        console.log(
+          "This job was supposed to run at 1210 but actually ran at " +
+            new Date()
+        );
       }
     });
   });
 
   const ClearPassengerDriverVehicleLinkingSchedule = schedule.scheduleJob(
-    " * 0 * * *",
+    " 1 0 * * *",
     function () {
       TruncatePassengerDriverVehicleLinking((error, result) => {
         if (result) {
           console.log("PDVL table truncated");
+          console.log(
+            "This job was supposed to run at 1201 but actually ran at " +
+              new Date()
+          );
         }
       });
     }

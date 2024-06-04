@@ -1,5 +1,5 @@
-import { GestureResponderEvent } from 'react-native/Libraries/Types/CoreEventTypes';
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 
 export type InputProps = {
   isInvalid: boolean;
@@ -52,6 +52,7 @@ export type SignInFormProps = {
       | undefined,
   ) => void;
 };
+
 export type SetPasswordFormProps = {
   passwordIsInvalid: boolean;
   passwordOnChangeText: (e: string | ChangeEvent<any>) => void;
@@ -70,6 +71,7 @@ export type SetPasswordFormProps = {
       | undefined,
   ) => void;
 };
+
 export type SignUpFormProps = {
   passwordIsInvalid: boolean;
   passwordOnChangeText: (e: string | ChangeEvent<any>) => void;
@@ -93,6 +95,7 @@ export type SignUpFormProps = {
       | undefined,
   ) => void;
 };
+
 export type SelectUserRoleFormProps = {
   userRoleSelectIsInvalid: boolean;
   userRoleSelectOnChangeText: (e: string | ChangeEvent<any>) => void;
@@ -149,6 +152,60 @@ export type UserDetailsFormProps = {
   postalCodeOnBlur: (e: any) => void;
   postalCodeValue: string;
   submitUserDetails: (
+    values:
+      | GestureResponderEvent
+      | React.FormEvent<HTMLFormElement>
+      | undefined,
+  ) => void;
+};
+
+export type AddPassengerFormProps = {
+  firstNameIsInvalid: boolean;
+  firstNameOnChangeText: (e: string | ChangeEvent<any>) => void;
+  firstNameErrorText: string | undefined;
+  firstNameOnBlur: (e: any) => void;
+  firstNameValue: string;
+  lastNameIsInvalid: boolean;
+  lastNameOnChangeText: (e: string | ChangeEvent<any>) => void;
+  lastNameErrorText: string | undefined;
+  lastNameOnBlur: (e: any) => void;
+  lastNameValue: string;
+  ageIsInvalid: boolean;
+  ageOnChangeText: (e: string | ChangeEvent<any>) => void;
+  ageErrorText: string | undefined;
+  ageOnBlur: (e: any) => void;
+  ageValue: string;
+  homeAddressIsInvalid: boolean;
+  homeAddressOnChangeText: (e: string | ChangeEvent<any>) => void;
+  homeAddressErrorText: string | undefined;
+  homeAddressOnBlur: (e: any) => void;
+  homeAddressValue: string;
+  suburbIsInvalid: boolean;
+  suburbOnChangeText: (e: string | ChangeEvent<any>) => void;
+  suburbErrorText: string | undefined;
+  suburbOnBlur: (e: any) => void;
+  suburbValue: string;
+  cityIsInvalid: boolean;
+  cityOnChangeText: (e: string | ChangeEvent<any>) => void;
+  cityErrorText: string | undefined;
+  cityOnBlur: (e: any) => void;
+  cityValue: string;
+  provinceIsInvalid: boolean;
+  provinceOnChangeText: (e: string | ChangeEvent<any>) => void;
+  provinceErrorText: string | undefined;
+  provinceOnBlur: (e: any) => void;
+  provinceValue: string;
+  postalCodeIsInvalid: boolean;
+  postalCodeOnChangeText: (e: string | ChangeEvent<any>) => void;
+  postalCodeErrorText: string | undefined;
+  postalCodeOnBlur: (e: any) => void;
+  postalCodeValue: string;
+  destinationAddressIsInvalid: boolean;
+  destinationAddressOnChangeText: (e: string | ChangeEvent<any>) => void;
+  destinationAddressErrorText: string | undefined;
+  destinationAddressOnBlur: (e: any) => void;
+  destinationAddressValue: string;
+  submitPassenger: (
     values:
       | GestureResponderEvent
       | React.FormEvent<HTMLFormElement>

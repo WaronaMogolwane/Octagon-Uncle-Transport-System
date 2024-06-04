@@ -3,10 +3,14 @@ import { Passenger } from "../Classes/Passenger";
 import {
   InsertPassenger,
   GetAllPassengersByParentId as GetAllPassengersByParentId,
-  GetAllPassengersByBusinessId,
+  GetActivePassengersByBusinessId,
   GetPassengerByPassengerId,
   UpdatePassenger,
   UpdateIsAssigned,
+  GetAllPassengersByBusinessId,
+  GetPendingPassengersByBusinessId,
+  DeletePassengerByPassengerId,
+  DeletePassengerRequestByPassengerId,
 } from "../Models/PassengerModel";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 
@@ -17,6 +21,10 @@ export const AddPassenger = async (req: any, res: any, next: any) => {
     req.body.passenger.LastName,
     req.body.passenger.Age,
     req.body.passenger.HomeAddress,
+    req.body.passenger.Suburb,
+    req.body.passenger.City,
+    req.body.passenger.Province,
+    req.body.passenger.PostalCode,
     req.body.passenger.DestinationAddress,
     req.body.passenger.ParentId,
     req.body.passenger.BusinessId
@@ -62,14 +70,18 @@ export const GetPassenger = async (req: any, res: any, next: any) => {
 
 export const UpdatePassengerDetail = async (req: any, res: any, next: any) => {
   let passenger = new Passenger(
-    req.body.passenger.PassengerId,
-    req.body.passenger.FirstName,
-    req.body.passenger.LastName,
-    req.body.passenger.Age,
-    req.body.passenger.HomeAddress,
-    req.body.passenger.DestinationAddress,
-    req.body.passenger.ParentId,
-    req.body.passenger.BusinessId
+    req.body.params.PassengerId,
+    req.body.params.FirstName,
+    req.body.params.LastName,
+    req.body.params.Age,
+    req.body.params.HomeAddress,
+    req.body.params.Suburb,
+    req.body.params.City,
+    req.body.params.Province,
+    req.body.params.PostalCode,
+    req.body.params.DestinationAddress,
+    req.body.params.ParentId,
+    req.body.params.BusinessId
   );
   await UpdatePassenger(passenger, (error, result) => {
     if (error) {
@@ -115,7 +127,7 @@ export const UpdatePassengerIsAssigned = async (
 };
 
 export const GetPassengersByParent = async (req: any, res: any, next: any) => {
-  let parentId = req.body.passenger.ParentId;
+  let parentId = req.query.ParentId;
 
   await GetAllPassengersByParentId(parentId, (error, result) => {
     if (error) {
@@ -142,7 +154,102 @@ export const GetPassengersByBusiness = async (
 ) => {
   let businessId = req.query.BusinessId;
 
+  await GetActivePassengersByBusinessId(businessId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else if (result[0] == "") {
+      let err: any = {
+        status: 405,
+        message: "Record not found",
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result[0],
+      });
+    }
+  });
+};
+
+export const GetAllPassengersByBusiness = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  let businessId = req.query.BusinessId;
+
   await GetAllPassengersByBusinessId(businessId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else if (result[0] == "") {
+      let err: any = {
+        status: 405,
+        message: "Record not found",
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result[0],
+      });
+    }
+  });
+};
+
+export const GetPendingPassengersByBusiness = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  let businessId = req.query.BusinessId;
+
+  await GetPendingPassengersByBusinessId(businessId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else if (result[0] == "") {
+      let err: any = {
+        status: 405,
+        message: "Record not found",
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result[0],
+      });
+    }
+  });
+};
+
+export const DeletePassenger = async (req: any, res: any, next: any) => {
+  let passengerId = req.query.PassengerId;
+
+  await DeletePassengerByPassengerId(passengerId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else if (result[0] == "") {
+      let err: any = {
+        status: 405,
+        message: "Record not found",
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result[0],
+      });
+    }
+  });
+};
+
+export const DeletePassengerRequest = async (req: any, res: any, next: any) => {
+  let deleteRequest = {
+    passengerId: req.query.PassengerId,
+    reason: req.query.Reason,
+  };
+
+  await DeletePassengerRequestByPassengerId(deleteRequest, (error, result) => {
     if (error) {
       next(new ErrorResponse(501, error.message));
     } else if (result[0] == "") {

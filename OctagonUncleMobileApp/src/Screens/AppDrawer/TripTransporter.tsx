@@ -1,10 +1,15 @@
 import {FlatList, RefreshControl} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {VehicleCard} from '../../Components/VehicleCard';
+import React, {useContext, useEffect, useState} from 'react';
+import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
+import {Auth} from '../../Classes/Auth';
+import {AuthContext} from '../../Services/AuthenticationService';
 
 const TripTransporter = ({navigation}: any) => {
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+  const {session, isLoading}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
+
+  const businessId = auth.GetBusinessId();
 
   const [vehicleList, setVehicleList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);

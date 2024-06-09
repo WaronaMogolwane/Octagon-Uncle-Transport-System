@@ -1,7 +1,9 @@
+import { RemovePassengerDriverLinkingFromDB } from './../Data/PassengerDriverVehicleLinkingDAL';
 import { ChangeEvent } from "react";
 import { GestureResponderEvent } from "react-native";
 import { RemoveVehicleAlertProps } from "./RemoveDriverAlertProps";
 import { RemoveClientAlertProps } from "./RemoveClientAlertProps";
+import { RemoveDriverAlertProps } from './RemoveVehicleAlertProps';
 
 export type VerifyOtpModalProps = {
     ShowModal: boolean;
@@ -57,7 +59,7 @@ export type DriverDetailsModalProps = {
     vehicleLicenseNumber: string;
     OpenRemoveDriverAlert: () => void;
     CloseOtpModalButtonOnPress: () => void;
-    RemoveDriverAlertProps: RemoveVehicleAlertProps;
+    RemoveDriverAlertProps: RemoveDriverAlertProps;
     // RemoveDriverAlertIsOpen: boolean;
     // VerifyRemoveIsInvalid: boolean;
     // VerifyRemoveOnChangeText: (e: string | ChangeEvent<any>) => void;

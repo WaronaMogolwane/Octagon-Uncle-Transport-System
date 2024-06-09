@@ -70,8 +70,8 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
     ndkVersion rootProject.ext.ndkVersion
+    compileSdk 34
 
-    compileSdkVersion rootProject.ext.compileSdkVersion
 
     namespace "com.octagonunclemobileapp"
     defaultConfig {

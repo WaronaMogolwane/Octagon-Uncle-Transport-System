@@ -1,39 +1,38 @@
 export class Vehicle {
-    ownerId: string;
-    make: string;
-    model: string;
-    yearModel: string;
-    registrationNo: string;
-    vinNo: string;
-    engineNo: string;
-    licenceNo: string;
-    colour: string;
-    dateCreated: Date;
-    dateModified: Date;
-
-    constructor(
-        ownerId: string,
-        make: string,
-        model: string,
-        yearModel: string,
-        registrationNo: string,
-        vinNo: string,
-        engineNo: string,
-        licenceNo: string,
-        colour: string,
-        dateCreated: Date,
-        dateModified: Date
-    ) {
-        this.ownerId = ownerId;
-        this.make = make;
-        this.model = model;
-        this.yearModel = yearModel;
-        this.registrationNo = registrationNo;
-        this.vinNo = vinNo;
-        this.engineNo = engineNo;
-        this.licenceNo = licenceNo;
-        this.colour = colour;
-        this.dateCreated = dateCreated
-        this.dateModified = dateModified
-    }
+  LicenseNumber: string;
+  Make: string;
+  Model: string;
+  Colour: string;
+  EngineNumber: string;
+  RegistratonNumber: string;
+  Vin: string;
+  Description: string;
+  DriverFullName?: string;
+  DateCreated: string;
+  DateModified?: Date;
+  constructor(
+    LicenseNumber: string,
+    Make: string,
+    Model: string,
+    Colour: string,
+    EngineNumber: string,
+    RegistratonNumber: string,
+    Vin: string,
+    Description: string,
+    DateCreated: string,
+    DateModified?: Date,
+    DriverFullName?: string,
+  ) {
+    this.LicenseNumber = LicenseNumber;
+    this.Make = Make;
+    this.Model = Model;
+    this.Colour = Colour;
+    this.EngineNumber = EngineNumber;
+    this.RegistratonNumber = RegistratonNumber;
+    this.Vin = Vin;
+    this.Description = Description;
+    this.DriverFullName = DriverFullName;
+    this.DateCreated = DateCreated;
+    this.DateModified = DateModified;
+  }
 }

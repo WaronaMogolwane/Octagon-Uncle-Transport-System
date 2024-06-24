@@ -18,7 +18,7 @@ import {
 } from '@gluestack-ui/themed';
 import React from 'react';
 import {CustomFormControlInput} from '../CustomFormInput';
-import {RemoveVehicleAlertProps} from '../../Props/RemoveDriverAlertProps';
+import {RemoveClientAlertProps} from '../../Props/RemoveClientAlertProps';
 String.prototype.format = function () {
   var args = arguments;
   return this.replace(/{([0-9]+)}/g, function (match, index) {
@@ -26,10 +26,10 @@ String.prototype.format = function () {
   });
 };
 
-const RemoveDriverAlert = (props: RemoveVehicleAlertProps) => {
+const RemoveClientAlert = (props: RemoveClientAlertProps) => {
   return (
     <AlertDialog
-      isOpen={props.RemoveDriverAlertIsOpen}
+      isOpen={props.RemoveClientAlertIsOpen}
       onClose={props.CloseAlertOnPress}>
       <AlertDialogBackdrop />
       <AlertDialogContent>
@@ -42,17 +42,17 @@ const RemoveDriverAlert = (props: RemoveVehicleAlertProps) => {
         <AlertDialogBody>
           <Text size="sm">
             Are you sure you want to remove
-            {' {0} '.format(props.RemoveDriverConfirmation)}
+            {' {0} '.format(props.RemoveClientConfirmation)}
             as your driver? Any vehicle linked to this driver will have to be
             linked to another driver.
           </Text>
           <Text size="sm" highlight={true}>
             Enter
-            {' {0} '.format(props.RemoveDriverConfirmation)}
+            {' {0} '.format(props.RemoveClientConfirmation)}
             to remove the driver.
           </Text>
           <CustomFormControlInput
-            placeHolder={' {0} '.format(props.RemoveDriverConfirmation)}
+            placeHolder={' {0} '.format(props.RemoveClientConfirmation)}
             type="text"
             isInvalid={props.VerifyRemoveIsInvalid}
             onChangeText={props.VerifyRemoveOnChangeText}
@@ -73,7 +73,7 @@ const RemoveDriverAlert = (props: RemoveVehicleAlertProps) => {
             <Button
               bg="$error600"
               action="negative"
-              onPress={props.HandleRemoveDriver}>
+              onPress={props.HandleRemoveClient}>
               <ButtonText>Remove</ButtonText>
             </Button>
           </ButtonGroup>
@@ -83,4 +83,4 @@ const RemoveDriverAlert = (props: RemoveVehicleAlertProps) => {
   );
 };
 
-export default RemoveDriverAlert;
+export default RemoveClientAlert;

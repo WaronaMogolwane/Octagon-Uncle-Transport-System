@@ -6359,6 +6359,11 @@ lru-cache@^6.0.0:
   dependencies:
     tmpl "1.0.5"
 
+lucide-react-native@^0.394.0:
+  version "0.394.0"
+  resolved "https://registry.npmjs.org/lucide-react-native/-/lucide-react-native-0.394.0.tgz"
+  integrity sha512-InjIuiAZmMPSi7Movu/62o3dT07X3/xp6AzTOjYmDVRrgeZnnqttdKXEpXV1+zGlxqrz5ivC6VYWSVXHpIMmlw==
+
 make-dir@^2.0.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/make-dir/-/make-dir-2.1.0.tgz"
@@ -7599,6 +7604,11 @@ react-native-gesture-handler@^2.14.1:
     invariant "^2.2.4"
     lodash "^4.17.21"
     prop-types "^15.7.2"
+
+react-native-image-crop-picker@^0.41.1:
+  version "0.41.1"
+  resolved "https://registry.npmjs.org/react-native-image-crop-picker/-/react-native-image-crop-picker-0.41.1.tgz"
+  integrity sha512-2O2+DeQcZABlhhyMTYUIGCJwpyUnkJwutJbQwETSQ5uwtKsmsmhM1X91bwf6XG1+c1U3kVrtTxHMakc62HPBXQ==
 
 react-native-pager-view@^6.2.3:
   version "6.2.3"

@@ -16,7 +16,12 @@ import {
 } from '@gluestack-ui/themed';
 import {useFormik} from 'formik';
 import React, {useContext, useEffect, useState} from 'react';
-import {RefreshControl, StyleSheet, View} from 'react-native';
+import {
+  ActivityIndicator,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from 'react-native';
 import * as yup from 'yup';
 import {
   AuthContext,
@@ -26,13 +31,16 @@ import {GestureResponderEvent} from 'react-native';
 import {Auth} from '../../../Classes/Auth';
 import {VehicleListCard} from '../../../Components/Cards/VehicleListCard';
 import VehicleDetailsModal from '../../../Components/Modals/VehicleDetailsModal';
-import {Camera} from 'react-native-vision-camera';
 import {Menu} from '@gluestack-ui/themed';
 import {Vehicle} from '../../../Models/VehicleModel';
-import NewVehicleDetailsModal from '../../../Components/Modals/NewVehicleDetailsModal';
+import NewVehicleModal from '../../../Components/Modals/NewVehicleDetailsModal';
+import {useFocusEffect} from '@react-navigation/native';
+import CaptureVehicleImageAlert from '../../../Components/Alerts/CaptureVehicleImageAlert';
+import ImagePicker from 'react-native-image-crop-picker';
+import {AddNewVehicle} from '../../../Controllers/VehicleController';
 
 const ManageVehiclesScreen = ({route, navigation}: any) => {
-  const {session, isLoading}: any = useContext(AuthContext);
+  const {session}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const [VehicleList, setVehicleList] = useState([]);
   const [refreshingVehicles, setRefreshingVehicles] = useState(false);
@@ -59,28 +67,28 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   });
   const [newVehicle, setNewVehicle] = useState<Vehicle>();
   const [showVehicleDetailsModal, setShowVehicleDetailsModal] = useState(false);
-  const [showNewVehicleDetailsModal, setNewShowVehicleDetailsModal] =
+  const [showNewVehicleDetailsModal, setShowNewVehicleDetailsModal] =
     useState(false);
   const [showRemoveVehicleDialog, setShowRemoveVehicleDialog] = useState(false);
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState([]);
   const [selected, setSelected] = React.useState(new Set([]));
 
+  const [vehicleFrontImage, setVehicleFrontImage] = useState('');
+  const [vehicleRearImage, setVehicleRearImage] = useState('');
+  const [licensePlateImage, setLicensePlateImage] = useState('');
+  const [showCaptureImageAlert, setShowCaptureImageAlert] = useState(false);
+  const [captureImageAlertTitle, setCaptureImageAlertTitle] = useState(
+    'Successfully scanned',
+  );
+  const [captureImageAlertDescription, setCaptureImageAlertDescription] =
+    useState('Please take a picture of the front and rear of the vehicle.');
+  const [confirmButtonTitle, setConfirmButtonTitle] = useState('Capture front');
+
+  const [vehicleIsSaving, setVehicleIsSaving] = useState(true);
   const toast = useToast();
 
-  const AddVehicleSchema = yup.object().shape({
-    firstName: yup
-      .string()
-      .min(2, 'First name too Short!')
-      .max(50, 'First name too Long!')
-      .required('Required'),
-    lastName: yup
-      .string()
-      .min(2, 'Last name too Short!')
-      .max(50, 'Last name too Long!')
-      .required('Required'),
-    email: yup.string().email('Invalid email').required('Email is required'),
-  });
+  const AddVehicleSchema = yup.object().shape({});
 
   const RegisterAddVehicleValues = {
     licenseNumber: '',
@@ -94,13 +102,33 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     vehicleImageFrontUrl: '',
     vehicleImageBackUrl: '',
   };
-
+  const [IsLoading, setIsLoading] = useState(false);
   const formik = useFormik({
     initialValues: RegisterAddVehicleValues,
     validationSchema: AddVehicleSchema,
-
     onSubmit: async () => {
-      if (formik.isValid) {
+      if (1 == 1) {
+        setIsLoading(true);
+        setShowNewVehicleDetailsModal(false);
+        await AddNewVehicle(
+          newVehicle!,
+          vehicleFrontImage,
+          vehicleRearImage,
+          (error: any, result: any) => {
+            if (error) {
+              console.log(error);
+              setIsLoading(false);
+              ShowAddVehicleToast(false);
+              setShowNewVehicleDetailsModal(true);
+            } else {
+              console.log(result.data);
+              setIsLoading(false);
+              setShowNewVehicleDetailsModal(false);
+              ShowAddVehicleToast(true);
+              ClearNewVehicle();
+            }
+          },
+        );
       }
     },
   });
@@ -150,6 +178,31 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     // );
     return null;
   };
+  const ShowAddVehicleToast = (isSuccess: boolean) => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return isSuccess ? (
+          <Toast nativeID={toastId} action="success" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Success</ToastTitle>
+              <ToastDescription>Vehicle successfully added..</ToastDescription>
+            </VStack>
+          </Toast>
+        ) : (
+          <Toast nativeID={toastId} action="error" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Failed</ToastTitle>
+              <ToastDescription>
+                An error has occurred. The vehicle was not added.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
   const ShowRemoveDriverToast = (isSuccess: boolean) => {
     toast.show({
       placement: 'top',
@@ -175,7 +228,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       },
     });
   };
-  const AddVehicleFab = () => {
+  const AddVehicleFab = (props: any) => {
     return (
       <Fab
         style={{zIndex: 1}}
@@ -227,11 +280,80 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     );
   };
 
+  const ClearNewVehicle = () => {
+    setCurrentVehicle({
+      LicenseNumber: '',
+      RegistrationNumber: '',
+      Vin: '',
+      EngineNumber: '',
+      Make: '',
+      Model: '',
+      Colour: '',
+      LicenseDiskImageUrl: '',
+      VehicleImageFrontUrl: '',
+      VehicleImageBackUrl: '',
+    });
+    setVehicleFrontImage('');
+    setVehicleRearImage('');
+    setConfirmButtonTitle('Capture front');
+  };
+  async function GetFileBlob(url: string, callback: any) {
+    let data: Blob;
+    await fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        let reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = function (e) {
+          callback(e.target!.result.toString());
+        };
+      });
+  }
+
+  const OpenCamera = () => {
+    ImagePicker.openCamera({
+      width: 500,
+      height: 500,
+      cropping: true,
+      compressImageQuality: 0.7,
+      showCropFrame: true,
+      forceJpg: true,
+    }).then(image => {
+      if (!vehicleFrontImage) {
+        GetFileBlob(image.path, async function (imageUrl: string) {
+          setVehicleFrontImage(imageUrl);
+          setCaptureImageAlertTitle('Successfully captured');
+          setConfirmButtonTitle('Capture rear');
+        });
+      }
+      if (vehicleFrontImage && !vehicleRearImage) {
+        GetFileBlob(image.path, async function (imageUrl: string) {
+          setVehicleRearImage(imageUrl!);
+          let NewVehicle: Vehicle = route.params.NewVehicle;
+          NewVehicle.FrontImage = vehicleFrontImage;
+          NewVehicle.RearImage = vehicleRearImage;
+          setNewVehicle(NewVehicle!);
+          setShowCaptureImageAlert(false);
+          setShowNewVehicleDetailsModal(true);
+        });
+      }
+    });
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const CheckRouteParams = () => {
+        if (route.params?.NewVehicle) {
+        }
+      };
+
+      return () => CheckRouteParams();
+    }, []),
+  );
+
   useEffect(() => {
     if (route.params?.NewVehicle) {
-      let NewVehicle: Vehicle = route.params.NewVehicle;
-      setNewVehicle(NewVehicle);
-      setShowVehicleDetailsModal(true);
+      setShowCaptureImageAlert(true);
     }
     let data: any = [
       {
@@ -284,6 +406,24 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
+      {IsLoading ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" />
+          <Text>Saving</Text>
+        </View>
+      ) : null}
+
       <View
         style={{
           position: 'absolute',
@@ -335,7 +475,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
               <Text>You currently have no drivers. Invite a driver.</Text>
             </ScrollView>
           )}
-          <NewVehicleDetailsModal
+          <NewVehicleModal
             LicenseNumberIsInvalid={!!formik.errors.licenseNumber}
             LicenseNumberOnChangeText={formik.handleChange('licenseNumber')}
             LicenseNumberErrorText={formik?.errors?.licenseNumber}
@@ -347,7 +487,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             )}
             RegistrationNumberErrorText={formik?.errors?.registrationNumber}
             RegistrationNumberOnBlur={formik.handleBlur('registrationNumber')}
-            RegistrationNumberValue={newVehicle?.RegistratonNumber!}
+            RegistrationNumberValue={newVehicle?.RegistrationNumber!}
             VinIsInvalid={!!formik.errors.vin}
             VinOnChangeText={formik.handleChange('vin')}
             VinErrorText={formik?.errors?.vin}
@@ -373,15 +513,25 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             ColourErrorText={formik?.errors?.colour}
             ColourOnBlur={formik.handleBlur('colour')}
             ColourValue={newVehicle?.Colour!}
-            ShowModal={showVehicleDetailsModal}
+            ShowModal={showNewVehicleDetailsModal}
             LicenseDiskImageUrl={currentVehicle.LicenseDiskImageUrl}
-            VehicleImageFrontUrl={currentVehicle.VehicleImageFrontUrl}
-            VehicleImageBackUrl={currentVehicle.VehicleImageBackUrl}
+            VehicleImageFrontUrl={vehicleFrontImage}
+            VehicleImageBackUrl={vehicleRearImage}
+            HandleSaveVehicle={
+              formik.handleSubmit as (
+                values:
+                  | GestureResponderEvent
+                  | React.FormEvent<HTMLFormElement>
+                  | undefined,
+              ) => void
+            }
             OpenRemoveVehicleAlert={() => {
               setShowRemoveVehicleDialog(true);
             }}
             CloseOtpModalButtonOnPress={() => {
-              setShowVehicleDetailsModal(false);
+              setShowNewVehicleDetailsModal(false);
+              ClearNewVehicle();
+              formik!!!.resetForm();
             }}
             RemoveVehicleAlertProps={{
               RemoveVehicleAlertIsOpen: showRemoveVehicleDialog,
@@ -406,10 +556,12 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
               ) => void,
               CloseAlertOnPress: () => {
                 setShowRemoveVehicleDialog(false);
+                navigation.setParams({NewVehicleModal: undefined});
               },
             }}
           />
           <VehicleDetailsModal
+            HandleSaveVehicle={() => {}}
             LicenseNumberIsInvalid={!!formik.errors.licenseNumber}
             LicenseNumberOnChangeText={formik.handleChange('licenseNumber')}
             LicenseNumberErrorText={formik?.errors?.licenseNumber}
@@ -447,7 +599,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             ColourErrorText={formik?.errors?.colour}
             ColourOnBlur={formik.handleBlur('colour')}
             ColourValue={currentVehicle.Colour}
-            ShowModal={showNewVehicleDetailsModal}
+            ShowModal={showVehicleDetailsModal}
             LicenseDiskImageUrl={currentVehicle.LicenseDiskImageUrl}
             VehicleImageFrontUrl={currentVehicle.VehicleImageFrontUrl}
             VehicleImageBackUrl={currentVehicle.VehicleImageBackUrl}
@@ -485,7 +637,24 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
           />
         </View>
       </View>
-
+      <CaptureVehicleImageAlert
+        ShowAlert={showCaptureImageAlert}
+        AlertTitle={captureImageAlertTitle}
+        AlertDescription={captureImageAlertDescription}
+        ConfirmButtonTitle={confirmButtonTitle}
+        CancelAlertOnPress={() => {
+          setShowCaptureImageAlert(false);
+          ClearNewVehicle();
+        }}
+        HandleTakePicture={() => {
+          if (vehicleFrontImage && vehicleRearImage) {
+            setShowCaptureImageAlert(false);
+            setShowNewVehicleDetailsModal(true);
+          } else {
+            OpenCamera();
+          }
+        }}
+      />
       <FabMenu />
     </SafeAreaView>
   );

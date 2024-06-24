@@ -141,7 +141,7 @@ const VehicleDetailsModal = (props: VehicleDetailsModalProps) => {
               size="sm"
               action="primary"
               mr="$3"
-              onPress={props.CloseOtpModalButtonOnPress}>
+              onPress={props.HandleSaveVehicle}>
               {/* onPress={() => {}}> */}
               <ButtonText>Save</ButtonText>
             </Button>

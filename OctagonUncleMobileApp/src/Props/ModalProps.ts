@@ -147,4 +147,10 @@ export type VehicleDetailsModalProps = {
     OpenRemoveVehicleAlert: () => void;
     CloseOtpModalButtonOnPress: () => void;
     RemoveVehicleAlertProps: RemoveVehicleAlertProps;
+    HandleSaveVehicle: (
+        values:
+            | GestureResponderEvent
+            | React.FormEvent<HTMLFormElement>
+            | undefined,
+    ) => void;
 };

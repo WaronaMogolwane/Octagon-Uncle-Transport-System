@@ -22,6 +22,9 @@ const BarcodeScanner = ({navigation, route}: any) => {
   const [cameraPermission, setCameraPermission] = useState<any>();
   const [codeIsScanned, setCodeIsScanned] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState();
+  const [cameraIsActive, setCameraIsActive] = useState(true);
+  const {session}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
 
   const codeScanner = useCodeScanner({
     codeTypes: ['codabar', 'pdf-417'],
@@ -30,7 +33,7 @@ const BarcodeScanner = ({navigation, route}: any) => {
         let vehicleInfo: any = codes[0].value?.split('%');
         const newVehicle: Vehicle = {
           LicenseNumber: vehicleInfo[6],
-          RegistratonNumber: vehicleInfo[7],
+          RegistrationNumber: vehicleInfo[7],
           Make: vehicleInfo[9],
           Model: vehicleInfo[10],
           Description: vehicleInfo[8].split(' / ')[0],
@@ -38,7 +41,9 @@ const BarcodeScanner = ({navigation, route}: any) => {
           Vin: vehicleInfo[12],
           EngineNumber: vehicleInfo[13],
           DateCreated: Date.now().toString(),
+          BusinessId: auth.GetBusinessId(),
         };
+        setCameraIsActive(false);
         navigation.navigate({
           name: 'Manage Vehicles',
           params: {NewVehicle: newVehicle},
@@ -79,7 +84,7 @@ const BarcodeScanner = ({navigation, route}: any) => {
         <Camera
           style={{zIndex: 3, height: '90%'}}
           device={cameraDevice}
-          isActive={true}
+          isActive={cameraIsActive}
           codeScanner={codeScanner}
         />
         <Heading style={{zIndex: 4, width: '100%', textAlign: 'center'}}>

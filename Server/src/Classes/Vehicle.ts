@@ -1,6 +1,6 @@
 export class Vehicle {
-  FrontImage?: string;
-  RearImage?: string;
+  FrontImage: string;
+  RearImage: string;
   LicenseNumber: string;
   Make: string;
   Model: string;
@@ -14,6 +14,8 @@ export class Vehicle {
   DateCreated: string;
   DateModified?: Date;
   constructor(
+    FrontImage: string,
+    RearImage: string,
     LicenseNumber: string,
     Make: string,
     Model: string,
@@ -24,9 +26,6 @@ export class Vehicle {
     BusinessId: string,
     Description: string,
     DateCreated: string,
-    FrontImage?: string,
-    RearImage?: string,
-
     DateModified?: Date,
     DriverFullName?: string,
   ) {

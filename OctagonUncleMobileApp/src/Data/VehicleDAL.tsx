@@ -118,3 +118,20 @@ export const InsertNewVehicle = async (businessId: string) => {
 
   return result;
 };
+export const GetVehiclesByBusinessId = async (
+  businessId: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/vehicle/get-business-vehicles`, {
+      params: {
+        businessId: businessId,
+      },
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
+};

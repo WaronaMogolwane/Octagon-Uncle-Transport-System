@@ -1,6 +1,7 @@
 import {
   AddVehicleToDatabase,
   GetVehicleAndDriverFromDB,
+  GetVehiclesByBusinessId,
 } from '../Data/VehicleDAL';
 import {Vehicle} from '../Models/VehicleModel';
 
@@ -25,4 +26,16 @@ export const AddNewVehicle = async (
       }
     },
   );
+};
+export const GetVehicles = async (
+  businessId: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await GetVehiclesByBusinessId(businessId, (error: any, result: any) => {
+    if (error) {
+      callback(error, null);
+    } else {
+      callback(null, result);
+    }
+  });
 };

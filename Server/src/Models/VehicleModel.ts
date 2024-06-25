@@ -38,10 +38,29 @@ export const InsertNewVehicle = async (
           newVehicle.Colour,
           newVehicle.BusinessId,
           newVehicle.LicenseNumber,
-          newVehicle.FrontImage,
-          newVehicle.RearImage,
+          '/' + newVehicle.FrontImage,
+          '/' + newVehicle.RearImage,
           ""
         ],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+export const GetVehiclesByBusinessId = async (
+  businessId: string,
+  callback: (error: any, result: any) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetVehiclesByBusinessId(?);",
+      timeout: 40000,
+      values: [businessId],
     },
     function (error, results, fields) {
       if (error) {

@@ -37,7 +37,10 @@ import NewVehicleModal from '../../../Components/Modals/NewVehicleDetailsModal';
 import {useFocusEffect} from '@react-navigation/native';
 import CaptureVehicleImageAlert from '../../../Components/Alerts/CaptureVehicleImageAlert';
 import ImagePicker from 'react-native-image-crop-picker';
-import {AddNewVehicle} from '../../../Controllers/VehicleController';
+import {
+  AddNewVehicle,
+  GetVehicles,
+} from '../../../Controllers/VehicleController';
 
 const ManageVehiclesScreen = ({route, navigation}: any) => {
   const {session}: any = useContext(AuthContext);
@@ -48,7 +51,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     setRefreshingVehicles(true);
     setTimeout(() => {
       try {
-        GetVehicles(auth.GetBusinessId());
+        GetBusinessVehicles(auth.GetBusinessId());
       } catch (error) {}
     }, 2000);
     setRefreshingVehicles(false);
@@ -62,8 +65,8 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     Model: '',
     Colour: '',
     LicenseDiskImageUrl: '',
-    VehicleImageFrontUrl: '',
-    VehicleImageBackUrl: '',
+    FrontImageUrl: '',
+    RearImageUrl: '',
   });
   const [newVehicle, setNewVehicle] = useState<Vehicle>();
   const [showVehicleDetailsModal, setShowVehicleDetailsModal] = useState(false);
@@ -99,10 +102,12 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     model: '',
     colour: '',
     licenseDiskImageUrl: '',
-    vehicleImageFrontUrl: '',
-    vehicleImageBackUrl: '',
+    frontImageUrl: '',
+    rearImageUrl: '',
   };
   const [IsLoading, setIsLoading] = useState(false);
+  const storageUrl: string =
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
   const formik = useFormik({
     initialValues: RegisterAddVehicleValues,
     validationSchema: AddVehicleSchema,
@@ -154,7 +159,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
                 console.error(error);
                 ShowRemoveDriverToast(false);
               } else {
-                GetVehicles(auth.GetBusinessId());
+                GetBusinessVehicles(auth.GetBusinessId());
                 setShowRemoveVehicleDialog(false);
                 setShowVehicleDetailsModal(false);
                 ShowRemoveDriverToast(true);
@@ -165,18 +170,14 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       }
     },
   });
-  const GetVehicles = async (businessId: string) => {
-    // return await GetDriversByBusinessId(
-    //   businessId,
-    //   (error: any, result: any) => {
-    //     if (error) {
-    //       console.error(error);
-    //     } else {
-    //       setDriversList(result.data);
-    //     }
-    //   },
-    // );
-    return null;
+  const GetBusinessVehicles = async (businessId: string) => {
+    return await GetVehicles(businessId, (error: any, result: any) => {
+      if (error) {
+        console.error(error.response.data);
+      } else {
+        setVehicleList(result.data);
+      }
+    });
   };
   const ShowAddVehicleToast = (isSuccess: boolean) => {
     toast.show({
@@ -290,8 +291,8 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       Model: '',
       Colour: '',
       LicenseDiskImageUrl: '',
-      VehicleImageFrontUrl: '',
-      VehicleImageBackUrl: '',
+      FrontImageUrl: '',
+      RearImageUrl: '',
     });
     setVehicleFrontImage('');
     setVehicleRearImage('');
@@ -366,9 +367,9 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
         Vin: '2T1AE09B4RL059372',
         LicenseDiskImageUrl:
           'https://thupello.co.za/wp-content/uploads/2021/10/ShuttleDirect_1446193980.jpg',
-        VehicleImageFrontUrl:
+        FrontImageUrl:
           'https://eu.amcdn.co.za/cars/toyota-quantum-2-5d-4d-gl-14-seater-bus-2017-id-52703215-type-main.jpg',
-        VehicleImageBackUrl: 'https://img.autotrader.co.za/30808179/',
+        RearImageUrl: 'https://img.autotrader.co.za/30808179/',
       },
       {
         LicenseNumber: 'QWE456GP',
@@ -380,9 +381,9 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
         Vin: 'D4H7I92N644UBAV',
         LicenseDiskImageUrl:
           'https://www.licenserenewal.co.za/images/disc_image.jpeg',
-        VehicleImageFrontUrl:
+        FrontImageUrl:
           'https://i.pinimg.com/736x/d4/2f/74/d42f7478442235c759666556e884cb11.jpg',
-        VehicleImageBackUrl: 'https://img.autotrader.co.za/25818492/',
+        RearImageUrl: 'https://img.autotrader.co.za/25818492/',
       },
       {
         LicenseNumber: 'QWE789GP',
@@ -394,14 +395,14 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
         Vin: '11ER7A32S05GFT789',
         LicenseDiskImageUrl:
           'https://cdn.24.co.za/files/Cms/General/d/2589/39efadb018d24e678458be17b7993478.jpg',
-        VehicleImageFrontUrl:
+        FrontImageUrl:
           'https://www.carfind.co.za/dealer/dealerstock/13131/img-20231113-wa0026_ID49c2ec91-9886-434c-a8d4-e38dd38aa17e.jpg',
-        VehicleImageBackUrl:
+        RearImageUrl:
           'https://d2wxnkq3f3e5mq.cloudfront.net/prod/vehicles/a0CIV00002llWWf2AM/Photos/360/Rear.jpg',
       },
     ];
-    GetVehicles(auth.GetBusinessId());
-    setVehicleList(data);
+    GetBusinessVehicles(auth.GetBusinessId());
+    //setVehicleList(data);
   }, [auth, route.params?.NewVehicle]);
 
   return (
@@ -444,7 +445,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
                   Make={item.Make}
                   Model={item.Model}
                   Colour={item.Colour}
-                  VehicleImageFrontUrl={item.VehicleImageFrontUrl}
+                  VehicleImageFrontUrl={storageUrl + item.FrontImageUrl}
                   DriverFullName={
                     item.DriverFullName
                       ? item.DriverFullName
@@ -456,7 +457,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
                   }}
                 />
               )}
-              keyExtractor={(item: any) => item.LicenseNumber}
+              keyExtractor={(item: any) => item.VehicleId}
               refreshControl={
                 <RefreshControl
                   refreshing={refreshingVehicles}
@@ -601,8 +602,8 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             ColourValue={currentVehicle.Colour}
             ShowModal={showVehicleDetailsModal}
             LicenseDiskImageUrl={currentVehicle.LicenseDiskImageUrl}
-            VehicleImageFrontUrl={currentVehicle.VehicleImageFrontUrl}
-            VehicleImageBackUrl={currentVehicle.VehicleImageBackUrl}
+            VehicleImageFrontUrl={storageUrl + currentVehicle.FrontImageUrl}
+            VehicleImageBackUrl={storageUrl + currentVehicle.RearImageUrl}
             OpenRemoveVehicleAlert={() => {
               setShowRemoveVehicleDialog(true);
             }}

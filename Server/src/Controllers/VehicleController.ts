@@ -1,7 +1,7 @@
 import { error } from "console";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 import { Vehicle } from "../Classes/Vehicle";
-import { GetVehicleAndDriverByBusiness, InsertNewVehicle } from "../Models/VehicleModel";
+import { GetVehicleAndDriverByBusiness, GetVehiclesByBusinessId, InsertNewVehicle } from "../Models/VehicleModel";
 import { GetUploadUrl, UploadFile } from "../Services/BlobStorageService";
 
 export const AddNewVehicle = async (req: any, res: any, next: any) => {
@@ -23,9 +23,6 @@ export const AddNewVehicle = async (req: any, res: any, next: any) => {
   const frontImageName = filePath + 'Front-Image.jpeg';
   const rearImageName = filePath + 'Rear-Image.jpeg';
 
-  newVehicle.FrontImage = frontImageName;
-  newVehicle.RearImage = rearImageName;
-
   await UploadFile(newVehicle.FrontImage, frontImageName, req.body.FileType, async (error, result) => {
     if (error) {
       next(new ErrorResponse(501, error));
@@ -36,6 +33,8 @@ export const AddNewVehicle = async (req: any, res: any, next: any) => {
           next(new ErrorResponse(501, error));
         }
         else {
+          newVehicle.FrontImage = frontImageName;
+          newVehicle.RearImage = rearImageName;
           await InsertNewVehicle(newVehicle, async (error, result) => {
             if (error) {
               next(new ErrorResponse(501, error.message));
@@ -103,3 +102,20 @@ export const GetVehicleAndDriver = async (req: any, res: any, next: any) => {
     }
   });
 };
+export const GetVehicles = async (req: any, res: any, next: any) => {
+  let businessId = req.query.businessId;
+  await GetVehiclesByBusinessId(businessId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(400, error.message));
+    }
+    else {
+      if (result[0]) {
+        res.status(200).send(result[0]);
+      }
+      else {
+        res.status(400).send(new ErrorResponse(400, "No vehicles found."));
+      }
+    }
+  });
+};
+

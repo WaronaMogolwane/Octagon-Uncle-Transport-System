@@ -1,60 +1,46 @@
-import {GestureResponderEvent, View} from 'react-native';
-import {UserDetailForm} from '../../Components/Forms/UserDetailForm';
+import {GestureResponderEvent, ScrollView, View} from 'react-native';
+import React from 'react';
 import {
-  Image,
+  Toast,
   ToastDescription,
   ToastTitle,
   VStack,
   useToast,
-  Toast,
-  ScrollView,
 } from '@gluestack-ui/themed';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {BusinessDetail} from '../../Models/BusinessDetail';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {UserDetail} from '../../Models/UserDetail';
-import {AddUserDetail} from '../../Controllers/UserDetailController';
-import {CustomButton1} from '../../Components/Buttons';
-import {useContext, useEffect, useState} from 'react';
-import {decode} from 'base-64';
-import {useStorageState} from '../../Services/StorageStateService';
-import {Auth} from '../../Classes/Auth';
-import {AuthContext} from '../../Services/AuthenticationService';
-global.atob = decode;
+import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {BusinessDetailForm} from '../../Components/Forms/BusinessDetailForm';
+import {AddBusinessDetail} from '../../Controllers/BusinessDetailController';
 
-export default function PersonalDetailsScreen({route, navigation}: any) {
-  const {sessionId} = route.params;
-  const [[tokenIsLoading, authToken], setAuthToken] =
-    useStorageState('authToken');
-  const [[isLoading, session], setSession] = useStorageState('session');
-  const {SetSession}: any = useContext(AuthContext);
-
-  const [auth, setAuth] = useState(new Auth(sessionId));
+const BusinessDetailsScreen = ({navigation}: any) => {
   const toast = useToast();
-  //const userId = 'c7728615-394f-466b-833e-ea9dd60ba836';
-  const userId = auth.GetUserId();
-  const userDetailHelper = async (values: any) => {
-    let userDetail = new UserDetail(
+  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+
+  const businessDetailHelper = async (values: any) => {
+    let businessDetail = new BusinessDetail(
       '',
-      values.firstname,
-      values.lastname,
-      values.phonenumber,
+      values.businessName,
+      values.businessPhoneNumber,
       values.addressline1,
       values.addressline2,
       values.suburb,
       values.city,
       values.province,
       values.postalcode,
-      userId,
+      businessId,
     );
 
-    await AddUserDetail(userDetail)
+    await AddBusinessDetail(businessDetail)
       .then((r: any) => {
         if (r == 200) {
-          //On success this cofe runs
-          SetSession(authToken!);
+          //On success this code runs
           formik.resetForm();
+          //navigation.push('Home');
+          successToast();
+          navigation.navigate('Home');
         } else {
           //On faluire this code runs
           toast.show({
@@ -76,50 +62,75 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
           });
         }
       })
-      .catch(error => console.log(error));
+      .catch(error => console.error(error));
   };
 
-  const userDetailSchema = yup.object().shape({
-    firstname: yup
+  const successToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="success" variant="outline">
+            <VStack space="xs">
+              <ToastTitle>Details saved successfully</ToastTitle>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const businessDetailSchema = yup.object().shape({
+    businessName: yup
       .string()
-      .min(2, 'Firstname too Short!')
-      .max(50, 'Firstname too Long!'),
-    lastname: yup
-      .string()
-      .min(2, 'lastname too Short!')
-      .max(50, 'lastname too Long!'),
-    phoneNumber: yup
+      .min(2, 'Business name too Short!')
+      .max(50, 'Business name too Long!')
+      .required(),
+    businessPhoneNumber: yup
       .string()
       .matches(
         /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
         'not valid',
       )
       .min(10, 'Business phone number should be 10 digits')
-      .max(10, 'Business phone number should be 10 digits'),
+      .max(10, 'Business phone number should be 10 digits')
+      .required(),
     addressline1: yup
       .string()
       .min(2, 'Address too Short!')
-      .max(100, 'Address too Long!'),
+      .max(100, 'Address too Long!')
+      .required(),
     addressline2: yup.string().min(2, 'Too Short!').max(100, 'Too Long!'),
     suburb: yup
       .string()
       .min(2, 'Suburb too Short!')
-      .max(50, 'Suburb too  Long!'),
+      .max(50, 'Suburb too  Long!')
+      .required(),
     city: yup.string().min(2, 'City too Short!').max(50, 'City too Long!'),
     province: yup
       .string()
       .min(2, 'Province too Short!')
-      .max(50, 'Province too Long!'),
+      .max(50, 'Province too Long!')
+      .required(),
     postalcode: yup
-      .string()
-      .min(2, 'Postal code too Short!')
-      .max(4, 'Postal code too Long!'),
+      .number()
+      .required()
+      .positive()
+      .integer()
+      .min(4, 'Postal code too Short!')
+      .max(4, 'Postal code too Long!')
+      .required(),
+    // postalcode: yup
+    //   .string()
+    //   .min(4, 'Postal code too Short!')
+    //   .max(4, 'Postal code too Long!')
+    //   .required('Required'),
   });
 
-  const userDetailsInitialValues = {
-    firstname: '',
-    lastname: '',
-    phonenumber: '',
+  const businessDetailsInitialValues = {
+    businessName: '',
+    businessPhoneNumber: '',
     addressline1: '',
     addressline2: '',
     suburb: '',
@@ -129,47 +140,33 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
   };
 
   const formik = useFormik({
-    initialValues: userDetailsInitialValues,
-    validationSchema: userDetailSchema,
+    initialValues: businessDetailsInitialValues,
+    validationSchema: businessDetailSchema,
 
-    onSubmit: async (values, {resetForm}) => {
-      await userDetailHelper(values);
+    onSubmit: (values, {resetForm}) => {
+      businessDetailHelper(values);
     },
   });
+
   return (
     <ScrollView>
       <SafeAreaView style={ThemeStyles.container}>
-        <View style={ThemeStyles.container}>
-          <View style={{margin: 5}}>
-            <Image
-              size="xl"
-              alt="Logo of Company"
-              borderRadius={30}
-              source={{
-                uri: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
-              }}
-            />
-          </View>
-        </View>
         <View style={{paddingBottom: 15, paddingTop: 15}}>
-          <UserDetailForm
+          <BusinessDetailForm
             showButton={true}
-            heading="Add User Details"
-            firstNameIsInvalid={!!formik.errors.firstname}
-            firstNameOnChangeText={formik.handleChange('firstname')}
-            firstNameErrorText={formik?.errors?.firstname}
-            firstNameOnBlur={formik.handleBlur('firstname')}
-            firstNameValue={formik.values?.firstname}
-            lastNameIsInvalid={!!formik.errors.lastname}
-            lastNameOnChangeText={formik.handleChange('lastname')}
-            lastNameErrorText={formik?.errors?.lastname}
-            lastNameOnBlur={formik.handleBlur('lastname')}
-            lastNameValue={formik.values?.lastname}
-            phoneNumberIsInvalid={!!formik.errors.phonenumber}
-            phoneNumberOnChangeText={formik.handleChange('phonenumber')}
-            phoneNumberErrorText={formik?.errors?.phonenumber}
-            phoneNumberOnBlur={formik.handleBlur('phonenumber')}
-            phoneNumberValue={formik.values?.phonenumber}
+            buttonText="Submit Business Details"
+            businessNameIsInvalid={!!formik.errors.businessName}
+            businessNameOnChangeText={formik.handleChange('businessName')}
+            businessNameErrorText={formik?.errors?.businessName}
+            businessNameOnBlur={formik.handleBlur('businessName')}
+            businessNameValue={formik.values?.businessName}
+            businessPhoneNumberIsInvalid={!!formik.errors.businessPhoneNumber}
+            businessPhoneNumberOnChangeText={formik.handleChange(
+              'businessPhoneNumber',
+            )}
+            businessPhoneNumberErrorText={formik?.errors?.businessPhoneNumber}
+            businessPhoneNumberOnBlur={formik.handleBlur('businessPhoneNumber')}
+            businessPhoneNumberValue={formik.values?.businessPhoneNumber}
             addressline1IsInvalid={!!formik.errors.addressline1}
             addressline1OnChangeText={formik.handleChange('addressline1')}
             addressline1ErrorText={formik?.errors?.addressline1}
@@ -200,7 +197,7 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
             postalCodeErrorText={formik?.errors?.postalcode}
             postalCodeOnBlur={formik.handleBlur('postalcode')}
             postalCodeValue={formik.values?.postalcode}
-            submitUserDetails={
+            submitBusinessDetail={
               formik.handleSubmit as (
                 values:
                   | GestureResponderEvent
@@ -213,4 +210,6 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
       </SafeAreaView>
     </ScrollView>
   );
-}
+};
+
+export default BusinessDetailsScreen;

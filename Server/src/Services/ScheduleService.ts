@@ -14,7 +14,7 @@ export const StartSchedule = () => {
         if (result) {
           console.log("Passengers inserted into PDVL table succesfully");
           console.log(
-            "This job was supposed to run at 1201 but actually ran at " +
+            "This job was supposed to run at 1205 but actually ran at " +
               new Date()
           );
         }

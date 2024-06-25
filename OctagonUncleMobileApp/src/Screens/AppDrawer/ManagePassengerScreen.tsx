@@ -16,7 +16,6 @@ import {
   GetParentPassengers,
   UpdatePassenger,
 } from '../../Controllers/PassengerController';
-import {CustomButton1} from '../../Components/Buttons';
 import {PassengerParentCard} from '../../Components/Cards/PassengerListForParentCard';
 import {
   Modal,

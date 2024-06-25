@@ -1,52 +1,40 @@
-import {Heading, VStack} from '@gluestack-ui/themed';
+import {VStack} from '@gluestack-ui/themed';
 import {View} from 'react-native';
-import {UserDetailsFormProps} from '../../Models/FormControlProps';
+import {AddBusinessDetailFormProps} from '../../Models/FormControlProps';
 import {CustomButton1} from '../Buttons';
 import {
   CustomFormControlInput,
   CustomFormControlInputNumber,
-  CustomFormControlInputPhone,
 } from '../CustomFormInput';
 
-export function UserDetailForm(props: UserDetailsFormProps) {
+export function BusinessDetailForm(props: AddBusinessDetailFormProps) {
   return (
     <View>
-      <Heading mb="$3">{props.heading}</Heading>
       <VStack>
         <CustomFormControlInput
-          labelText="Firstname"
-          placeHolder="firstname"
-          isInvalid={props.firstNameIsInvalid}
+          labelText="Business Name"
+          placeHolder="business name"
+          isInvalid={props.businessNameIsInvalid}
           isRequired={true}
           type="text"
-          onChangeText={props.firstNameOnChangeText}
-          errorText={props.firstNameErrorText}
-          onBlur={props.firstNameOnBlur}
-          value={props.firstNameValue}
+          onChangeText={props.businessNameOnChangeText}
+          errorText={props.businessNameErrorText}
+          onBlur={props.businessNameOnBlur}
+          value={props.businessNameValue}
         />
 
-        <CustomFormControlInput
-          labelText="Lastname"
-          placeHolder="lastname"
-          isInvalid={props.lastNameIsInvalid}
+        <CustomFormControlInputNumber
+          labelText="Business Phone Number"
+          placeHolder="business phone number"
+          isInvalid={props.businessPhoneNumberIsInvalid}
           isRequired={true}
           type="text"
-          onChangeText={props.lastNameOnChangeText}
-          errorText={props.lastNameErrorText}
-          onBlur={props.lastNameOnBlur}
-          value={props.lastNameValue}
+          onChangeText={props.businessPhoneNumberOnChangeText}
+          errorText={props.businessPhoneNumberErrorText}
+          onBlur={props.businessPhoneNumberOnBlur}
+          value={props.businessPhoneNumberValue}
         />
-        <CustomFormControlInputPhone
-          labelText="Phone number"
-          placeHolder="phone number"
-          isInvalid={props.phoneNumberIsInvalid}
-          isRequired={true}
-          type="text"
-          onChangeText={props.phoneNumberOnChangeText}
-          errorText={props.phoneNumberErrorText}
-          onBlur={props.phoneNumberOnBlur}
-          value={props.phoneNumberValue}
-        />
+
         <CustomFormControlInput
           labelText="Addressline 1"
           placeHolder="address"
@@ -117,8 +105,12 @@ export function UserDetailForm(props: UserDetailsFormProps) {
           onBlur={props.postalCodeOnBlur}
           value={props.postalCodeValue}
         />
+
         {props.showButton ? (
-          <CustomButton1 title={'Submit'} onPress={props.submitUserDetails} />
+          <CustomButton1
+            title={props.buttonText}
+            onPress={props.submitBusinessDetail}
+          />
         ) : null}
       </VStack>
     </View>

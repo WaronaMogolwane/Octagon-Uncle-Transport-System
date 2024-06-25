@@ -26,6 +26,7 @@ import * as yup from 'yup';
 import {
   AuthContext,
   DeleteUserByUserIdAndRole,
+  GetDriversByBusinessId,
 } from '../../../Services/AuthenticationService';
 import {GestureResponderEvent} from 'react-native';
 import {Auth} from '../../../Classes/Auth';
@@ -46,6 +47,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   const {session}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const [VehicleList, setVehicleList] = useState([]);
+  const [currentDriverIndex, setCurrentDriverIndex] = useState<number>();
   const [refreshingVehicles, setRefreshingVehicles] = useState(false);
   const onRefreshDrivers = React.useCallback(() => {
     setRefreshingVehicles(true);
@@ -89,6 +91,8 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   const [confirmButtonTitle, setConfirmButtonTitle] = useState('Capture front');
 
   const [vehicleIsSaving, setVehicleIsSaving] = useState(true);
+  const [driversList, setDriversList] = useState<[]>();
+
   const toast = useToast();
 
   const AddVehicleSchema = yup.object().shape({});
@@ -280,6 +284,32 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       </Menu>
     );
   };
+  const ConvertDriversListToDropDownList = (driversList: []) => {
+    let driverDropDownList: any = [];
+    if (driversList) {
+      driversList!.forEach((driver: any, index: number) => {
+        let driverName = driver.FirstName + ' ' + driver.LastName;
+        let vehicleLicenseNumber = driver.LicenseNumber
+          ? `(${driver.LicenseNumber})`
+          : '';
+        let dropDownLabel = driverName + vehicleLicenseNumber;
+        driverDropDownList.push({label: dropDownLabel, value: index + 1});
+      });
+    }
+    return driverDropDownList;
+  };
+  const GetDrivers = async (businessId: string) => {
+    return await GetDriversByBusinessId(
+      businessId,
+      (error: any, result: any) => {
+        if (error) {
+          console.error(error);
+        } else {
+          setDriversList(result.data);
+        }
+      },
+    );
+  };
 
   const ClearNewVehicle = () => {
     setCurrentVehicle({
@@ -341,6 +371,13 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     });
   };
 
+  const SetCurrentDriver = (vehicle: any, driverList: []) => {
+    driverList.forEach((driver: any, index) => {
+      if (vehicle.LicenseNumber === driver.LicenseNumber) {
+        setCurrentDriverIndex(index);
+      }
+    });
+  };
   useFocusEffect(
     React.useCallback(() => {
       const CheckRouteParams = () => {
@@ -356,52 +393,12 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     if (route.params?.NewVehicle) {
       setShowCaptureImageAlert(true);
     }
-    let data: any = [
-      {
-        LicenseNumber: 'QWE123GP',
-        Make: 'Toyota',
-        Model: 'Quantum',
-        Colour: 'White',
-        DriverFullName: null,
-        EngineNumber: 'PJ12345U123456P',
-        Vin: '2T1AE09B4RL059372',
-        LicenseDiskImageUrl:
-          'https://thupello.co.za/wp-content/uploads/2021/10/ShuttleDirect_1446193980.jpg',
-        FrontImageUrl:
-          'https://eu.amcdn.co.za/cars/toyota-quantum-2-5d-4d-gl-14-seater-bus-2017-id-52703215-type-main.jpg',
-        RearImageUrl: 'https://img.autotrader.co.za/30808179/',
-      },
-      {
-        LicenseNumber: 'QWE456GP',
-        Make: 'Toyota',
-        Model: 'Quantum',
-        Colour: 'White',
-        DriverFullName: 'Thando Kgosi',
-        EngineNumber: 'PJ12345U123456P',
-        Vin: 'D4H7I92N644UBAV',
-        LicenseDiskImageUrl:
-          'https://www.licenserenewal.co.za/images/disc_image.jpeg',
-        FrontImageUrl:
-          'https://i.pinimg.com/736x/d4/2f/74/d42f7478442235c759666556e884cb11.jpg',
-        RearImageUrl: 'https://img.autotrader.co.za/25818492/',
-      },
-      {
-        LicenseNumber: 'QWE789GP',
-        Make: 'Toyota',
-        Model: 'Quantum',
-        Colour: 'White',
-        DriverFullName: 'Vusumuzi Khumalo',
-        EngineNumber: 'PJ12345U123456P',
-        Vin: '11ER7A32S05GFT789',
-        LicenseDiskImageUrl:
-          'https://cdn.24.co.za/files/Cms/General/d/2589/39efadb018d24e678458be17b7993478.jpg',
-        FrontImageUrl:
-          'https://www.carfind.co.za/dealer/dealerstock/13131/img-20231113-wa0026_ID49c2ec91-9886-434c-a8d4-e38dd38aa17e.jpg',
-        RearImageUrl:
-          'https://d2wxnkq3f3e5mq.cloudfront.net/prod/vehicles/a0CIV00002llWWf2AM/Photos/360/Rear.jpg',
-      },
-    ];
-    GetBusinessVehicles(auth.GetBusinessId());
+    try {
+      GetBusinessVehicles(auth.GetBusinessId());
+      GetDrivers(auth.GetBusinessId());
+    } catch (error) {
+      console.error(error);
+    }
     //setVehicleList(data);
   }, [auth, route.params?.NewVehicle]);
 
@@ -452,6 +449,8 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
                       : 'No driver linked.'
                   }
                   handleVehicleCardPress={() => {
+                    SetCurrentDriver(item, driversList!);
+
                     setCurrentVehicle(item);
                     setShowVehicleDetailsModal(true);
                   }}
@@ -477,6 +476,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             </ScrollView>
           )}
           <NewVehicleModal
+            CurrentDriverIndex={0}
             LicenseNumberIsInvalid={!!formik.errors.licenseNumber}
             LicenseNumberOnChangeText={formik.handleChange('licenseNumber')}
             LicenseNumberErrorText={formik?.errors?.licenseNumber}
@@ -518,6 +518,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             LicenseDiskImageUrl={currentVehicle.LicenseDiskImageUrl}
             VehicleImageFrontUrl={vehicleFrontImage}
             VehicleImageBackUrl={vehicleRearImage}
+            DriverList={ConvertDriversListToDropDownList(driversList!)}
             HandleSaveVehicle={
               formik.handleSubmit as (
                 values:
@@ -562,6 +563,8 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             }}
           />
           <VehicleDetailsModal
+            CurrentDriverIndex={currentDriverIndex!}
+            DriverList={ConvertDriversListToDropDownList(driversList!)}
             HandleSaveVehicle={() => {}}
             LicenseNumberIsInvalid={!!formik.errors.licenseNumber}
             LicenseNumberOnChangeText={formik.handleChange('licenseNumber')}
@@ -660,86 +663,4 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     </SafeAreaView>
   );
 };
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#EEF2E6',
-  },
-  saveArea: {
-    backgroundColor: '#3D8361',
-  },
-  header: {
-    height: 50,
-    backgroundColor: '#3D8361',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerText: {
-    color: '#ffffff',
-    fontSize: 20,
-  },
-  caption: {
-    height: 100,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  captionText: {
-    color: '#100F0F',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  camera: {
-    height: 460,
-    width: '92%',
-    alignSelf: 'center',
-  },
-  photoAndVideoCamera: {
-    height: 360,
-  },
-  barcodeText: {
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    textAlign: 'center',
-    color: '#100F0F',
-    fontSize: 24,
-  },
-  pickerSelect: {
-    paddingVertical: 12,
-  },
-  image: {
-    marginHorizontal: 16,
-    paddingTop: 8,
-    width: 80,
-    height: 80,
-  },
-  dropdownPickerWrapper: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    zIndex: 9,
-  },
-  btnGroup: {
-    margin: 16,
-    flexDirection: 'row',
-  },
-  btn: {
-    backgroundColor: '#63995f',
-    margin: 13,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderRadius: 8,
-  },
-  btnText: {
-    color: '#ffffff',
-    fontSize: 20,
-    textAlign: 'center',
-  },
-  video: {
-    marginHorizontal: 16,
-    height: 100,
-    width: 80,
-    position: 'absolute',
-    right: 0,
-    bottom: -80,
-  },
-});
 export default ManageVehiclesScreen;

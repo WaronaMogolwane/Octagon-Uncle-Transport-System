@@ -52,7 +52,10 @@ const VehicleDetailsModal = (props: VehicleDetailsModalProps) => {
                 alt="Vehicle rear image."
               />
             </View>
-            <DriverSelect data={data.length ? data : null} currentDriver={''} />
+            <DriverSelect
+              data={props.DriverList?.length ? props.DriverList : null}
+              currentDriverIndex={props.CurrentDriverIndex}
+            />
             <CustomFormControlInput
               labelText="Make"
               placeHolder="Make"

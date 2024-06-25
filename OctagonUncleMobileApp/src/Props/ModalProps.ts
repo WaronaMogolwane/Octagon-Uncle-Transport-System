@@ -140,6 +140,7 @@ export type VehicleDetailsModalProps = {
     ColourErrorText: string | undefined;
     ColourOnBlur: (e: any) => void;
     ColourValue: string;
+    CurrentDriverIndex: number;
     LicenseDiskImageUrl: string;
     VehicleImageFrontUrl: string;
     VehicleImageBackUrl: string;
@@ -147,6 +148,7 @@ export type VehicleDetailsModalProps = {
     OpenRemoveVehicleAlert: () => void;
     CloseOtpModalButtonOnPress: () => void;
     RemoveVehicleAlertProps: RemoveVehicleAlertProps;
+    DriverList: [];
     HandleSaveVehicle: (
         values:
             | GestureResponderEvent

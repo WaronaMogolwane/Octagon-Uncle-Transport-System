@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 
@@ -9,13 +9,18 @@ type DriverSelectProps = {
         value: string;
       }[]
     | null;
-  currentDriver: string;
+  currentDriverIndex: number;
 };
 
 const DriverSelect = (props: DriverSelectProps) => {
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState<any>(
+    props.data![props.currentDriverIndex],
+  );
   const [isFocus, setIsFocus] = useState(false);
-
+  const SetVal = () => {};
+  useEffect(() => {
+    //setValue(props.currentDriver);
+  }, [value]);
   return (
     <View style={styles.container}>
       <Dropdown
@@ -25,14 +30,15 @@ const DriverSelect = (props: DriverSelectProps) => {
         inputSearchStyle={styles.inputSearchStyle}
         iconStyle={styles.iconStyle}
         data={props.data || [{label: 'No Drivers available.', value: '1'}]}
-        search
+        search={true}
         maxHeight={300}
         labelField="label"
         valueField="value"
+        confirmSelectItem={true}
         placeholder={
           !isFocus
-            ? props.currentDriver
-              ? props.currentDriver
+            ? props.currentDriverIndex
+              ? 'A driver is lnked to this vehicle.'
               : 'No driver linked.'
             : 'Select a driver...'
         }

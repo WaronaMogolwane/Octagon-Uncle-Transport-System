@@ -75,3 +75,174 @@ export const CustomFormControlInput = (props: InputProps) => {
     </View>
   );
 };
+
+export const CustomFormControlInputNumber = (props: InputProps) => {
+  const [showInputText, SetShowInputText] = useState(IsTextInput);
+
+  function IsTextInput(): boolean {
+    if (props.type == 'text') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  const handleState = () => {
+    SetShowInputText(showState => {
+      return !showState;
+    });
+  };
+
+  return (
+    <View>
+      <FormControl
+        style={FormStyles.input}
+        isInvalid={props.isInvalid}
+        size={props.size}
+        isDisabled={props.isDisabled}
+        isRequired={props.isRequired}>
+        <FormControlLabel>
+          <FormControlLabelText>{props.labelText}</FormControlLabelText>
+        </FormControlLabel>
+        <Input>
+          <InputField
+            keyboardType={'numeric'}
+            type={showInputText ? 'text' : 'password'}
+            defaultValue={props.defaultValue}
+            placeholder={props.placeHolder}
+            onChangeText={props.onChangeText}
+            onBlur={props.onBlur}
+            value={props.value}
+          />
+          {props.type == 'password' ? (
+            <InputSlot onPress={handleState} pr="$3">
+              <InputIcon as={showInputText ? EyeIcon : EyeOffIcon} />
+            </InputSlot>
+          ) : null}
+        </Input>
+        {props.helperText ? (
+          <FormControlHelper>
+            <FormControlHelperText>{props.helperText}</FormControlHelperText>
+          </FormControlHelper>
+        ) : null}
+        <FormControlError>
+          <FormControlErrorIcon as={AlertCircleIcon} />
+          <FormControlErrorText>{props.errorText}</FormControlErrorText>
+        </FormControlError>
+      </FormControl>
+    </View>
+  );
+};
+
+export const CustomFormControlInputEmail = (props: InputProps) => {
+  const [showInputText, SetShowInputText] = useState(IsTextInput);
+
+  function IsTextInput(): boolean {
+    if (props.type == 'text') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  const handleState = () => {
+    SetShowInputText(showState => {
+      return !showState;
+    });
+  };
+
+  return (
+    <View>
+      <FormControl
+        style={FormStyles.input}
+        isInvalid={props.isInvalid}
+        size={props.size}
+        isDisabled={props.isDisabled}
+        isRequired={props.isRequired}>
+        <FormControlLabel>
+          <FormControlLabelText>{props.labelText}</FormControlLabelText>
+        </FormControlLabel>
+        <Input>
+          <InputField
+            keyboardType={'email-address'}
+            type={showInputText ? 'text' : 'password'}
+            defaultValue={props.defaultValue}
+            placeholder={props.placeHolder}
+            onChangeText={props.onChangeText}
+            onBlur={props.onBlur}
+            value={props.value}
+          />
+          {props.type == 'password' ? (
+            <InputSlot onPress={handleState} pr="$3">
+              <InputIcon as={showInputText ? EyeIcon : EyeOffIcon} />
+            </InputSlot>
+          ) : null}
+        </Input>
+        {props.helperText ? (
+          <FormControlHelper>
+            <FormControlHelperText>{props.helperText}</FormControlHelperText>
+          </FormControlHelper>
+        ) : null}
+        <FormControlError>
+          <FormControlErrorIcon as={AlertCircleIcon} />
+          <FormControlErrorText>{props.errorText}</FormControlErrorText>
+        </FormControlError>
+      </FormControl>
+    </View>
+  );
+};
+
+export const CustomFormControlInputPhone = (props: InputProps) => {
+  const [showInputText, SetShowInputText] = useState(IsTextInput);
+
+  function IsTextInput(): boolean {
+    if (props.type == 'text') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+  const handleState = () => {
+    SetShowInputText(showState => {
+      return !showState;
+    });
+  };
+
+  return (
+    <View>
+      <FormControl
+        style={FormStyles.input}
+        isInvalid={props.isInvalid}
+        size={props.size}
+        isDisabled={props.isDisabled}
+        isRequired={props.isRequired}>
+        <FormControlLabel>
+          <FormControlLabelText>{props.labelText}</FormControlLabelText>
+        </FormControlLabel>
+        <Input>
+          <InputField
+            keyboardType={'phone-pad'}
+            type={showInputText ? 'text' : 'password'}
+            defaultValue={props.defaultValue}
+            placeholder={props.placeHolder}
+            onChangeText={props.onChangeText}
+            onBlur={props.onBlur}
+            value={props.value}
+          />
+          {props.type == 'password' ? (
+            <InputSlot onPress={handleState} pr="$3">
+              <InputIcon as={showInputText ? EyeIcon : EyeOffIcon} />
+            </InputSlot>
+          ) : null}
+        </Input>
+        {props.helperText ? (
+          <FormControlHelper>
+            <FormControlHelperText>{props.helperText}</FormControlHelperText>
+          </FormControlHelper>
+        ) : null}
+        <FormControlError>
+          <FormControlErrorIcon as={AlertCircleIcon} />
+          <FormControlErrorText>{props.errorText}</FormControlErrorText>
+        </FormControlError>
+      </FormControl>
+    </View>
+  );
+};

@@ -1,39 +1,36 @@
-export class UserDetail {
-  userDetailId: string;
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
+export class BusinessDetail {
+  businessDetailId: string;
+  businessName: string;
+  businessPhoneNumber: string;
   addressLine1: string;
   addressLine2: string;
   suburb: string;
   city: string;
   province: string;
   postalCode: string;
-  userId: string;
+  businessId: string;
 
   constructor(
-    userDetailId: string,
-    firstName: string,
-    lastName: string,
-    phoneNumber: string,
+    businessDetailId: string,
+    businessName: string,
+    businessPhoneNumber: string,
     addressLine1: string,
     addressLine2: string,
     suburb: string,
     city: string,
     province: string,
     postalCode: string,
-    userId: string,
+    businessId: string,
   ) {
-    this.userDetailId = userDetailId;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.phoneNumber = phoneNumber;
+    this.businessDetailId = businessDetailId;
+    this.businessName = businessName;
+    this.businessPhoneNumber = businessPhoneNumber;
     this.addressLine1 = addressLine1;
     this.addressLine2 = addressLine2;
     this.suburb = suburb;
     this.city = city;
     this.province = province;
     this.postalCode = postalCode;
-    this.userId = userId;
+    this.businessId = businessId;
   }
 }

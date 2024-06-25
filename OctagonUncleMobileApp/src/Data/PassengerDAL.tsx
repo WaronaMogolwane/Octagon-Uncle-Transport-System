@@ -218,7 +218,7 @@ export const GetParentPassengersFromDB = async (parentId: string) => {
   return result;
 };
 
-export const DeletePassengerFromDatabase = async (passengerId: string) => {
+export const DeletePassengerFromDB = async (passengerId: string) => {
   let statusCode: any;
   let data: any;
 
@@ -267,7 +267,7 @@ export const DeletePassengerRequestFromDB = async (
   return [data, statusCode];
 };
 
-export const UpdatePassengerInDatabase = async (passenger: Passenger) => {
+export const UpdatePassengerInDB = async (passenger: Passenger) => {
   let statusCode: any;
   let data: any;
 

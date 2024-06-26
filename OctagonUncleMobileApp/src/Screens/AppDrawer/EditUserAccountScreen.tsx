@@ -102,7 +102,12 @@ const EditUserAccountScreen = ({navigation}: any) => {
           ShowSuccessToast('Email');
           passwordFormik.resetForm();
           setRefreshData(!refreshData);
-        } else {
+        } else if (
+          response[2] == 'AxiosError: Request failed with status code 499'
+        ) {
+          ShowDuplicateEmailToast();
+        }
+        {
           ShowFaliureToast('Email');
         }
       },
@@ -194,6 +199,25 @@ const EditUserAccountScreen = ({navigation}: any) => {
             <VStack space="xs">
               <ToastTitle>Success</ToastTitle>
               <ToastDescription>Email sent successfully.</ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const ShowDuplicateEmailToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="error" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Error</ToastTitle>
+              <ToastDescription>
+                The email provided already exsits, please choose another one
+              </ToastDescription>
             </VStack>
           </Toast>
         );

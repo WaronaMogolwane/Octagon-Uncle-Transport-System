@@ -474,6 +474,7 @@ const TripsScreen = ({navigation}: any) => {
       );
     }
   }
+
   //Contains Past Flatlist for all roles
   function SecondRoute() {
     if (tempRole == 3) {

@@ -9,12 +9,12 @@ type DriverSelectProps = {
         value: string;
       }[]
     | null;
-  currentDriverIndex: number;
+  currentDriverIndex: number | null;
 };
 
 const DriverSelect = (props: DriverSelectProps) => {
   const [value, setValue] = useState<any>(
-    props.data![props.currentDriverIndex],
+    props.data![props.currentDriverIndex!],
   );
   const [isFocus, setIsFocus] = useState(false);
   const SetVal = () => {};

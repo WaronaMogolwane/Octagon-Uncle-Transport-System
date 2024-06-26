@@ -45,6 +45,7 @@ import {
 import {useFormik} from 'formik';
 import {AuthContext} from '../../Services/AuthenticationService';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
+import {err} from 'react-native-svg/lib/typescript/xml';
 
 const EditUserAccountScreen = ({navigation}: any) => {
   const {session, emailOtp, verifyOtp}: any = useContext(AuthContext);
@@ -116,7 +117,12 @@ const EditUserAccountScreen = ({navigation}: any) => {
     ).then((response: any) => {
       if (response[1] == 200) {
         ShowSuccessToast('Password');
+        setShowChangePassword(false);
         passwordFormik.resetForm();
+      } else if (
+        response[2] == 'AxiosError: Request failed with status code 499'
+      ) {
+        ShowWrongPasswordToast();
       } else {
         ShowFaliureToast('Password');
       }
@@ -148,9 +154,28 @@ const EditUserAccountScreen = ({navigation}: any) => {
         return (
           <Toast nativeID={toastId} action="error" variant="solid">
             <VStack space="xs">
-              <ToastTitle>Success</ToastTitle>
+              <ToastTitle>Error</ToastTitle>
               <ToastDescription>
                 {label} change unsuccessful, please try again.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const ShowWrongPasswordToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="error" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Error</ToastTitle>
+              <ToastDescription>
+                Old password enterd incorret please check it and try again.
               </ToastDescription>
             </VStack>
           </Toast>
@@ -252,6 +277,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
         isOpen={showChangePassword}
         onClose={() => {
           setShowChangePassword(false);
+          passwordFormik.resetForm();
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />
@@ -272,7 +298,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
                 errorText={passwordFormik?.errors?.oldPassword}
                 isInvalid={!!passwordFormik.errors.oldPassword}
                 isDisabled={false}
-                type="text"
+                type="password"
                 value={passwordFormik.values?.oldPassword}
                 onChangeText={passwordFormik.handleChange('oldPassword')}
                 isRequired={false}
@@ -292,7 +318,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
                 isInvalid={!!passwordFormik.errors.newPassword}
                 errorText={passwordFormik?.errors?.newPassword}
                 isDisabled={false}
-                type="text"
+                type="password"
                 value={passwordFormik.values?.newPassword}
                 onChangeText={passwordFormik.handleChange('newPassword')}
                 isRequired={false}
@@ -303,7 +329,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
                 errorText={passwordFormik?.errors?.confirmPassword}
                 isInvalid={!!passwordFormik.errors.confirmPassword}
                 isDisabled={false}
-                type="text"
+                type="password"
                 value={passwordFormik.values?.confirmPassword}
                 onChangeText={passwordFormik.handleChange('confirmPassword')}
                 isRequired={false}
@@ -359,18 +385,26 @@ const EditUserAccountScreen = ({navigation}: any) => {
   };
 
   const passwordSchema = yup.object().shape({
-    //oldPassword: yup.string().oneOf([password], 'Incorrect old password'),
+    oldPassword: yup
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
+      )
+      .required('Please enter old password'),
     newPassword: yup
       .string()
       .min(8, 'Password must be at least 8 characters')
       .matches(
-        passwordExp,
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
       )
       .required('Password is required'),
     confirmPassword: yup
       .string()
-      .oneOf([yup.ref('newPassword')], 'Passwords must match'),
+      .oneOf([yup.ref('newPassword')], 'Passwords must match')
+      .required(),
   });
 
   const emailSchema = yup.object().shape({

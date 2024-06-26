@@ -38,10 +38,16 @@ const AppDrawer = () => {
       <Drawer.Screen
         name="Edit Payment Details"
         component={EditPaymentDetailsScreen}
+        options={{
+          drawerItemStyle: {display: 'none'},
+        }}
       />
       <Drawer.Screen
         name="Edit User Account"
         component={EditUserAccountScreen}
+        options={{
+          drawerItemStyle: {display: 'none'},
+        }}
       />
       <Drawer.Screen
         name="Edit User Details"

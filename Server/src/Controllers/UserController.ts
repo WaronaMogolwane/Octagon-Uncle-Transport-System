@@ -61,7 +61,7 @@ export const UpdateUserPassword = async (req: any, res: any, next: any) => {
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
-        message: "Something went wrong",
+        message: "Old password is incorrect",
       };
       next(err);
     } else {

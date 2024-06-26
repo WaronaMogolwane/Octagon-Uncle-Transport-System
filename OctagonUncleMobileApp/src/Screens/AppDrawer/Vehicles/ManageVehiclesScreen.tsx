@@ -39,6 +39,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import CaptureVehicleImageAlert from '../../../Components/Alerts/CaptureVehicleImageAlert';
 import ImagePicker from 'react-native-image-crop-picker';
 import {
+  AddNewDriverVehicleLink,
   AddNewVehicle,
   GetVehicles,
 } from '../../../Controllers/VehicleController';
@@ -47,7 +48,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   const {session}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const [VehicleList, setVehicleList] = useState([]);
-  const [currentDriverIndex, setCurrentDriverIndex] = useState<number | null>();
+  const [currentDriverId, setCurrentDriverId] = useState<string | null>();
   const [refreshingVehicles, setRefreshingVehicles] = useState(false);
   const onRefreshDrivers = React.useCallback(() => {
     setRefreshingVehicles(true);
@@ -59,6 +60,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     setRefreshingVehicles(false);
   }, []);
   const [currentVehicle, setCurrentVehicle] = useState({
+    VehicleId: '',
     LicenseNumber: '',
     RegistrationNumber: '',
     Vin: '',
@@ -92,12 +94,12 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
 
   const [vehicleIsSaving, setVehicleIsSaving] = useState(true);
   const [driversList, setDriversList] = useState<[]>();
-
+  const [newLinkedDriverId, setNewLinkedDriverId] = useState('');
+  const [IsLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
-  const AddVehicleSchema = yup.object().shape({});
-
-  const RegisterAddVehicleValues = {
+  const VehicleSchema = yup.object().shape({});
+  const RegisterVehicleValues = {
     licenseNumber: '',
     registrationNumber: '',
     vin: '',
@@ -108,13 +110,11 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     licenseDiskImageUrl: '',
     frontImageUrl: '',
     rearImageUrl: '',
+    newLinkedDriverId: '',
   };
-  const [IsLoading, setIsLoading] = useState(false);
-  const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
   const formik = useFormik({
-    initialValues: RegisterAddVehicleValues,
-    validationSchema: AddVehicleSchema,
+    initialValues: RegisterVehicleValues,
+    validationSchema: VehicleSchema,
     onSubmit: async () => {
       if (1 == 1) {
         setIsLoading(true);
@@ -125,22 +125,23 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
           vehicleRearImage,
           (error: any, result: any) => {
             if (error) {
-              console.log(error);
+              console.error(error);
               setIsLoading(false);
               ShowAddVehicleToast(false);
               setShowNewVehicleDetailsModal(true);
             } else {
-              console.log(result.data);
               setIsLoading(false);
               setShowNewVehicleDetailsModal(false);
               ShowAddVehicleToast(true);
-              ClearNewVehicle();
+              ClearVehicleState();
             }
           },
         );
       }
     },
   });
+  const storageUrl: string =
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
 
   const removeVehicleFormik = useFormik({
     initialValues: {
@@ -293,7 +294,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
           ? `(${driver.LicenseNumber})`
           : '';
         let dropDownLabel = driverName + vehicleLicenseNumber;
-        driverDropDownList.push({label: dropDownLabel, value: index + 1});
+        driverDropDownList.push({label: dropDownLabel, value: driver.UserId});
       });
     }
     return driverDropDownList;
@@ -311,8 +312,9 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     );
   };
 
-  const ClearNewVehicle = () => {
+  const ClearVehicleState = () => {
     setCurrentVehicle({
+      VehicleId: '',
       LicenseNumber: '',
       RegistrationNumber: '',
       Vin: '',
@@ -324,9 +326,11 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       FrontImageUrl: '',
       RearImageUrl: '',
     });
+    setNewLinkedDriverId('');
     setVehicleFrontImage('');
     setVehicleRearImage('');
     setConfirmButtonTitle('Capture front');
+    formik!!!.resetForm();
   };
   async function GetFileBlob(url: string, callback: any) {
     let data: Blob;
@@ -374,9 +378,34 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   const SetCurrentDriver = (vehicle: any, driverList: []) => {
     driverList.forEach((driver: any, index) => {
       if (vehicle.LicenseNumber === driver.LicenseNumber) {
-        setCurrentDriverIndex(index);
+        setCurrentDriverId(driver.UserId);
       }
     });
+  };
+  const LinkDriverToVehicle = () => {
+    if (newLinkedDriverId) {
+      setShowVehicleDetailsModal(false);
+      setIsLoading(true);
+      AddNewDriverVehicleLink(
+        newLinkedDriverId,
+        currentVehicle.LicenseNumber,
+        currentVehicle.VehicleId,
+        (error: any, result: any) => {
+          if (error) {
+            setIsLoading(false);
+
+            ShowAddVehicleToast(false);
+            setShowVehicleDetailsModal(true);
+            console.error(error);
+          } else {
+            setIsLoading(false);
+            setShowNewVehicleDetailsModal(false);
+            ShowAddVehicleToast(true);
+            console.log(result);
+          }
+        },
+      );
+    }
   };
   useFocusEffect(
     React.useCallback(() => {
@@ -476,7 +505,9 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             </ScrollView>
           )}
           <NewVehicleModal
-            CurrentDriverIndex={null}
+            setNewLinkedDriver={setNewLinkedDriverId}
+            onDriverChange={formik.handleChange('newLinkedDriverId')}
+            CurrentDriverId={null}
             LicenseNumberIsInvalid={!!formik.errors.licenseNumber}
             LicenseNumberOnChangeText={formik.handleChange('licenseNumber')}
             LicenseNumberErrorText={formik?.errors?.licenseNumber}
@@ -532,8 +563,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             }}
             CloseOtpModalButtonOnPress={() => {
               setShowNewVehicleDetailsModal(false);
-              ClearNewVehicle();
-              formik!!!.resetForm();
+              ClearVehicleState();
             }}
             RemoveVehicleAlertProps={{
               RemoveVehicleAlertIsOpen: showRemoveVehicleDialog,
@@ -563,9 +593,13 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             }}
           />
           <VehicleDetailsModal
-            CurrentDriverIndex={currentDriverIndex!}
+            setNewLinkedDriver={setNewLinkedDriverId}
+            onDriverChange={formik.handleChange('newLinkedDriverId')}
+            CurrentDriverId={currentDriverId!}
             DriverList={ConvertDriversListToDropDownList(driversList!)}
-            HandleSaveVehicle={() => {}}
+            HandleSaveVehicle={() => {
+              LinkDriverToVehicle();
+            }}
             LicenseNumberIsInvalid={!!formik.errors.licenseNumber}
             LicenseNumberOnChangeText={formik.handleChange('licenseNumber')}
             LicenseNumberErrorText={formik?.errors?.licenseNumber}
@@ -611,8 +645,9 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
               setShowRemoveVehicleDialog(true);
             }}
             CloseOtpModalButtonOnPress={() => {
-              setCurrentDriverIndex(null);
+              setCurrentDriverId(null);
               setShowVehicleDetailsModal(false);
+              ClearVehicleState();
             }}
             RemoveVehicleAlertProps={{
               RemoveVehicleAlertIsOpen: showRemoveVehicleDialog,
@@ -649,7 +684,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
         ConfirmButtonTitle={confirmButtonTitle}
         CancelAlertOnPress={() => {
           setShowCaptureImageAlert(false);
-          ClearNewVehicle();
+          ClearVehicleState();
         }}
         HandleTakePicture={() => {
           if (vehicleFrontImage && vehicleRearImage) {

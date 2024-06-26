@@ -20,6 +20,31 @@ export const GetVehicleAndDriverByBusiness = async (
     }
   );
 };
+export const InsertNewDriverVehicleLink = async (
+  driverId: string,
+  vehicleId: string,
+  vehicleLicenseNumber: string,
+  callback: (error: any, result: any) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL InsertDriverVehicleLink(?,?);",
+      timeout: 40000,
+      values:
+        [
+          driverId,
+          vehicleId
+        ],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
 export const InsertNewVehicle = async (
   newVehicle: Vehicle,
   callback: (error: any, result: any) => void

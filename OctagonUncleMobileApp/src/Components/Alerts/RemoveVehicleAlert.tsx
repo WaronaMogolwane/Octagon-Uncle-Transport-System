@@ -34,7 +34,7 @@ const RemoveVehicleAlert = (props: RemoveVehicleAlertProps) => {
       <AlertDialogBackdrop />
       <AlertDialogContent>
         <AlertDialogHeader>
-          <Heading size="lg">Remove driver</Heading>
+          <Heading size="lg">Remove vehicle</Heading>
           <AlertDialogCloseButton>
             <Icon as={CloseIcon} />
           </AlertDialogCloseButton>
@@ -42,14 +42,13 @@ const RemoveVehicleAlert = (props: RemoveVehicleAlertProps) => {
         <AlertDialogBody>
           <Text size="sm">
             Are you sure you want to remove
-            {' {0} '.format(props.RemoveVehicleConfirmation)}
-            as your driver? Any vehicle linked to this driver will have to be
-            linked to another driver.
+            {' {0}'.format(props.RemoveVehicleConfirmation)}? Any driver linked
+            to this vehicled will be unlinked.
           </Text>
-          <Text size="sm" highlight={true}>
+          <Text size="sm" highlight={true} bold={true}>
             Enter
             {' {0} '.format(props.RemoveVehicleConfirmation)}
-            to remove the driver.
+            to remove the vehicle.
           </Text>
           <CustomFormControlInput
             placeHolder={' {0} '.format(props.RemoveVehicleConfirmation)}

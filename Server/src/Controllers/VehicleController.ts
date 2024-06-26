@@ -1,9 +1,25 @@
 import { error } from "console";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 import { Vehicle } from "../Classes/Vehicle";
-import { GetVehicleAndDriverByBusiness, GetVehiclesByBusinessId, InsertNewVehicle } from "../Models/VehicleModel";
+import { GetVehicleAndDriverByBusiness, GetVehiclesByBusinessId, InsertNewDriverVehicleLink, InsertNewVehicle } from "../Models/VehicleModel";
 import { GetUploadUrl, UploadFile } from "../Services/BlobStorageService";
 
+export const LinkedDriverToVehicle = async (req: any, res: any, next: any) => {
+  const driverId: string = req.body.DriverId;
+  const vehicleId: string = req.body.VehicleId;
+  const vehicleLicenseNumber: string = req.body.VehicleLicenseNumber;
+  await InsertNewDriverVehicleLink(driverId, vehicleId, vehicleLicenseNumber, async (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    }
+    else {
+      res.status(200).json({
+        VehicleAdded: true,
+        result: result,
+      });
+    }
+  });
+}
 export const AddNewVehicle = async (req: any, res: any, next: any) => {
   let newVehicle: Vehicle = {
     FrontImage: req.body.FrontImage,
@@ -51,7 +67,6 @@ export const AddNewVehicle = async (req: any, res: any, next: any) => {
     }
   });
 };
-
 export const GetVehicle = async (req: any, res: any, next: any) => {
   const newVehicle: Vehicle = {
     FrontImage: req.body.FrontImage,

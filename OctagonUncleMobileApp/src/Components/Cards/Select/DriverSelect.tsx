@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Dropdown} from 'react-native-element-dropdown';
 
@@ -9,13 +9,13 @@ type DriverSelectProps = {
         value: string;
       }[]
     | null;
-  currentDriverIndex: number | null;
+  currentDriverId: string | null;
+  onDriverChange: (e: string | ChangeEvent<any>) => void;
+  setNewLinkedDriver: React.Dispatch<React.SetStateAction<string>>;
 };
 
 const DriverSelect = (props: DriverSelectProps) => {
-  const [value, setValue] = useState<any>(
-    props.data![props.currentDriverIndex!],
-  );
+  const [value, setValue] = useState<any>(props.currentDriverId);
   const [isFocus, setIsFocus] = useState(false);
   const SetVal = () => {};
   useEffect(() => {
@@ -37,18 +37,20 @@ const DriverSelect = (props: DriverSelectProps) => {
         confirmSelectItem={true}
         placeholder={
           !isFocus
-            ? props.currentDriverIndex
+            ? props.currentDriverId
               ? 'A driver is lnked to this vehicle.'
               : 'No driver linked.'
             : 'Select a driver...'
         }
         searchPlaceholder="Search..."
         value={value}
+        onChangeText={props.onDriverChange}
         onFocus={() => setIsFocus(true)}
         onBlur={() => setIsFocus(false)}
         onChange={item => {
           setValue(item.value);
           setIsFocus(false);
+          props.setNewLinkedDriver(item.value);
         }}
       />
     </View>

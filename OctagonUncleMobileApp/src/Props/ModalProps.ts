@@ -105,6 +105,7 @@ export type ClientDetailsModalProps = {
     // CloseAlertOnPress: () => void;
 };
 export type VehicleDetailsModalProps = {
+    setNewLinkedDriver: React.Dispatch<React.SetStateAction<string>>
     LicenseNumberIsInvalid: boolean;
     LicenseNumberOnChangeText: (e: string | ChangeEvent<any>) => void;
     LicenseNumberErrorText: string | undefined;
@@ -140,7 +141,7 @@ export type VehicleDetailsModalProps = {
     ColourErrorText: string | undefined;
     ColourOnBlur: (e: any) => void;
     ColourValue: string;
-    CurrentDriverIndex: number | null;
+    CurrentDriverId: string | null;
     LicenseDiskImageUrl: string;
     VehicleImageFrontUrl: string;
     VehicleImageBackUrl: string;
@@ -149,6 +150,7 @@ export type VehicleDetailsModalProps = {
     CloseOtpModalButtonOnPress: () => void;
     RemoveVehicleAlertProps: RemoveVehicleAlertProps;
     DriverList: [];
+    onDriverChange: (e: string | ChangeEvent<any>) => void;
     HandleSaveVehicle: (
         values:
             | GestureResponderEvent

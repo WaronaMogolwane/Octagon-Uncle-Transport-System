@@ -56,7 +56,9 @@ const VehicleDetailsModal = (props: VehicleDetailsModalProps) => {
               </View>
               <DriverSelect
                 data={props.DriverList?.length ? props.DriverList : null}
-                currentDriverIndex={props.CurrentDriverIndex}
+                currentDriverId={props.CurrentDriverId}
+                onDriverChange={props.onDriverChange}
+                setNewLinkedDriver={props.setNewLinkedDriver}
               />
               <CustomFormControlInput
                 labelText="Make"

@@ -20,13 +20,15 @@ import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
 import {TripCardDriver} from '../../Components/Cards/TripListCardForDriver';
 import {
   useToast,
-  Toast,
-  ToastTitle,
   Fab,
   FabIcon,
   FabLabel,
   ArrowLeftIcon,
   Text,
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  VStack,
 } from '@gluestack-ui/themed';
 import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
@@ -61,6 +63,8 @@ const TripsScreen = ({navigation}: any) => {
 
   const [showNoFutureTripText, setShowNoFutureTripText] = useState(false);
   const [showNoPastTripText, setShowNoPastTripText] = useState(false);
+  const [noLinkedVehicle, setNoLinkedVehicle] = useState(true);
+  const toast = useToast();
 
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
@@ -99,14 +103,23 @@ const TripsScreen = ({navigation}: any) => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
+    setNoLinkedVehicle(true);
 
     setTimeout(() => {
       //setRefreshing(true);
 
       GetVehiclesAndDrivers(tempUserId)
         .then(result => {
+          if (result.length == 0) {
+            setNoLinkedVehicle(true);
+            setRefreshing(false);
+          } else {
+          }
           setVehicleList(result);
           setRefreshing(false);
+          if (!noLinkedVehicle) {
+            ShowSelectVehilcleToast();
+          }
         })
         .catch(() => {
           setRefreshing(false);
@@ -130,8 +143,16 @@ const TripsScreen = ({navigation}: any) => {
 
         GetVehiclesAndDrivers(tempUserId)
           .then(result => {
+            if (result.length == 0) {
+              setNoLinkedVehicle(true);
+              setRefreshing(false);
+            } else {
+            }
             setVehicleList(result);
             setRefreshing(false);
+            if (!noLinkedVehicle) {
+              ShowSelectVehilcleToast();
+            }
           })
           .catch(() => {
             setRefreshing(false);
@@ -139,6 +160,25 @@ const TripsScreen = ({navigation}: any) => {
       }, 2000);
     }
   }, [tempRole, userId, role]);
+
+  const ShowSelectVehilcleToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="attention" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Select Vehicle</ToastTitle>
+              <ToastDescription>
+                Please a select a vehicle to contine.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
 
   //Empty flatlist text is defined
   const EmtpyFlatListText = () => {
@@ -149,10 +189,19 @@ const TripsScreen = ({navigation}: any) => {
     );
   };
 
+  const EmtpyVehicleFlatListText = () => {
+    return (
+      <View>
+        <Text>
+          You currently have no linked vehicles. Please add vehicles and try
+          again.
+        </Text>
+      </View>
+    );
+  };
+
   //This is where the Toast is defined
   const ShowToast = () => {
-    const toast = useToast();
-
     toast.show({
       placement: 'top',
       render: ({id}) => {
@@ -490,13 +539,17 @@ const TripsScreen = ({navigation}: any) => {
           <Tab.Screen name="Past Trips" component={SecondRoute} />
         </Tab.Navigator>
       ) : (
-        <FlatList
-          data={vehicleList}
-          renderItem={({item}) => vehicleSelectorTransporter(item)}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        />
+        <View style={FlatlistStyles.container}>
+          {noLinkedVehicle ? EmtpyVehicleFlatListText() : null}
+          <FlatList
+            data={vehicleList}
+            renderItem={({item}) => vehicleSelectorTransporter(item)}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          />
+          <View>{GoBackFab()}</View>
+        </View>
       )}
     </NavigationContainer>
   );

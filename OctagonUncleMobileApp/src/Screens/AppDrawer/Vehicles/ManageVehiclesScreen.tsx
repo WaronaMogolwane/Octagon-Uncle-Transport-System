@@ -47,7 +47,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   const {session}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const [VehicleList, setVehicleList] = useState([]);
-  const [currentDriverIndex, setCurrentDriverIndex] = useState<number>();
+  const [currentDriverIndex, setCurrentDriverIndex] = useState<number | null>();
   const [refreshingVehicles, setRefreshingVehicles] = useState(false);
   const onRefreshDrivers = React.useCallback(() => {
     setRefreshingVehicles(true);
@@ -476,7 +476,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             </ScrollView>
           )}
           <NewVehicleModal
-            CurrentDriverIndex={0}
+            CurrentDriverIndex={null}
             LicenseNumberIsInvalid={!!formik.errors.licenseNumber}
             LicenseNumberOnChangeText={formik.handleChange('licenseNumber')}
             LicenseNumberErrorText={formik?.errors?.licenseNumber}
@@ -611,6 +611,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
               setShowRemoveVehicleDialog(true);
             }}
             CloseOtpModalButtonOnPress={() => {
+              setCurrentDriverIndex(null);
               setShowVehicleDetailsModal(false);
             }}
             RemoveVehicleAlertProps={{

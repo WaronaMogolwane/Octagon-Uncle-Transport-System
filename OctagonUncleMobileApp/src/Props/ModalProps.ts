@@ -140,7 +140,7 @@ export type VehicleDetailsModalProps = {
     ColourErrorText: string | undefined;
     ColourOnBlur: (e: any) => void;
     ColourValue: string;
-    CurrentDriverIndex: number;
+    CurrentDriverIndex: number | null;
     LicenseDiskImageUrl: string;
     VehicleImageFrontUrl: string;
     VehicleImageBackUrl: string;

@@ -15,6 +15,7 @@ import {
   Button,
   Modal,
   Image,
+  ScrollView,
 } from '@gluestack-ui/themed';
 import {
   DriverDetailsModalProps,
@@ -33,122 +34,124 @@ const VehicleDetailsModal = (props: VehicleDetailsModalProps) => {
         isOpen={props.ShowModal}
         onClose={props.CloseOtpModalButtonOnPress}>
         <ModalBackdrop />
-        <ModalContent backgroundColor="#fff">
+        <ModalContent backgroundColor="#fff" height={'90%'}>
           <ModalHeader>
             <Heading size="lg">Manage Vehicle</Heading>
             <ModalCloseButton>
               <Icon as={CloseIcon} />
             </ModalCloseButton>
           </ModalHeader>
-          <ModalBody>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
-              <Image
-                source={props.VehicleImageFrontUrl}
-                alt="Vehicle front image."
+          <ScrollView persistentScrollbar={true}>
+            <ModalBody>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+                <Image
+                  source={props.VehicleImageFrontUrl}
+                  alt="Vehicle front image."
+                />
+                <Image
+                  source={props.VehicleImageBackUrl}
+                  alt="Vehicle rear image."
+                />
+              </View>
+              <DriverSelect
+                data={props.DriverList?.length ? props.DriverList : null}
+                currentDriverIndex={props.CurrentDriverIndex}
               />
-              <Image
-                source={props.VehicleImageBackUrl}
-                alt="Vehicle rear image."
+              <CustomFormControlInput
+                labelText="Make"
+                placeHolder="Make"
+                isInvalid={props.MakeIsInvalid}
+                isRequired={true}
+                type="text"
+                onChangeText={props.MakeOnChangeText}
+                errorText={props.MakeErrorText}
+                onBlur={props.MakeOnBlur}
+                value={props.MakeValue}
+                isDisabled={true}
               />
-            </View>
-            <DriverSelect
-              data={props.DriverList?.length ? props.DriverList : null}
-              currentDriverIndex={props.CurrentDriverIndex}
-            />
-            <CustomFormControlInput
-              labelText="Make"
-              placeHolder="Make"
-              isInvalid={props.MakeIsInvalid}
-              isRequired={true}
-              type="text"
-              onChangeText={props.MakeOnChangeText}
-              errorText={props.MakeErrorText}
-              onBlur={props.MakeOnBlur}
-              value={props.MakeValue}
-              isDisabled={true}
-            />
-            <CustomFormControlInput
-              labelText="Model"
-              placeHolder="Model"
-              isInvalid={props.ModelIsInvalid}
-              isRequired={true}
-              type="text"
-              onChangeText={props.ModelOnChangeText}
-              errorText={props.ModelErrorText}
-              onBlur={props.ModelOnBlur}
-              value={props.ModelValue}
-              isDisabled={true}
-            />
-            <CustomFormControlInput
-              labelText="Colour"
-              placeHolder="Colour"
-              isInvalid={props.ColourIsInvalid}
-              isRequired={true}
-              type="text"
-              onChangeText={props.ColourOnChangeText}
-              errorText={props.ColourErrorText}
-              onBlur={props.ColourOnBlur}
-              value={props.ColourValue}
-              isDisabled={true}
-            />
+              <CustomFormControlInput
+                labelText="Model"
+                placeHolder="Model"
+                isInvalid={props.ModelIsInvalid}
+                isRequired={true}
+                type="text"
+                onChangeText={props.ModelOnChangeText}
+                errorText={props.ModelErrorText}
+                onBlur={props.ModelOnBlur}
+                value={props.ModelValue}
+                isDisabled={true}
+              />
+              <CustomFormControlInput
+                labelText="Colour"
+                placeHolder="Colour"
+                isInvalid={props.ColourIsInvalid}
+                isRequired={true}
+                type="text"
+                onChangeText={props.ColourOnChangeText}
+                errorText={props.ColourErrorText}
+                onBlur={props.ColourOnBlur}
+                value={props.ColourValue}
+                isDisabled={true}
+              />
 
-            <CustomFormControlInput
-              labelText="License Number"
-              placeHolder="License Number"
-              isInvalid={props.LicenseNumberIsInvalid}
-              isRequired={true}
-              type="text"
-              onChangeText={props.LicenseNumberOnChangeText}
-              errorText={props.LicenseNumberErrorText}
-              onBlur={props.LicenseNumberOnBlur}
-              value={props.LicenseNumberValue}
-              isDisabled={true}
-            />
-            <CustomFormControlInput
-              labelText="Vin"
-              placeHolder="Vin"
-              isInvalid={props.VinIsInvalid}
-              isRequired={true}
-              type="text"
-              onChangeText={props.VinOnChangeText}
-              errorText={props.VinErrorText}
-              onBlur={props.VinOnBlur}
-              value={props.VinValue}
-              isDisabled={true}
-            />
-            <CustomFormControlInput
-              labelText="Engine Number"
-              placeHolder="Engine Number"
-              isInvalid={props.EngineNumberIsInvalid}
-              isRequired={true}
-              type="text"
-              onChangeText={props.EngineNumberOnChangeText}
-              errorText={props.EngineNumberErrorText}
-              onBlur={props.EngineNumberOnBlur}
-              value={props.EngineNumberValue}
-              isDisabled={true}
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button
-              variant="outline"
-              size="sm"
-              action="negative"
-              borderWidth="$0"
-              onPress={props.OpenRemoveVehicleAlert}>
-              <ButtonText>Remove vehicle</ButtonText>
-            </Button>
-            <Button
-              variant="solid"
-              size="sm"
-              action="primary"
-              mr="$3"
-              onPress={props.HandleSaveVehicle}>
-              {/* onPress={() => {}}> */}
-              <ButtonText>Save</ButtonText>
-            </Button>
-          </ModalFooter>
+              <CustomFormControlInput
+                labelText="License Number"
+                placeHolder="License Number"
+                isInvalid={props.LicenseNumberIsInvalid}
+                isRequired={true}
+                type="text"
+                onChangeText={props.LicenseNumberOnChangeText}
+                errorText={props.LicenseNumberErrorText}
+                onBlur={props.LicenseNumberOnBlur}
+                value={props.LicenseNumberValue}
+                isDisabled={true}
+              />
+              <CustomFormControlInput
+                labelText="Vin"
+                placeHolder="Vin"
+                isInvalid={props.VinIsInvalid}
+                isRequired={true}
+                type="text"
+                onChangeText={props.VinOnChangeText}
+                errorText={props.VinErrorText}
+                onBlur={props.VinOnBlur}
+                value={props.VinValue}
+                isDisabled={true}
+              />
+              <CustomFormControlInput
+                labelText="Engine Number"
+                placeHolder="Engine Number"
+                isInvalid={props.EngineNumberIsInvalid}
+                isRequired={true}
+                type="text"
+                onChangeText={props.EngineNumberOnChangeText}
+                errorText={props.EngineNumberErrorText}
+                onBlur={props.EngineNumberOnBlur}
+                value={props.EngineNumberValue}
+                isDisabled={true}
+              />
+            </ModalBody>
+            <ModalFooter>
+              <Button
+                variant="outline"
+                size="sm"
+                action="negative"
+                borderWidth="$0"
+                onPress={props.OpenRemoveVehicleAlert}>
+                <ButtonText>Remove vehicle</ButtonText>
+              </Button>
+              <Button
+                variant="solid"
+                size="sm"
+                action="primary"
+                mr="$3"
+                onPress={props.HandleSaveVehicle}>
+                {/* onPress={() => {}}> */}
+                <ButtonText>Save</ButtonText>
+              </Button>
+            </ModalFooter>
+          </ScrollView>
         </ModalContent>
       </Modal>
       <RemoveVehicleAlert

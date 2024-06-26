@@ -96,6 +96,7 @@ const ManageTripsScreen = ({navigation}: any) => {
       }}
     />
   );
+
   const EmtpyFlatListText = () => {
     return (
       <View>

@@ -2,6 +2,25 @@ import {SERVER_HOST, SERVER_PORT} from '@env';
 import axios from 'axios';
 import {Vehicle} from '../Models/VehicleModel';
 
+export const InsertNewDriverVehicleLink = async (
+  driverId: string,
+  vehicleLicenseNumber: string,
+  vehicleId: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .post(`${SERVER_HOST}:${SERVER_PORT}/vehicle/link-driver-and-vehicle`, {
+      DriverId: driverId,
+      VehicleId: vehicleId,
+      VehicleLicenseNumber: vehicleLicenseNumber,
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch((error: any) => {
+      callback(error, null);
+    });
+};
 export const AddVehicleToDatabase = async (
   newVehicle: Vehicle,
   frontImage: string,
@@ -117,6 +136,25 @@ export const InsertNewVehicle = async (businessId: string) => {
     });
 
   return result;
+};
+export const DeleteVehicleByBusinessIdAndLicenseNuimber = async (
+  businessId: string,
+  vehicleId: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .delete(`${SERVER_HOST}:${SERVER_PORT}/vehicle/delete-vehicle`, {
+      data: {
+        BusinessId: businessId,
+        VehicleId: vehicleId,
+      },
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
 };
 export const GetVehiclesByBusinessId = async (
   businessId: string,

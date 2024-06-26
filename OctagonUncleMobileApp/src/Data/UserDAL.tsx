@@ -35,6 +35,7 @@ export const UpdateUserEmailInDB = async (
 ) => {
   let statusCode: any;
   let data: any;
+  let errorMessage: any;
 
   await axios
     .patch(`${SERVER_HOST}:${SERVER_PORT}/user/update-user-email`, {
@@ -50,9 +51,10 @@ export const UpdateUserEmailInDB = async (
     })
     .catch((error: any) => {
       console.log(error);
+      errorMessage = error;
     });
 
-  return [data, statusCode];
+  return [data, statusCode, errorMessage];
 };
 
 export const UpdateUserPasswordInDB = async (

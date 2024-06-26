@@ -90,8 +90,6 @@ const ProfileScreen = ({navigation}: any) => {
     name: 'John Smith',
   };
 
-  const [friends, setFriends] = useState(data);
-
   useEffect(() => {
     GetUserName();
   }, []);
@@ -240,7 +238,7 @@ const ProfileScreen = ({navigation}: any) => {
           </View>
           <View style={styles.body}>
             <FlatList
-              data={friends}
+              data={data}
               renderItem={({item}) => {
                 return (
                   <TouchableOpacity

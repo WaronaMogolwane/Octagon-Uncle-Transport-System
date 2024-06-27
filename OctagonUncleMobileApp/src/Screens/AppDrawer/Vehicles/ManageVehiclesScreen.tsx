@@ -50,11 +50,12 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   const [VehicleList, setVehicleList] = useState([]);
   const [currentDriverId, setCurrentDriverId] = useState<string | null>();
   const [refreshingVehicles, setRefreshingVehicles] = useState(false);
-  const onRefreshDrivers = React.useCallback(() => {
+  const onRefreshVehicles = React.useCallback(() => {
     setRefreshingVehicles(true);
     setTimeout(() => {
       try {
         GetBusinessVehicles(auth.GetBusinessId());
+        GetDrivers(auth.GetBusinessId());
       } catch (error) {}
     }, 2000);
     setRefreshingVehicles(false);
@@ -95,6 +96,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   const [vehicleIsSaving, setVehicleIsSaving] = useState(true);
   const [driversList, setDriversList] = useState<[]>();
   const [newLinkedDriverId, setNewLinkedDriverId] = useState('');
+  const [driverList, setDriverList] = useState<[]>();
   const [IsLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
@@ -164,7 +166,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
                 console.error(error);
                 ShowRemoveDriverToast(false);
               } else {
-                GetBusinessVehicles(auth.GetBusinessId());
+                onRefreshVehicles();
                 setShowRemoveVehicleDialog(false);
                 setShowVehicleDetailsModal(false);
                 ShowRemoveDriverToast(true);
@@ -299,6 +301,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     }
     return driverDropDownList;
   };
+
   const GetDrivers = async (businessId: string) => {
     return await GetDriversByBusinessId(
       businessId,
@@ -396,12 +399,11 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
 
             ShowAddVehicleToast(false);
             setShowVehicleDetailsModal(true);
-            console.error(error);
+            console.error(error.response.data);
           } else {
             setIsLoading(false);
             setShowNewVehicleDetailsModal(false);
             ShowAddVehicleToast(true);
-            console.log(result);
           }
         },
       );
@@ -423,13 +425,12 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       setShowCaptureImageAlert(true);
     }
     try {
-      GetBusinessVehicles(auth.GetBusinessId());
-      GetDrivers(auth.GetBusinessId());
+      onRefreshVehicles();
     } catch (error) {
       console.error(error);
     }
     //setVehicleList(data);
-  }, [auth, route.params?.NewVehicle]);
+  }, [auth, route.params?.NewVehicle, driversList]);
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -479,7 +480,9 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
                   }
                   handleVehicleCardPress={() => {
                     SetCurrentDriver(item, driversList!);
-
+                    setDriverList(
+                      ConvertDriversListToDropDownList(driversList!),
+                    );
                     setCurrentVehicle(item);
                     setShowVehicleDetailsModal(true);
                   }}
@@ -489,7 +492,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
               refreshControl={
                 <RefreshControl
                   refreshing={refreshingVehicles}
-                  onRefresh={onRefreshDrivers}
+                  onRefresh={onRefreshVehicles}
                 />
               }
             />
@@ -498,7 +501,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
               refreshControl={
                 <RefreshControl
                   refreshing={refreshingVehicles}
-                  onRefresh={onRefreshDrivers}
+                  onRefresh={onRefreshVehicles}
                 />
               }>
               <Text>You currently have no drivers. Invite a driver.</Text>
@@ -549,7 +552,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             LicenseDiskImageUrl={currentVehicle.LicenseDiskImageUrl}
             VehicleImageFrontUrl={vehicleFrontImage}
             VehicleImageBackUrl={vehicleRearImage}
-            DriverList={ConvertDriversListToDropDownList(driversList!)}
+            DriverList={driverList!}
             HandleSaveVehicle={
               formik.handleSubmit as (
                 values:
@@ -596,9 +599,10 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             setNewLinkedDriver={setNewLinkedDriverId}
             onDriverChange={formik.handleChange('newLinkedDriverId')}
             CurrentDriverId={currentDriverId!}
-            DriverList={ConvertDriversListToDropDownList(driversList!)}
+            DriverList={driverList!}
             HandleSaveVehicle={() => {
               LinkDriverToVehicle();
+              onRefreshVehicles();
             }}
             LicenseNumberIsInvalid={!!formik.errors.licenseNumber}
             LicenseNumberOnChangeText={formik.handleChange('licenseNumber')}

@@ -22,7 +22,7 @@ export const GetVehicleAndDriverByBusiness = async (
 };
 export const InsertNewDriverVehicleLink = async (
   driverId: string,
-  vehicleId: string,
+  vehicleId: number,
   vehicleLicenseNumber: string,
   callback: (error: any, result: any) => void
 ) => {

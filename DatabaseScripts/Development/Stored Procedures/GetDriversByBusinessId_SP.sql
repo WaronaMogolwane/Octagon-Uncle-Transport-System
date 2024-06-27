@@ -16,6 +16,7 @@ FROM
     UserBusinessLinking ubl ON ubl.UserId = u.UserId
         LEFT JOIN
     DriverVehicleLinking dvl ON dvl.DriverId = u.UserId
+        AND dvl.IsActive = 1
         LEFT JOIN
     Vehicle v ON v.VehicleId = dvl.VehicleId
 WHERE

@@ -6,7 +6,7 @@ import { GetUploadUrl, UploadFile } from "../Services/BlobStorageService";
 
 export const LinkedDriverToVehicle = async (req: any, res: any, next: any) => {
   const driverId: string = req.body.DriverId;
-  const vehicleId: string = req.body.VehicleId;
+  const vehicleId: number = req.body.VehicleId;
   const vehicleLicenseNumber: string = req.body.VehicleLicenseNumber;
   await InsertNewDriverVehicleLink(driverId, vehicleId, vehicleLicenseNumber, async (error, result) => {
     if (error) {

@@ -1,4 +1,4 @@
-import {FlatList, RefreshControl, View} from 'react-native';
+import {FlatList, RefreshControl, Text, View} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
@@ -8,9 +8,14 @@ import {
   VStack,
   ToastDescription,
   ToastTitle,
+  FabIcon,
+  Fab,
+  FabLabel,
+  ArrowLeftIcon,
 } from '@gluestack-ui/themed';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {Auth} from '../../Classes/Auth';
+import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
 
 const ManageTripsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -22,41 +27,23 @@ const ManageTripsScreen = ({navigation}: any) => {
 
   const [vehicleList, setVehicleList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
+  const [noLinkedVehicle, setNoLinkedVehicle] = useState(true);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
+    setNoLinkedVehicle(false);
 
     setTimeout(() => {
       //setRefreshing(true);
-
-      GetVehiclesAndDrivers(businessId)
-        .then(result => {
-          setVehicleList(result);
-          setRefreshing(false);
-        })
-        .catch(() => {
-          setRefreshing(false);
-        });
+      GetLinkedVehicle();
     }, 2000);
 
     setRefreshing(false);
   }, []);
 
   useEffect(() => {
-    ShowToast();
     setRefreshing(true);
-
-    setTimeout(() => {
-      GetVehiclesAndDrivers(businessId)
-        .then(result => {
-          setVehicleList(result);
-          setRefreshing(false);
-        })
-        .then(() => {
-          setRefreshing(false);
-        });
-    }, 2000);
-    setRefreshing(false);
+    GetLinkedVehicle();
   }, []);
 
   const ShowToast = () => {
@@ -78,6 +65,24 @@ const ManageTripsScreen = ({navigation}: any) => {
     });
   };
 
+  const GetLinkedVehicle = async () => {
+    await GetVehiclesAndDrivers(businessId)
+      .then(result => {
+        if (result.length == 0) {
+          setNoLinkedVehicle(true);
+          setRefreshing(false);
+        } else {
+          ShowToast();
+          setVehicleList(result);
+          setRefreshing(false);
+          setNoLinkedVehicle(false);
+        }
+      })
+      .catch(() => {
+        setRefreshing(false);
+      });
+  };
+
   const renderItemComponentVehicleInfo = (itemData: any) => (
     <VehicleCard
       registrationNumber={itemData.registrationNumber}
@@ -86,15 +91,44 @@ const ManageTripsScreen = ({navigation}: any) => {
       color={itemData.color}
       fullName={itemData.fullName}
       onPress={() => {
-        navigation.navigate('Assign Passenger', {
+        navigation.push('Assign Passenger', {
           vehicleId: itemData.vehicleId,
         });
       }}
     />
   );
 
+  const EmtpyFlatListText = () => {
+    return (
+      <View>
+        <Text>
+          You currently have no linked vehicles. Please add vehicles and try
+          again.
+        </Text>
+      </View>
+    );
+  };
+
+  const GoBackFab = () => {
+    return (
+      <Fab
+        onPress={() => {
+          navigation.navigate('Home');
+        }}
+        size="sm"
+        placement="bottom right"
+        isHovered={false}
+        isDisabled={false}
+        isPressed={false}>
+        <FabIcon as={ArrowLeftIcon} mr="$1" />
+        <FabLabel>Back</FabLabel>
+      </Fab>
+    );
+  };
+
   return (
-    <View>
+    <View style={FlatlistStyles.container}>
+      {noLinkedVehicle ? EmtpyFlatListText() : null}
       <FlatList
         data={vehicleList}
         renderItem={({item}) => renderItemComponentVehicleInfo(item)}
@@ -102,6 +136,7 @@ const ManageTripsScreen = ({navigation}: any) => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
+      <View>{GoBackFab()}</View>
     </View>
   );
 };

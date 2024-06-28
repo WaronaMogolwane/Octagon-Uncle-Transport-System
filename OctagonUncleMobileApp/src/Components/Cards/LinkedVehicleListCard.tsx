@@ -28,9 +28,7 @@ export const VehicleCard = (props: tripCardProps) => {
       <View style={TripCardDriverStyles.cardBorder}>
         <View style={TripCardDriverStyles.cardContainer}>
           <View style={{marginEnd: 5}}>
-            <Text style={TripCardDriverStyles.cardText}>
-              Registration Number:
-            </Text>
+            <Text style={TripCardDriverStyles.cardText}>License Plate:</Text>
           </View>
           <View>
             <Text>{props.registrationNumber}</Text>

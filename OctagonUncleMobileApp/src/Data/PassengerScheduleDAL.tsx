@@ -35,6 +35,28 @@ export const AddPassengerScheduleToDB = async (
   return result;
 };
 
+export const AddTempPassengerScheduleToDB = async (passengerId: string) => {
+  let result: any;
+
+  await axios
+    .post(
+      `${SERVER_HOST}:${SERVER_PORT}/passenger-schedule/add-temp-passenger-schedule`,
+      {
+        params: {
+          PassengerId: passengerId,
+        },
+      },
+    )
+    .then((response: any) => {
+      result = response.status;
+    })
+    .catch((error: any) => {
+      result = error;
+    });
+
+  return result;
+};
+
 export const GetPassengerScheduleFromDB = async (passengerId: string) => {
   let res: any;
   await axios

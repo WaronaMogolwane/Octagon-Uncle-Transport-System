@@ -150,6 +150,7 @@ const TripsScreen = ({navigation}: any) => {
             }
             setVehicleList(result);
             setRefreshing(false);
+            setNoLinkedVehicle(false);
             if (!noLinkedVehicle) {
               ShowSelectVehilcleToast();
             }

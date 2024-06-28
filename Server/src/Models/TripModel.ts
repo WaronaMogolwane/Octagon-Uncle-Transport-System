@@ -5,23 +5,14 @@ import { TripStatus } from "../Classes/TripStatus";
 dotenv.config();
 
 export const InsertTrip = async (
-  trip: Trip,
+  trip: any,
   callback: (error, result) => void
 ) => {
   DbPool.query(
     {
-      sql: "CALL InsertNewTrip(?,?,?,?,?,?,?,?);",
+      sql: "CALL InsertNewTrip(?,?);",
       timeout: 40000,
-      values: [
-        trip.tripId,
-        trip.passengerId,
-        trip.driverVehicleLinkingId,
-        trip.date,
-        trip.pickUpTime,
-        trip.dropOffTime,
-        trip.isCompleted,
-        trip.tripStatus,
-      ],
+      values: [trip.vehicleId, trip.passengerId],
     },
     function (error, results, fields) {
       if (error) {

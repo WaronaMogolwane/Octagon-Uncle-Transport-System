@@ -4,24 +4,25 @@ import {ConvertDate, SplitTimeString} from '../Services/DataConverterService';
 import {SERVER_HOST, SERVER_PORT} from '@env';
 
 export const AddTripToDB = async (trip: Trip) => {
+  let data: any;
+  let code: any;
+
   await axios
     .post(`${SERVER_HOST}:${SERVER_PORT}/trip/add-trip`, {
       trip: {
-        RegistrationNumber: trip.registrationNumber,
-        Passengers: trip.passenger,
+        PassengerId: trip.passengerId,
         VehicleId: trip.vehicleId,
-        BusinessId: trip.businesId,
-        DriverId: trip.driverId,
-        Date: trip.date,
-        Time: trip.time,
       },
     })
     .then((response: any) => {
-      console.log(response.data, response.status);
+      data = response.data;
+      code = response.status;
     })
     .catch((error: any) => {
       console.log(error);
     });
+
+  return [data, code];
 };
 
 export const GetTripFromDB = async (tripId: string) => {
@@ -35,17 +36,7 @@ export const GetTripFromDB = async (tripId: string) => {
     .then((response: any) => {
       let result = response.data.result;
 
-      let trip = new Trip(
-        result.trip_id,
-        result.registrationnumber,
-        [...result.passenger],
-        result.vehicle_id,
-        result.business_id,
-        result.driver_id,
-        result.date,
-        result.time,
-        result.iscompleted,
-      );
+      let trip = new Trip(result.trip_id, result.registrationnumber, '');
 
       res = trip;
     })

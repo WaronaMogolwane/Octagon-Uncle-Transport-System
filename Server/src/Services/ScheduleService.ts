@@ -1,5 +1,8 @@
 import schedule from "node-schedule";
-import { AutoInsertPassengerSchedule } from "../Models/PassengerScheduleModel";
+import {
+  AutoInsertPassengerSchedule,
+  TruncateTempPassengerSchedule,
+} from "../Models/PassengerScheduleModel";
 import { AutoInsertTrip } from "../Models/TripModel";
 import { TruncatePassengerDriverVehicleLinking } from "../Models/PassengerDriverVehicleLinkingModel";
 
@@ -42,6 +45,21 @@ export const StartSchedule = () => {
           console.log("PDVL table truncated");
           console.log(
             "This job was supposed to run at 1201 but actually ran at " +
+              new Date()
+          );
+        }
+      });
+    }
+  );
+
+  const ClearTempPassengerSchedule = schedule.scheduleJob(
+    " 59 23 * * *",
+    function () {
+      TruncateTempPassengerSchedule((error, result) => {
+        if (result) {
+          console.log("TempPassengerTable table truncated");
+          console.log(
+            "This job was supposed to run at 1159 but actually ran at " +
               new Date()
           );
         }

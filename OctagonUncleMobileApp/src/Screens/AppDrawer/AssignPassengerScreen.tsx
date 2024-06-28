@@ -1,4 +1,4 @@
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {FlatList, Text, View} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {
@@ -9,7 +9,6 @@ import {
   GetAllActivePassengerForBusiness,
   UpdateIsAssigned,
 } from '../../Controllers/PassengerController';
-import {CustomButton1} from '../../Components/Buttons';
 import {
   AddPassengerDriverVehicleLinking,
   GetPassengerDriverVehicleLinking,
@@ -40,16 +39,21 @@ import {
   ToastTitle,
   useToast,
   ToastDescription,
+  ScrollView,
 } from '@gluestack-ui/themed';
 import {
   AddPassengerSchedule,
+  AddTempPassengerSchedule,
   GetPassengerSchedule,
   UpdatePassengerSchedule,
 } from '../../Controllers/PassengerScheduleController';
 import {PassengerSchedule} from '../../Models/PassengerSchedule';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {PassengerCard} from '../../Components/Cards/PassengerListCard';
+import {AddTrip} from '../../Controllers/TripController';
 import {Auth} from '../../Classes/Auth';
+import {AlarmClock, Car} from 'lucide-react-native';
+import {Trip} from '../../Models/Trip';
 
 const AssignPassengerScreen = ({route, navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -87,9 +91,11 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const ref = React.useRef(null);
   const toast = useToast();
 
-  const vehicleId = route.params.vehicleId;
+  //const vehicleId = route.params.vehicleId;
+  const vehicleId = '29';
+  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
-  const businessId = auth.GetBusinessId();
+  //const businessId = auth.GetBusinessId();
 
   useEffect(() => {
     GetPassengers();
@@ -201,40 +207,67 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     />
   );
 
+  const PrepareSchedule = async () => {
+    let newPVL = new PassengerDriverVehicleLinking(
+      vehicleId,
+      businessId,
+      newPassengerId,
+    );
+
+    let newSchedule = new PassengerSchedule(
+      monday,
+      tuesday,
+      wednesday,
+      thursday,
+      friday,
+      saturday,
+      sunday,
+      newPassengerId,
+      vehicleId,
+    );
+
+    await AddPassengerDriverVehicleLinking(newPVL).then((result: any) => {
+      if (result == 200) {
+        UpdateIsAssigned(newPassengerId).then((result1: any) => {
+          if (result1[1] == 200) {
+            AddPassengerSchedule(newSchedule).then((result2: any) => {
+              if (result2 == 200) {
+                setNewPassengerId('');
+                GetPassengers();
+              }
+            });
+          }
+        });
+      }
+    });
+  };
+
   const PrepareTrip = async () => {
-    if (newPassengerId != '') {
-      let newPVL = new PassengerDriverVehicleLinking(
-        vehicleId,
-        businessId,
-        newPassengerId,
-      );
+    let newPVL = new PassengerDriverVehicleLinking(
+      vehicleId,
+      businessId,
+      newPassengerId,
+    );
 
-      let newSchedule = new PassengerSchedule(
-        monday,
-        tuesday,
-        wednesday,
-        thursday,
-        friday,
-        saturday,
-        sunday,
-        newPassengerId,
-        vehicleId,
-      );
+    let newTrip = new Trip('', newPassengerId, vehicleId);
 
-      await AddPassengerDriverVehicleLinking(newPVL).then((result: any) => {
-        if (result == 200) {
-          UpdateIsAssigned(newPassengerId).then((result1: any) => {
-            if (result1[1] == 200) {
-              AddPassengerSchedule(newSchedule).then((result2: any) => {
-                if (result == 200) {
+    await AddPassengerDriverVehicleLinking(newPVL).then((result: any) => {
+      UpdateIsAssigned(newPassengerId).then((result1: any) => {
+        if (result1[1] == 200) {
+          AddTempPassengerSchedule(newPassengerId).then((result2: any) => {
+            if (result2 == 200) {
+              AddTrip(newTrip).then((response: any) => {
+                if (response[1] == 200) {
                   GetPassengers();
+                  setNewPassengerId('');
+                  ShowSuccessToast();
                 }
               });
             }
           });
         }
       });
-    }
+    });
   };
 
   const ModifyCalender = async () => {
@@ -335,7 +368,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     );
   };
 
-  const showCalender = () => {
+  const CalenderModal = () => {
     return (
       <Modal
         isOpen={calender}
@@ -355,122 +388,178 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
-            <CheckboxGroup
-              value={values}
-              onChange={(keys: any) => {
-                setValues(keys);
-              }}>
-              <VStack space="xl">
-                <Checkbox
-                  aria-label="Monday"
-                  value="monday"
-                  onPress={() => {
-                    setMonday(!monday);
-                  }}>
-                  <CheckboxIndicator mr="$2">
-                    <CheckboxIcon as={CheckIcon} />
-                  </CheckboxIndicator>
-                  <CheckboxLabel>Monday</CheckboxLabel>
-                </Checkbox>
-                <Checkbox
-                  aria-label="Tuesday"
-                  value="tuesday"
-                  onPress={() => {
-                    setTuesday(!tuesday);
-                  }}>
-                  <CheckboxIndicator mr="$2">
-                    <CheckboxIcon as={CheckIcon} />
-                  </CheckboxIndicator>
-                  <CheckboxLabel>Tuesday</CheckboxLabel>
-                </Checkbox>
-                <Checkbox
-                  aria-label="Wednesday"
-                  value="wednesday"
-                  onPress={() => {
-                    setWednesday(!wednesday);
-                  }}>
-                  <CheckboxIndicator mr="$2">
-                    <CheckboxIcon as={CheckIcon} />
-                  </CheckboxIndicator>
-                  <CheckboxLabel>Wednseday</CheckboxLabel>
-                </Checkbox>
-                <Checkbox
-                  aria-label="Thursday"
-                  value="thursday"
-                  onPress={() => {
-                    setThursday(!thursday);
-                  }}>
-                  <CheckboxIndicator mr="$2">
-                    <CheckboxIcon as={CheckIcon} />
-                  </CheckboxIndicator>
-                  <CheckboxLabel>Thursday</CheckboxLabel>
-                </Checkbox>
-                <Checkbox
-                  aria-label="Friday"
-                  value="friday"
-                  onPress={() => {
-                    setFriday(!friday);
-                  }}>
-                  <CheckboxIndicator mr="$2">
-                    <CheckboxIcon as={CheckIcon} />
-                  </CheckboxIndicator>
-                  <CheckboxLabel>Friday</CheckboxLabel>
-                </Checkbox>
-                <Checkbox
-                  aria-label="Saturday"
-                  value="saturday"
-                  onPress={() => {
-                    setSaturday(!saturday);
-                  }}>
-                  <CheckboxIndicator mr="$2">
-                    <CheckboxIcon as={CheckIcon} />
-                  </CheckboxIndicator>
-                  <CheckboxLabel>Saturday</CheckboxLabel>
-                </Checkbox>
-                <Checkbox
-                  aria-label="Sunday"
-                  value="sunday"
-                  onPress={() => {
-                    setSunday(!sunday);
-                  }}>
-                  <CheckboxIndicator mr="$2">
-                    <CheckboxIcon as={CheckIcon} />
-                  </CheckboxIndicator>
-                  <CheckboxLabel>Sunday</CheckboxLabel>
-                </Checkbox>
-              </VStack>
-            </CheckboxGroup>
+            <View style={{paddingBottom: 20}}>
+              <Text>Please schedule the days for {passengerName} below.</Text>
+            </View>
+            <View>
+              <CheckboxGroup
+                value={values}
+                onChange={(keys: any) => {
+                  setValues(keys);
+                }}>
+                <VStack space="xl">
+                  <Checkbox
+                    aria-label="Monday"
+                    value="monday"
+                    onPress={() => {
+                      setMonday(!monday);
+                    }}>
+                    <CheckboxIndicator mr="$2">
+                      <CheckboxIcon as={CheckIcon} />
+                    </CheckboxIndicator>
+                    <CheckboxLabel>Monday</CheckboxLabel>
+                  </Checkbox>
+                  <Checkbox
+                    aria-label="Tuesday"
+                    value="tuesday"
+                    onPress={() => {
+                      setTuesday(!tuesday);
+                    }}>
+                    <CheckboxIndicator mr="$2">
+                      <CheckboxIcon as={CheckIcon} />
+                    </CheckboxIndicator>
+                    <CheckboxLabel>Tuesday</CheckboxLabel>
+                  </Checkbox>
+                  <Checkbox
+                    aria-label="Wednesday"
+                    value="wednesday"
+                    onPress={() => {
+                      setWednesday(!wednesday);
+                    }}>
+                    <CheckboxIndicator mr="$2">
+                      <CheckboxIcon as={CheckIcon} />
+                    </CheckboxIndicator>
+                    <CheckboxLabel>Wednseday</CheckboxLabel>
+                  </Checkbox>
+                  <Checkbox
+                    aria-label="Thursday"
+                    value="thursday"
+                    onPress={() => {
+                      setThursday(!thursday);
+                    }}>
+                    <CheckboxIndicator mr="$2">
+                      <CheckboxIcon as={CheckIcon} />
+                    </CheckboxIndicator>
+                    <CheckboxLabel>Thursday</CheckboxLabel>
+                  </Checkbox>
+                  <Checkbox
+                    aria-label="Friday"
+                    value="friday"
+                    onPress={() => {
+                      setFriday(!friday);
+                    }}>
+                    <CheckboxIndicator mr="$2">
+                      <CheckboxIcon as={CheckIcon} />
+                    </CheckboxIndicator>
+                    <CheckboxLabel>Friday</CheckboxLabel>
+                  </Checkbox>
+                  <Checkbox
+                    aria-label="Saturday"
+                    value="saturday"
+                    onPress={() => {
+                      setSaturday(!saturday);
+                    }}>
+                    <CheckboxIndicator mr="$2">
+                      <CheckboxIcon as={CheckIcon} />
+                    </CheckboxIndicator>
+                    <CheckboxLabel>Saturday</CheckboxLabel>
+                  </Checkbox>
+                  <Checkbox
+                    aria-label="Sunday"
+                    value="sunday"
+                    onPress={() => {
+                      setSunday(!sunday);
+                    }}>
+                    <CheckboxIndicator mr="$2">
+                      <CheckboxIcon as={CheckIcon} />
+                    </CheckboxIndicator>
+                    <CheckboxLabel>Sunday</CheckboxLabel>
+                  </Checkbox>
+                </VStack>
+              </CheckboxGroup>
+            </View>
           </ModalBody>
           <ModalFooter>
-            <Button
-              variant="outline"
-              size="sm"
-              action="secondary"
-              mr="$3"
-              onPress={() => {
-                setCalender(false);
-              }}>
-              <ButtonText>Back</ButtonText>
-            </Button>
-            <Button
-              size="sm"
-              action="positive"
-              borderWidth="$0"
-              onPress={() => {
-                if (modifyCalender == true) {
-                  ModifyCalender();
-                } else {
-                  PrepareTrip();
-                }
-                setValues(initialState);
-                setCalender(false);
-              }}>
-              <ButtonText>Comfirm</ButtonText>
-            </Button>
+            <ScrollView>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: 'row',
+                  }}>
+                  <View style={{padding: 5}}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      action="secondary"
+                      mr="$3"
+                      onPress={() => {
+                        setCalender(false);
+                      }}>
+                      <ButtonText>Back</ButtonText>
+                    </Button>
+                  </View>
+                  <View style={{padding: 5}}>
+                    <Button
+                      size="sm"
+                      action="positive"
+                      borderWidth="$0"
+                      onPress={() => {
+                        if (modifyCalender == true) {
+                          ModifyCalender();
+                        } else {
+                          PrepareSchedule();
+                        }
+                        setValues(initialState);
+                        setCalender(false);
+                      }}>
+                      <ButtonText>Comfirm</ButtonText>
+                    </Button>
+                  </View>
+                </View>
+              </View>
+            </ScrollView>
           </ModalFooter>
         </ModalContent>
       </Modal>
     );
+  };
+
+  const ShowSuccessToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="success" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Success</ToastTitle>
+              <ToastDescription>Trip added successfully.</ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const ShowPickPassengerToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="attention" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Please pick a passenger</ToastTitle>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
   };
 
   return (
@@ -488,7 +577,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             inputSearchStyle={AssignPassengerScreenStyles.inputSearchStyle}
             iconStyle={AssignPassengerScreenStyles.iconStyle}
             data={passengers}
-            search
+            search={true}
             disable={isDisabled}
             maxHeight={300}
             labelField="passengerName"
@@ -506,16 +595,56 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
           />
         </View>
       </View>
-      <View>{showCalender()}</View>
+      <View>{CalenderModal()}</View>
       <View>
-        <CustomButton1
-          onPress={() => {
-            if (newPassengerId != '') {
-              setCalender(true);
-            }
-          }}
-          title="Add Passenger"
-        />
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+            }}>
+            <View style={{padding: 5}}>
+              <Button
+                size="md"
+                variant="solid"
+                action="secondary"
+                isDisabled={false}
+                isFocusVisible={false}
+                onPress={() => {
+                  if (newPassengerId != '') {
+                    PrepareTrip();
+                  } else {
+                    ShowPickPassengerToast();
+                  }
+                }}>
+                <Car size={20} strokeWidth={1} color={'#FFFFFF'} />
+                <ButtonText>Add Trip</ButtonText>
+              </Button>
+            </View>
+            <View style={{padding: 5}}>
+              <Button
+                size="md"
+                variant="solid"
+                action="primary"
+                isDisabled={false}
+                isFocusVisible={false}
+                onPress={() => {
+                  if (newPassengerId != '') {
+                    setCalender(true);
+                  } else {
+                    ShowPickPassengerToast();
+                  }
+                }}>
+                <AlarmClock size={20} strokeWidth={1} color={'#FFFFFF'} />
+                <ButtonText>Schedule Trip</ButtonText>
+              </Button>
+            </View>
+          </View>
+        </View>
       </View>
       <View>{showPopUp()}</View>
       <View>

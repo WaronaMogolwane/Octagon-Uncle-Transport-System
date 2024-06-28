@@ -10,5 +10,5 @@ UPDATE UserDetail
      City  = _City,
   	 Province  = _Province ,
      PostalCode  = _PostalCode
-WHERE UserDetailId  = _UserDetailId;
+WHERE UserId  = _UserId;
 END

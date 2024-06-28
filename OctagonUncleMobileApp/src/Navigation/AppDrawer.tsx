@@ -64,9 +64,9 @@ const AppDrawer = () => {
       <Drawer.Screen
         name="Assign Passenger"
         component={AssignPassengerScreen}
-        // options={{
-        //   drawerItemStyle: {display: 'none'},
-        // }}
+        options={{
+          drawerItemStyle: {display: 'none'},
+        }}
       />
     </Drawer.Navigator>
   );

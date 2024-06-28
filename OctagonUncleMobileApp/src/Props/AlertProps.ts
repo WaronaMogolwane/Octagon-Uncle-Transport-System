@@ -11,3 +11,12 @@ export type CaptureVehicleImageAlertProps = {
     ) => void;
     CancelAlertOnPress: () => void;
 };
+export type NotificationAlertProps = {
+    // Action: "Primary" | 'Danger'
+    ShowAlert: boolean;
+    AlertTitle: string;
+    ConfirmButtonTitle: string;
+    AlertDescription: string;
+    HandleConfirm: () => void;
+    HandleCancel: () => void;
+};

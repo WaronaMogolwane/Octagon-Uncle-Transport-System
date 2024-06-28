@@ -156,6 +156,70 @@ export const DeleteVehicleByBusinessIdAndLicenseNuimber = async (
       callback(error, null);
     });
 };
+export const DeleteDriverVehicleLinkByDriverId = async (
+  driverId: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .delete(
+      `${SERVER_HOST}:${SERVER_PORT}/vehicle/delete-driver-vehicle-link`,
+      {
+        data: {
+          DriverId: driverId,
+        },
+      },
+    )
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      console.log(error);
+
+      callback(error, null);
+    });
+};
+export const DeleteVehicleByDriverIdAndVehicleId = async (
+  driverId: string,
+  vehicleId: number,
+  callback: (error: any, result: any) => void,
+) => {
+  console.log(driverId, vehicleId);
+  await axios
+    .delete(`${SERVER_HOST}:${SERVER_PORT}/vehicle/delete-vehicle`, {
+      data: {
+        DriverId: driverId,
+        VehicleId: vehicleId,
+      },
+    })
+    .then((response: any) => {
+      console.log(response);
+      callback(null, response);
+    })
+    .catch(error => {
+      console.log(error);
+
+      callback(error, null);
+    });
+};
+export const GetVehicleByLicenseNumberAndBusinessId = async (
+  businessId: string,
+  licenseNumber: string,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/vehicle/get-vehicle-status`, {
+      params: {
+        BusinessId: businessId,
+        LicenseNumber: licenseNumber,
+      },
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
+};
 export const GetVehiclesByBusinessId = async (
   businessId: string,
   callback: (error: any, result: any) => void,

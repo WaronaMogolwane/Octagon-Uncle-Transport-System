@@ -36,7 +36,7 @@ const NewVehicleModal = (props: VehicleModalProps) => {
       <Modal
         closeOnOverlayClick={false}
         isOpen={props.ShowModal}
-        onClose={props.CloseOtpModalButtonOnPress}>
+        onClose={props.HandleCloseModal}>
         <ModalBackdrop />
         <ModalContent backgroundColor="#fff" height={'90%'}>
           <ModalHeader>
@@ -151,7 +151,7 @@ const NewVehicleModal = (props: VehicleModalProps) => {
                 size="sm"
                 action="negative"
                 borderWidth="$0"
-                onPress={props.CloseOtpModalButtonOnPress}>
+                onPress={props.HandleCloseModal}>
                 <ButtonText>Cancel</ButtonText>
               </Button>
               <Button

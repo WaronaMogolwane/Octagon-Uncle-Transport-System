@@ -25,16 +25,23 @@ import VehicleSelect from '../Cards/Select/VehicleSelect';
 import RemoveDriverAlert from '../Alerts/RemoveDriverAlert';
 import DriverSelect from '../Cards/Select/DriverSelect';
 import RemoveVehicleAlert from '../Alerts/RemoveVehicleAlert';
+import {CustomButton1, CustomButton2, CustomButton3} from '../Buttons';
 const data: any = [];
 
 const VehicleDetailsModal = (props: VehicleDetailsModalProps) => {
   return (
     <View>
       <Modal
+        style={{
+          shadowColor: '#171717',
+          shadowOffset: {width: -2, height: 4},
+          shadowOpacity: 0.2,
+          shadowRadius: 3,
+        }}
         isOpen={props.ShowModal}
-        onClose={props.CloseOtpModalButtonOnPress}>
+        onClose={props.HandleCloseModal}>
         <ModalBackdrop />
-        <ModalContent backgroundColor="#fff" height={'90%'}>
+        <ModalContent backgroundColor="#fff" height={'75%'}>
           <ModalHeader>
             <Heading size="lg">Manage Vehicle</Heading>
             <ModalCloseButton>
@@ -48,10 +55,14 @@ const VehicleDetailsModal = (props: VehicleDetailsModalProps) => {
                 <Image
                   source={props.VehicleImageFrontUrl}
                   alt="Vehicle front image."
+                  width={128}
+                  aspectRatio={1 / 1}
                 />
                 <Image
                   source={props.VehicleImageBackUrl}
                   alt="Vehicle rear image."
+                  width={128}
+                  aspectRatio={1 / 1}
                 />
               </View>
               <DriverSelect
@@ -60,6 +71,32 @@ const VehicleDetailsModal = (props: VehicleDetailsModalProps) => {
                 onDriverChange={props.onDriverChange}
                 setNewLinkedDriver={props.setNewLinkedDriver}
               />
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-evenly',
+                }}>
+                {(props.CurrentDriverId && !props.NewLinkedDriverId) ||
+                (props.CurrentDriverId === props.NewLinkedDriverId &&
+                  props.CurrentDriverId) ? (
+                  <CustomButton3
+                    title="Unlink driver"
+                    action="negative"
+                    size="sm"
+                    onPress={props.HandleUnlinkDriver}
+                  />
+                ) : null}
+                {props.NewLinkedDriverId &&
+                props.CurrentDriverId !== props.NewLinkedDriverId ? (
+                  <CustomButton3
+                    title="Link driver"
+                    action="primary"
+                    size="sm"
+                    onPress={props.HandleLinkDriver}
+                  />
+                ) : null}
+              </View>
               <CustomFormControlInput
                 labelText="Make"
                 placeHolder="Make"
@@ -133,6 +170,18 @@ const VehicleDetailsModal = (props: VehicleDetailsModalProps) => {
                 value={props.EngineNumberValue}
                 isDisabled={true}
               />
+              <View
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'space-evenly',
+                }}>
+                <CustomButton3
+                  title="Recapture vehicle"
+                  size="sm"
+                  action="primary"
+                />
+              </View>
             </ModalBody>
             <ModalFooter>
               <Button

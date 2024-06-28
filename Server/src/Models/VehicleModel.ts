@@ -77,6 +77,45 @@ export const InsertNewVehicle = async (
     }
   );
 };
+export const DeleteDriverVehicleLinkByDriverId = async (
+  driverId: string,
+  callback: (error: any, result: any) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL DeleteDriverVehicleLinkByDriverId(?);",
+      timeout: 40000,
+      values: [driverId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+export const DeleteVehicleByDriverIdAndVehicleId = async (
+  driverId: string,
+  vehicleId: number,
+  callback: (error: any, result: any) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL DeleteVehicleByDriverIdAndVehicleId(?,?);",
+      timeout: 40000,
+      values: [driverId, vehicleId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
 export const GetVehiclesByBusinessId = async (
   businessId: string,
   callback: (error: any, result: any) => void
@@ -95,4 +134,24 @@ export const GetVehiclesByBusinessId = async (
       }
     }
   );
-};
+}
+export const GetVehicleByLicenseNumberAndBusinessId = async (
+  businessId: string,
+  licenseNumber: string,
+  callback: (error: any, result: any) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetVehicleByLicenseNumberAndBusinessId(?,?);",
+      timeout: 40000,
+      values: [licenseNumber, businessId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+}

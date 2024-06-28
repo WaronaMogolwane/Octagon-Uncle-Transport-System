@@ -1,7 +1,7 @@
 import { error } from "console";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 import { Vehicle } from "../Classes/Vehicle";
-import { GetVehicleAndDriverByBusiness, GetVehiclesByBusinessId, InsertNewDriverVehicleLink, InsertNewVehicle } from "../Models/VehicleModel";
+import { DeleteDriverVehicleLinkByDriverId, DeleteVehicleByDriverIdAndVehicleId, GetVehicleAndDriverByBusiness, GetVehicleByLicenseNumberAndBusinessId, GetVehiclesByBusinessId, InsertNewDriverVehicleLink, InsertNewVehicle } from "../Models/VehicleModel";
 import { GetUploadUrl, UploadFile } from "../Services/BlobStorageService";
 
 export const LinkedDriverToVehicle = async (req: any, res: any, next: any) => {
@@ -67,6 +67,43 @@ export const AddNewVehicle = async (req: any, res: any, next: any) => {
     }
   });
 };
+export const CheckIfVehicleExists = async (req: any, res: any, next: any) => {
+  const businessId: string = req.query.BusinessId;
+  const licenseNumber: string = req.query.LicenseNumber;
+  console.log(req)
+  GetVehicleByLicenseNumberAndBusinessId(businessId, licenseNumber, async (error: any, result: any) => {
+    if (error) {
+      next(new ErrorResponse(error, "400"));
+    }
+    else {
+      if (result[0][0]) {
+        if (!result[0][0].IsActive) {
+          //Vehicle exists but is not active
+          res.status(200).send({
+            VehicleExists: true,
+            IsActive: false
+          });
+        }
+        else {
+          //Vehicle exists and is active
+          res.status(200).send({
+            VehicleExists: true,
+            IsActive: true
+          });
+        }
+      }
+      else {
+        //Vehicle does not exist
+        res.status(200).send({
+          VehicleExists: false,
+          IsActive: false
+        });
+      }
+    }
+  })
+}
+
+
 export const GetVehicle = async (req: any, res: any, next: any) => {
   const newVehicle: Vehicle = {
     FrontImage: req.body.FrontImage,
@@ -114,6 +151,29 @@ export const GetVehicleAndDriver = async (req: any, res: any, next: any) => {
         RecordRetrieved: true,
         result: result[0],
       });
+    }
+  });
+};
+export const DeleteDriverVehicleLink = async (req: any, res: any, next: any) => {
+  let driverId: string = req.body.DriverId;
+  await DeleteDriverVehicleLinkByDriverId(driverId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(400, error.message));
+    }
+    else {
+      res.status(200).send(result);
+    }
+  });
+};
+export const DeleteVehicle = async (req: any, res: any, next: any) => {
+  let driverId: string = req.body.DriverId;
+  let vehicleId: number = req.body.VehicleId;
+  await DeleteVehicleByDriverIdAndVehicleId(driverId, vehicleId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(400, error.message));
+    }
+    else {
+      res.status(200).send(result);
     }
   });
 };

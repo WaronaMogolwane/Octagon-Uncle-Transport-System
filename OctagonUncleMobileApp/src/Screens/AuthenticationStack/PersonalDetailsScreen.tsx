@@ -39,6 +39,7 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
       '',
       values.firstname,
       values.lastname,
+      values.phonenumber,
       values.addressline1,
       values.addressline2,
       values.suburb,
@@ -82,44 +83,43 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
     firstname: yup
       .string()
       .min(2, 'Firstname too Short!')
-      .max(50, 'Firstname too Long!')
-      .required('Required'),
+      .max(50, 'Firstname too Long!'),
     lastname: yup
       .string()
       .min(2, 'lastname too Short!')
-      .max(50, 'lastname too Long!')
-      .required('Required'),
+      .max(50, 'lastname too Long!'),
+    phoneNumber: yup
+      .string()
+      .matches(
+        /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
+        'not valid',
+      )
+      .min(10, 'Business phone number should be 10 digits')
+      .max(10, 'Business phone number should be 10 digits'),
     addressline1: yup
       .string()
       .min(2, 'Address too Short!')
-      .max(100, 'Address too Long!')
-      .required('Required'),
+      .max(100, 'Address too Long!'),
     addressline2: yup.string().min(2, 'Too Short!').max(100, 'Too Long!'),
     suburb: yup
       .string()
       .min(2, 'Suburb too Short!')
-      .max(50, 'Suburb too  Long!')
-      .required('Required'),
-    city: yup
-      .string()
-      .min(2, 'City too Short!')
-      .max(50, 'City too Long!')
-      .required('Required'),
+      .max(50, 'Suburb too  Long!'),
+    city: yup.string().min(2, 'City too Short!').max(50, 'City too Long!'),
     province: yup
       .string()
       .min(2, 'Province too Short!')
-      .max(50, 'Province too Long!')
-      .required('Required'),
+      .max(50, 'Province too Long!'),
     postalcode: yup
       .string()
       .min(2, 'Postal code too Short!')
-      .max(4, 'Postal code too Long!')
-      .required('Required'),
+      .max(4, 'Postal code too Long!'),
   });
 
   const userDetailsInitialValues = {
     firstname: '',
     lastname: '',
+    phonenumber: '',
     addressline1: '',
     addressline2: '',
     suburb: '',
@@ -153,6 +153,8 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
         </View>
         <View style={{paddingBottom: 15, paddingTop: 15}}>
           <UserDetailForm
+            showButton={true}
+            heading="Add User Details"
             firstNameIsInvalid={!!formik.errors.firstname}
             firstNameOnChangeText={formik.handleChange('firstname')}
             firstNameErrorText={formik?.errors?.firstname}
@@ -163,6 +165,11 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
             lastNameErrorText={formik?.errors?.lastname}
             lastNameOnBlur={formik.handleBlur('lastname')}
             lastNameValue={formik.values?.lastname}
+            phoneNumberIsInvalid={!!formik.errors.phonenumber}
+            phoneNumberOnChangeText={formik.handleChange('phonenumber')}
+            phoneNumberErrorText={formik?.errors?.phonenumber}
+            phoneNumberOnBlur={formik.handleBlur('phonenumber')}
+            phoneNumberValue={formik.values?.phonenumber}
             addressline1IsInvalid={!!formik.errors.addressline1}
             addressline1OnChangeText={formik.handleChange('addressline1')}
             addressline1ErrorText={formik?.errors?.addressline1}
@@ -201,11 +208,6 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
                   | undefined,
               ) => void
             }
-          />
-
-          <CustomButton1
-            onPress={() => navigation.goBack()}
-            title="Go back home"
           />
         </View>
       </SafeAreaView>

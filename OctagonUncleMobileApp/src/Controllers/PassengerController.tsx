@@ -1,10 +1,10 @@
 import {
   AddPassengerToDB,
   GetPassengerFromDatabase,
-  DeletePassengerFromDatabase as DeletePassengerFromDB,
+  DeletePassengerFromDB as DeletePassengerFromDB,
   GetActivePassengerForBusinessFromDB,
   UpdateIsAssignedInDB,
-  UpdatePassengerInDatabase,
+  UpdatePassengerInDB,
   GetParentPassengersFromDB,
   GetAllPassengerForBusinessFromDB,
   GetPendingPassengerForBusinessFromDB,
@@ -48,7 +48,7 @@ export const DeletePassengerRequest = async (
 };
 
 export const UpdatePassenger = async (passenger: Passenger) => {
-  return await UpdatePassengerInDatabase(passenger);
+  return await UpdatePassengerInDB(passenger);
 };
 
 export const UpdateIsAssigned = async (passengerId: string) => {

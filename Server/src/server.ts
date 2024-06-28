@@ -11,6 +11,9 @@ import vehicleRoute from "./Routes/VehicleRoutes";
 import passengerDriverVehicleLinkingRoute from "./Routes/PassengerDriverVehicleLinkingRoutes";
 import passengerScheduleRoute from "./Routes/PassengerScheduleRoutes";
 import driverVehicleLinkingRoute from "./Routes/DriverVehicleLinkingRoutes";
+import businessDetailRoute from "./Routes/BusinessDetailRoutes";
+import bankingDetailRoute from "./Routes/BankingDetailRoutes";
+import userRoute from "./Routes/UserRoutes";
 
 import ErrorHandler from "./Middleware/ErrorHandler";
 
@@ -25,10 +28,13 @@ app.use(express.json());
 const PORT = process.env.PORT || 8081;
 
 app.use("/auth", authRoute);
+app.use("/user", userRoute);
 app.use("/user-profile", userProfileRoute);
 app.use("/passenger", passengerRoute);
 app.use("/trip", tripRoute);
 app.use("/vehicle", vehicleRoute);
+app.use("/business-detail", businessDetailRoute);
+app.use("/banking-detail", bankingDetailRoute);
 app.use(
   "/passenger-driver-vehicle-linking",
   passengerDriverVehicleLinkingRoute

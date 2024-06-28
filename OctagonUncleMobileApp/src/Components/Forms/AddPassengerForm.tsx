@@ -2,7 +2,10 @@ import {Heading, VStack} from '@gluestack-ui/themed';
 import {View} from 'react-native';
 import {AddPassengerFormProps} from '../../Models/FormControlProps';
 import {CustomButton1} from '../Buttons';
-import {CustomFormControlInput} from '../CustomFormInput';
+import {
+  CustomFormControlInput,
+  CustomFormControlInputNumber,
+} from '../CustomFormInput';
 
 export function AddPassengerForm(props: AddPassengerFormProps) {
   return (
@@ -31,7 +34,7 @@ export function AddPassengerForm(props: AddPassengerFormProps) {
           onBlur={props.lastNameOnBlur}
           value={props.lastNameValue}
         />
-        <CustomFormControlInput
+        <CustomFormControlInputNumber
           labelText="Age"
           placeHolder="age"
           isInvalid={props.ageIsInvalid}

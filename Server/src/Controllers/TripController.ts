@@ -20,16 +20,10 @@ export const AddTrip = async (req: any, res: any, next: any) => {
   const convertedDate = req.body.trip.Date;
   const date = new Date(convertedDate);
 
-  let newTrip = new Trip(
-    randomUUID(),
-    req.body.trip.PassengerId,
-    req.body.trip.DriverVehicleLinkingId,
-    date,
-    req.body.trip.PickUpTime,
-    req.body.trip.DropOffTime,
-    req.body.trip.IsCompleted,
-    req.body.trip.TripStatus
-  );
+  let newTrip = {
+    passengerId: req.body.trip.PassengerId,
+    vehicleId: req.body.trip.VehicleId,
+  };
 
   await InsertTrip(newTrip, (error, result) => {
     if (error) {

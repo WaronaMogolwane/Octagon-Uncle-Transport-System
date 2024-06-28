@@ -75,6 +75,7 @@ const ManageTripsScreen = ({navigation}: any) => {
           ShowToast();
           setVehicleList(result);
           setRefreshing(false);
+          setNoLinkedVehicle(false);
         }
       })
       .catch(() => {

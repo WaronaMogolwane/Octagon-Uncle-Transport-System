@@ -31,6 +31,26 @@ export const InsertPassengerSchedule = async (
   );
 };
 
+export const InsertTempPassengerSchedule = async (
+  passengerId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL InsertNewTempPassengerSchedule(?);",
+      timeout: 40000,
+      values: [passengerId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
 export const GetPassengerSchedule = async (
   passengerId: string,
   callback: (error, result) => void
@@ -91,6 +111,24 @@ export const AutoInsertPassengerSchedule = async (
       SELECT DriverVehicleLinkingId, BusinessId, PassengerId
       FROM PassengerSchedule 
         WHERE ${day} = '1';`,
+      timeout: 40000,
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const TruncateTempPassengerSchedule = async (
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL AutoTruncateTempPassengerSchedule();",
       timeout: 40000,
     },
     function (error, results, fields) {

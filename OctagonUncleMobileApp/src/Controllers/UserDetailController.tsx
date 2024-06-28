@@ -1,18 +1,18 @@
 import {
-  AddUserDetailsToDatabase,
+  AddUserDetailsToDB,
   // GetAllUserDetailsFromDatabase,
-  GetUserDetailsFromDatabase,
+  GetUserDetailsFromDB,
   // DeleteUserDetailsFromDatabase,
-  UpdateUserDetailsInDatabase,
+  UpdateUserDetailsInDB,
 } from '../Data/UserDetailDAL';
 import {UserDetail} from '../Models/UserDetail';
 
 export const AddUserDetail = async (userDetail: UserDetail) => {
-  return await AddUserDetailsToDatabase(userDetail);
+  return await AddUserDetailsToDB(userDetail);
 };
 
-export const GetUserDetail = async (userDetail: string) => {
-  return await GetUserDetailsFromDatabase(userDetail);
+export const GetUserDetail = async (userId: string) => {
+  return await GetUserDetailsFromDB(userId);
 };
 
 export const GetAllUserDetails = async () => {
@@ -24,5 +24,5 @@ export const DeleteUserDetail = async (uid: string) => {
 };
 
 export const UpdateUserDetail = async (userDetail: UserDetail) => {
-  await UpdateUserDetailsInDatabase(userDetail);
+  return await UpdateUserDetailsInDB(userDetail);
 };

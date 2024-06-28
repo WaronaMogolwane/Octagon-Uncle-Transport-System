@@ -16,7 +16,7 @@ import {
 import {Trip} from '../Models/Trip';
 
 export const AddTrip = async (trip: Trip) => {
-  await AddTripToDB(trip);
+  return await AddTripToDB(trip);
 };
 
 export const GetTrip = async (tripId: string) => {

@@ -2,12 +2,16 @@ import {Heading, VStack} from '@gluestack-ui/themed';
 import {View} from 'react-native';
 import {UserDetailsFormProps} from '../../Models/FormControlProps';
 import {CustomButton1} from '../Buttons';
-import {CustomFormControlInput} from '../CustomFormInput';
+import {
+  CustomFormControlInput,
+  CustomFormControlInputNumber,
+  CustomFormControlInputPhone,
+} from '../CustomFormInput';
 
 export function UserDetailForm(props: UserDetailsFormProps) {
   return (
     <View>
-      <Heading mb="$3">Personal Details</Heading>
+      <Heading mb="$3">{props.heading}</Heading>
       <VStack>
         <CustomFormControlInput
           labelText="Firstname"
@@ -31,6 +35,17 @@ export function UserDetailForm(props: UserDetailsFormProps) {
           errorText={props.lastNameErrorText}
           onBlur={props.lastNameOnBlur}
           value={props.lastNameValue}
+        />
+        <CustomFormControlInputPhone
+          labelText="Phone number"
+          placeHolder="phone number"
+          isInvalid={props.phoneNumberIsInvalid}
+          isRequired={true}
+          type="text"
+          onChangeText={props.phoneNumberOnChangeText}
+          errorText={props.phoneNumberErrorText}
+          onBlur={props.phoneNumberOnBlur}
+          value={props.phoneNumberValue}
         />
         <CustomFormControlInput
           labelText="Addressline 1"
@@ -91,7 +106,7 @@ export function UserDetailForm(props: UserDetailsFormProps) {
           value={props.provinceValue}
         />
 
-        <CustomFormControlInput
+        <CustomFormControlInputNumber
           labelText="Postal Code"
           placeHolder="postal code"
           isInvalid={props.postalCodeIsInvalid}
@@ -102,8 +117,9 @@ export function UserDetailForm(props: UserDetailsFormProps) {
           onBlur={props.postalCodeOnBlur}
           value={props.postalCodeValue}
         />
-
-        <CustomButton1 title={'Submit'} onPress={props.submitUserDetails} />
+        {props.showButton ? (
+          <CustomButton1 title={'Submit'} onPress={props.submitUserDetails} />
+        ) : null}
       </VStack>
     </View>
   );

@@ -21,7 +21,7 @@ export type ButtonProps = {
   title?: string;
   size?: 'sm' | 'md' | 'lg' | undefined;
   variant?: string;
-  action?: string;
+  action?: "default" | "negative" | "primary" | "secondary" | "positive" | undefined;
   isDisabled?: boolean;
   isFocusVisible?: boolean;
   buttonText?: string;

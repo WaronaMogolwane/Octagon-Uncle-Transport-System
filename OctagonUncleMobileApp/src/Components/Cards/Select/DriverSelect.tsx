@@ -29,12 +29,13 @@ const DriverSelect = (props: DriverSelectProps) => {
         selectedTextStyle={styles.selectedTextStyle}
         inputSearchStyle={styles.inputSearchStyle}
         iconStyle={styles.iconStyle}
+        containerStyle={{height: '80%'}}
         data={props.data || [{label: 'No Drivers available.', value: '1'}]}
         search={true}
-        maxHeight={300}
         labelField="label"
         valueField="value"
         confirmSelectItem={true}
+        mode="modal"
         placeholder={
           !isFocus
             ? props.currentDriverId
@@ -65,7 +66,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   dropdown: {
-    height: 50,
+    height: 45,
     borderColor: 'gray',
     borderWidth: 0.5,
     borderRadius: 8,

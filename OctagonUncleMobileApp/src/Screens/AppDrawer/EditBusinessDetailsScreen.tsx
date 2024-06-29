@@ -62,15 +62,15 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
       await GetBusinessDetail(businessId).then((result: any) => {
         setBusinessDetail(
           new BusinessDetail(
-            result.businessDetailId,
-            result.businessName,
-            result.businessPhoneNumber,
-            result.addressLine1,
-            result.addressLine2,
-            result.suburb,
-            result.province,
-            result.city,
-            result.postalCode,
+            result.businessDetailId.trim(),
+            result.businessName.trim(),
+            result.businessPhoneNumber.trim(),
+            result.addressLine1.trim(),
+            result.addressLine2.trim(),
+            result.suburb.trim(),
+            result.province.trim(),
+            result.city.trim(),
+            result.postalCode.trim(),
             businessId,
           ),
         );

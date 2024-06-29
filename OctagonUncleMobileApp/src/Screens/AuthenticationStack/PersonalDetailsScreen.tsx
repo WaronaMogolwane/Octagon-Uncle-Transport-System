@@ -37,15 +37,15 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
   const userDetailHelper = async (values: any) => {
     let userDetail = new UserDetail(
       '',
-      values.firstname,
-      values.lastname,
-      values.phonenumber,
-      values.addressline1,
-      values.addressline2,
-      values.suburb,
-      values.city,
-      values.province,
-      values.postalcode,
+      values.firstname.trim(),
+      values.lastname.trim(),
+      values.phonenumber.trim(),
+      values.addressline1.trim(),
+      values.addressline2.trim(),
+      values.suburb.trim(),
+      values.city.trim(),
+      values.province.trim(),
+      values.postalcode.trim(),
       userId,
     );
 

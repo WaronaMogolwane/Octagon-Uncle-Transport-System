@@ -83,16 +83,19 @@ const EditUserAccountScreen = ({navigation}: any) => {
   };
 
   const SendOtp = async () => {
-    await emailOtp(emailFormik.values.email, (error: any, result: any) => {
-      if (error) {
-        console.error(error);
-      } else {
-        console.log(result.data);
-        ShowEmailSentToast();
-        setShowEmailModal(false);
-        setShowEmailVerificationModal(true);
-      }
-    });
+    await emailOtp(
+      emailFormik.values.email.trim(),
+      (error: any, result: any) => {
+        if (error) {
+          console.error(error);
+        } else {
+          console.log(result.data);
+          ShowEmailSentToast();
+          setShowEmailModal(false);
+          setShowEmailVerificationModal(true);
+        }
+      },
+    );
   };
 
   const UpdateEmail = async () => {
@@ -227,8 +230,8 @@ const EditUserAccountScreen = ({navigation}: any) => {
 
   const VerifyOtp = async () => {
     verifyOtp(
-      emailFormik.values.otp,
-      emailFormik.values.email,
+      emailFormik.values.otp.trim(),
+      emailFormik.values.email.trim(),
       (error: any, result: any) => {
         if (error) {
           console.warn(error);

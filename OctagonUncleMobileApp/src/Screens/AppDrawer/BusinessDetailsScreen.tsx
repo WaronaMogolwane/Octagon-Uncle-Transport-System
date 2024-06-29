@@ -22,14 +22,14 @@ const BusinessDetailsScreen = ({navigation}: any) => {
   const businessDetailHelper = async (values: any) => {
     let businessDetail = new BusinessDetail(
       '',
-      values.businessName,
-      values.businessPhoneNumber,
-      values.addressline1,
-      values.addressline2,
-      values.suburb,
-      values.city,
-      values.province,
-      values.postalcode,
+      values.businessName.trim(),
+      values.businessPhoneNumber.trim(),
+      values.addressline1.trim(),
+      values.addressline2.trim(),
+      values.suburb.trim(),
+      values.city.trim(),
+      values.province.trim(),
+      values.postalcode.trim(),
       businessId,
     );
 

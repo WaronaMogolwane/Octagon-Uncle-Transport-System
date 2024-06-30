@@ -1,36 +1,36 @@
 export class Passenger {
-  PassengerId: String;
-  FirstName: String;
-  LastName: String;
+  PassengerId: string;
+  FirstName: string;
+  LastName: string;
   Age: Number;
-  HomeAddress: String;
-  Suburb: String;
-  City: String;
-  Province: String;
-  PostalCode: String;
-  DestinationAddress: String;
-  ParentId: String;
-  BusinessId: String;
-  TripStatus?: String;
-  PickUpTIme?: String;
-  DropOffTime?: String;
+  HomeAddress: string;
+  Suburb: string;
+  City: string;
+  Province: string;
+  PostalCode: string;
+  DestinationAddress: string;
+  ParentId: string;
+  BusinessId: string;
+  TripStatus?: string;
+  PickUpTIme?: string;
+  DropOffTime?: string;
 
   constructor(
-    PassengerId: String,
-    FirstName: String,
-    LastName: String,
+    PassengerId: string,
+    FirstName: string,
+    LastName: string,
     Age: Number,
-    HomeAddress: String,
-    Suburb: String,
-    City: String,
-    Province: String,
-    PostalCode: String,
-    DestinationAddress: String,
-    ParentId: String,
-    BusinessId: String,
-    TripStatus?: String,
-    PickUpTIme?: String,
-    DropOffTime?: String,
+    HomeAddress: string,
+    Suburb: string,
+    City: string,
+    Province: string,
+    PostalCode: string,
+    DestinationAddress: string,
+    ParentId: string,
+    BusinessId: string,
+    TripStatus?: string,
+    PickUpTIme?: string,
+    DropOffTime?: string,
   ) {
     this.PassengerId = PassengerId;
     this.FirstName = FirstName;

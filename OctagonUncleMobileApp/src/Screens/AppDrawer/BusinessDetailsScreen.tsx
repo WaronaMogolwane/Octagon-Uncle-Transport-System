@@ -1,6 +1,18 @@
 import {GestureResponderEvent, ScrollView, View} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {
+  Button,
+  ButtonText,
+  CloseIcon,
+  Heading,
+  Icon,
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  Text,
   Toast,
   ToastDescription,
   ToastTitle,
@@ -14,9 +26,19 @@ import * as yup from 'yup';
 import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
 import {BusinessDetailForm} from '../../Components/Forms/BusinessDetailForm';
 import {AddBusinessDetail} from '../../Controllers/BusinessDetailController';
+import {
+  CustomFormControlInput,
+  CustomFormControlInputNumber,
+} from '../../Components/CustomFormInput';
+import {BankingDetail} from '../../Models/BankingDetail';
+import {AddBankingDetail} from '../../Controllers/BankingDetailController';
 
 const BusinessDetailsScreen = ({navigation}: any) => {
   const toast = useToast();
+  const ref = React.useRef(null);
+
+  const [showModal, setShowModal] = useState(true);
+
   const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
 
   const businessDetailHelper = async (values: any) => {
@@ -81,6 +103,150 @@ const BusinessDetailsScreen = ({navigation}: any) => {
     });
   };
 
+  const BankingDetailModal = () => {
+    return (
+      <Modal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(true);
+          formik.resetForm();
+        }}
+        finalFocusRef={ref}>
+        <ModalBackdrop />
+        <ModalContent>
+          <ModalHeader>
+            <Heading size="lg">Banking Details</Heading>
+            <ModalCloseButton>
+              <Icon as={CloseIcon} />
+            </ModalCloseButton>
+          </ModalHeader>
+          <ModalBody>
+            <View style={{marginBottom: 20}}>
+              <Text>Please enter you banking details below.</Text>
+            </View>
+            <View>
+              <CustomFormControlInput
+                labelText="Bank Name"
+                errorText={bankingFormik?.errors?.bankName}
+                isInvalid={!!bankingFormik.errors.bankName}
+                isDisabled={false}
+                type="text"
+                value={bankingFormik.values?.bankName}
+                onChangeText={bankingFormik.handleChange('bankName')}
+                isRequired={false}
+                onBlur={bankingFormik.handleBlur('bankName')}
+              />
+            </View>
+            <View>
+              <CustomFormControlInputNumber
+                labelText="Branch Number"
+                isInvalid={!!bankingFormik.errors.branchNumber}
+                errorText={bankingFormik?.errors?.branchNumber}
+                isDisabled={false}
+                type="text"
+                value={bankingFormik.values?.branchNumber}
+                onChangeText={bankingFormik.handleChange('branchNumber')}
+                isRequired={false}
+                onBlur={bankingFormik.handleBlur('branchNumber')}
+              />
+              <CustomFormControlInput
+                labelText="Account Name"
+                errorText={bankingFormik?.errors?.accountName}
+                isInvalid={!!bankingFormik.errors.accountName}
+                isDisabled={false}
+                type="text"
+                value={bankingFormik.values?.accountName}
+                onChangeText={bankingFormik.handleChange('accountName')}
+                isRequired={false}
+                onBlur={bankingFormik.handleBlur('accountName')}
+              />
+              <CustomFormControlInputNumber
+                labelText="Account Number"
+                errorText={bankingFormik?.errors?.accountNumber}
+                isInvalid={!!bankingFormik.errors.accountNumber}
+                isDisabled={false}
+                type="text"
+                value={bankingFormik.values?.accountNumber}
+                onChangeText={bankingFormik.handleChange('accountNumber')}
+                isRequired={false}
+                onBlur={bankingFormik.handleBlur('accountNumber')}
+              />
+            </View>
+            <View>
+              <Button
+                size="sm"
+                action="positive"
+                borderWidth="$0"
+                onPress={() => {
+                  bankingFormik.handleSubmit();
+                }}>
+                <ButtonText>Submit</ButtonText>
+              </Button>
+            </View>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    );
+  };
+
+  const SubmitBankingDetail = async (values: any) => {
+    let bankingDetail = new BankingDetail(
+      values.bankName.trim(),
+      values.branchNumber.trim(),
+      values.accountName.trim(),
+      values.accountNumber.trim(),
+      values.businessId,
+    );
+
+    console.log(bankingDetail);
+
+    await AddBankingDetail(bankingDetail)
+      .then((response: any) => {
+        if (response == 200) {
+          console.log('Submit');
+        } else {
+          console.log('It didnt work');
+        }
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
+  };
+
+  const bankingDetailSchema = yup.object().shape({
+    // bankName: yup
+    //   .string()
+    //   .min(2, 'Business name too Short!')
+    //   .max(50, 'Business name too Long!')
+    //   .required(),
+    // branchNumber: yup
+    //   .string()
+    //   .matches(
+    //     /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
+    //     'not valid',
+    //   )
+    //   .min(10, 'Business phone number should be 10 digits')
+    //   .max(10, 'Business phone number should be 10 digits')
+    //   .required(),
+    // accountName: yup
+    //   .string()
+    //   .min(2, 'Address too Short!')
+    //   .max(100, 'Address too Long!')
+    //   .required(),
+    // accountNumber: yup
+    //   .string()
+    //   .min(2, 'Too Short!')
+    //   .max(100, 'Too Long!')
+    //   .required(),
+  });
+
+  const bankingDetailInitialValues = {
+    bankName: '',
+    branchNumber: '',
+    accountName: '',
+    accountNumber: '',
+  };
+
   const businessDetailSchema = yup.object().shape({
     businessName: yup
       .string()
@@ -139,6 +305,15 @@ const BusinessDetailsScreen = ({navigation}: any) => {
     postalcode: '',
   };
 
+  const bankingFormik = useFormik({
+    initialValues: bankingDetailInitialValues,
+    validationSchema: bankingDetailSchema,
+
+    onSubmit: (values, {resetForm}) => {
+      SubmitBankingDetail(values);
+    },
+  });
+
   const formik = useFormik({
     initialValues: businessDetailsInitialValues,
     validationSchema: businessDetailSchema,
@@ -152,6 +327,7 @@ const BusinessDetailsScreen = ({navigation}: any) => {
     <ScrollView>
       <SafeAreaView style={ThemeStyles.container}>
         <View style={{paddingBottom: 15, paddingTop: 15}}>
+          {BankingDetailModal()}
           <BusinessDetailForm
             showButton={true}
             buttonText="Submit Business Details"

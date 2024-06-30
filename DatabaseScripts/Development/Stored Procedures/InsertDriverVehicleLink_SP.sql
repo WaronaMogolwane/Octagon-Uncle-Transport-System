@@ -1,11 +1,14 @@
 CREATE DEFINER=`sqladmin`@`%` PROCEDURE `InsertDriverVehicleLink`(IN _driverId VARCHAR(50),IN _vehicleId INT)
 BEGIN
 IF
-(SELECT IF(COUNT(*)>0,1,0)
-FROM DriverVehicleLinking
-WHERE DriverId = _driverId) > 0
+(SELECT 
+    IF(COUNT(*) > 0, 1, 0)
+FROM
+    DriverVehicleLinking
+WHERE
+    DriverId = _driverId) > 0
 THEN 
-CALL DeleteDriverVehicleLink(_driverId);
+CALL DeleteDriverVehicleLinkByDriverId(_driverId);
 END IF;
 INSERT INTO DriverVehicleLinking
 (VehicleId, DriverId)

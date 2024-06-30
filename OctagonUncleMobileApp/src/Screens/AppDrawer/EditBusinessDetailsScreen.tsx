@@ -39,10 +39,11 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   const [auth, setAuth] = useState(new Auth(session));
   const toast = useToast();
 
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  const role: number = 2;
-  //const businessId = auth.GetBusinessId();
-  //const role: number = Number(auth.GetUserRole());
+  // const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+  // const role: number = 2;
+
+  const businessId = auth.GetBusinessId();
+  const role: number = Number(auth.GetUserRole());
 
   const [businessDetail, setBusinessDetail] = useState<BusinessDetail>();
   const [email, setEmail] = useState('');
@@ -62,15 +63,15 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
       await GetBusinessDetail(businessId).then((result: any) => {
         setBusinessDetail(
           new BusinessDetail(
-            result.businessDetailId.trim(),
-            result.businessName.trim(),
-            result.businessPhoneNumber.trim(),
-            result.addressLine1.trim(),
-            result.addressLine2.trim(),
-            result.suburb.trim(),
-            result.province.trim(),
-            result.city.trim(),
-            result.postalCode.trim(),
+            result.businessDetailId,
+            result.businessName,
+            result.businessPhoneNumber,
+            result.addressLine1,
+            result.addressLine2,
+            result.suburb,
+            result.province,
+            result.city,
+            result.postalCode,
             businessId,
           ),
         );
@@ -89,14 +90,14 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   const businessDetailHelper = async (values: any) => {
     let businessDetail = new BusinessDetail(
       '',
-      values.businessName,
-      values.businessPhoneNumber,
-      values.addressline1,
-      values.addressline2,
-      values.suburb,
-      values.city,
-      values.province,
-      values.postalCode,
+      values.businessName.trim(),
+      values.businessPhoneNumber.trim(),
+      values.addressline1.trim(),
+      values.addressline2.trim(),
+      values.suburb.trim(),
+      values.city.trim(),
+      values.province.trim(),
+      values.postalCode.trim(),
       businessId,
     );
 

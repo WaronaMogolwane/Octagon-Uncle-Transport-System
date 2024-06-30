@@ -9,7 +9,7 @@ export const InsertPassenger = async (
 ) => {
   DbPool.query(
     {
-      sql: "call InsertNewPassenger(?,?,?,?,?,?,?,?)",
+      sql: "call InsertNewPassenger(?,?,?,?,?,?,?,?,?,?,?,?)",
       timeout: 40000,
       values: [
         passenger.passenger_id,
@@ -17,6 +17,10 @@ export const InsertPassenger = async (
         passenger.lastName,
         passenger.age,
         passenger.homeAddress,
+        passenger.suburb,
+        passenger.city,
+        passenger.province,
+        passenger.postalCode,
         passenger.destinationAddress,
         passenger.parentId,
         passenger.businessId,
@@ -58,7 +62,7 @@ export const UpdatePassenger = async (
 ) => {
   DbPool.query(
     {
-      sql: "CALL UpdatePassenger(?,?,?,?,?,?)",
+      sql: "CALL UpdatePassenger(?,?,?,?,?,?,?,?,?,?)",
       timeout: 40000,
       values: [
         passenger.passenger_id,
@@ -66,6 +70,10 @@ export const UpdatePassenger = async (
         passenger.lastName,
         passenger.age,
         passenger.homeAddress,
+        passenger.suburb,
+        passenger.city,
+        passenger.province,
+        passenger.postalCode,
         passenger.destinationAddress,
       ],
     },
@@ -99,7 +107,7 @@ export const UpdateIsAssigned = async (
   );
 };
 
-export const GetAllPassengersByBusinessId = async (
+export const GetActivePassengersByBusinessId = async (
   businessId: string,
   callback: (error, result) => void
 ) => {
@@ -128,6 +136,86 @@ export const GetAllPassengersByParentId = async (
       sql: "call GetPassengerByParentId(?)",
       timeout: 40000,
       values: [ParentId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const GetAllPassengersByBusinessId = async (
+  businessId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "call GetPassengerAllByBusinessId(?)",
+      timeout: 40000,
+      values: [businessId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const GetPendingPassengersByBusinessId = async (
+  businessId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "call GetPassengersPendingForBusiness(?)",
+      timeout: 40000,
+      values: [businessId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const DeletePassengerByPassengerId = async (
+  passengerId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "call DeletePassenger(?)",
+      timeout: 40000,
+      values: [passengerId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const DeletePassengerRequestByPassengerId = async (
+  deleteRequest: any,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "call DeletePassengerRequest(?,?)",
+      timeout: 40000,
+      values: [deleteRequest.passengerId, deleteRequest.reason],
     },
     function (error, results, fields) {
       if (error) {

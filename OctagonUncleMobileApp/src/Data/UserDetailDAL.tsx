@@ -2,7 +2,7 @@ import {UserDetail} from '../Models/UserDetail';
 import axios from 'axios';
 import {SERVER_HOST, SERVER_PORT} from '@env';
 
-export const AddUserDetailsToDatabase = async (userDetail: UserDetail) => {
+export const AddUserDetailsToDB = async (userDetail: UserDetail) => {
   let statusCode: any;
   let data: any;
   await axios
@@ -10,6 +10,7 @@ export const AddUserDetailsToDatabase = async (userDetail: UserDetail) => {
       userDetail: {
         FirstName: userDetail.firstName,
         LastName: userDetail.lastName,
+        PhoneNumber: userDetail.phoneNumber,
         AddressLine1: userDetail.addressLine1,
         AddressLine2: userDetail.addressLine2,
         Surburb: userDetail.suburb,
@@ -32,7 +33,7 @@ export const AddUserDetailsToDatabase = async (userDetail: UserDetail) => {
   return statusCode;
 };
 
-export const GetUserDetailsFromDatabase = async (userId: string) => {
+export const GetUserDetailsFromDB = async (userId: string) => {
   let res: any;
   await axios
     .post(`${SERVER_HOST}:${SERVER_PORT}/user-profile/get-user-details`, {
@@ -44,16 +45,17 @@ export const GetUserDetailsFromDatabase = async (userId: string) => {
       let result = response.data.result;
 
       let userDetail = new UserDetail(
-        result.userDetail_id,
-        result.firstname,
-        result.lastname,
-        result.addressline1,
-        result.addressline2,
-        result.suburb,
-        result.city,
-        result.province,
-        result.postalcode,
-        result.user_id,
+        result[0].UserDetailId,
+        result[0].FirstName,
+        result[0].LastName,
+        result[0].Cellphone,
+        result[0].AddressLine1,
+        result[0].AddressLine2,
+        result[0].Suburb,
+        result[0].City,
+        result[0].Province,
+        result[0].PostalCode,
+        result[0].UserId,
       );
 
       res = userDetail;
@@ -65,16 +67,17 @@ export const GetUserDetailsFromDatabase = async (userId: string) => {
   return res;
 };
 
-export const UpdateUserDetailsInDatabase = async (userDetails: UserDetail) => {
+export const UpdateUserDetailsInDB = async (userDetails: UserDetail) => {
   let statusCode: any;
   let data: any;
 
   await axios
-    .patch(`${SERVER_HOST}:${SERVER_PORT}/passenger/update-passenger-details`, {
+    .patch(`${SERVER_HOST}:${SERVER_PORT}/user-profile/update-user-details`, {
       userDetail: {
         UserDetailId: userDetails.userDetailId,
         FirstName: userDetails.firstName,
         LastName: userDetails.lastName,
+        Cellphone: userDetails.phoneNumber,
         AddressLine1: userDetails.addressLine1,
         AddressLine2: userDetails.addressLine2,
         Surburb: userDetails.suburb,

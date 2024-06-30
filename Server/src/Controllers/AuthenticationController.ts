@@ -277,11 +277,8 @@ export const GetBusinessDrivers = async (req, res, next) => {
     else {
       if (result[0]) {
         res.status(200).send(result[0]);
-        console.log(result)
       }
       else {
-        console.log(result)
-
         res.status(400).send(new ErrorResponse(400, "No drivers found."));
       }
     }

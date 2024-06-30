@@ -1981,6 +1981,11 @@
   resolved "https://registry.npmjs.org/@legendapp/tools/-/tools-2.0.1.tgz"
   integrity sha512-Kxt0HWvWElRK6oybHRzcYxdgaKGwuaiRNreS7usW7QuHXRIHaH4yMcW2YNRG4DHE5fpefv+Bno/BohQcCE4FaA==
 
+"@lucide/lab@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.npmjs.org/@lucide/lab/-/lab-0.1.2.tgz"
+  integrity sha512-VprF2BJa7ZuTGOhUd5cf8tHJXyL63wdxcGieAiVVoR9hO0YmPsnZO0AGqDiX2/br+/MC6n8BoJcmPilltOXIJA==
+
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
   version "5.1.1-v1"
   resolved "https://registry.npmjs.org/@nicolo-ribaudo/eslint-scope-5-internals/-/eslint-scope-5-internals-5.1.1-v1.tgz"

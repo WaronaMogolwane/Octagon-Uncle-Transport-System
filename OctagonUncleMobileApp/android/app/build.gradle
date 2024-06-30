@@ -70,8 +70,8 @@ def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
     ndkVersion rootProject.ext.ndkVersion
+    compileSdk 34
 
-    compileSdkVersion rootProject.ext.compileSdkVersion
 
     namespace "com.octagonunclemobileapp"
     defaultConfig {
@@ -114,6 +114,8 @@ dependencies {
     implementation("com.facebook.react:react-android")
     implementation ('com.google.firebase:firebase-analytics:17.3.0')
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
+    // For animated GIF support
+    implementation ('com.facebook.fresco:animated-gif:2.5.0')
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.squareup.okhttp3', module:'okhttp'
     }

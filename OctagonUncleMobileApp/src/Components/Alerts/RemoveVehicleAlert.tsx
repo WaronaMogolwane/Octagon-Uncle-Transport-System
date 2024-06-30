@@ -18,7 +18,7 @@ import {
 } from '@gluestack-ui/themed';
 import React from 'react';
 import {CustomFormControlInput} from '../CustomFormInput';
-import {RemoveDriverAlertProps} from '../../Props/RemoveVehicleAlertProps';
+import {RemoveVehicleAlertProps} from '../../Props/RemoveDriverAlertProps';
 String.prototype.format = function () {
   var args = arguments;
   return this.replace(/{([0-9]+)}/g, function (match, index) {
@@ -26,15 +26,15 @@ String.prototype.format = function () {
   });
 };
 
-const RemoveDriverAlert = (props: RemoveDriverAlertProps) => {
+const RemoveVehicleAlert = (props: RemoveVehicleAlertProps) => {
   return (
     <AlertDialog
-      isOpen={props.RemoveDriverAlertIsOpen}
+      isOpen={props.RemoveVehicleAlertIsOpen}
       onClose={props.CloseAlertOnPress}>
       <AlertDialogBackdrop />
       <AlertDialogContent>
         <AlertDialogHeader>
-          <Heading size="lg">Remove driver</Heading>
+          <Heading size="lg">Remove vehicle</Heading>
           <AlertDialogCloseButton>
             <Icon as={CloseIcon} />
           </AlertDialogCloseButton>
@@ -42,17 +42,16 @@ const RemoveDriverAlert = (props: RemoveDriverAlertProps) => {
         <AlertDialogBody>
           <Text size="sm">
             Are you sure you want to remove
-            {' {0} '.format(props.RemoveDriverConfirmation)}
-            as your driver? Any vehicle linked to this driver will have to be
-            linked to another driver.
+            {' {0}'.format(props.RemoveVehicleConfirmation)}? Any driver linked
+            to this vehicled will be unlinked.
           </Text>
-          <Text size="sm" highlight={true}>
+          <Text size="sm" highlight={true} bold={true}>
             Enter
-            {' {0} '.format(props.RemoveDriverConfirmation)}
-            to remove the driver.
+            {' {0} '.format(props.RemoveVehicleConfirmation)}
+            to remove the vehicle.
           </Text>
           <CustomFormControlInput
-            placeHolder={' {0} '.format(props.RemoveDriverConfirmation)}
+            placeHolder={' {0} '.format(props.RemoveVehicleConfirmation)}
             type="text"
             isInvalid={props.VerifyRemoveIsInvalid}
             onChangeText={props.VerifyRemoveOnChangeText}
@@ -73,7 +72,7 @@ const RemoveDriverAlert = (props: RemoveDriverAlertProps) => {
             <Button
               bg="$error600"
               action="negative"
-              onPress={props.HandleRemoveDriver}>
+              onPress={props.HandleRemoveVehicle}>
               <ButtonText>Remove</ButtonText>
             </Button>
           </ButtonGroup>
@@ -83,4 +82,4 @@ const RemoveDriverAlert = (props: RemoveDriverAlertProps) => {
   );
 };
 
-export default RemoveDriverAlert;
+export default RemoveVehicleAlert;

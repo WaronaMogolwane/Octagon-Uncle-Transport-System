@@ -4,9 +4,6 @@ import PushNotification, { Importance } from "react-native-push-notification";
 import messaging from '@react-native-firebase/messaging';
 import { useEffect } from "react";
 import { PermissionsAndroid } from 'react-native';
-
-PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
-
 const RegisterGeneralChannel = () => {
     PushNotification.createChannel(
         {

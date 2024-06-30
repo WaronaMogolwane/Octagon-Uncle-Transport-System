@@ -1,7 +1,9 @@
+import { RemovePassengerDriverLinkingFromDB } from './../Data/PassengerDriverVehicleLinkingDAL';
 import { ChangeEvent } from "react";
 import { GestureResponderEvent } from "react-native";
-import { RemoveDriverAlertProps } from "./RemoveDriverAlertProps";
+import { RemoveVehicleAlertProps } from "./RemoveDriverAlertProps";
 import { RemoveClientAlertProps } from "./RemoveClientAlertProps";
+import { RemoveDriverAlertProps } from './RemoveVehicleAlertProps';
 
 export type VerifyOtpModalProps = {
     ShowModal: boolean;
@@ -101,4 +103,62 @@ export type ClientDetailsModalProps = {
     //     values: GestureResponderEvent | React.FormEvent<HTMLFormElement> | undefined
     // ) => void;
     // CloseAlertOnPress: () => void;
+};
+export type VehicleDetailsModalProps = {
+    setNewLinkedDriver: React.Dispatch<React.SetStateAction<string>>
+    LicenseNumberIsInvalid: boolean;
+    LicenseNumberOnChangeText: (e: string | ChangeEvent<any>) => void;
+    LicenseNumberErrorText: string | undefined;
+    LicenseNumberOnBlur: (e: any) => void;
+    LicenseNumberValue: string;
+    RegistrationNumberIsInvalid: boolean;
+    RegistrationNumberOnChangeText: (e: string | ChangeEvent<any>) => void;
+    RegistrationNumberErrorText: string | undefined;
+    RegistrationNumberOnBlur: (e: any) => void;
+    RegistrationNumberValue: string;
+    VinIsInvalid: boolean;
+    VinOnChangeText: (e: string | ChangeEvent<any>) => void;
+    VinErrorText: string | undefined;
+    VinOnBlur: (e: any) => void;
+    VinValue: string;
+    EngineNumberIsInvalid: boolean;
+    EngineNumberOnChangeText: (e: string | ChangeEvent<any>) => void;
+    EngineNumberErrorText: string | undefined;
+    EngineNumberOnBlur: (e: any) => void;
+    EngineNumberValue: string;
+    MakeIsInvalid: boolean;
+    MakeOnChangeText: (e: string | ChangeEvent<any>) => void;
+    MakeErrorText: string | undefined;
+    MakeOnBlur: (e: any) => void;
+    MakeValue: string;
+    ModelIsInvalid: boolean;
+    ModelOnChangeText: (e: string | ChangeEvent<any>) => void;
+    ModelErrorText: string | undefined;
+    ModelOnBlur: (e: any) => void;
+    ModelValue: string;
+    ColourIsInvalid: boolean;
+    ColourOnChangeText: (e: string | ChangeEvent<any>) => void;
+    ColourErrorText: string | undefined;
+    ColourOnBlur: (e: any) => void;
+    ColourValue: string;
+    CurrentDriverId: string | null;
+    LicenseDiskImageUrl: string;
+    VehicleImageFrontUrl: string;
+    VehicleImageBackUrl: string;
+    ShowModal: boolean;
+    OpenRemoveVehicleAlert: () => void;
+    HandleCloseModal: () => void;
+    RemoveVehicleAlertProps: RemoveVehicleAlertProps;
+    DriverList: [];
+    onDriverChange: (e: string | ChangeEvent<any>) => void;
+    NewLinkedDriverId: string
+    HandleUnlinkDriver: () => void;
+    HandleLinkDriver: () => void;
+    HandleReScan: () => void;
+    HandleSaveVehicle: (
+        values:
+            | GestureResponderEvent
+            | React.FormEvent<HTMLFormElement>
+            | undefined,
+    ) => void;
 };

@@ -3,7 +3,7 @@ import {setStorageItemAsync, useStorageState} from './StorageStateService';
 import {AuthenticationResponseModel} from '../Models/AuthenticationResponseModel';
 import axios from 'axios';
 import {UserSignIn} from '../Controllers/AuthenticationController';
-import {SERVER_HOST, SERVER_PORT} from '@env';
+import {SERVER_HOST, SERVER_PORT} from '../Const/colors';
 import {UserInvitation} from '../Models/UserInvitation';
 import {User} from '../Models/UserModel';
 

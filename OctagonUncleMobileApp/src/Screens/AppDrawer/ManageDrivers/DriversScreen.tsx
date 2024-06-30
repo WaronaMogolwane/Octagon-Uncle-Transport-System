@@ -159,9 +159,7 @@ export const DriversScreen = () => {
               lastName={item.LastName}
               email={item.Email}
               vehicleLicenseNumber={
-                item.RegistrationNumber
-                  ? item.RegistrationNumber
-                  : 'No vehicle linked.'
+                item.LicenseNumber ? item.LicenseNumber : 'No vehicle linked.'
               }
               handleDriverCardPress={() => {
                 setCurrentDriver(item);

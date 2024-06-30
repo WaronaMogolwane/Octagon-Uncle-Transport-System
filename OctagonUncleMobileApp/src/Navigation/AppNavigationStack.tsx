@@ -7,7 +7,7 @@ import CameraScreen from '../Screens/Camera/CameraScreen';
 const AppNavigationStack = () => {
   const Stack = createNativeStackNavigator();
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="AppDrawer" component={AppDrawer} />
       <Stack.Screen name="BarcodeScanner" component={BarcodeScanner} />
       <Stack.Screen name="Camera" component={CameraScreen} />

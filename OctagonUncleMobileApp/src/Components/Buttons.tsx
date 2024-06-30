@@ -13,7 +13,6 @@ export const CustomButton1 = (props: ButtonProps) => {
       isFocusVisible={props.isFocusVisible}
       onPress={props.onPress}>
       <ButtonText>{props.title}</ButtonText>
-      <ButtonIcon as={props.buttonIcon} />
     </Button>
   );
 };

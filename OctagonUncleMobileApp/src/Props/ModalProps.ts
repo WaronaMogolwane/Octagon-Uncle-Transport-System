@@ -147,10 +147,14 @@ export type VehicleDetailsModalProps = {
     VehicleImageBackUrl: string;
     ShowModal: boolean;
     OpenRemoveVehicleAlert: () => void;
-    CloseOtpModalButtonOnPress: () => void;
+    HandleCloseModal: () => void;
     RemoveVehicleAlertProps: RemoveVehicleAlertProps;
     DriverList: [];
     onDriverChange: (e: string | ChangeEvent<any>) => void;
+    NewLinkedDriverId: string
+    HandleUnlinkDriver: () => void;
+    HandleLinkDriver: () => void;
+    HandleReScan: () => void;
     HandleSaveVehicle: (
         values:
             | GestureResponderEvent

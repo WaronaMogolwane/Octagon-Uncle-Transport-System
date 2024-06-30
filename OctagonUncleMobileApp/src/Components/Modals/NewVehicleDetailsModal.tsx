@@ -62,6 +62,8 @@ const NewVehicleModal = (props: VehicleModalProps) => {
                   />
                 ) : null}
               </View>
+              {/* For Next Update. 
+              1. Linking driver to new vehic;e
               <FormControlLabel>
                 <FormControlLabelText>Link a driver.</FormControlLabelText>
               </FormControlLabel>
@@ -70,7 +72,7 @@ const NewVehicleModal = (props: VehicleModalProps) => {
                 currentDriverId={props.CurrentDriverId}
                 onDriverChange={props.onDriverChange}
                 setNewLinkedDriver={props.setNewLinkedDriver}
-              />
+              /> */}
               <CustomFormControlInput
                 labelText="Make"
                 placeHolder="Make"
@@ -107,7 +109,6 @@ const NewVehicleModal = (props: VehicleModalProps) => {
                 value={props.ColourValue}
                 isDisabled={true}
               />
-
               <CustomFormControlInput
                 labelText="License Number"
                 placeHolder="License Number"

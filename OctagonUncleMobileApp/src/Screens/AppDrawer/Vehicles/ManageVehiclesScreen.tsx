@@ -37,7 +37,7 @@ import {Vehicle} from '../../../Models/VehicleModel';
 import NewVehicleModal from '../../../Components/Modals/NewVehicleDetailsModal';
 import {useFocusEffect} from '@react-navigation/native';
 import CaptureVehicleImageAlert from '../../../Components/Alerts/CaptureVehicleImageAlert';
-import ImagePicker from 'react-native-image-crop-picker';
+import ImagePicker, {ImageOrVideo} from 'react-native-image-crop-picker';
 import {
   AddNewDriverVehicleLink,
   AddNewVehicle,
@@ -48,6 +48,7 @@ import {
 } from '../../../Controllers/VehicleController';
 import NotificationToast from '../../../Components/Toasts/NotificationToast';
 import NotificationAlert from '../../../Components/Alerts/NotificationAlert';
+import {OpenCamera} from '../../../Services/CameraService';
 
 const ManageVehiclesScreen = ({route, navigation}: any) => {
   const {session}: any = useContext(AuthContext);
@@ -59,8 +60,8 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     setRefreshingVehicles(true);
     setTimeout(() => {
       try {
-        GetBusinessVehicles(auth.GetBusinessId());
         GetDrivers(auth.GetBusinessId());
+        GetBusinessVehicles(auth.GetBusinessId());
       } catch (error) {}
     }, 2000);
     setRefreshingVehicles(false);
@@ -86,7 +87,6 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState([]);
   const [selected, setSelected] = React.useState(new Set([]));
-
   const [vehicleFrontImage, setVehicleFrontImage] = useState('');
   const [vehicleRearImage, setVehicleRearImage] = useState('');
   const [licensePlateImage, setLicensePlateImage] = useState('');
@@ -109,6 +109,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     AlertDescription: string;
     ConfirmButtonTitle: string;
     AlertTitle: string;
+    HandleConfirm: () => void;
   }>();
   const toast = useToast();
 
@@ -144,6 +145,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
               ShowAddVehicleToast(false, 'Error', error);
               setShowNewVehicleDetailsModal(true);
             } else {
+              onRefreshVehicles();
               setIsLoading(false);
               setShowCaptureImageAlert(false);
               setShowNewVehicleDetailsModal(false);
@@ -175,18 +177,21 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
           removeVehicleFormik.values.confirmLicenseNumber ===
           currentVehicle.LicenseNumber
         ) {
+          setIsLoading(true);
+          setShowVehicleDetailsModal(false);
           RemoveVehicle(
             currentDriverId!,
             parseInt(currentVehicle.VehicleId),
             (error: any, resut: any) => {
               if (error) {
                 console.error(error.response.data);
-                ShowRemoveDriverToast(false);
+                ShowRemoveDriverToast(true);
               } else {
                 onRefreshVehicles();
-                setShowRemoveVehicleDialog(false);
-                setShowVehicleDetailsModal(false);
                 ShowRemoveDriverToast(true);
+
+                setIsLoading(false);
+                setShowRemoveVehicleDialog(false);
               }
             },
           );
@@ -264,8 +269,12 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       </Fab>
     );
   };
-  const ScanLicenseDisc = () => {
-    navigation.navigate('BarcodeScanner');
+  const ScanLicenseDisc = (params?: {}) => {
+    navigation.navigate({
+      name: 'BarcodeScanner',
+      params: params,
+      merge: true,
+    });
   };
   const FabMenu = () => {
     return (
@@ -275,7 +284,8 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
         onSelectionChange={keys => {
           const selectedMenuItem: any = keys;
           if (selectedMenuItem.currentKey === 'AddNewVehicle') {
-            ScanLicenseDisc();
+            setIsLoading(true);
+            ScanLicenseDisc({IsReScan: false});
           }
         }}
         closeOnSelect={true}
@@ -334,7 +344,11 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     );
   };
   const ClearVehicleState = () => {
-    navigation.setParams({NewVehicle: undefined});
+    navigation.setParams({
+      NewVehicle: undefined,
+      IsReScan: false,
+      ExistingVehicle: undefined,
+    });
     setCurrentVehicle({
       VehicleId: '',
       LicenseNumber: '',
@@ -367,33 +381,30 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       });
   }
 
-  const OpenCamera = () => {
-    ImagePicker.openCamera({
-      width: 500,
-      height: 500,
-      cropping: true,
-      compressImageQuality: 0.7,
-      showCropFrame: true,
-      forceJpg: true,
-    }).then(image => {
-      if (!vehicleFrontImage) {
-        GetFileBlob(image.path, async function (imageUrl: string) {
-          setVehicleFrontImage(imageUrl);
-          setCaptureImageAlertTitle('Successfully captured');
-          setConfirmButtonTitle('Capture rear');
-        });
-      }
-      if (vehicleFrontImage && !vehicleRearImage) {
-        GetFileBlob(image.path, async function (imageUrl: string) {
-          setVehicleRearImage(imageUrl!);
-          let NewVehicle: Vehicle = route.params.NewVehicle;
-          NewVehicle.FrontImage = vehicleFrontImage;
-          NewVehicle.RearImage = vehicleRearImage;
-          setNewVehicle(NewVehicle!);
-          setShowCaptureImageAlert(false);
-          setShowNewVehicleDetailsModal(true);
-          navigation.setParams({NewVehicle: undefined});
-        });
+  const CaptureVehicle = () => {
+    OpenCamera(false, (result: any, error: any) => {
+      if (error) {
+      } else {
+        const image: ImageOrVideo = result;
+        if (!vehicleFrontImage) {
+          GetFileBlob(image.path, async function (imageUrl: string) {
+            setVehicleFrontImage(imageUrl);
+            setCaptureImageAlertTitle('Successfully scanned');
+            setConfirmButtonTitle('Capture rear');
+          });
+        }
+        if (vehicleFrontImage && !vehicleRearImage) {
+          GetFileBlob(image.path, async function (imageUrl: string) {
+            setVehicleRearImage(imageUrl!);
+            let NewVehicle: Vehicle = route.params.NewVehicle;
+            NewVehicle.FrontImage = vehicleFrontImage;
+            NewVehicle.RearImage = vehicleRearImage;
+            setNewVehicle(NewVehicle!);
+            setShowCaptureImageAlert(false);
+            setShowNewVehicleDetailsModal(true);
+            navigation.setParams({NewVehicle: undefined});
+          });
+        }
       }
     });
   };
@@ -405,24 +416,17 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       }
     });
   };
-  const LinkDriverToVehicle = () => {
+  const LinkDriverToVehicle = async () => {
     if (newLinkedDriverId) {
-      setShowVehicleDetailsModal(false);
-      setIsLoading(true);
-      AddNewDriverVehicleLink(
+      await AddNewDriverVehicleLink(
         newLinkedDriverId,
         currentVehicle.LicenseNumber,
         currentVehicle.VehicleId,
         (error: any, result: any) => {
           if (error) {
-            setIsLoading(false);
-
             ShowAddVehicleToast(false, 'Update failed', error);
-            setShowVehicleDetailsModal(true);
             console.error(error.response.data);
           } else {
-            setIsLoading(false);
-            setShowNewVehicleDetailsModal(false);
             ShowAddVehicleToast(
               true,
               'Update successful',
@@ -441,6 +445,8 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
         ShowAddVehicleToast(false, 'Unlink failed', error);
         console.error(error.response.data);
       } else {
+        setVehicleList([]);
+        onRefreshVehicles();
         setIsLoading(false);
         setNewLinkedDriverId('');
         setCurrentDriverId('');
@@ -452,6 +458,13 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       }
     });
   };
+  const ReScanVehicle = () => {
+    //ClearVehicleState();
+    setShowVehicleDetailsModal(false);
+    setCurrentDriverId('');
+    setIsLoading(true);
+    ScanLicenseDisc({IsReScan: true, ExistingVehicle: currentVehicle});
+  };
   const CheckRouteParams = () => {
     if (route.params?.NewVehicle) {
       CheckIfVehicleExists(
@@ -462,11 +475,19 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             console.error(error);
           } else {
             let vehicleStatus: any = result.data;
-            if (!vehicleStatus.VehicleExists && !vehicleStatus.IsActive) {
+            if (
+              !vehicleStatus.VehicleExists &&
+              !vehicleStatus.IsActive &&
+              !route.params?.IsReScan
+            ) {
               //Vehicle does not exists
               setShowCaptureImageAlert(true);
             }
-            if (vehicleStatus.VehicleExists && !vehicleStatus.IsActive) {
+            if (
+              vehicleStatus.VehicleExists &&
+              !vehicleStatus.IsActive &&
+              !route.params?.IsReScan
+            ) {
               //Vehicle exists and is deactivated
               setNotificationAlert({
                 showNotificationAlert: true,
@@ -475,19 +496,76 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
                 AlertDescription:
                   'This vehicle has previously been added. Do you want to reactivate it?',
                 notificationAlertMessage: 'test',
+                HandleConfirm: () => {
+                  setShowCaptureImageAlert(true);
+                  setCurrentDriverId('');
+                  setNotificationAlert({
+                    showNotificationAlert: false,
+                    AlertTitle: '',
+                    ConfirmButtonTitle: '',
+                    AlertDescription: '',
+                    notificationAlertMessage: '',
+                    HandleConfirm: () => {},
+                  });
+                },
               });
             }
-            if (vehicleStatus.VehicleExists && vehicleStatus.IsActive) {
+            if (
+              vehicleStatus.VehicleExists &&
+              vehicleStatus.IsActive &&
+              !route.params?.IsReScan
+            ) {
               //Vehicle exists and is active
+              setIsLoading(false);
               ShowAddVehicleToast(
                 false,
                 'Vehicle exists',
                 'You have already added this vehicle',
               );
             }
+            if (
+              vehicleStatus.VehicleExists &&
+              vehicleStatus.IsActive &&
+              route.params?.IsReScan
+            ) {
+              //Rescanning vehicle
+              if (route.params.NewVehicle.Vin === currentVehicle.Vin) {
+                setNotificationAlert({
+                  showNotificationAlert: true,
+                  AlertTitle: 'Vehicle update',
+                  ConfirmButtonTitle: 'Yes',
+                  AlertDescription:
+                    'Would you like to re-capture your vehicle?',
+                  notificationAlertMessage: 'test',
+                  HandleConfirm: () => {
+                    setShowCaptureImageAlert(true);
+                    setCurrentDriverId('');
+                    setNotificationAlert({
+                      showNotificationAlert: false,
+                      AlertTitle: '',
+                      ConfirmButtonTitle: '',
+                      AlertDescription: '',
+                      notificationAlertMessage: '',
+                      HandleConfirm: () => {},
+                    });
+                  },
+                });
+              } else {
+                OpenVehicleDetailsModal();
+                ShowAddVehicleToast(
+                  false,
+                  'Error',
+                  'You have scanned a different vehicle. Please re-scan the selected vehicle: ' +
+                    currentVehicle.LicenseNumber,
+                );
+              }
+            }
           }
         },
       );
+    }
+    if (!route.params?.NewVehicle && !route.params?.IsReScan) {
+      setIsLoading(false);
     }
   };
   const RefreshData = () => {
@@ -499,7 +577,9 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     }
     // }
   };
-
+  const GetRandomQueryString = () => {
+    return '?no-cache=' + Math.round(Math.random() * Date.now());
+  };
   useFocusEffect(
     React.useCallback(() => {
       // Do something when the screen is focused
@@ -515,16 +595,15 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
 
   useEffect(() => {
     RefreshData();
-    console.log('current driver: ' + currentDriverId);
-    console.log('new linked driver: ' + newLinkedDriverId);
-
     console.log('Use effect');
   }, [currentDriverId, newLinkedDriverId]);
+  useEffect(() => {
+    setDriverList(ConvertDriversListToDropDownList(driversList!));
+  }, [driversList]);
 
   useEffect(() => {
     if (formik.values.newLinkedDriverId!) {
       setNewLinkedDriverId(formik.values.newLinkedDriverId);
-      console.log('Use effect 2');
     }
   }, [formik.values.newLinkedDriverId]);
 
@@ -568,9 +647,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
                   Make={item.Make}
                   Model={item.Model}
                   Colour={item.Colour}
-                  VehicleImageFrontUrl={
-                    storageUrl + item.FrontImageUrl + '?x=123'
-                  }
+                  VehicleImageFrontUrl={storageUrl + item.FrontImageUrl}
                   DriverFullName={
                     item.DriverFullName
                       ? item.DriverFullName
@@ -606,6 +683,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             </ScrollView>
           )}
           <NewVehicleModal
+            HandleReScan={() => {}}
             HandleLinkDriver={() => {}}
             HandleUnlinkDriver={() => {}}
             NewLinkedDriverId={formik.values.newLinkedDriverId}
@@ -697,18 +775,33 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             }}
           />
           <VehicleDetailsModal
+            HandleReScan={ReScanVehicle}
             NewLinkedDriverId={newLinkedDriverId}
-            HandleLinkDriver={() => {}}
-            HandleUnlinkDriver={async () => {
+            HandleLinkDriver={async () => {
               setIsLoading(true);
               CloseVehicleDetailsModal();
+
+              await LinkDriverToVehicle()
+                .then(() => {
+                  setCurrentDriverId(newLinkedDriverId);
+                  setNewLinkedDriverId('');
+                  onRefreshVehicles();
+                })
+                .finally(() => {
+                  setIsLoading(false);
+                  OpenVehicleDetailsModal();
+                });
+            }}
+            HandleUnlinkDriver={async () => {
+              CloseVehicleDetailsModal();
+              setIsLoading(true);
               await RemoveDriverVehicleLink(currentDriverId!)
                 .then(result => {
-                  setDriverList([]);
                   setNewLinkedDriverId('');
                   setCurrentDriverId('');
                 })
                 .finally(() => {
+                  onRefreshVehicles();
                   OpenVehicleDetailsModal();
                 });
             }}
@@ -765,7 +858,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
               setShowRemoveVehicleDialog(true);
             }}
             HandleCloseModal={() => {
-              setCurrentDriverId(null);
+              setCurrentDriverId('');
               setShowVehicleDetailsModal(false);
               ClearVehicleState();
             }}
@@ -811,7 +904,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             setShowCaptureImageAlert(false);
             setShowNewVehicleDetailsModal(true);
           } else {
-            OpenCamera();
+            CaptureVehicle();
           }
         }}
       />
@@ -820,25 +913,16 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
         AlertDescription={notificationAlert?.AlertDescription!}
         ShowAlert={notificationAlert?.showNotificationAlert!}
         ConfirmButtonTitle={notificationAlert?.ConfirmButtonTitle!}
-        HandleConfirm={() => {
-          setShowCaptureImageAlert(true);
-          setCurrentDriverId(null);
-          setNotificationAlert({
-            showNotificationAlert: false,
-            AlertTitle: '',
-            ConfirmButtonTitle: '',
-            AlertDescription: '',
-            notificationAlertMessage: '',
-          });
-        }}
+        HandleConfirm={notificationAlert?.HandleConfirm!}
         HandleCancel={() => {
-          setCurrentDriverId(null);
+          setCurrentDriverId('');
           setNotificationAlert({
             showNotificationAlert: false,
             AlertTitle: '',
             ConfirmButtonTitle: '',
             AlertDescription: '',
             notificationAlertMessage: '',
+            HandleConfirm: () => {},
           });
 
           ClearVehicleState();

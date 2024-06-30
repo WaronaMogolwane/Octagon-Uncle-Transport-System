@@ -70,7 +70,6 @@ export const AddNewVehicle = async (req: any, res: any, next: any) => {
 export const CheckIfVehicleExists = async (req: any, res: any, next: any) => {
   const businessId: string = req.query.BusinessId;
   const licenseNumber: string = req.query.LicenseNumber;
-  console.log(req)
   GetVehicleByLicenseNumberAndBusinessId(businessId, licenseNumber, async (error: any, result: any) => {
     if (error) {
       next(new ErrorResponse(error, "400"));
@@ -102,8 +101,6 @@ export const CheckIfVehicleExists = async (req: any, res: any, next: any) => {
     }
   })
 }
-
-
 export const GetVehicle = async (req: any, res: any, next: any) => {
   const newVehicle: Vehicle = {
     FrontImage: req.body.FrontImage,

@@ -70,7 +70,6 @@ export const RemoveVehicle = async (
   vehicleId: number,
   callback: (error: any, result: any) => void,
 ) => {
-  console.log('delete control');
   await DeleteVehicleByDriverIdAndVehicleId(
     driverId,
     vehicleId,

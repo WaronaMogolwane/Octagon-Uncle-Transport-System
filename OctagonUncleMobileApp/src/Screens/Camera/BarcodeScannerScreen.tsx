@@ -19,13 +19,11 @@ import {Vehicle} from '../../Models/VehicleModel';
 import {NavigationProp} from '@react-navigation/native';
 
 const BarcodeScanner = ({navigation, route}: any) => {
-  const [cameraPermission, setCameraPermission] = useState<any>();
   const [codeIsScanned, setCodeIsScanned] = useState(false);
   const [vehicleDetails, setVehicleDetails] = useState();
   const [cameraIsActive, setCameraIsActive] = useState(true);
   const {session}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
-
   const codeScanner = useCodeScanner({
     codeTypes: ['codabar', 'pdf-417'],
     onCodeScanned: codes => {
@@ -46,7 +44,7 @@ const BarcodeScanner = ({navigation, route}: any) => {
         setCameraIsActive(false);
         navigation.navigate({
           name: 'Manage Vehicles',
-          params: {NewVehicle: newVehicle},
+          params: {NewVehicle: newVehicle, IsReScan: route.params.IsReScan},
           merge: true,
         });
       }
@@ -56,12 +54,6 @@ const BarcodeScanner = ({navigation, route}: any) => {
   const devices = useCameraDevices();
   const cameraDevice = useCameraDevice('back');
 
-  useEffect(() => {
-    (async () => {
-      const cameraPermissionStatus = await Camera.requestCameraPermission();
-      setCameraPermission(cameraPermissionStatus);
-    })();
-  });
   if (cameraDevice == null) return <Text>No Camera</Text>;
   return (
     <View

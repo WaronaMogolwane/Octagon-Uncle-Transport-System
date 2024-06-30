@@ -95,7 +95,7 @@ export const GetVehicleAndDriverFromDB = async (businessId: string) => {
       result = vehicleData;
     })
     .catch((error: any) => {
-      console.log(error);
+      console.error(error);
       result = error;
     });
 
@@ -131,7 +131,7 @@ export const InsertNewVehicle = async (businessId: string) => {
       result = vehicleData;
     })
     .catch((error: any) => {
-      console.log(error);
+      console.error(error);
       result = error;
     });
 
@@ -173,7 +173,7 @@ export const DeleteDriverVehicleLinkByDriverId = async (
       callback(null, response);
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
 
       callback(error, null);
     });
@@ -183,7 +183,6 @@ export const DeleteVehicleByDriverIdAndVehicleId = async (
   vehicleId: number,
   callback: (error: any, result: any) => void,
 ) => {
-  console.log(driverId, vehicleId);
   await axios
     .delete(`${SERVER_HOST}:${SERVER_PORT}/vehicle/delete-vehicle`, {
       data: {
@@ -192,11 +191,10 @@ export const DeleteVehicleByDriverIdAndVehicleId = async (
       },
     })
     .then((response: any) => {
-      console.log(response);
       callback(null, response);
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
 
       callback(error, null);
     });

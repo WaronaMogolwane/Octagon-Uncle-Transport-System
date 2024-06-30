@@ -16,6 +16,8 @@ import {
   Modal,
   Image,
   ScrollView,
+  VStack,
+  HStack,
 } from '@gluestack-ui/themed';
 import {
   DriverDetailsModalProps,
@@ -175,32 +177,27 @@ const VehicleDetailsModal = (props: VehicleDetailsModalProps) => {
                   display: 'flex',
                   flexDirection: 'row',
                   justifyContent: 'space-evenly',
-                }}>
-                <CustomButton3
-                  title="Recapture vehicle"
-                  size="sm"
-                  action="primary"
-                />
-              </View>
+                }}></View>
             </ModalBody>
             <ModalFooter>
-              <Button
-                variant="outline"
-                size="sm"
-                action="negative"
-                borderWidth="$0"
-                onPress={props.OpenRemoveVehicleAlert}>
-                <ButtonText>Remove vehicle</ButtonText>
-              </Button>
-              <Button
-                variant="solid"
-                size="sm"
-                action="primary"
-                mr="$3"
-                onPress={props.HandleSaveVehicle}>
-                {/* onPress={() => {}}> */}
-                <ButtonText>Save</ButtonText>
-              </Button>
+              <HStack justifyContent="center" display="flex" width={'$full'}>
+                <VStack>
+                  <CustomButton1
+                    title="Re-scan vehicle"
+                    size="sm"
+                    action="primary"
+                    onPress={props.HandleReScan}
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    action="negative"
+                    borderWidth="$0"
+                    onPress={props.OpenRemoveVehicleAlert}>
+                    <ButtonText>Remove vehicle</ButtonText>
+                  </Button>
+                </VStack>
+              </HStack>
             </ModalFooter>
           </ScrollView>
         </ModalContent>

@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {FlatList, RefreshControl, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {TripCardParent} from '../../Components/TripCardParent';
+import {TripCardParent} from '../../Components/Cards/TripListForParentCard';
 import {
   EndTrip,
   GetPastTripsForClient,
@@ -15,29 +15,35 @@ import {
   SetTripPickUpTime,
   UpdatePassengerStatus,
 } from '../../Controllers/TripController';
-import {TripCardDriverSwipable} from '../../Components/TripCardDriverSwipable';
+import {TripCardDriverSwipable} from '../../Components/Cards/TripListCardForDriverSwipable';
 import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
-import {TripCardDriver} from '../../Components/TripCardDriver';
+import {TripCardDriver} from '../../Components/Cards/TripListCardForDriver';
 import {
   useToast,
-  Toast,
-  ToastTitle,
   Fab,
   FabIcon,
   FabLabel,
   ArrowLeftIcon,
   Text,
+  Toast,
+  ToastTitle,
+  ToastDescription,
+  VStack,
 } from '@gluestack-ui/themed';
-import {VehicleCard} from '../../Components/VehicleCard';
+import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
 import {GetDriverId} from '../../Controllers/DriverVehicleLinkingController.tsx';
-import {useGlobalState} from '../../State';
+import {AuthContext} from '../../Services/AuthenticationService';
+import {Auth} from '../../Classes/Auth';
 
 const TripsScreen = ({navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
 
-  const [userId, x] = useGlobalState('userId');
-  const [role, y] = useGlobalState('role');
+  const {session, isLoading}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
+
+  const userId = auth.GetUserId();
+  const role: number = Number(auth.GetUserRole());
 
   const [tempUserId, setTempUserId] = useState(userId);
 
@@ -57,6 +63,8 @@ const TripsScreen = ({navigation}: any) => {
 
   const [showNoFutureTripText, setShowNoFutureTripText] = useState(false);
   const [showNoPastTripText, setShowNoPastTripText] = useState(false);
+  const [noLinkedVehicle, setNoLinkedVehicle] = useState(true);
+  const toast = useToast();
 
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
@@ -95,14 +103,23 @@ const TripsScreen = ({navigation}: any) => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
+    setNoLinkedVehicle(true);
 
     setTimeout(() => {
       //setRefreshing(true);
 
       GetVehiclesAndDrivers(tempUserId)
         .then(result => {
+          if (result.length == 0) {
+            setNoLinkedVehicle(true);
+            setRefreshing(false);
+          } else {
+          }
           setVehicleList(result);
           setRefreshing(false);
+          if (!noLinkedVehicle) {
+            ShowSelectVehilcleToast();
+          }
         })
         .catch(() => {
           setRefreshing(false);
@@ -126,8 +143,17 @@ const TripsScreen = ({navigation}: any) => {
 
         GetVehiclesAndDrivers(tempUserId)
           .then(result => {
+            if (result.length == 0) {
+              setNoLinkedVehicle(true);
+              setRefreshing(false);
+            } else {
+            }
             setVehicleList(result);
             setRefreshing(false);
+            setNoLinkedVehicle(false);
+            if (!noLinkedVehicle) {
+              ShowSelectVehilcleToast();
+            }
           })
           .catch(() => {
             setRefreshing(false);
@@ -135,6 +161,25 @@ const TripsScreen = ({navigation}: any) => {
       }, 2000);
     }
   }, [tempRole, userId, role]);
+
+  const ShowSelectVehilcleToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="attention" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Select Vehicle</ToastTitle>
+              <ToastDescription>
+                Please a select a vehicle to contine.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
 
   //Empty flatlist text is defined
   const EmtpyFlatListText = () => {
@@ -145,10 +190,19 @@ const TripsScreen = ({navigation}: any) => {
     );
   };
 
+  const EmtpyVehicleFlatListText = () => {
+    return (
+      <View>
+        <Text>
+          You currently have no linked vehicles. Please add vehicles and try
+          again.
+        </Text>
+      </View>
+    );
+  };
+
   //This is where the Toast is defined
   const ShowToast = () => {
-    const toast = useToast();
-
     toast.show({
       placement: 'top',
       render: ({id}) => {
@@ -213,7 +267,7 @@ const TripsScreen = ({navigation}: any) => {
 
   //Gets all upcoming Trips for all roles
   const GetUpcomingTrips = async () => {
-    if (tempRole == 2) {
+    if (tempRole == 3) {
       return await GetUpcomingTripsForClient(tempUserId).then(trip => {
         if (trip.length == 0) {
           setShowNoFutureTripText(true);
@@ -221,7 +275,7 @@ const TripsScreen = ({navigation}: any) => {
           setUpcomingTripList(trip);
         }
       });
-    } else if (tempRole == 3) {
+    } else if (tempRole == 2) {
       return await GetUpcomingTripsForDriver(tempUserId).then(trip => {
         if (trip.length == 0) {
           setShowNoFutureTripText(true);
@@ -242,7 +296,7 @@ const TripsScreen = ({navigation}: any) => {
 
   //Gets all past Trips for all roles
   const GetPastTrips = async () => {
-    if (tempRole == 2) {
+    if (tempRole == 3) {
       return await GetPastTripsForClient(tempUserId).then(trip => {
         if (trip.length == 0) {
           setShowNoPastTripText(true);
@@ -250,7 +304,7 @@ const TripsScreen = ({navigation}: any) => {
           setPastTripList(trip);
         }
       });
-    } else if (tempRole == 3) {
+    } else if (tempRole == 2) {
       return await GetPastTripsForDriver(tempUserId).then(trip => {
         if (trip.length == 0) {
           setShowNoPastTripText(true);
@@ -372,7 +426,7 @@ const TripsScreen = ({navigation}: any) => {
 
   //Contains Upcoming Flatlist for all roles
   function FirstRoute() {
-    if (tempRole == 2) {
+    if (tempRole == 3) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoFutureTripText ? EmtpyFlatListText() : null}
@@ -389,7 +443,7 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 3) {
+    } else if (tempRole == 2) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoFutureTripText ? EmtpyFlatListText() : null}
@@ -421,9 +475,10 @@ const TripsScreen = ({navigation}: any) => {
       );
     }
   }
+
   //Contains Past Flatlist for all roles
   function SecondRoute() {
-    if (tempRole == 2) {
+    if (tempRole == 3) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoPastTripText ? EmtpyFlatListText() : null}
@@ -440,7 +495,7 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 3) {
+    } else if (tempRole == 2) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoPastTripText ? EmtpyFlatListText() : null}
@@ -482,17 +537,21 @@ const TripsScreen = ({navigation}: any) => {
       {GoBackFab()}
       {tempRole != 1 ? (
         <Tab.Navigator>
-          <Tab.Screen name="Upcoming Trps" component={FirstRoute} />
+          <Tab.Screen name="Upcoming Trips" component={FirstRoute} />
           <Tab.Screen name="Past Trips" component={SecondRoute} />
         </Tab.Navigator>
       ) : (
-        <FlatList
-          data={vehicleList}
-          renderItem={({item}) => vehicleSelectorTransporter(item)}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        />
+        <View style={FlatlistStyles.container}>
+          {noLinkedVehicle ? EmtpyVehicleFlatListText() : null}
+          <FlatList
+            data={vehicleList}
+            renderItem={({item}) => vehicleSelectorTransporter(item)}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          />
+          <View>{GoBackFab()}</View>
+        </View>
       )}
     </NavigationContainer>
   );

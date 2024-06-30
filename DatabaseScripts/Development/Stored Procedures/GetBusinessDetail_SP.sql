@@ -1,6 +1,6 @@
-CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetBusinessDetail`(in _BusinessDetailId varchar(100))
+CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetBusinessDetail`(in _BusinessId varchar(100))
 BEGIN
 SELECT * 
     FROM  BusinessDetail 
-    WHERE BusinessDetailId = _BusinessDetailId;
+    WHERE BusinessId = _BusinessId;
 END

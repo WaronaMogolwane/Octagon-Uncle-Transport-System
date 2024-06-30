@@ -13,7 +13,7 @@ export const AddUserDetail = async (req: any, res: any, next: any) => {
     randomUUID(),
     req.body.userDetail.FirstName,
     req.body.userDetail.LastName,
-    req.body.userDetail.Cellphone,
+    req.body.userDetail.PhoneNumber,
     req.body.userDetail.AddressLine1,
     req.body.userDetail.AddressLine2,
     req.body.userDetail.Surburb,
@@ -41,7 +41,7 @@ export const AddUserDetail = async (req: any, res: any, next: any) => {
 };
 
 export const GetUserDetail = async (req: any, res: any, next: any) => {
-  let userId = req.body.userDetails.UserDetailId;
+  let userId = req.body.userDetails.UserId;
   await GetUserDetailByUserId(userId, (error, result) => {
     if (error) {
       next(new ErrorResponse(501, error.message));
@@ -95,22 +95,3 @@ export const UpdateUserPersonalDetail = async (
     }
   });
 };
-
-// export const GetAllUserDetail = async (req: any, res: any, next: any) => {
-//   let userId = req.body.userDetails.userId;
-
-//   await GetUserDetailByUserId(userId, (error, result) => {
-//     if (error) {
-//       let err: any = {
-//         status: 400,
-//         message: error.message,
-//       };
-//       next(err);
-//     } else {
-//       res.status(200).json({
-//         RecordRetrieved: true,
-//         result: result.rows[0],
-//       });
-//     }
-//   });
-// };

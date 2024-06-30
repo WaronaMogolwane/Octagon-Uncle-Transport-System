@@ -1,5 +1,8 @@
 CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetPastTripsForDriver`(in _DriverId varchar(100))
 BEGIN
+
+SET @_DriverVehicleLinkingId = (SELECT DriverVehicleLinkingId FROM DriverVehicleLinking WHERE DriverId = _DriverId);
+
 SELECT 
     Trip.TripId,
     Trip.PickUpTime,
@@ -25,7 +28,7 @@ FROM
       INNER JOIN
       Passenger ON Passenger.PassengerId = Trip.PassengerId
 WHERE
-    Trip.DriverVehicleLinkingId = _DriverId
+    Trip.DriverVehicleLinkingId = @_DriverVehicleLinkingId
     AND Trip.Date < current_timestamp()
     OR Trip.IsCompleted = '1';
 

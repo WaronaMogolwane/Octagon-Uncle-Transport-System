@@ -1,12 +1,12 @@
-import { Transporter } from "../Models/TransporterDetailsModel";
-import { BusinessDetails } from "../Models/BusinessDetailsModel";
-import { v4 as uuidv4 } from "uuid";
+import {Transporter} from '../Models/TransporterDetailsModel';
+import {BusinessDetail} from '../Models/BusinessDetailsModel';
+import {v4 as uuidv4} from 'uuid';
 
 let currentDate = new Date(Date.now());
 
 export const AddTransporterToDatabase = async (
   transporterDetails: Transporter,
-  transporterUid: string
+  transporterUid: string,
 ) => {
   let response;
 
@@ -23,32 +23,32 @@ export const CreateUserVerification = async (
   cellphone: string,
   verificationCode: string,
   transporterUid: string,
-  userRole: number
+  userRole: number,
 ) => {
   let response;
   return response;
 };
 export const CheckIfUserVerificationExists = async (
   verificationCode: string,
-  userRole: string
+  userRole: string,
 ) => {};
 export const UpdateTransporterDetails = async (
   transporterDetails: Transporter,
-  transporterUid: string
+  transporterUid: string,
 ) => {
   let response;
   return response;
 };
 export const VerifyUser = async (
   verificationCode: string,
-  userRole: number
+  userRole: number,
 ) => {
   let response;
   return response;
 };
 export const AddBusinessDetails = async (
-  businessDetails: BusinessDetails,
-  transporterUid: string
+  businessDetails: BusinessDetail,
+  transporterUid: string,
 ) => {
   let response;
   return response;

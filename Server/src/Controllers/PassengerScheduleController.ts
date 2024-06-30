@@ -5,6 +5,7 @@ import {
   AutoInsertPassengerSchedule,
   GetPassengerSchedule,
   InsertPassengerSchedule,
+  InsertTempPassengerSchedule,
   UpdatePassengerSchedule,
 } from "../Models/PassengerScheduleModel";
 
@@ -23,6 +24,31 @@ export const AddPassengerSchedule = async (req: any, res: any, next: any) => {
   );
 
   await InsertPassengerSchedule(newPassenger, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        PassengerCreated: true,
+        result: result.affectedRows,
+      });
+    }
+  });
+};
+
+export const AddTempPassengerSchedule = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  let passengerId = req.body.params.PassengerId;
+
+  await InsertTempPassengerSchedule(passengerId, (error, result) => {
     if (error) {
       next(new ErrorResponse(501, error.message));
     } else if (result.affectedRows == 0) {
@@ -100,26 +126,3 @@ export const UpdatePassengerScheduleByPassengerId = async (
     }
   });
 };
-
-// export const AutoAddPassengerSchedule = async (
-//   req: any,
-//   res: any,
-//   next: any
-// ) => {
-//   await AutoInsertPassengerSchedule((error, result) => {
-//     if (error) {
-//       next(new ErrorResponse(501, error.message));
-//     } else if (result.affectedRows == 0) {
-//       let err: any = {
-//         status: 499,
-//         message: "Something went wrong",
-//       };
-//       next(err);
-//     } else {
-//       res.status(200).json({
-//         PassengerCreated: true,
-//         result: result.affectedRows,
-//       });
-//     }
-//   });
-// };

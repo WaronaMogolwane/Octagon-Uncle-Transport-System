@@ -1,5 +1,5 @@
 import {GestureResponderEvent, ScrollView, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   Button,
   ButtonText,
@@ -32,14 +32,20 @@ import {
 } from '../../Components/CustomFormInput';
 import {BankingDetail} from '../../Models/BankingDetail';
 import {AddBankingDetail} from '../../Controllers/BankingDetailController';
+import {Auth} from '../../Classes/Auth';
+import {AuthContext} from '../../Services/AuthenticationService';
 
 const BusinessDetailsScreen = ({navigation}: any) => {
+  const {session, isLoading}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
+
   const toast = useToast();
   const ref = React.useRef(null);
 
   const [showModal, setShowModal] = useState(true);
 
-  const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+  // const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
+  const businessId = auth.GetBusinessId();
 
   const businessDetailHelper = async (values: any) => {
     let businessDetail = new BusinessDetail(

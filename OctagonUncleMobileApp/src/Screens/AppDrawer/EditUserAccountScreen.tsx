@@ -46,9 +46,11 @@ import {useFormik} from 'formik';
 import {AuthContext} from '../../Services/AuthenticationService';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
 import {err} from 'react-native-svg/lib/typescript/xml';
+import {Auth} from '../../Classes/Auth';
 
 const EditUserAccountScreen = ({navigation}: any) => {
   const {session, emailOtp, verifyOtp}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
 
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -65,7 +67,8 @@ const EditUserAccountScreen = ({navigation}: any) => {
   const passwordExp: RegExp =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 
-  const userId = 'ffe121bd-de71-4016-813b-50e70e7fa298';
+  // const userId = 'ffe121bd-de71-4016-813b-50e70e7fa298';
+  const userId = auth.GetUserId();
 
   const ref = React.useRef(null);
   const toast = useToast();

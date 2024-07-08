@@ -1,19 +1,16 @@
 {
   "folders": [
     {
-      "path": "School-Transport"
-    },
-    {
       "path": "Admin"
     },
     {
       "path": "Server"
     },
     {
-      "path": "OctagonUncleMobileApp"
+      "path": "DatabaseScripts"
     },
     {
-      "path": "DatabaseScripts"
+      "path": "MobileApp"
     }
   ],
   "settings": {

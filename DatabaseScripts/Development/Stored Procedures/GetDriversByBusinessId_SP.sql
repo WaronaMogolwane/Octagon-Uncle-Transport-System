@@ -20,7 +20,7 @@ FROM
         LEFT JOIN
     Vehicle v ON v.VehicleId = dvl.VehicleId
 WHERE
-    u.UserRole = 2
+    u.UserRole = 3
         AND ubl.BusinessId = _BusinessId
         AND u.ActiveStatus = 1;
 END

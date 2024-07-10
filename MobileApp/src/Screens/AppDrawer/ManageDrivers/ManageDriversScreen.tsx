@@ -68,7 +68,7 @@ const ManageDriverscreen = ({navigation}: any) => {
         firstName: addDriverFormik.values.firstName,
         lastName: addDriverFormik.values.lastName,
         userEmail: addDriverFormik.values.email,
-        userRole: '2',
+        userRole: '3',
       };
       if (addDriverFormik.isValid) {
         await createUserInvitation(
@@ -81,7 +81,7 @@ const ManageDriverscreen = ({navigation}: any) => {
               setShowAlertDialog(true);
               GetDriverInvitation(
                 auth.GetBusinessId(),
-                '2',
+                '3',
                 (error: any, result: any) => {
                   if (error) {
                   } else {

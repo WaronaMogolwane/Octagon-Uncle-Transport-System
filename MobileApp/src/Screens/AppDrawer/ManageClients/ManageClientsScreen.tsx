@@ -80,7 +80,7 @@ const ManageClientsScreen = ({navigation}: any) => {
         firstName: addClientFormik.values.firstName,
         lastName: addClientFormik.values.lastName,
         userEmail: addClientFormik.values.email,
-        userRole: '3',
+        userRole: '2',
       };
       if (addClientFormik.isValid) {
         await createUserInvitation(
@@ -93,7 +93,7 @@ const ManageClientsScreen = ({navigation}: any) => {
               setShowAlertDialog(true);
               GetClientsInvitation(
                 auth.GetBusinessId(),
-                '3',
+                '2',
                 (error: any, result: any) => {
                   if (error) {
                   } else {

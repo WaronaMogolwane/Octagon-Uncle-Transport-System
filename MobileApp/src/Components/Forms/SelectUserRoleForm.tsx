@@ -43,13 +43,13 @@ export const SelectUserRoleForm = (props: SelectUserRoleFormProps) => {
                 <RadioIndicator mr="$2">
                   <RadioIcon as={CircleIcon} />
                 </RadioIndicator>
-                <RadioLabel>Driver</RadioLabel>
+                <RadioLabel>Client</RadioLabel>
               </Radio>
               <Radio value="3" size="md">
                 <RadioIndicator mr="$2">
                   <RadioIcon as={CircleIcon} />
                 </RadioIndicator>
-                <RadioLabel>Client</RadioLabel>
+                <RadioLabel>Driver</RadioLabel>
               </Radio>
             </VStack>
           </RadioGroup>

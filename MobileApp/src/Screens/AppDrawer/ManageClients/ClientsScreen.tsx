@@ -90,7 +90,7 @@ export const ClientsScreen = () => {
           removeClientFormik.values.confirmDriverName ===
           '{0} {1}'.format(currentClient.FirstName, currentClient.LastName)
         ) {
-          DeleteUserByUserIdAndRole(currentClient.UserId, '3', (error: any) => {
+          DeleteUserByUserIdAndRole(currentClient.UserId, '2', (error: any) => {
             if (error) {
               console.error(error);
               ShowRemoveClientToast(false);

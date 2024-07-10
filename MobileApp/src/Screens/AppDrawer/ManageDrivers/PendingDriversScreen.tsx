@@ -50,7 +50,7 @@ export const PendingDriverscreen = () => {
     setRefreshingPendingDrivers(false);
   }, []);
   const RemoveInvitation = async (invitationId: string) => {
-    await DeleteUserInvitation(invitationId, 2, (error: any) => {
+    await DeleteUserInvitation(invitationId, 3, (error: any) => {
       if (error) {
         setRefreshingPendingDrivers(false);
         console.error(error.response.data);
@@ -64,7 +64,7 @@ export const PendingDriverscreen = () => {
   const GetPendingDrivers = async (businessId: string) => {
     return await GetInvitationsByBusinessIdUserRole(
       businessId,
-      '2',
+      '3',
       (error: any, result: any) => {
         if (error) {
           console.error(error.response.data);

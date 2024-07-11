@@ -426,7 +426,7 @@ const TripsScreen = ({navigation}: any) => {
 
   //Contains Upcoming Flatlist for all roles
   function FirstRoute() {
-    if (tempRole == 3) {
+    if (tempRole == 2) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoFutureTripText ? EmtpyFlatListText() : null}
@@ -443,7 +443,7 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 2) {
+    } else if (tempRole == 3) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoFutureTripText ? EmtpyFlatListText() : null}
@@ -478,7 +478,7 @@ const TripsScreen = ({navigation}: any) => {
 
   //Contains Past Flatlist for all roles
   function SecondRoute() {
-    if (tempRole == 3) {
+    if (tempRole == 2) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoPastTripText ? EmtpyFlatListText() : null}
@@ -495,7 +495,7 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 2) {
+    } else if (tempRole == 3) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoPastTripText ? EmtpyFlatListText() : null}

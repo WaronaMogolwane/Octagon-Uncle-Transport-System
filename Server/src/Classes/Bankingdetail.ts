@@ -1,20 +1,23 @@
 export class BankingDetail {
-  bankingDetailId: String;
-  bankName: String;
+  bankingDetailId: string;
+  bankName: string;
   branchNumber: Number;
+  accountName: string;
   accountNumber: Number;
-  businessId: String;
+  businessId: string;
 
   constructor(
     bankingDetailId: string,
     bankName: string,
     bankBranch: number,
+    accountName: string,
     accountNumber: number,
     businessId: string
   ) {
     this.bankingDetailId = bankingDetailId;
     this.accountNumber = accountNumber;
     this.bankName = bankName;
+    this.accountName = accountName;
     this.branchNumber = bankBranch;
     this.businessId = businessId;
   }

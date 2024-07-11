@@ -110,7 +110,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [showReasonField, setShowReasonField] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
 
-  const userId = auth.GetUserRole();
+  const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
   const role: number = Number(auth.GetUserRole());
 
@@ -160,7 +160,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
           }
         },
       );
-    } else if (role == 3) {
+    } else if (role == 2) {
       //Parent
       await GetParentPassengers(userId).then((result: any) => {
         if (result.length != 0) {
@@ -222,16 +222,16 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const UpdatePassengerDetails = async (values: any) => {
     const updatePassenger = new Passenger(
       passengerId,
-      values.firstname != '' ? values.firstname : firstName,
-      values.lastname != '' ? values.lastname : lastName,
-      values.age != '' ? values.age : age,
-      values.homeAddress != '' ? values.homeAddress : homeAddress,
-      values.suburb != '' ? values.suburb : suburb,
-      values.city != '' ? values.city : city,
-      values.province != '' ? values.province : province,
-      values.postalCode != '' ? values.postalCode : postalCode,
+      values.firstname != '' ? values.firstname.trim() : firstName,
+      values.lastname != '' ? values.lastname.trim() : lastName,
+      values.age != '' ? values.age.trim() : age,
+      values.homeAddress != '' ? values.homeAddress.trim() : homeAddress,
+      values.suburb != '' ? values.suburb.trim() : suburb,
+      values.city != '' ? values.city.trim() : city,
+      values.province != '' ? values.province.trim() : province,
+      values.postalCode != '' ? values.postalCode.trim() : postalCode,
       values.destinationAddress != ''
-        ? values.destinationAddress
+        ? values.destinationAddress.trim()
         : destinationAddress,
       userId,
       businessId,
@@ -249,15 +249,15 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const CreatePassenger = async (values: any) => {
     const newPassenger = new Passenger(
       '',
-      values.firstname,
-      values.lastname,
-      values.age,
-      values.homeAddress,
-      values.suburb,
-      values.city,
-      values.province,
-      values.postalCode,
-      values.destinationAddress,
+      values.firstname.trim(),
+      values.lastname.trim(),
+      values.age.trim(),
+      values.homeAddress.trim(),
+      values.suburb.trim(),
+      values.city.trim(),
+      values.province.trim(),
+      values.postalCode.trim(),
+      values.destinationAddress.trim(),
       userId,
       businessId,
     );
@@ -494,7 +494,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                   isDisabled={false}
                   isFocusVisible={false}
                   onPress={() => {
-                    DeletePassengerRequest(passengerId, reason).then(
+                    DeletePassengerRequest(passengerId, reason.trim()).then(
                       (result: any) => {
                         if (result[1] == 200) {
                           GetPassengers();

@@ -90,7 +90,7 @@ export const DriversScreen = () => {
           removeDriverFormik.values.confirmDriverName ===
           '{0} {1}'.format(currentDriver.FirstName, currentDriver.LastName)
         ) {
-          DeleteUserByUserIdAndRole(currentDriver.UserId, '2', (error: any) => {
+          DeleteUserByUserIdAndRole(currentDriver.UserId, '3', (error: any) => {
             if (error) {
               console.error(error);
               ShowRemoveDriverToast(false);

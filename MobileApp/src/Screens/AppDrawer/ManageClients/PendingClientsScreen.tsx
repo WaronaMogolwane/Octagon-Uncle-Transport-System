@@ -46,7 +46,7 @@ export const PendingClientsScreen = () => {
     setRefreshingPendingCliients(false);
   }, []);
   const RemoveInvitation = async (invitationId: string) => {
-    await DeleteUserInvitation(invitationId, 3, (error: any) => {
+    await DeleteUserInvitation(invitationId, 2, (error: any) => {
       if (error) {
         setRefreshingPendingCliients(false);
         console.error(error.response.data);
@@ -60,7 +60,7 @@ export const PendingClientsScreen = () => {
   const GetPendingClients = async (businessId: string) => {
     return await GetInvitationsByBusinessIdUserRole(
       businessId,
-      '3',
+      '2',
       (error: any, result: any) => {
         if (error) {
           console.error(error.response.data);

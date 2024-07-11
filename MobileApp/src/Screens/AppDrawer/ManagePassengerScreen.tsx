@@ -110,9 +110,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [showReasonField, setShowReasonField] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
 
-  const userId = auth.GetUserRole();
+  const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
-  const role: number = Number(auth.GetUserRole());
+  const role: number = Number(2);
+  // const role: number = Number(auth.GetUserRole());
 
   const defaultReasons = [
     {
@@ -160,7 +161,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
           }
         },
       );
-    } else if (role == 3) {
+    } else if (role == 2) {
       //Parent
       await GetParentPassengers(userId).then((result: any) => {
         if (result.length != 0) {

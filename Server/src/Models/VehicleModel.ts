@@ -30,11 +30,7 @@ export const InsertNewDriverVehicleLink = async (
     {
       sql: "CALL InsertDriverVehicleLink(?,?);",
       timeout: 40000,
-      values:
-        [
-          driverId,
-          vehicleId
-        ],
+      values: [driverId, vehicleId],
     },
     function (error, results, fields) {
       if (error) {
@@ -53,20 +49,19 @@ export const InsertNewVehicle = async (
     {
       sql: "CALL InsertNewVehicle(?,?,?,?,?,?,?,?,?,?,?);",
       timeout: 40000,
-      values:
-        [
-          newVehicle.RegistrationNumber,
-          newVehicle.Make,
-          newVehicle.Model,
-          newVehicle.Vin,
-          newVehicle.EngineNumber,
-          newVehicle.Colour,
-          newVehicle.BusinessId,
-          newVehicle.LicenseNumber,
-          '/' + newVehicle.FrontImage,
-          '/' + newVehicle.RearImage,
-          ""
-        ],
+      values: [
+        newVehicle.RegistrationNumber,
+        newVehicle.Make,
+        newVehicle.Model,
+        newVehicle.Vin,
+        newVehicle.EngineNumber,
+        newVehicle.Colour,
+        newVehicle.BusinessId,
+        newVehicle.LicenseNumber,
+        "/" + newVehicle.FrontImage,
+        "/" + newVehicle.RearImage,
+        "",
+      ],
     },
     function (error, results, fields) {
       if (error) {
@@ -134,7 +129,7 @@ export const GetVehiclesByBusinessId = async (
       }
     }
   );
-}
+};
 export const GetVehicleByLicenseNumberAndBusinessId = async (
   businessId: string,
   licenseNumber: string,
@@ -154,4 +149,4 @@ export const GetVehicleByLicenseNumberAndBusinessId = async (
       }
     }
   );
-}
+};

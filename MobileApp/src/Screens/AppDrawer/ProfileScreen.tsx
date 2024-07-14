@@ -233,15 +233,15 @@ const ProfileScreen = ({navigation}: any) => {
                 <Text style={styles.username}>Personal</Text>
               </View>
             </TouchableOpacity>
-            {role == 4 ? (
+            {role == 2 ? (
               <TouchableOpacity
                 onPress={() => {
-                  navigation.navigate('Payment Details');
+                  //navigation.navigate('Edit Payment Details');
                 }}>
                 <View style={styles.box}>
                   <View>{iconSelector(3)}</View>
 
-                  <Text style={styles.username}>Payment</Text>
+                  <Text style={styles.username}>Payments</Text>
                 </View>
               </TouchableOpacity>
             ) : null}

@@ -20,6 +20,26 @@ export const GetUserByUserId = async (
   );
 };
 
+export const CheckUserEmailByEmail = async (
+  email: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL CheckUserEmail(?);",
+      timeout: 40000,
+      values: [email],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
 export const UpdateUserEmailByUserId = async (
   user: any,
   callback: (error, result) => void

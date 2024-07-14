@@ -42,7 +42,7 @@ const BusinessDetailsScreen = ({navigation}: any) => {
   const toast = useToast();
   const ref = React.useRef(null);
 
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   // const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
   const businessId = auth.GetBusinessId();
@@ -114,7 +114,7 @@ const BusinessDetailsScreen = ({navigation}: any) => {
       <Modal
         isOpen={showModal}
         onClose={() => {
-          setShowModal(true);
+          setShowModal(false);
           formik.resetForm();
         }}
         finalFocusRef={ref}>

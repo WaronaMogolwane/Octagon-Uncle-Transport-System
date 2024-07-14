@@ -1,5 +1,6 @@
 import Router from "express-promise-router";
 import {
+  CheckUserEmail,
   GetUser,
   UpdateUserEmail,
   UpdateUserPassword,
@@ -8,6 +9,8 @@ import {
 const router = Router();
 
 router.get("/get-user", GetUser, async (req, res, next) => {});
+
+router.get("/check-user-email", CheckUserEmail, async (req, res, next) => {});
 
 router.patch(
   "/update-user-email",

@@ -14,6 +14,7 @@ import driverVehicleLinkingRoute from "./Routes/DriverVehicleLinkingRoutes";
 import businessDetailRoute from "./Routes/BusinessDetailRoutes";
 import bankingDetailRoute from "./Routes/BankingDetailRoutes";
 import userRoute from "./Routes/UserRoutes";
+import paymentsRoute from "./Routes/PaymentsRoute";
 
 import ErrorHandler from "./Middleware/ErrorHandler";
 
@@ -37,6 +38,7 @@ app.use("/trip", tripRoute);
 app.use("/vehicle", vehicleRoute);
 app.use("/business-detail", businessDetailRoute);
 app.use("/banking-detail", bankingDetailRoute);
+app.use("/payments", paymentsRoute);
 app.use(
   "/passenger-driver-vehicle-linking",
   passengerDriverVehicleLinkingRoute

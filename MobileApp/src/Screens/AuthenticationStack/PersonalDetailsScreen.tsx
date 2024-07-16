@@ -32,20 +32,21 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
 
   const [auth, setAuth] = useState(new Auth(sessionId));
   const toast = useToast();
-  //const userId = 'c7728615-394f-466b-833e-ea9dd60ba836';
+
   const userId = auth.GetUserId();
+
   const userDetailHelper = async (values: any) => {
     let userDetail = new UserDetail(
       '',
-      values.firstname,
-      values.lastname,
-      values.phonenumber,
-      values.addressline1,
-      values.addressline2,
-      values.suburb,
-      values.city,
-      values.province,
-      values.postalcode,
+      values.firstname.trim(),
+      values.lastname.trim(),
+      values.phonenumber.trim(),
+      values.addressline1.trim(),
+      values.addressline2.trim(),
+      values.suburb.trim(),
+      values.city.trim(),
+      values.province.trim(),
+      values.postalcode.trim(),
       userId,
     );
 

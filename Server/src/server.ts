@@ -25,11 +25,16 @@ const app = express();
 var cors = require("cors");
 app.use(cors());
 
-
 const PORT = process.env.PORT || 8081;
-var bodyParser = require('body-parser');
+var bodyParser = require("body-parser");
 app.use(bodyParser.json({ limit: "50mb" }));
-app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }));
+app.use(
+  bodyParser.urlencoded({
+    limit: "50mb",
+    extended: true,
+    parameterLimit: 50000,
+  })
+);
 app.use("/auth", authRoute);
 app.use("/user", userRoute);
 app.use("/user-profile", userProfileRoute);

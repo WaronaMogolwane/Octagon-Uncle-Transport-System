@@ -1,19 +1,57 @@
 import {View, Text} from 'react-native';
 import React from 'react';
-import {ArrowLeft, Icon} from 'lucide-react-native';
+import {ArrowLeft, ArrowLeftIcon, FilePen, Icon} from 'lucide-react-native';
 import {burger} from '@lucide/lab';
+import {Button, ButtonIcon, ButtonText} from '@gluestack-ui/themed';
 
-const EditPaymentDetailsScreen = () => {
+const EditPaymentDetailsScreen = ({navigation}: any) => {
   return (
     <View>
-      <Icon size={24} strokeWidth={2} iconNode={burger} color={'#000000'} />
+      <View>
+        <Text>Horizontal View Box</Text>
+        <View>
+          <Text>Side by Side view Box</Text>
+          <Text>Next Payment Date</Text>
+          <Text>08/05/2024</Text>
+        </View>
+        <View>
+          <Text>Side by Side view Box</Text>
+          <Text>Amount</Text>
+          <Text>R 230.00</Text>
+        </View>
+      </View>
 
-      <Text>EditPaymentDetailsScreen</Text>
-      <Text>
-        Favor{' '}
-        <Icon size={24} strokeWidth={2} iconNode={burger} color={'#000000'} />
-      </Text>
-      <ArrowLeft size={24} strokeWidth={2} color={'#000000'} />
+      <View>
+        <Text>Generic Card Details</Text>
+        <Text>Card number</Text>
+      </View>
+
+      <View
+        style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+          }}>
+          <View style={{padding: 5}}>
+            <Button
+              size="md"
+              variant="solid"
+              action="secondary"
+              isDisabled={false}
+              isFocusVisible={false}
+              onPress={() => {
+                navigation.navigate('Profile');
+              }}>
+              <ButtonIcon as={ArrowLeftIcon} />
+              <ButtonText>Back</ButtonText>
+            </Button>
+          </View>
+        </View>
+      </View>
     </View>
   );
 };

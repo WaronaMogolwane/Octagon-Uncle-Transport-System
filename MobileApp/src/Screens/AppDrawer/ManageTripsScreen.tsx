@@ -91,7 +91,7 @@ const ManageTripsScreen = ({navigation}: any) => {
       color={itemData.color}
       fullName={itemData.fullName}
       onPress={() => {
-        navigation.push('Assign Passenger', {
+        navigation.navigate('Assign Passenger', {
           vehicleId: itemData.vehicleId,
         });
       }}

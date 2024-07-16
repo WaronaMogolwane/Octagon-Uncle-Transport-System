@@ -82,10 +82,10 @@ export const GetVehicleAndDriverFromDB = async (businessId: string) => {
       res.forEach(data => {
         vehicle = {
           vehicleId: data.VehicleId,
-          registrationNumber: data.RegistrationNumber,
+          licenseNumber: data.LicenseNumber,
           make: data.Make,
           model: data.Model,
-          color: data.Color,
+          color: data.Colour,
           fullName: data.FirstName + ' ' + data.LastName,
         };
 

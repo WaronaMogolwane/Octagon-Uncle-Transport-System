@@ -11,8 +11,11 @@ export const AddBankingDetail = async (req: any, res: any, next: any) => {
     randomUUID(),
     req.body.bankingDetail.BankName,
     Number(req.body.bankingDetail.BranchNumber),
+    req.body.bankingDetail.AccountName,
     Number(req.body.bankingDetail.AccountNumber),
-    req.body.bankingDetail.BusinessId
+    req.body.bankingDetail.BusinessId,
+    req.body.bankingDetail.BankId,
+    req.body.bankingDetail.BankCode
   );
   await InsertBankingDetail(bankingDetail, (error, result) => {
     if (error) {
@@ -37,8 +40,11 @@ export const ModifyBankingDetail = async (req: any, res: any, next: any) => {
     req.body.bankingDetail.BankingDetailId,
     req.body.bankingDetail.BankName,
     Number(req.body.bankingDetail.BranchNumber),
+    req.body.bankingDetail.AccountName,
     Number(req.body.bankingDetail.AccountNumber),
-    req.body.bankingDetail.BusinessId
+    req.body.bankingDetail.BusinessId,
+    req.body.bankingDetail.BankId,
+    req.body.bankingDetail.BankCode
   );
   await UpdateBankingDetail(bankingDetail, (error, result) => {
     if (error) {

@@ -47,16 +47,16 @@ export default function EditUserDetailsScreen({navigation}: any) {
     await GetUserDetail(userId).then((result: any) => {
       setUserDetail(
         new UserDetail(
-          result.userDetailId,
-          result.firstName,
-          result.lastName,
-          result.phoneNumber,
-          result.addressLine1,
-          result.addressLine2,
-          result.suburb,
-          result.province,
-          result.city,
-          result.postalCode,
+          result.userDetailId.trim(),
+          result.firstName.trim(),
+          result.lastName.trim(),
+          result.phoneNumber.trim(),
+          result.addressLine1.trim(),
+          result.addressLine2.trim(),
+          result.suburb.trim(),
+          result.province.trim(),
+          result.city.trim(),
+          result.postalCode.trim(),
           userId,
         ),
       );

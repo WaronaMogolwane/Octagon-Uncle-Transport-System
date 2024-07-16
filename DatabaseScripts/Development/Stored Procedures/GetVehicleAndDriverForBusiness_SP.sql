@@ -1,25 +1,28 @@
 CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetVehicleAndDriverForBusiness`(in _BusinessId varchar(100))
 BEGIN
-SELECT
-	Vehicle.VehicleId,
-    Vehicle.RegistrationNumber,
-    Vehicle.Make,
-    Vehicle.Model,
-    Vehicle.Color,
-    UserDetail.FirstName,
-    UserDetail.LastName
+SELECT 
+    v.VehicleId,
+    v.RegistrationNumber,
+    v.Make,
+    v.Model,
+    v.Vin,
+    v.EngineNumber,
+    v.Colour,
+    v.LicenseNumber,
+    dvl.DriverId,
+    ud.FirstName, 
+    ud.LastName
 FROM
-	DriverVehicleLinking
-		INNER JOIN
-	Vehicle ON Vehicle.VehicleId = DriverVehicleLinking.VehicleId
-		INNER JOIN
-	UserBusinessLinking ON UserBusinessLinking.UserId = DriverVehicleLinking.DriverID
-    	INNER JOIN
-	User ON User.UserId = UserBusinessLinking.UserId
-    	INNER JOIN
-	UserDetail ON UserDetail.UserId = User.UserId
+    Vehicle v
+        INNER JOIN
+    DriverVehicleLinking dvl ON dvl.VehicleId = v.VehicleId
+        AND dvl.IsActive = 1
+        INNER JOIN
+    UserDetail ud ON ud.UserId = dvl.DriverId
+        INNER JOIN
+    User u ON u.UserId = dvl.DriverId
+        AND u.ActiveStatus = 1
 WHERE
-    UserBusinessLinking.BusinessId = _BusinessId
-AND 
-	User.UserRole = 2;
+    BusinessId = _BusinessId
+        AND v.IsActive = 1;
 END

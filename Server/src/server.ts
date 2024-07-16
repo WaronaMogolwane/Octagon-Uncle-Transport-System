@@ -14,6 +14,7 @@ import driverVehicleLinkingRoute from "./Routes/DriverVehicleLinkingRoutes";
 import businessDetailRoute from "./Routes/BusinessDetailRoutes";
 import bankingDetailRoute from "./Routes/BankingDetailRoutes";
 import userRoute from "./Routes/UserRoutes";
+import paymentsRoute from "./Routes/PaymentsRoute";
 
 import ErrorHandler from "./Middleware/ErrorHandler";
 
@@ -24,11 +25,16 @@ const app = express();
 var cors = require("cors");
 app.use(cors());
 
-
 const PORT = process.env.PORT || 8081;
-var bodyParser = require('body-parser');
+var bodyParser = require("body-parser");
 app.use(bodyParser.json({ limit: "50mb" }));
-app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }));
+app.use(
+  bodyParser.urlencoded({
+    limit: "50mb",
+    extended: true,
+    parameterLimit: 50000,
+  })
+);
 app.use("/auth", authRoute);
 app.use("/user", userRoute);
 app.use("/user-profile", userProfileRoute);
@@ -37,6 +43,7 @@ app.use("/trip", tripRoute);
 app.use("/vehicle", vehicleRoute);
 app.use("/business-detail", businessDetailRoute);
 app.use("/banking-detail", bankingDetailRoute);
+app.use("/payments", paymentsRoute);
 app.use(
   "/passenger-driver-vehicle-linking",
   passengerDriverVehicleLinkingRoute

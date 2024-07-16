@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext, useState} from 'react';
 import {createDrawerNavigator} from '@react-navigation/drawer';
 import HomeScreen from '../Screens/AppDrawer/HomeScreen';
 import TripsScreen from '../Screens/AppDrawer/TripsScreen';
@@ -15,18 +15,38 @@ import ProfileScreen from '../Screens/AppDrawer/ProfileScreen';
 import EditBusinessDetailsScreen from '../Screens/AppDrawer/EditBusinessDetailsScreen';
 import EditUserDetailsScreen from '../Screens/AppDrawer/EditUserDetailsScreen';
 import EditPaymentDetailsScreen from '../Screens/AppDrawer/EditPaymentDetailsScreen';
+import {Auth} from '../Classes/Auth';
+import {AuthContext} from '../Services/AuthenticationService';
 
 const AppDrawer = () => {
+  const {session, isLoading}: any = useContext(AuthContext);
+  const [auth, setAuth] = useState(new Auth(session));
+
+  const role: number = Number(auth.GetUserRole());
+
   const Drawer = createDrawerNavigator();
   return (
     <Drawer.Navigator initialRouteName="Home">
       <Drawer.Screen name="Home" component={HomeScreen} />
       <Drawer.Screen name="Trips" component={TripsScreen} />
-      <Drawer.Screen name="Payments" component={PaymentsScreen} />
-      <Drawer.Screen name="Manage Vehicles" component={ManageVehiclesScreen} />
-      <Drawer.Screen name="Manage Trip" component={ManageTripsScreen} />
-      <Drawer.Screen name="Manage Drivers" component={ManageDriversScreen} />
-      <Drawer.Screen name="Manage Clients" component={ManageClientsScreen} />
+      {role == 1 ? (
+        <Drawer.Screen name="Payments" component={PaymentsScreen} />
+      ) : null}
+      {role == 1 ? (
+        <Drawer.Screen
+          name="Manage Vehicles"
+          component={ManageVehiclesScreen}
+        />
+      ) : null}
+      {role == 1 ? (
+        <Drawer.Screen name="Manage Trip" component={ManageTripsScreen} />
+      ) : null}
+      {role == 1 ? (
+        <Drawer.Screen name="Manage Drivers" component={ManageDriversScreen} />
+      ) : null}
+      {role == 1 ? (
+        <Drawer.Screen name="Manage Clients" component={ManageClientsScreen} />
+      ) : null}
       <Drawer.Screen name="Profile" component={ProfileScreen} />
       <Drawer.Screen
         name="Edit Business Details"
@@ -57,10 +77,12 @@ const AppDrawer = () => {
         }}
       />
       <Drawer.Screen name="Business Detail" component={BusinessDetailsScreen} />
-      <Drawer.Screen
-        name="Manage Passengers"
-        component={ManagePassengerScreen}
-      />
+      {role != 3 ? (
+        <Drawer.Screen
+          name="Manage Passengers"
+          component={ManagePassengerScreen}
+        />
+      ) : null}
       <Drawer.Screen
         name="Assign Passenger"
         component={AssignPassengerScreen}

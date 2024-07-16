@@ -192,6 +192,8 @@ const ManagePassengerScreen = ({navigation}: any) => {
         setDestinationAddress(itemData.destinationAddress);
         setParentName(itemData.parentName);
         setIsActiveText(itemData.isActivetext);
+        setShowReasonField(false);
+        setShowButton(false);
         setShowPassengerSummary(true);
       }}
     />
@@ -528,7 +530,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
         onClose={() => {
           setShowPassengerSummary(false);
           setShowButton(false);
-          setShowReasonField(true);
+          setShowReasonField(false);
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />

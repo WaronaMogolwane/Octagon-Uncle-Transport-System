@@ -34,6 +34,7 @@ import {
 import * as yup from 'yup';
 import {CustomButton1} from '../../Components/Buttons';
 import {
+  CheckDuplicateEmail,
   GetUser,
   UpdateUserEmail,
   UpdateUserPassword,
@@ -86,34 +87,31 @@ const EditUserAccountScreen = ({navigation}: any) => {
   };
 
   const SendOtp = async () => {
-    await emailOtp(
-      emailFormik.values.email.trim(),
-      (error: any, result: any) => {
-        if (error) {
-          console.error(error);
-        } else {
-          console.log(result.data);
-          ShowEmailSentToast();
-          setShowEmailModal(false);
-          setShowEmailVerificationModal(true);
-        }
-      },
-    );
+    CheckDuplicateEmail(emailFormik.values.email.trim()).then((result: any) => {
+      if (result[0].result == true) {
+        emailOtp(emailFormik.values.email.trim(), (error: any, result: any) => {
+          if (error) {
+            console.error(error);
+          } else {
+            ShowEmailSentToast();
+            setShowEmailModal(false);
+            setShowEmailVerificationModal(true);
+          }
+        });
+      } else if (result[0].result == false) {
+        ShowDuplicateEmailToast();
+      }
+    });
   };
 
   const UpdateEmail = async () => {
-    UpdateUserEmail(userId, emailFormik.values.email, name).then(
+    await UpdateUserEmail(userId, emailFormik.values.email, name).then(
       (response: any) => {
         if (response[1] == 200) {
           ShowSuccessToast('Email');
           passwordFormik.resetForm();
           setRefreshData(!refreshData);
-        } else if (
-          response[2] == 'AxiosError: Request failed with status code 499'
-        ) {
-          ShowDuplicateEmailToast();
-        }
-        {
+        } else {
           ShowFaliureToast('Email');
         }
       },
@@ -231,6 +229,29 @@ const EditUserAccountScreen = ({navigation}: any) => {
     });
   };
 
+  // const VerifyOtp = async () => {
+  //   verifyOtp(
+  //     emailFormik.values.otp.toString().trim(),
+  //     emailFormik.values.email.toString().trim(),
+  //     (error: any, result: any) => {
+  //       //console.log(result.status);
+  //       if (error) {
+  //         console.warn(error);
+  //         ShowFaliureToast('Email');
+  //       } else {
+  //         if (result[0] == undefined) {
+  //           ShowFaliureToast('Email');
+  //         } else {
+  //           setIsEmailVerified(true);
+  //           setShowEmailVerificationModal(false);
+  //           emailFormik.resetForm();
+  //           UpdateEmail();
+  //         }
+  //       }
+  //     },
+  //   );
+  // };
+
   const VerifyOtp = async () => {
     verifyOtp(
       emailFormik.values.otp.trim(),
@@ -238,15 +259,11 @@ const EditUserAccountScreen = ({navigation}: any) => {
       (error: any, result: any) => {
         if (error) {
           console.warn(error);
-          ShowFaliureToast('Email');
         } else {
-          if (result[0] == undefined) {
-            ShowFaliureToast('Email');
-          } else {
-            setIsEmailVerified(true);
-            setShowEmailVerificationModal(false);
-            UpdateEmail();
-          }
+          setIsEmailVerified(true);
+          setShowEmailVerificationModal(false);
+          emailFormik.resetForm();
+          UpdateEmail();
         }
       },
     );
@@ -270,7 +287,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
           </ModalHeader>
           <ModalBody>
             <View>
-              <Text>Please enter your new email adddress below</Text>
+              <Text>Please enter your new email address below</Text>
             </View>
             <View>
               <CustomFormControlInputEmail
@@ -280,6 +297,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
                 type="text"
                 value={emailFormik.values?.email}
                 onChangeText={emailFormik.handleChange('email')}
+                errorText={emailFormik?.errors?.email}
                 isRequired={false}
                 onBlur={emailFormik.handleBlur('email')}
               />

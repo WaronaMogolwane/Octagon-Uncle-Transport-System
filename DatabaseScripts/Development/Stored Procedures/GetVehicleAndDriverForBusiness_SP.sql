@@ -14,12 +14,12 @@ SELECT
     ud.LastName
 FROM
     Vehicle v
-        LEFT JOIN
+        INNER JOIN
     DriverVehicleLinking dvl ON dvl.VehicleId = v.VehicleId
         AND dvl.IsActive = 1
-        LEFT JOIN
+        INNER JOIN
     UserDetail ud ON ud.UserId = dvl.DriverId
-        LEFT JOIN
+        INNER JOIN
     User u ON u.UserId = dvl.DriverId
         AND u.ActiveStatus = 1
 WHERE

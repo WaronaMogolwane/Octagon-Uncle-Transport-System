@@ -1,4 +1,4 @@
-import {VStack} from '@gluestack-ui/themed';
+import {Button, ButtonText, VStack} from '@gluestack-ui/themed';
 import {View} from 'react-native';
 import {AddBusinessDetailFormProps} from '../../Models/FormControlProps';
 import {CustomButton1} from '../Buttons';
@@ -107,10 +107,13 @@ export function BusinessDetailForm(props: AddBusinessDetailFormProps) {
         />
 
         {props.showButton ? (
-          <CustomButton1
-            title={props.buttonText}
-            onPress={props.submitBusinessDetail}
-          />
+          <Button
+            size="sm"
+            action="positive"
+            borderWidth="$0"
+            onPress={props.submitBusinessDetail}>
+            <ButtonText>{props.buttonText}</ButtonText>
+          </Button>
         ) : null}
       </VStack>
     </View>

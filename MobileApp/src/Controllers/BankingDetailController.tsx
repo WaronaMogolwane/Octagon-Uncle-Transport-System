@@ -1,6 +1,8 @@
 import {
   AddBankingDetailToDB,
+  GetBankListFromDB,
   UpdateBankingDetailToDB,
+  ValidateAccountInDB,
 } from '../Data/BankingDetailDAL';
 import {BankingDetail} from '../Models/BankingDetail';
 
@@ -12,10 +14,10 @@ export const UpdateBusinessDetail = async (bankingDetail: BankingDetail) => {
   return await UpdateBankingDetailToDB(bankingDetail);
 };
 
-// export const GetBusinessDetail = async (businessId: string) => {
-//   return await GetBusinessDetailFromDB(businessId);
-// };
+export const GetBanksList = async () => {
+  return await GetBankListFromDB();
+};
 
-// export const GetBusinessDetailForParent = async (businessId: string) => {
-//   return await GetBusinessDetailForParentFromDB(businessId);
-// };
+export const ValidateAccount = async (accountDetails: any) => {
+  return await ValidateAccountInDB(accountDetails);
+};

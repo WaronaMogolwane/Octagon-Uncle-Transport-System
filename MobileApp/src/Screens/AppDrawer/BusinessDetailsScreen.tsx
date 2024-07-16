@@ -1,5 +1,5 @@
 import {GestureResponderEvent, ScrollView, View} from 'react-native';
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Button,
   ButtonText,
@@ -23,7 +23,10 @@ import {BusinessDetail} from '../../Models/BusinessDetail';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {
+  AssignPassengerScreenStyles,
+  ThemeStyles,
+} from '../../Stylesheets/GlobalStyles';
 import {BusinessDetailForm} from '../../Components/Forms/BusinessDetailForm';
 import {AddBusinessDetail} from '../../Controllers/BusinessDetailController';
 import {
@@ -31,9 +34,14 @@ import {
   CustomFormControlInputNumber,
 } from '../../Components/CustomFormInput';
 import {BankingDetail} from '../../Models/BankingDetail';
-import {AddBankingDetail} from '../../Controllers/BankingDetailController';
+import {
+  AddBankingDetail,
+  GetBanksList,
+  ValidateAccount,
+} from '../../Controllers/BankingDetailController';
 import {Auth} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
+import {Dropdown} from 'react-native-element-dropdown';
 
 const BusinessDetailsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -43,11 +51,61 @@ const BusinessDetailsScreen = ({navigation}: any) => {
   const ref = React.useRef(null);
 
   const [showModal, setShowModal] = useState(false);
+  const [isFocus, setIsFocus] = useState(false);
+  const [isFocusAccount, setIsFocusAcccount] = useState(false);
+  const [isFocusDocument, setIsFocusDocument] = useState(false);
+  const [bankName, setBankName] = useState('');
+  const [bankCode, setBankCode] = useState('');
+  const [bankId, setBankId] = useState('');
+  const [accountType, setAccountType] = useState('');
+  const [documentType, setDocumentType] = useState('');
+  const [documentLabel, setDocumentLabel] = useState('');
 
-  // const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  const businessId = auth.GetBusinessId();
+  const [bankList, setBankList] = useState(['']);
 
-  const businessDetailHelper = async (values: any) => {
+  useEffect(() => {
+    BankList();
+  }, []);
+
+  const businessId = auth.GetUserId();
+
+  const accountData = [
+    {accountType: 'Personal', value: 'personal'},
+    {accountType: 'Business', value: 'business'},
+  ];
+
+  const documentData = [
+    {document: 'Identiy Card', value: 'identityNumber'},
+    {document: 'Passport', value: 'passportNumber'},
+    {document: 'Business Rgistration', value: 'businessRegistrationNumber '},
+  ];
+
+  const BankList = async () => {
+    await GetBanksList().then((result: any) => {
+      if (result.length != 0) {
+        setBankList(result);
+      } else {
+        //somthing went wrong
+        toast.show({
+          placement: 'top',
+          render: ({id}) => {
+            const toastId = 'toast-' + id;
+            return (
+              <Toast nativeID={toastId} action="error" variant="outline">
+                <VStack space="xs">
+                  <ToastTitle>
+                    Please check your internet connection and try again.
+                  </ToastTitle>
+                </VStack>
+              </Toast>
+            );
+          },
+        });
+      }
+    });
+  };
+
+  const BusinessDetailHelper = async (values: any) => {
     let businessDetail = new BusinessDetail(
       '',
       values.businessName.trim(),
@@ -64,11 +122,7 @@ const BusinessDetailsScreen = ({navigation}: any) => {
     await AddBusinessDetail(businessDetail)
       .then((r: any) => {
         if (r == 200) {
-          //On success this code runs
-          formik.resetForm();
-          //navigation.push('Home');
-          successToast();
-          navigation.navigate('Home');
+          setShowModal(true);
         } else {
           //On faluire this code runs
           toast.show({
@@ -93,7 +147,7 @@ const BusinessDetailsScreen = ({navigation}: any) => {
       .catch(error => console.error(error));
   };
 
-  const successToast = () => {
+  const SuccessToast = () => {
     toast.show({
       placement: 'top',
       render: ({id}) => {
@@ -102,6 +156,24 @@ const BusinessDetailsScreen = ({navigation}: any) => {
           <Toast nativeID={toastId} action="success" variant="outline">
             <VStack space="xs">
               <ToastTitle>Details saved successfully</ToastTitle>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const FaliureToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="error" variant="outline">
+            <VStack space="xs">
+              <ToastTitle>
+                Details were not save successfully. Please try again.
+              </ToastTitle>
             </VStack>
           </Toast>
         );
@@ -131,17 +203,40 @@ const BusinessDetailsScreen = ({navigation}: any) => {
               <Text>Please enter you banking details below.</Text>
             </View>
             <View>
-              <CustomFormControlInput
-                labelText="Bank Name"
-                errorText={bankingFormik?.errors?.bankName}
-                isInvalid={!!bankingFormik.errors.bankName}
-                isDisabled={false}
-                type="text"
-                value={bankingFormik.values?.bankName}
-                onChangeText={bankingFormik.handleChange('bankName')}
-                isRequired={false}
-                onBlur={bankingFormik.handleBlur('bankName')}
-              />
+              <View style={{width: '90%', paddingBottom: 20}}>
+                <Dropdown
+                  style={[
+                    AssignPassengerScreenStyles.dropdown,
+                    isFocus && {borderColor: 'red'},
+                  ]}
+                  placeholderStyle={
+                    AssignPassengerScreenStyles.placeholderStyle
+                  }
+                  selectedTextStyle={
+                    AssignPassengerScreenStyles.selectedTextStyle
+                  }
+                  inputSearchStyle={
+                    AssignPassengerScreenStyles.inputSearchStyle
+                  }
+                  iconStyle={AssignPassengerScreenStyles.iconStyle}
+                  data={bankList}
+                  search={true}
+                  maxHeight={300}
+                  labelField="bankName"
+                  valueField="bankName"
+                  placeholder={!isFocus ? 'Select bank name' : 'tap here...'}
+                  searchPlaceholder="Search..."
+                  value={bankList}
+                  onFocus={() => setIsFocus(true)}
+                  onBlur={() => setIsFocus(false)}
+                  onChange={(item: any) => {
+                    setBankName(item.bankName);
+                    setBankId(item.bankId);
+                    setBankCode(item.bankCode);
+                    setIsFocus(false);
+                  }}
+                />
+              </View>
             </View>
             <View>
               <CustomFormControlInputNumber
@@ -155,6 +250,40 @@ const BusinessDetailsScreen = ({navigation}: any) => {
                 isRequired={false}
                 onBlur={bankingFormik.handleBlur('branchNumber')}
               />
+
+              <View style={{width: '90%', paddingBottom: 20}}>
+                <Dropdown
+                  style={[
+                    AssignPassengerScreenStyles.dropdown,
+                    isFocusAccount && {borderColor: 'red'},
+                  ]}
+                  placeholderStyle={
+                    AssignPassengerScreenStyles.placeholderStyle
+                  }
+                  selectedTextStyle={
+                    AssignPassengerScreenStyles.selectedTextStyle
+                  }
+                  inputSearchStyle={
+                    AssignPassengerScreenStyles.inputSearchStyle
+                  }
+                  iconStyle={AssignPassengerScreenStyles.iconStyle}
+                  data={accountData}
+                  search={false}
+                  maxHeight={300}
+                  labelField="accountType"
+                  valueField="value"
+                  placeholder={
+                    !isFocusAccount ? 'Select account type' : 'tap here...'
+                  }
+                  value={accountType}
+                  onFocus={() => setIsFocusAcccount(true)}
+                  onBlur={() => setIsFocusAcccount(false)}
+                  onChange={(item: any) => {
+                    setAccountType(item.value);
+                    setIsFocusAcccount(false);
+                  }}
+                />
+              </View>
               <CustomFormControlInput
                 labelText="Account Name"
                 errorText={bankingFormik?.errors?.accountName}
@@ -177,6 +306,57 @@ const BusinessDetailsScreen = ({navigation}: any) => {
                 isRequired={false}
                 onBlur={bankingFormik.handleBlur('accountNumber')}
               />
+              <View>
+                <View style={{width: '90%', paddingBottom: 20}}>
+                  <Dropdown
+                    style={[
+                      AssignPassengerScreenStyles.dropdown,
+                      isFocusDocument && {borderColor: 'red'},
+                    ]}
+                    placeholderStyle={
+                      AssignPassengerScreenStyles.placeholderStyle
+                    }
+                    selectedTextStyle={
+                      AssignPassengerScreenStyles.selectedTextStyle
+                    }
+                    inputSearchStyle={
+                      AssignPassengerScreenStyles.inputSearchStyle
+                    }
+                    iconStyle={AssignPassengerScreenStyles.iconStyle}
+                    data={documentData}
+                    search={true}
+                    maxHeight={300}
+                    labelField="document"
+                    valueField="value"
+                    placeholder={
+                      !isFocusDocument ? 'Select document type' : 'tap here...'
+                    }
+                    searchPlaceholder="Search..."
+                    value={documentType}
+                    onFocus={() => setIsFocusDocument(true)}
+                    onBlur={() => setIsFocusDocument(false)}
+                    onChange={(item: any) => {
+                      setDocumentType(item.value);
+                      setDocumentLabel(item.document);
+                      setIsFocusDocument(false);
+                    }}
+                  />
+                </View>
+              </View>
+
+              <CustomFormControlInput
+                labelText={`${
+                  documentLabel == '' ? 'Document' : documentLabel
+                } Number`}
+                errorText={bankingFormik?.errors?.documentNumber}
+                isInvalid={!!bankingFormik.errors.documentNumber}
+                isDisabled={false}
+                type="text"
+                value={bankingFormik.values?.documentNumber}
+                onChangeText={bankingFormik.handleChange('documentNumber')}
+                isRequired={false}
+                onBlur={bankingFormik.handleBlur('documentNumber')}
+              />
             </View>
             <View>
               <Button
@@ -184,7 +364,38 @@ const BusinessDetailsScreen = ({navigation}: any) => {
                 action="positive"
                 borderWidth="$0"
                 onPress={() => {
-                  bankingFormik.handleSubmit();
+                  if (bankName != '') {
+                    if (accountType != '') {
+                      if (documentType != '') {
+                        bankingFormik.handleSubmit();
+                      } else {
+                        setIsFocusDocument(true);
+                      }
+                    } else {
+                      setIsFocusAcccount(true);
+                    }
+                  } else {
+                    setIsFocus(true);
+
+                    toast.show({
+                      placement: 'top',
+                      render: ({id}) => {
+                        const toastId = 'toast-' + id;
+                        return (
+                          <Toast
+                            nativeID={toastId}
+                            action="attention"
+                            variant="outline">
+                            <VStack space="xs">
+                              <ToastTitle>
+                                Please select a bank to proceed
+                              </ToastTitle>
+                            </VStack>
+                          </Toast>
+                        );
+                      },
+                    });
+                  }
                 }}>
                 <ButtonText>Submit</ButtonText>
               </Button>
@@ -201,17 +412,57 @@ const BusinessDetailsScreen = ({navigation}: any) => {
       values.branchNumber.trim(),
       values.accountName.trim(),
       values.accountNumber.trim(),
-      values.businessId,
+      businessId,
+      bankId,
+      bankCode,
     );
 
-    console.log(bankingDetail);
+    let accountDetails = {
+      bank_code: bankCode,
+      country_code: 'ZA',
+      account_number: values.accountNumber.trim(),
+      account_name: values.accountName.trim(),
+      account_type: accountType,
+      document_type: documentType,
+      document_number: values.documentNumber.trim(),
+    };
 
-    await AddBankingDetail(bankingDetail)
+    ValidateAccount(accountDetails)
       .then((response: any) => {
-        if (response == 200) {
-          console.log('Submit');
-        } else {
-          console.log('It didnt work');
+        if (response == 'true') {
+          AddBankingDetail(bankingDetail)
+            .then((response: any) => {
+              if (response == 200) {
+                //On success this code runs
+                formik.resetForm();
+                setShowModal(false);
+                SuccessToast();
+                navigation.navigate('Home');
+              } else {
+                FaliureToast();
+              }
+            })
+            .catch((error: any) => {
+              console.log(error);
+            });
+        } else if (response == 'false') {
+          toast.show({
+            placement: 'top',
+            render: ({id}) => {
+              const toastId = 'toast-' + id;
+              return (
+                <Toast nativeID={toastId} action="error" variant="outline">
+                  <VStack space="xs">
+                    <ToastTitle>Account validation unsuccessful</ToastTitle>
+                    <ToastDescription>
+                      Your account was not validated successfully, please check
+                      the details and try again.
+                    </ToastDescription>
+                  </VStack>
+                </Toast>
+              );
+            },
+          });
         }
       })
       .catch((error: any) => {
@@ -220,30 +471,30 @@ const BusinessDetailsScreen = ({navigation}: any) => {
   };
 
   const bankingDetailSchema = yup.object().shape({
-    // bankName: yup
-    //   .string()
-    //   .min(2, 'Business name too Short!')
-    //   .max(50, 'Business name too Long!')
-    //   .required(),
-    // branchNumber: yup
-    //   .string()
-    //   .matches(
-    //     /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
-    //     'not valid',
-    //   )
-    //   .min(10, 'Business phone number should be 10 digits')
-    //   .max(10, 'Business phone number should be 10 digits')
-    //   .required(),
-    // accountName: yup
-    //   .string()
-    //   .min(2, 'Address too Short!')
-    //   .max(100, 'Address too Long!')
-    //   .required(),
-    // accountNumber: yup
-    //   .string()
-    //   .min(2, 'Too Short!')
-    //   .max(100, 'Too Long!')
-    //   .required(),
+    branchNumber: yup
+      .string()
+      .matches(
+        /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
+        'not valid',
+      )
+      .min(5, 'Branch number should be more than 5 digits')
+      .max(10, 'Branch number should not be more than 10 digits')
+      .required('is required'),
+    accountName: yup
+      .string()
+      .min(2, 'Account name too short!')
+      .max(100, 'Account name too long')
+      .required('is required'),
+    accountNumber: yup
+      .string()
+      .min(5, 'Account number too short')
+      .max(20, 'Account number too long!')
+      .required('is required'),
+    documentNumber: yup
+      .string()
+      .min(2, 'Document number too short!')
+      .max(20, 'Document number too long!')
+      .required('is required'),
   });
 
   const bankingDetailInitialValues = {
@@ -251,6 +502,7 @@ const BusinessDetailsScreen = ({navigation}: any) => {
     branchNumber: '',
     accountName: '',
     accountNumber: '',
+    documentNumber: '',
   };
 
   const businessDetailSchema = yup.object().shape({
@@ -279,7 +531,11 @@ const BusinessDetailsScreen = ({navigation}: any) => {
       .min(2, 'Suburb too Short!')
       .max(50, 'Suburb too  Long!')
       .required(),
-    city: yup.string().min(2, 'City too Short!').max(50, 'City too Long!'),
+    city: yup
+      .string()
+      .min(2, 'City too Short!')
+      .max(50, 'City too Long!')
+      .required(),
     province: yup
       .string()
       .min(2, 'Province too Short!')
@@ -293,11 +549,6 @@ const BusinessDetailsScreen = ({navigation}: any) => {
       .min(4, 'Postal code too Short!')
       .max(4, 'Postal code too Long!')
       .required(),
-    // postalcode: yup
-    //   .string()
-    //   .min(4, 'Postal code too Short!')
-    //   .max(4, 'Postal code too Long!')
-    //   .required('Required'),
   });
 
   const businessDetailsInitialValues = {
@@ -325,7 +576,7 @@ const BusinessDetailsScreen = ({navigation}: any) => {
     validationSchema: businessDetailSchema,
 
     onSubmit: (values, {resetForm}) => {
-      businessDetailHelper(values);
+      BusinessDetailHelper(values);
     },
   });
 

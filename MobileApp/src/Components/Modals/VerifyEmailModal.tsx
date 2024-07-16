@@ -1,6 +1,9 @@
 import {GestureResponderEvent, View} from 'react-native';
 import React, {useState} from 'react';
-import {CustomFormControlInput} from '../../Components/CustomFormInput';
+import {
+  CustomFormControlInput,
+  CustomFormControlInputNumber,
+} from '../../Components/CustomFormInput';
 import {CustomButton1} from '../../Components/Buttons';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
@@ -39,7 +42,7 @@ const VerifyEmailModal = (props: VerifyOtpModalProps) => {
           </ModalHeader>
           <ModalBody>
             <Text>Enter the OTP sent to {props.ToEmailAddress}</Text>
-            <CustomFormControlInput
+            <CustomFormControlInputNumber
               labelText="OTP"
               placeHolder="Enter the code here"
               isInvalid={props.otpIsInvalid}

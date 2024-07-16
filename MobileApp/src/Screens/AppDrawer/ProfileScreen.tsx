@@ -54,34 +54,8 @@ const ProfileScreen = ({navigation}: any) => {
 
   const ref = React.useRef(null);
 
-  const data = [
-    {
-      id: 1,
-      label: 'User Account',
-      screen: 'Edit User Account',
-      icon: 'AddIcon',
-    },
-    {
-      id: 2,
-      label: 'Edit User Details',
-      screen: 'Edit User Details',
-      icon: 'ArrowLeftIcon',
-    },
-    {
-      id: 3,
-      label: 'Payment Details',
-      screen: 'Edit Payment Details',
-      icon: 'ArrowRightIcon',
-    },
-    {
-      id: 4,
-      label: 'Business Details',
-      screen: 'Edit Business Details',
-      icon: 'AtSignIcon',
-    },
-  ];
-
   const userId = auth.GetUserId();
+  const role: number = Number(auth.GetUserRole());
 
   const user = {
     avatar: 'https://www.bootdey.com/img/Content/avatar/avatar1.png',
@@ -236,24 +210,52 @@ const ProfileScreen = ({navigation}: any) => {
               <Text style={styles.name}>{firstName + ' ' + lastName}</Text>
             </View>
           </View>
-          <View style={styles.body}>
-            <FlatList
-              data={data}
-              renderItem={({item}) => {
-                return (
-                  <TouchableOpacity
-                    onPress={() => {
-                      navigation.navigate(item.screen);
-                    }}>
-                    <View style={styles.box}>
-                      <View>{iconSelector(item.id)}</View>
 
-                      <Text style={styles.username}>{item.label}</Text>
-                    </View>
-                  </TouchableOpacity>
-                );
-              }}
-            />
+          <View style={styles.body}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Edit User Account');
+              }}>
+              <View style={styles.box}>
+                <View>{iconSelector(1)}</View>
+
+                <Text style={styles.username}>Account</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Edit User Details');
+              }}>
+              <View style={styles.box}>
+                <View>{iconSelector(2)}</View>
+
+                <Text style={styles.username}>Personal</Text>
+              </View>
+            </TouchableOpacity>
+            {role == 2 ? (
+              <TouchableOpacity
+                onPress={() => {
+                  //navigation.navigate('Edit Payment Details');
+                }}>
+                <View style={styles.box}>
+                  <View>{iconSelector(3)}</View>
+
+                  <Text style={styles.username}>Payments</Text>
+                </View>
+              </TouchableOpacity>
+            ) : null}
+
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Edit Business Details');
+              }}>
+              <View style={styles.box}>
+                <View>{iconSelector(4)}</View>
+
+                <Text style={styles.username}>Business</Text>
+              </View>
+            </TouchableOpacity>
           </View>
           <View>{SignOutModal()}</View>
           <View

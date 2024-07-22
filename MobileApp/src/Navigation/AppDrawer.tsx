@@ -86,12 +86,20 @@ const AppDrawer = ({navigation}: any) => {
             <View>
               <View style={styles.coverPhoto}></View>
               <View style={styles.avatarContainer}>
-                <Image
-                  alt="profile photo"
-                  source={{uri: user.avatar}}
-                  style={styles.avatar}
-                />
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('Profile');
+                  }}>
+                  <Image
+                    alt="profile photo"
+                    source={{uri: user.avatar}}
+                    style={styles.avatar}
+                  />
+                </TouchableOpacity>
                 <Text style={styles.name}>{fullname}</Text>
+                <Text style={{fontSize: 16, color: '#111'}}>
+                  {RoleLabel(role)}
+                </Text>
               </View>
             </View>
             {/* <View
@@ -289,6 +297,7 @@ const AppDrawer = ({navigation}: any) => {
         name="Business Detail"
         component={BusinessDetailsScreen}
         options={{
+          drawerItemStyle: {display: 'none'},
           drawerIcon: () => (
             <Aperture
               size={iconSize}
@@ -367,7 +376,7 @@ const styles = StyleSheet.create({
   },
   coverPhoto: {
     width: '100%',
-    height: 130,
+    height: 120,
     resizeMode: 'cover',
     backgroundColor: '#808080',
   },

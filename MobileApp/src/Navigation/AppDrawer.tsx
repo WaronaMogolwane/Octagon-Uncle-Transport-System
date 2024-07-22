@@ -83,7 +83,7 @@ const AppDrawer = ({navigation}: any) => {
       drawerContent={(props: any) => {
         return (
           <SafeAreaView>
-            {/* <View>
+            <View>
               <View style={styles.coverPhoto}></View>
               <View style={styles.avatarContainer}>
                 <Image
@@ -93,8 +93,8 @@ const AppDrawer = ({navigation}: any) => {
                 />
                 <Text style={styles.name}>{fullname}</Text>
               </View>
-            </View> */}
-            <View
+            </View>
+            {/* <View
               style={{
                 height: 200,
                 width: '100%',
@@ -106,10 +106,7 @@ const AppDrawer = ({navigation}: any) => {
                 onPress={() => {
                   navigation.navigate('Profile');
                 }}>
-                <Image
-                  source={{uri: user.avatar}}
-                  style={{height: 130, width: 130, borderRadius: 60}}
-                />
+                <Image source={{uri: user.avatar}} style={styles.avatar} />
               </TouchableOpacity>
               <Text
                 style={{
@@ -123,7 +120,7 @@ const AppDrawer = ({navigation}: any) => {
               <Text style={{fontSize: 16, color: '#111'}}>
                 {RoleLabel(role)}
               </Text>
-            </View>
+            </View> */}
             <DrawerItemList {...props} />
           </SafeAreaView>
         );
@@ -379,8 +376,8 @@ const styles = StyleSheet.create({
     marginTop: -75,
   },
   avatar: {
-    width: 150,
-    height: 150,
+    width: 130,
+    height: 130,
     borderRadius: 75,
     borderWidth: 5,
     borderColor: 'white',

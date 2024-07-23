@@ -84,7 +84,13 @@ const AppDrawer = ({navigation}: any) => {
         return (
           <SafeAreaView>
             <View>
-              <View style={styles.coverPhoto}></View>
+              <View>
+                <Image
+                  style={styles.coverPhoto}
+                  alt="profile photo"
+                  source={require('../Images/background_image.jpg')}
+                />
+              </View>
               <View style={styles.avatarContainer}>
                 <TouchableOpacity
                   onPress={() => {
@@ -351,7 +357,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 120,
     resizeMode: 'cover',
-    backgroundColor: '#808080',
   },
   avatarContainer: {
     alignItems: 'center',

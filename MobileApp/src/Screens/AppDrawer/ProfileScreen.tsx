@@ -200,7 +200,13 @@ const ProfileScreen = ({navigation}: any) => {
       <ScrollView>
         <View>
           <View>
-            <View style={styles.coverPhoto}></View>
+            <View>
+              <Image
+                style={styles.coverPhoto}
+                alt="profile photo"
+                source={require('../../Images/background_image.jpg')}
+              />
+            </View>
             <View style={styles.avatarContainer}>
               <Image
                 alt="profile photo"
@@ -303,26 +309,14 @@ const styles = StyleSheet.create({
     padding: 30,
     alignItems: 'center',
   },
-  // avatar: {
-  //   width: 130,
-  //   height: 130,
-  //   borderRadius: 63,
-  //   borderWidth: 4,
-  //   borderColor: '#FFFFFF',
-  //   marginBottom: 10,
-  // },
+
   image: {
     width: 40,
     height: 40,
   },
-  // name: {
-  //   fontSize: 22,
-  //   color: '#FFFFFF',
-  //   fontWeight: '600',
-  // },
+
   body: {
     padding: 30,
-    // backgroundColor: '#E6E6FA',
   },
   box: {
     padding: 5,
@@ -352,7 +346,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 130,
     resizeMode: 'cover',
-    backgroundColor: '#808080',
   },
   avatarContainer: {
     alignItems: 'center',

@@ -97,38 +97,11 @@ const AppDrawer = ({navigation}: any) => {
                   />
                 </TouchableOpacity>
                 <Text style={styles.name}>{fullname}</Text>
-                <Text style={{fontSize: 16, color: '#111'}}>
+                <Text style={{fontSize: 16, color: '#111', paddingBottom: 10}}>
                   {RoleLabel(role)}
                 </Text>
               </View>
             </View>
-            {/* <View
-              style={{
-                height: 200,
-                width: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderBottomColor: '#f4f4f4',
-              }}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('Profile');
-                }}>
-                <Image source={{uri: user.avatar}} style={styles.avatar} />
-              </TouchableOpacity>
-              <Text
-                style={{
-                  fontSize: 22,
-                  marginVertical: 6,
-                  fontWeight: 'bold',
-                  color: '#111',
-                }}>
-                {fullname}
-              </Text>
-              <Text style={{fontSize: 16, color: '#111'}}>
-                {RoleLabel(role)}
-              </Text>
-            </View> */}
             <DrawerItemList {...props} />
           </SafeAreaView>
         );

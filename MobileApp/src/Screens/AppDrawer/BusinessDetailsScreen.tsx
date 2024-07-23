@@ -306,56 +306,19 @@ const BusinessDetailsScreen = ({navigation}: any) => {
                 isRequired={false}
                 onBlur={bankingFormik.handleBlur('accountNumber')}
               />
-              <View>
-                <View style={{width: '90%', paddingBottom: 20}}>
-                  <Dropdown
-                    style={[
-                      AssignPassengerScreenStyles.dropdown,
-                      isFocusDocument && {borderColor: 'red'},
-                    ]}
-                    placeholderStyle={
-                      AssignPassengerScreenStyles.placeholderStyle
-                    }
-                    selectedTextStyle={
-                      AssignPassengerScreenStyles.selectedTextStyle
-                    }
-                    inputSearchStyle={
-                      AssignPassengerScreenStyles.inputSearchStyle
-                    }
-                    iconStyle={AssignPassengerScreenStyles.iconStyle}
-                    data={documentData}
-                    search={true}
-                    maxHeight={300}
-                    labelField="document"
-                    valueField="value"
-                    placeholder={
-                      !isFocusDocument ? 'Select document type' : 'tap here...'
-                    }
-                    searchPlaceholder="Search..."
-                    value={documentType}
-                    onFocus={() => setIsFocusDocument(true)}
-                    onBlur={() => setIsFocusDocument(false)}
-                    onChange={(item: any) => {
-                      setDocumentType(item.value);
-                      setDocumentLabel(item.document);
-                      setIsFocusDocument(false);
-                    }}
-                  />
-                </View>
-              </View>
 
-              <CustomFormControlInput
-                labelText={`${
-                  documentLabel == '' ? 'Document' : documentLabel
-                } Number`}
-                errorText={bankingFormik?.errors?.documentNumber}
-                isInvalid={!!bankingFormik.errors.documentNumber}
+              <CustomFormControlInputNumber
+                labelText="Comfirm Account Number"
+                errorText={bankingFormik?.errors?.comfirmAccountNumber}
+                isInvalid={!!bankingFormik.errors.comfirmAccountNumber}
                 isDisabled={false}
                 type="text"
-                value={bankingFormik.values?.documentNumber}
-                onChangeText={bankingFormik.handleChange('documentNumber')}
+                value={bankingFormik.values?.comfirmAccountNumber}
+                onChangeText={bankingFormik.handleChange(
+                  'comfirmAccountNumber',
+                )}
                 isRequired={false}
-                onBlur={bankingFormik.handleBlur('documentNumber')}
+                onBlur={bankingFormik.handleBlur('comfirmAccountNumber')}
               />
             </View>
             <View>
@@ -365,15 +328,7 @@ const BusinessDetailsScreen = ({navigation}: any) => {
                 borderWidth="$0"
                 onPress={() => {
                   if (bankName != '') {
-                    if (accountType != '') {
-                      if (documentType != '') {
-                        bankingFormik.handleSubmit();
-                      } else {
-                        setIsFocusDocument(true);
-                      }
-                    } else {
-                      setIsFocusAcccount(true);
-                    }
+                    bankingFormik.handleSubmit();
                   } else {
                     setIsFocus(true);
 
@@ -417,52 +372,16 @@ const BusinessDetailsScreen = ({navigation}: any) => {
       bankCode,
     );
 
-    let accountDetails = {
-      bank_code: bankCode,
-      country_code: 'ZA',
-      account_number: values.accountNumber.trim(),
-      account_name: values.accountName.trim(),
-      account_type: accountType,
-      document_type: documentType,
-      document_number: values.documentNumber.trim(),
-    };
-
-    ValidateAccount(accountDetails)
+    await AddBankingDetail(bankingDetail)
       .then((response: any) => {
-        if (response == 'true') {
-          AddBankingDetail(bankingDetail)
-            .then((response: any) => {
-              if (response == 200) {
-                //On success this code runs
-                formik.resetForm();
-                setShowModal(false);
-                SuccessToast();
-                navigation.navigate('Home');
-              } else {
-                FaliureToast();
-              }
-            })
-            .catch((error: any) => {
-              console.log(error);
-            });
-        } else if (response == 'false') {
-          toast.show({
-            placement: 'top',
-            render: ({id}) => {
-              const toastId = 'toast-' + id;
-              return (
-                <Toast nativeID={toastId} action="error" variant="outline">
-                  <VStack space="xs">
-                    <ToastTitle>Account validation unsuccessful</ToastTitle>
-                    <ToastDescription>
-                      Your account was not validated successfully, please check
-                      the details and try again.
-                    </ToastDescription>
-                  </VStack>
-                </Toast>
-              );
-            },
-          });
+        if (response == 200) {
+          //On success this code runs
+          formik.resetForm();
+          setShowModal(false);
+          SuccessToast();
+          navigation.navigate('Home');
+        } else {
+          FaliureToast();
         }
       })
       .catch((error: any) => {
@@ -490,11 +409,12 @@ const BusinessDetailsScreen = ({navigation}: any) => {
       .min(5, 'Account number too short')
       .max(20, 'Account number too long!')
       .required('is required'),
-    documentNumber: yup
+    comfirmAccountNumber: yup
       .string()
-      .min(2, 'Document number too short!')
-      .max(20, 'Document number too long!')
-      .required('is required'),
+      .min(5, 'Account number too short')
+      .max(20, 'Account number too long!')
+      .required('is required')
+      .oneOf([yup.ref('accountNumber')], 'Account number must match'),
   });
 
   const bankingDetailInitialValues = {
@@ -502,7 +422,7 @@ const BusinessDetailsScreen = ({navigation}: any) => {
     branchNumber: '',
     accountName: '',
     accountNumber: '',
-    documentNumber: '',
+    comfirmAccountNumber: '',
   };
 
   const businessDetailSchema = yup.object().shape({

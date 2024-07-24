@@ -210,7 +210,8 @@ const ProfileScreen = ({navigation}: any) => {
             <View style={styles.avatarContainer}>
               <Image
                 alt="profile photo"
-                source={{uri: user.avatar}}
+                source={require('../../Images/default_avatar_image.jpg')}
+                // source={{uri: user.avatar}}
                 style={styles.avatar}
               />
               <Text style={styles.name}>{firstName + ' ' + lastName}</Text>
@@ -355,8 +356,6 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    borderWidth: 5,
-    borderColor: 'white',
   },
   name: {
     marginTop: 15,

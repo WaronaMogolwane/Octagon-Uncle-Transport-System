@@ -98,7 +98,7 @@ const AppDrawer = ({navigation}: any) => {
                   }}>
                   <Image
                     alt="profile photo"
-                    source={{uri: user.avatar}}
+                    source={require('../Images/default_avatar_image.jpg')}
                     style={styles.avatar}
                   />
                 </TouchableOpacity>
@@ -366,8 +366,6 @@ const styles = StyleSheet.create({
     width: 130,
     height: 130,
     borderRadius: 75,
-    borderWidth: 5,
-    borderColor: 'white',
   },
   name: {
     marginTop: 15,

@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Image,
   StyleSheet,
   Text,
@@ -30,6 +31,11 @@ import {
   ButtonText,
   TrashIcon,
   ButtonIcon,
+  Menu,
+  AddIcon,
+  MenuItem,
+  MenuItemLabel,
+  EditIcon,
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
 import {CustomButton1} from '../../Components/Buttons';
@@ -48,6 +54,11 @@ import {AuthContext} from '../../Services/AuthenticationService';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
 import {err} from 'react-native-svg/lib/typescript/xml';
 import {Auth} from '../../Classes/Auth';
+import {OpenCamera, OpenFilePicker} from '../../Services/CameraService';
+import {ImageOrVideo} from 'react-native-image-crop-picker';
+import {Camera} from 'lucide-react';
+import {Images} from 'lucide-react';
+import {Aperture} from 'lucide-react';
 
 const EditUserAccountScreen = ({navigation}: any) => {
   const {session, emailOtp, verifyOtp}: any = useContext(AuthContext);
@@ -57,18 +68,28 @@ const EditUserAccountScreen = ({navigation}: any) => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
 
+  const [profileImage, setProfileImage] = useState('');
+  const [captureImageAlertTitle, setCaptureImageAlertTitle] = useState(
+    'Successfully scanned',
+  );
+  const [confirmButtonTitle, setConfirmButtonTitle] = useState('Capture front');
+  const [selected, setSelected] = React.useState(new Set([]));
+
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showEmailVerificationModal, setShowEmailVerificationModal] =
     useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
+  const [IsLoading, setIsLoading] = useState(false);
 
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+
+  const storageUrl: string =
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
 
   const passwordExp: RegExp =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 
-  // const userId = 'ffe121bd-de71-4016-813b-50e70e7fa298';
   const userId = auth.GetUserId();
 
   const ref = React.useRef(null);
@@ -228,29 +249,6 @@ const EditUserAccountScreen = ({navigation}: any) => {
       },
     });
   };
-
-  // const VerifyOtp = async () => {
-  //   verifyOtp(
-  //     emailFormik.values.otp.toString().trim(),
-  //     emailFormik.values.email.toString().trim(),
-  //     (error: any, result: any) => {
-  //       //console.log(result.status);
-  //       if (error) {
-  //         console.warn(error);
-  //         ShowFaliureToast('Email');
-  //       } else {
-  //         if (result[0] == undefined) {
-  //           ShowFaliureToast('Email');
-  //         } else {
-  //           setIsEmailVerified(true);
-  //           setShowEmailVerificationModal(false);
-  //           emailFormik.resetForm();
-  //           UpdateEmail();
-  //         }
-  //       }
-  //     },
-  //   );
-  // };
 
   const VerifyOtp = async () => {
     verifyOtp(
@@ -421,6 +419,123 @@ const EditUserAccountScreen = ({navigation}: any) => {
     );
   };
 
+  async function GetFileBlob(url: string, callback: any) {
+    let data: Blob;
+    await fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        let reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = function (e) {
+          callback(e.target!.result.toString());
+        };
+      });
+  }
+
+  const CaptureImage = () => {
+    OpenCamera(false, (result: any, error: any) => {
+      if (error) {
+      } else {
+        const image: ImageOrVideo = result;
+        if (!profileImage) {
+          console.log(image.path);
+          setProfileImage(image.path);
+          GetFileBlob(image.path, async function (imageUrl: string) {
+            //setProfileImage(imageUrl);
+            setCaptureImageAlertTitle('Successfully scanned');
+            setConfirmButtonTitle('Capture rear');
+          });
+        }
+        // if (vehicleFrontImage && !vehicleRearImage) {
+        //   GetFileBlob(image.path, async function (imageUrl: string) {
+        //     setVehicleRearImage(imageUrl!);
+        //     let NewVehicle: Vehicle = route.params.NewVehicle;
+        //     NewVehicle.FrontImage = vehicleFrontImage;
+        //     NewVehicle.RearImage = vehicleRearImage;
+        //     setNewVehicle(NewVehicle!);
+        //     setShowCaptureImageAlert(false);
+        //     setShowNewVehicleDetailsModal(true);
+        //     navigation.setParams({NewVehicle: undefined});
+        //   });
+        // }
+      }
+    });
+  };
+
+  const OpenGallery = () => {
+    OpenFilePicker((result: any, error: any) => {
+      if (error) {
+      } else {
+        const image: ImageOrVideo = result;
+        if (!profileImage) {
+          GetFileBlob(image.path, async function (imageUrl: string) {
+            setProfileImage(imageUrl);
+            setCaptureImageAlertTitle('Successfully scanned');
+            setConfirmButtonTitle('Capture rear');
+          });
+        }
+        // if (vehicleFrontImage && !vehicleRearImage) {
+        //   GetFileBlob(image.path, async function (imageUrl: string) {
+        //     setVehicleRearImage(imageUrl!);
+        //     let NewVehicle: Vehicle = route.params.NewVehicle;
+        //     NewVehicle.FrontImage = vehicleFrontImage;
+        //     NewVehicle.RearImage = vehicleRearImage;
+        //     setNewVehicle(NewVehicle!);
+        //     setShowCaptureImageAlert(false);
+        //     setShowNewVehicleDetailsModal(true);
+        //     navigation.setParams({NewVehicle: undefined});
+        //   });
+        // }
+      }
+    });
+  };
+
+  const FabMenu = () => {
+    return (
+      <Menu
+        selectionMode="single"
+        selectedKeys={selected}
+        onSelectionChange={keys => {
+          const selectedMenuItem: any = keys;
+          if (selectedMenuItem.currentKey === 'Camera') {
+            setIsLoading(true);
+            // ScanLicenseDisc({IsReScan: false});
+            CaptureImage();
+            setIsLoading(false);
+          }
+          if (selectedMenuItem.currentKey === 'Gallery') {
+            setIsLoading(true);
+            // ScanLicenseDisc({IsReScan: false});
+            OpenGallery();
+            setIsLoading(false);
+          }
+        }}
+        closeOnSelect={true}
+        placement="bottom"
+        trigger={({...triggerProps}) => {
+          return (
+            <Fab
+              {...triggerProps}
+              style={{zIndex: 1}}
+              size="md"
+              placement="bottom right"
+              isHovered={false}
+              isDisabled={false}
+              isPressed={false}>
+              <FabIcon as={EditIcon} />
+            </Fab>
+          );
+        }}>
+        <MenuItem key="Camera" textValue="Camera">
+          <MenuItemLabel size="sm">Camera</MenuItemLabel>
+        </MenuItem>
+        <MenuItem key="Gallery" textValue="Gallery">
+          <MenuItemLabel size="sm">Gallery</MenuItemLabel>
+        </MenuItem>
+      </Menu>
+    );
+  };
+
   const emailInitialValues = {
     email: '',
     otp: '',
@@ -495,42 +610,36 @@ const EditUserAccountScreen = ({navigation}: any) => {
     },
   });
 
-  // const GoBackFab = () => {
-  //   return (
-  //     <Fab
-  //       onPress={navigation.navigate('Profile')}
-  //       size="sm"
-  //       placement="bottom right"
-  //       isHovered={false}
-  //       isDisabled={false}
-  //       isPressed={false}>
-  //       <FabIcon as={ArrowLeftIcon} mr="$1" />
-  //       <FabLabel>Back</FabLabel>
-  //     </Fab>
-  //   );
-  // };
-
   return (
     <View style={styles.container}>
+      {IsLoading ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" />
+          <Text>Saving</Text>
+        </View>
+      ) : null}
+
       <View>{EmailModal()}</View>
       <View>{EmailVerificationModal()}</View>
       <View>{ChangePasswordModal()}</View>
       <View style={styles.avatarContainer}>
         <Image
           style={styles.avatar}
-          source={{
-            uri: 'https://www.bootdey.com/img/Content/avatar/avatar3.png',
-          }}
+          source={require('../../Images/default_avatar_image.jpg')}
         />
-        <TouchableOpacity
-          style={styles.changeAvatarButton}
-          onPress={() => {
-            /* open image picker */
-          }}>
-          <Text style={styles.changeAvatarButtonText}>
-            Change Profile Picture
-          </Text>
-        </TouchableOpacity>
+        <Text></Text>
+        <FabMenu />
       </View>
       <View style={styles.form}>
         <Text style={styles.label}>Email</Text>
@@ -633,9 +742,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
   },
   changeAvatarButton: {
     marginTop: 10,

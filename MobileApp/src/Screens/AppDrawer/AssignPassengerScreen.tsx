@@ -40,6 +40,10 @@ import {
   useToast,
   ToastDescription,
   ScrollView,
+  FabIcon,
+  ArrowLeftIcon,
+  FabLabel,
+  Fab,
 } from '@gluestack-ui/themed';
 import {
   AddPassengerSchedule,
@@ -172,6 +176,22 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     setNewPassengerId('');
   };
 
+  const GoBackFab = () => {
+    return (
+      <Fab
+        onPress={() => {
+          navigation.navigate('Manage Trip');
+        }}
+        size="sm"
+        placement="bottom right"
+        isHovered={false}
+        isDisabled={false}
+        isPressed={false}>
+        <FabIcon as={ArrowLeftIcon} mr="$1" />
+        <FabLabel>Back</FabLabel>
+      </Fab>
+    );
+  };
   const renderItemComponentPassengers = (itemData: any) => (
     <PassengerCard
       passengerName={itemData.fullName}
@@ -594,6 +614,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
           <Text>Working</Text>
         </View>
       ) : null}
+      <View>{GoBackFab()}</View>
       <View>
         <View style={AssignPassengerScreenStyles.container}>
           {renderLabel()}

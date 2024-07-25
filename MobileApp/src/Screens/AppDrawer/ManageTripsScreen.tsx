@@ -85,7 +85,7 @@ const ManageTripsScreen = ({navigation}: any) => {
 
   const renderItemComponentVehicleInfo = (itemData: any) => (
     <VehicleCard
-      registrationNumber={itemData.registrationNumber}
+      registrationNumber={itemData.licenseNumber}
       make={itemData.make}
       model={itemData.model}
       color={itemData.color}

@@ -1,4 +1,4 @@
-import {FlatList, Text, View} from 'react-native';
+import {ActivityIndicator, FlatList, Text, View} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {
@@ -40,6 +40,10 @@ import {
   useToast,
   ToastDescription,
   ScrollView,
+  FabIcon,
+  ArrowLeftIcon,
+  FabLabel,
+  Fab,
 } from '@gluestack-ui/themed';
 import {
   AddPassengerSchedule,
@@ -87,6 +91,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const [friday, setFriday] = useState(false);
   const [saturday, setSaturday] = useState(false);
   const [sunday, setSunday] = useState(false);
+  const [IsLoading, setIsLoading] = useState(false);
 
   const ref = React.useRef(null);
   const toast = useToast();
@@ -95,6 +100,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const businessId = auth.GetBusinessId();
 
   useEffect(() => {
+    setIsLoading(true);
     GetPassengers();
   }, []);
 
@@ -105,9 +111,11 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       if (response.code != 'ERR_BAD_REQUEST') {
         setIsDisabled(false);
         setPassengers(response);
+        setIsLoading(false);
       } else {
         setPassengers(defaultData);
         setIsDisabled(true);
+        setIsLoading(false);
         //Toast Notifiaction
         toast.show({
           placement: 'top',
@@ -168,6 +176,22 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     setNewPassengerId('');
   };
 
+  const GoBackFab = () => {
+    return (
+      <Fab
+        onPress={() => {
+          navigation.navigate('Manage Trip');
+        }}
+        size="sm"
+        placement="bottom right"
+        isHovered={false}
+        isDisabled={false}
+        isPressed={false}>
+        <FabIcon as={ArrowLeftIcon} mr="$1" />
+        <FabLabel>Back</FabLabel>
+      </Fab>
+    );
+  };
   const renderItemComponentPassengers = (itemData: any) => (
     <PassengerCard
       passengerName={itemData.fullName}
@@ -258,10 +282,17 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                   GetPassengers();
                   setNewPassengerId('');
                   ShowSuccessToast();
+                  setIsLoading(false);
+                } else {
+                  setIsLoading(false);
                 }
               });
+            } else {
+              setIsLoading(false);
             }
           });
+        } else {
+          setIsLoading(false);
         }
       });
     });
@@ -284,6 +315,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       if (result == 200) {
         ClearCalender();
         setModifyCalender(false);
+        setIsLoading(false);
 
         //Toast of Success
         toast.show({
@@ -303,6 +335,8 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             );
           },
         });
+      } else {
+        setIsLoading(false);
       }
     });
   };
@@ -507,8 +541,10 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                       borderWidth="$0"
                       onPress={() => {
                         if (modifyCalender == true) {
+                          setIsLoading(true);
                           ModifyCalender();
                         } else {
+                          setIsLoading(true);
                           PrepareSchedule();
                         }
                         setValues(initialState);
@@ -561,6 +597,24 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
 
   return (
     <View style={{flex: 1}}>
+      {IsLoading ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" />
+          <Text>Working</Text>
+        </View>
+      ) : null}
+      <View>{GoBackFab()}</View>
       <View>
         <View style={AssignPassengerScreenStyles.container}>
           {renderLabel()}
@@ -613,6 +667,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                 isFocusVisible={false}
                 onPress={() => {
                   if (newPassengerId != '') {
+                    setIsLoading(true);
                     PrepareTrip();
                   } else {
                     ShowPickPassengerToast();

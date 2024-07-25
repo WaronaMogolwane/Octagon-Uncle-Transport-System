@@ -614,7 +614,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
           <Text>Working</Text>
         </View>
       ) : null}
-      <View>{GoBackFab()}</View>
       <View>
         <View style={AssignPassengerScreenStyles.container}>
           {renderLabel()}
@@ -706,6 +705,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
           renderItem={({item}) => renderItemComponentPassengers(item)}
         />
       </View>
+      {GoBackFab()}
     </View>
   );
 };

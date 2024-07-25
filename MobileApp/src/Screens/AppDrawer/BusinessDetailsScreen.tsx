@@ -1,4 +1,9 @@
-import {GestureResponderEvent, ScrollView, View} from 'react-native';
+import {
+  ActivityIndicator,
+  GestureResponderEvent,
+  ScrollView,
+  View,
+} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {
   Button,
@@ -58,8 +63,8 @@ const BusinessDetailsScreen = ({navigation}: any) => {
   const [bankCode, setBankCode] = useState('');
   const [bankId, setBankId] = useState('');
   const [accountType, setAccountType] = useState('');
-  const [documentType, setDocumentType] = useState('');
-  const [documentLabel, setDocumentLabel] = useState('');
+
+  const [IsLoading, setIsLoading] = useState(false);
 
   const [bankList, setBankList] = useState(['']);
 
@@ -106,6 +111,7 @@ const BusinessDetailsScreen = ({navigation}: any) => {
   };
 
   const BusinessDetailHelper = async (values: any) => {
+    setIsLoading(true);
     let businessDetail = new BusinessDetail(
       '',
       values.businessName.trim(),
@@ -123,8 +129,11 @@ const BusinessDetailsScreen = ({navigation}: any) => {
       .then((r: any) => {
         if (r == 200) {
           setShowModal(true);
+          setIsLoading(false);
         } else {
           //On faluire this code runs
+          setIsLoading(false);
+
           toast.show({
             placement: 'top',
             render: ({id}) => {
@@ -362,6 +371,7 @@ const BusinessDetailsScreen = ({navigation}: any) => {
   };
 
   const SubmitBankingDetail = async (values: any) => {
+    setIsLoading(true);
     let bankingDetail = new BankingDetail(
       values.bankName.trim(),
       values.branchNumber.trim(),
@@ -378,9 +388,11 @@ const BusinessDetailsScreen = ({navigation}: any) => {
           //On success this code runs
           formik.resetForm();
           setShowModal(false);
+          setIsLoading(false);
           SuccessToast();
           navigation.navigate('Home');
         } else {
+          setIsLoading(false);
           FaliureToast();
         }
       })
@@ -500,6 +512,23 @@ const BusinessDetailsScreen = ({navigation}: any) => {
   return (
     <ScrollView>
       <SafeAreaView style={ThemeStyles.container}>
+        {IsLoading ? (
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#ffffff75',
+              zIndex: 100,
+            }}>
+            <ActivityIndicator size="large" />
+            <Text>Working</Text>
+          </View>
+        ) : null}
         <View style={{paddingBottom: 15, paddingTop: 15}}>
           {BankingDetailModal()}
           <BusinessDetailForm

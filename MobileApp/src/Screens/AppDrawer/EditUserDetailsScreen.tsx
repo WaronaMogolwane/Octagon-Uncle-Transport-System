@@ -1,4 +1,9 @@
-import {GestureResponderEvent, View} from 'react-native';
+import {
+  ActivityIndicator,
+  GestureResponderEvent,
+  Text,
+  View,
+} from 'react-native';
 import {UserDetailForm} from '../../Components/Forms/UserDetailForm';
 import {
   ToastDescription,
@@ -33,12 +38,13 @@ export default function EditUserDetailsScreen({navigation}: any) {
   const toast = useToast();
 
   const [userDetail, setUserDetail] = useState<UserDetail>();
+  const [IsLoading, setIsLoading] = useState(false);
 
-  //const userId = 'c7728615-394f-466b-833e-ea9dd60ba836';
   const userId = auth.GetUserId();
 
   useEffect(() => {
     if (!userDetail) {
+      setIsLoading(true);
       GetUser();
     }
   }, [userDetail]);
@@ -60,10 +66,12 @@ export default function EditUserDetailsScreen({navigation}: any) {
           userId,
         ),
       );
+      setIsLoading(false);
     });
   };
 
   const userDetailHelper = async (values: any) => {
+    setIsLoading(true);
     let userDetail = new UserDetail(
       '',
       values.firstName,
@@ -85,14 +93,17 @@ export default function EditUserDetailsScreen({navigation}: any) {
           if (response[0].result != 0) {
             SuccessToast();
             navigation.navigate('Profile');
+            setIsLoading(false);
           } else {
             FaliureToast('Information is already saved');
+            setIsLoading(false);
           }
         } else {
           //On faluire this code runs
           FaliureToast(
             'Please check your internt and try again. If the problem persists contact support.',
           );
+          setIsLoading(false);
         }
       })
       .catch(error => console.log(error));
@@ -148,9 +159,9 @@ export default function EditUserDetailsScreen({navigation}: any) {
       .matches(
         /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
         'not valid',
-      ),
-    // .min(10, 'phone number should be 10 digits')
-    // .max(10, 'phone number should be 10 digits'),
+      )
+      .min(10, 'phone number should be 10 digits')
+      .max(10, 'phone number should be 10 digits'),
     addressLine1: yup
       .string()
       .min(2, 'Address too Short!')
@@ -193,109 +204,128 @@ export default function EditUserDetailsScreen({navigation}: any) {
     },
   });
   return (
-    <SafeAreaView style={ThemeStyles.container}>
-      <ScrollView>
-        <View style={{paddingBottom: 15, paddingTop: 15}}>
-          <UserDetailForm
-            showButton={false}
-            heading={'Update your details below'}
-            firstNameIsInvalid={!!formik.errors.firstName}
-            firstNameOnChangeText={formik.handleChange('firstName')}
-            firstNameErrorText={formik?.errors?.firstName}
-            firstNameOnBlur={formik.handleBlur('firstName')}
-            firstNameValue={formik.values?.firstName!}
-            lastNameIsInvalid={!!formik.errors.lastName}
-            lastNameOnChangeText={formik.handleChange('lastName')}
-            lastNameErrorText={formik?.errors?.lastName}
-            lastNameOnBlur={formik.handleBlur('lastName')}
-            lastNameValue={formik.values?.lastName!}
-            phoneNumberIsInvalid={!!formik.errors.phoneNumber}
-            phoneNumberOnChangeText={formik.handleChange('phoneNumber')}
-            phoneNumberErrorText={formik?.errors?.phoneNumber}
-            phoneNumberOnBlur={formik.handleBlur('phoneNumber')}
-            phoneNumberValue={formik.values?.phoneNumber!}
-            addressline1IsInvalid={!!formik.errors.addressLine1}
-            addressline1OnChangeText={formik.handleChange('addressLine1')}
-            addressline1ErrorText={formik?.errors?.addressLine1}
-            addressline1OnBlur={formik.handleBlur('addressLine1')}
-            addressline1Value={formik.values?.addressLine1!}
-            addressline2IsInvalid={!!formik.errors.addressLine2}
-            addressline2OnChangeText={formik.handleChange('addressLine2')}
-            addressline2ErrorText={formik?.errors?.addressLine2}
-            addressline2OnBlur={formik.handleBlur('addressline2')}
-            addressline2Value={formik.values?.addressLine2!}
-            suburbIsInvalid={!!formik.errors.suburb}
-            suburbOnChangeText={formik.handleChange('suburb')}
-            suburbErrorText={formik?.errors?.suburb}
-            suburbOnBlur={formik.handleBlur('suburb')}
-            suburbValue={formik.values?.suburb!}
-            cityIsInvalid={!!formik.errors.city}
-            cityOnChangeText={formik.handleChange('city')}
-            cityErrorText={formik?.errors?.city}
-            cityOnBlur={formik.handleBlur('city')}
-            cityValue={formik.values?.city!}
-            provinceIsInvalid={!!formik.errors.province}
-            provinceOnChangeText={formik.handleChange('province')}
-            provinceErrorText={formik?.errors?.province}
-            provinceOnBlur={formik.handleBlur('province')}
-            provinceValue={formik.values?.province!}
-            postalCodeIsInvalid={!!formik.errors.postalCode}
-            postalCodeOnChangeText={formik.handleChange('postalCode')}
-            postalCodeErrorText={formik?.errors?.postalCode}
-            postalCodeOnBlur={formik.handleBlur('postalCode')}
-            postalCodeValue={formik.values?.postalCode!}
-            submitUserDetails={
-              formik.handleSubmit as (
-                values:
-                  | GestureResponderEvent
-                  | React.FormEvent<HTMLFormElement>
-                  | undefined,
-              ) => void
-            }
-          />
-        </View>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
+      {IsLoading ? (
         <View
           style={{
-            justifyContent: 'center',
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
             alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
           }}>
+          <ActivityIndicator size="large" />
+          <Text>Working</Text>
+        </View>
+      ) : null}
+      <ScrollView>
+        <View style={{alignItems: 'center'}}>
+          <View style={{paddingBottom: 15, paddingTop: 15}}>
+            <UserDetailForm
+              showButton={false}
+              heading={'Update your details below'}
+              firstNameIsInvalid={!!formik.errors.firstName}
+              firstNameOnChangeText={formik.handleChange('firstName')}
+              firstNameErrorText={formik?.errors?.firstName}
+              firstNameOnBlur={formik.handleBlur('firstName')}
+              firstNameValue={formik.values?.firstName!}
+              lastNameIsInvalid={!!formik.errors.lastName}
+              lastNameOnChangeText={formik.handleChange('lastName')}
+              lastNameErrorText={formik?.errors?.lastName}
+              lastNameOnBlur={formik.handleBlur('lastName')}
+              lastNameValue={formik.values?.lastName!}
+              phoneNumberIsInvalid={!!formik.errors.phoneNumber}
+              phoneNumberOnChangeText={formik.handleChange('phoneNumber')}
+              phoneNumberErrorText={formik?.errors?.phoneNumber}
+              phoneNumberOnBlur={formik.handleBlur('phoneNumber')}
+              phoneNumberValue={formik.values?.phoneNumber!}
+              addressline1IsInvalid={!!formik.errors.addressLine1}
+              addressline1OnChangeText={formik.handleChange('addressLine1')}
+              addressline1ErrorText={formik?.errors?.addressLine1}
+              addressline1OnBlur={formik.handleBlur('addressLine1')}
+              addressline1Value={formik.values?.addressLine1!}
+              addressline2IsInvalid={!!formik.errors.addressLine2}
+              addressline2OnChangeText={formik.handleChange('addressLine2')}
+              addressline2ErrorText={formik?.errors?.addressLine2}
+              addressline2OnBlur={formik.handleBlur('addressline2')}
+              addressline2Value={formik.values?.addressLine2!}
+              suburbIsInvalid={!!formik.errors.suburb}
+              suburbOnChangeText={formik.handleChange('suburb')}
+              suburbErrorText={formik?.errors?.suburb}
+              suburbOnBlur={formik.handleBlur('suburb')}
+              suburbValue={formik.values?.suburb!}
+              cityIsInvalid={!!formik.errors.city}
+              cityOnChangeText={formik.handleChange('city')}
+              cityErrorText={formik?.errors?.city}
+              cityOnBlur={formik.handleBlur('city')}
+              cityValue={formik.values?.city!}
+              provinceIsInvalid={!!formik.errors.province}
+              provinceOnChangeText={formik.handleChange('province')}
+              provinceErrorText={formik?.errors?.province}
+              provinceOnBlur={formik.handleBlur('province')}
+              provinceValue={formik.values?.province!}
+              postalCodeIsInvalid={!!formik.errors.postalCode}
+              postalCodeOnChangeText={formik.handleChange('postalCode')}
+              postalCodeErrorText={formik?.errors?.postalCode}
+              postalCodeOnBlur={formik.handleBlur('postalCode')}
+              postalCodeValue={formik.values?.postalCode!}
+              submitUserDetails={
+                formik.handleSubmit as (
+                  values:
+                    | GestureResponderEvent
+                    | React.FormEvent<HTMLFormElement>
+                    | undefined,
+                ) => void
+              }
+            />
+          </View>
           <View
             style={{
-              flex: 1,
-              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}>
-            <View style={{padding: 5}}>
-              <Button
-                size="md"
-                variant="solid"
-                action="secondary"
-                isDisabled={false}
-                isFocusVisible={false}
-                onPress={() => {
-                  navigation.navigate('Profile');
-                }}>
-                <ButtonIcon as={ArrowLeftIcon} />
-                <ButtonText>Back</ButtonText>
-              </Button>
-            </View>
-            <View style={{padding: 5}}>
-              <Button
-                size="md"
-                variant="solid"
-                action="primary"
-                isDisabled={false}
-                isFocusVisible={false}
-                onPress={
-                  formik.handleSubmit as (
-                    values:
-                      | GestureResponderEvent
-                      | React.FormEvent<HTMLFormElement>
-                      | undefined,
-                  ) => void
-                }>
-                <FilePen size={20} strokeWidth={1} color={'#FFFFFF'} />
-                <ButtonText>Update</ButtonText>
-              </Button>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: 'row',
+              }}>
+              <View style={{padding: 5}}>
+                <Button
+                  size="md"
+                  variant="solid"
+                  action="secondary"
+                  isDisabled={false}
+                  isFocusVisible={false}
+                  onPress={() => {
+                    navigation.navigate('Profile');
+                  }}>
+                  <ButtonIcon as={ArrowLeftIcon} />
+                  <ButtonText>Back</ButtonText>
+                </Button>
+              </View>
+              <View style={{padding: 5}}>
+                <Button
+                  size="md"
+                  variant="solid"
+                  action="primary"
+                  isDisabled={false}
+                  isFocusVisible={false}
+                  onPress={
+                    formik.handleSubmit as (
+                      values:
+                        | GestureResponderEvent
+                        | React.FormEvent<HTMLFormElement>
+                        | undefined,
+                    ) => void
+                  }>
+                  <FilePen size={20} strokeWidth={1} color={'#FFFFFF'} />
+                  <ButtonText>Update</ButtonText>
+                </Button>
+              </View>
             </View>
           </View>
         </View>

@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {FlatList, RefreshControl, View} from 'react-native';
+import {ActivityIndicator, FlatList, RefreshControl, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {TripCardParent} from '../../Components/Cards/TripListForParentCard';
@@ -64,6 +64,7 @@ const TripsScreen = ({navigation}: any) => {
   const [showNoFutureTripText, setShowNoFutureTripText] = useState(false);
   const [showNoPastTripText, setShowNoPastTripText] = useState(false);
   const [noLinkedVehicle, setNoLinkedVehicle] = useState(true);
+  const [IsLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
   const onRefreshPastTrips = React.useCallback(() => {
@@ -217,6 +218,7 @@ const TripsScreen = ({navigation}: any) => {
 
   //Changes the status from the Driver's perspective
   const ChangeTripStatus = async (tripId: string, tripStatus: number) => {
+    setIsLoading(true);
     if (tripStatus == 1) {
       await UpdatePassengerStatus(tripId, tripStatus).then(result => {
         if (result[1] == 200) {
@@ -224,11 +226,15 @@ const TripsScreen = ({navigation}: any) => {
             if (result[1] == 200) {
               GetUpcomingTrips();
               GetPastTrips();
+              setIsLoading(false);
               setStatusCode(!statusCode);
             } else {
               ShowToast();
+              setIsLoading(false);
             }
           });
+        } else {
+          setIsLoading(false);
         }
       });
     } else if (tripStatus == 2) {
@@ -239,10 +245,14 @@ const TripsScreen = ({navigation}: any) => {
               GetUpcomingTrips();
               GetPastTrips();
               setStatusCode(!statusCode);
+              setIsLoading(false);
             } else {
               ShowToast();
+              setIsLoading(false);
             }
           });
+        } else {
+          setIsLoading(false);
         }
       });
     } else if (tripStatus == 3) {
@@ -254,12 +264,15 @@ const TripsScreen = ({navigation}: any) => {
               GetUpcomingTrips();
               GetPastTrips();
               setStatusCode(!statusCode);
+              setIsLoading(false);
             } else {
               ShowToast();
+              setIsLoading(false);
             }
           });
         } else {
           ShowToast();
+          setIsLoading(false);
         }
       });
     }
@@ -535,6 +548,23 @@ const TripsScreen = ({navigation}: any) => {
   return (
     <NavigationContainer independent={true}>
       {GoBackFab()}
+      {IsLoading ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" />
+          <Text>Working</Text>
+        </View>
+      ) : null}
       {tempRole != 1 ? (
         <Tab.Navigator>
           <Tab.Screen name="Upcoming Trips" component={FirstRoute} />

@@ -63,8 +63,6 @@ export const GetBusinessDetailFromDB = async (businessId: string) => {
       console.log(error);
       res = error;
     });
-  console.log(res);
-
   return res;
 };
 

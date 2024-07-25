@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   GestureResponderEvent,
   ScrollView,
   StyleSheet,
@@ -7,6 +8,7 @@ import {
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {
+  Image,
   ArrowLeftIcon,
   ButtonIcon,
   Button,
@@ -16,7 +18,6 @@ import {
   ToastTitle,
   VStack,
   useToast,
-  ArrowUpIcon,
   Heading,
 } from '@gluestack-ui/themed';
 import {BusinessDetail} from '../../Models/BusinessDetail';
@@ -39,9 +40,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   const [auth, setAuth] = useState(new Auth(session));
   const toast = useToast();
 
-  // const businessId = 'w8728321-394f-466b-833e-ea9dd60ba000';
-  // const role: number = 2;
-
   const businessId = auth.GetBusinessId();
   const role: number = Number(auth.GetUserRole());
 
@@ -52,8 +50,11 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   const [businessPhoneNumber, setBusinessPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
 
+  const [IsLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     if (!businessDetail) {
+      setIsLoading(true);
       GetBusiness();
     }
   }, [businessDetail]);
@@ -75,6 +76,7 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
             businessId,
           ),
         );
+        setIsLoading(false);
       });
     } else {
       await GetBusinessDetailForParent(businessId).then((result: any) => {
@@ -84,10 +86,12 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
         setBusinessPhoneNumber(result.businessPhoneNumber);
         setAddress(result.address);
       });
+      setIsLoading(false);
     }
   };
 
   const businessDetailHelper = async (values: any) => {
+    setIsLoading(true);
     let businessDetail = new BusinessDetail(
       '',
       values.businessName.trim(),
@@ -103,20 +107,22 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
 
     await UpdateBusinessDetail(businessDetail)
       .then((response: any) => {
-        console.log(response);
         if (response[1] == 200) {
           //On success this code runs
           if (response[0].result != 0) {
             SuccessToast();
             navigation.navigate('Profile');
+            setIsLoading(false);
           } else {
             FaliureToast('Information is already saved');
+            setIsLoading(false);
           }
         } else {
           //On faluire this code runs
           FaliureToast(
             'Please check your internt and try again. If the problem persists contact support.',
           );
+          setIsLoading(false);
         }
       })
       .catch(error => console.log(error));
@@ -168,9 +174,9 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
       .matches(
         /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
         'not valid',
-      ),
-    // .min(10, 'Business phone number should be 10 digits')
-    // .max(10, 'Business phone number should be 10 digits'),
+      )
+      .min(10, 'Business phone number should be 10 digits')
+      .max(10, 'Business phone number should be 10 digits'),
     addressline1: yup
       .string()
       .min(2, 'Address too Short!')
@@ -194,7 +200,7 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   const businessDetailsInitialValues = {
     businessName: businessDetail?.businessName,
     businessPhoneNumber: businessDetail?.businessPhoneNumber,
-    addressLine1: businessDetail?.addressLine1,
+    addressline1: businessDetail?.addressLine1,
     addressline2: businessDetail?.addressLine2,
     suburb: businessDetail?.suburb,
     city: businessDetail?.city,
@@ -213,8 +219,36 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   });
 
   return (
-    <SafeAreaView style={role == 1 ? ThemeStyles.container : styles.container}>
-      <ScrollView>
+    <ScrollView>
+      <SafeAreaView
+        style={
+          role == 1
+            ? {
+                ...{
+                  flex: 1,
+                  backgroundColor: '#fff',
+                  alignItems: 'center',
+                },
+              }
+            : styles.container
+        }>
+        {IsLoading ? (
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#ffffff75',
+              zIndex: 100,
+            }}>
+            <ActivityIndicator size="large" />
+            <Text>Working</Text>
+          </View>
+        ) : null}
         {role == 1 ? (
           <View>
             <Heading mb="$3">Update business details below.</Heading>
@@ -240,11 +274,11 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
                   'businessPhoneNumber',
                 )}
                 businessPhoneNumberValue={formik.values?.businessPhoneNumber!}
-                addressline1IsInvalid={!!formik.errors.addressLine1}
+                addressline1IsInvalid={!!formik.errors.addressline1}
                 addressline1OnChangeText={formik.handleChange('addressline1')}
-                addressline1ErrorText={formik?.errors?.addressLine1}
+                addressline1ErrorText={formik?.errors?.addressline1}
                 addressline1OnBlur={formik.handleBlur('addressline1')}
-                addressline1Value={formik.values?.addressLine1!}
+                addressline1Value={formik.values?.addressline1!}
                 addressline2IsInvalid={!!formik.errors.addressline2}
                 addressline2OnChangeText={formik.handleChange('addressline2')}
                 addressline2ErrorText={formik?.errors?.addressline2}
@@ -327,10 +361,14 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
             </View>
           </View>
         ) : (
-          <View style={styles.container}>
+          <View>
             <View style={styles.body}>
               <View style={styles.avatarContainer}>
-                <Text style={styles.avatar}>RN</Text>
+                <Image
+                  alt="profile photo"
+                  source={require('../../Images/default_avatar_image.jpg')}
+                  style={styles.avatar}
+                />
               </View>
               <View style={styles.nameContainer}>
                 <Text style={styles.name}>{businessName}</Text>
@@ -381,14 +419,14 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
             </View>
           </View>
         )}
-      </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ECF0F3',
+    flex: 1,
   },
   body: {
     marginTop: 50,
@@ -411,8 +449,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.16,
   },
   avatar: {
-    fontSize: 72,
-    fontWeight: '700',
+    width: 140,
+    height: 140,
+    borderRadius: 70,
   },
   nameContainer: {
     marginTop: 24,

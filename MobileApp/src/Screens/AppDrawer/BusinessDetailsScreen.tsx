@@ -462,10 +462,7 @@ const BusinessDetailsScreen = ({navigation}: any) => {
       .max(50, 'Province too Long!')
       .required(),
     postalcode: yup
-      .number()
-      .required()
-      .positive()
-      .integer()
+      .string()
       .min(4, 'Postal code too Short!')
       .max(4, 'Postal code too Long!')
       .required(),

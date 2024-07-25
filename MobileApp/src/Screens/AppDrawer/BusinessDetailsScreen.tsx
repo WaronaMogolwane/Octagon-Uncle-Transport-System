@@ -57,12 +57,9 @@ const BusinessDetailsScreen = ({navigation}: any) => {
 
   const [showModal, setShowModal] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
-  const [isFocusAccount, setIsFocusAcccount] = useState(false);
-  const [isFocusDocument, setIsFocusDocument] = useState(false);
   const [bankName, setBankName] = useState('');
   const [bankCode, setBankCode] = useState('');
   const [bankId, setBankId] = useState('');
-  const [accountType, setAccountType] = useState('');
 
   const [IsLoading, setIsLoading] = useState(false);
 
@@ -73,17 +70,6 @@ const BusinessDetailsScreen = ({navigation}: any) => {
   }, []);
 
   const businessId = auth.GetUserId();
-
-  const accountData = [
-    {accountType: 'Personal', value: 'personal'},
-    {accountType: 'Business', value: 'business'},
-  ];
-
-  const documentData = [
-    {document: 'Identiy Card', value: 'identityNumber'},
-    {document: 'Passport', value: 'passportNumber'},
-    {document: 'Business Rgistration', value: 'businessRegistrationNumber '},
-  ];
 
   const BankList = async () => {
     await GetBanksList().then((result: any) => {
@@ -259,40 +245,6 @@ const BusinessDetailsScreen = ({navigation}: any) => {
                 isRequired={false}
                 onBlur={bankingFormik.handleBlur('branchNumber')}
               />
-
-              <View style={{width: '90%', paddingBottom: 20}}>
-                <Dropdown
-                  style={[
-                    AssignPassengerScreenStyles.dropdown,
-                    isFocusAccount && {borderColor: 'red'},
-                  ]}
-                  placeholderStyle={
-                    AssignPassengerScreenStyles.placeholderStyle
-                  }
-                  selectedTextStyle={
-                    AssignPassengerScreenStyles.selectedTextStyle
-                  }
-                  inputSearchStyle={
-                    AssignPassengerScreenStyles.inputSearchStyle
-                  }
-                  iconStyle={AssignPassengerScreenStyles.iconStyle}
-                  data={accountData}
-                  search={false}
-                  maxHeight={300}
-                  labelField="accountType"
-                  valueField="value"
-                  placeholder={
-                    !isFocusAccount ? 'Select account type' : 'tap here...'
-                  }
-                  value={accountType}
-                  onFocus={() => setIsFocusAcccount(true)}
-                  onBlur={() => setIsFocusAcccount(false)}
-                  onChange={(item: any) => {
-                    setAccountType(item.value);
-                    setIsFocusAcccount(false);
-                  }}
-                />
-              </View>
               <CustomFormControlInput
                 labelText="Account Name"
                 errorText={bankingFormik?.errors?.accountName}

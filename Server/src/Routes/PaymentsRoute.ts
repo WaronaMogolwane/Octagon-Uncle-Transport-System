@@ -9,6 +9,7 @@ import { CreateNewCustomer, CreateNewPlan, CreateNewSubscription, TokenizePaymen
 const router = Router();
 
 router.post("/webhook", async (req, res, next) => {
+  res.status(200).send(req.body);
   console.log(req.body)
 });
 router.post("/create-new-customer", CreateNewCustomer, async (req, res, next) => { });

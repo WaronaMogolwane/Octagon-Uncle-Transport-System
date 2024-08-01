@@ -51,22 +51,26 @@ export default function EditUserDetailsScreen({navigation}: any) {
 
   const GetUser = async () => {
     await GetUserDetail(userId).then((result: any) => {
-      setUserDetail(
-        new UserDetail(
-          result.userDetailId.trim(),
-          result.firstName.trim(),
-          result.lastName.trim(),
-          result.phoneNumber.trim(),
-          result.addressLine1.trim(),
-          result.addressLine2.trim(),
-          result.suburb.trim(),
-          result.province.trim(),
-          result.city.trim(),
-          result.postalCode.trim(),
-          userId,
-        ),
-      );
-      setIsLoading(false);
+      if (result[1] == 200) {
+        setUserDetail(
+          new UserDetail(
+            result.userDetailId.trim(),
+            result.firstName.trim(),
+            result.lastName.trim(),
+            result.phoneNumber.trim(),
+            result.addressLine1.trim(),
+            result.addressLine2.trim(),
+            result.suburb.trim(),
+            result.province.trim(),
+            result.city.trim(),
+            result.postalCode.trim(),
+            userId,
+          ),
+        );
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+      }
     });
   };
 

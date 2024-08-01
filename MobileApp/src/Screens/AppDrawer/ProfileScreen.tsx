@@ -211,7 +211,6 @@ const ProfileScreen = ({navigation}: any) => {
               <Image
                 alt="profile photo"
                 source={require('../../Images/default_avatar_image.jpg')}
-                // source={{uri: user.avatar}}
                 style={styles.avatar}
               />
               <Text style={styles.name}>{firstName + ' ' + lastName}</Text>

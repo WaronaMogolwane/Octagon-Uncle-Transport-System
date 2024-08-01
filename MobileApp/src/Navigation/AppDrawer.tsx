@@ -32,7 +32,7 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {GetUser} from '../Controllers/UserController';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 
 const AppDrawer = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -83,32 +83,35 @@ const AppDrawer = ({navigation}: any) => {
       drawerContent={(props: any) => {
         return (
           <SafeAreaView>
-            <View>
+            <ScrollView>
               <View>
-                <Image
-                  style={styles.coverPhoto}
-                  alt="profile photo"
-                  source={require('../Images/background_image.jpg')}
-                />
-              </View>
-              <View style={styles.avatarContainer}>
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate('Profile');
-                  }}>
+                <View>
                   <Image
+                    style={styles.coverPhoto}
                     alt="profile photo"
-                    source={require('../Images/default_avatar_image.jpg')}
-                    style={styles.avatar}
+                    source={require('../Images/background_image.jpg')}
                   />
-                </TouchableOpacity>
-                <Text style={styles.name}>{fullname}</Text>
-                <Text style={{fontSize: 16, color: '#111', paddingBottom: 10}}>
-                  {RoleLabel(role)}
-                </Text>
+                </View>
+                <View style={styles.avatarContainer}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate('Profile');
+                    }}>
+                    <Image
+                      alt="profile photo"
+                      source={require('../Images/default_avatar_image.jpg')}
+                      style={styles.avatar}
+                    />
+                  </TouchableOpacity>
+                  <Text style={styles.name}>{fullname}</Text>
+                  <Text
+                    style={{fontSize: 16, color: '#111', paddingBottom: 10}}>
+                    {RoleLabel(role)}
+                  </Text>
+                </View>
               </View>
-            </View>
-            <DrawerItemList {...props} />
+              <DrawerItemList {...props} />
+            </ScrollView>
           </SafeAreaView>
         );
       }}
@@ -127,6 +130,7 @@ const AppDrawer = ({navigation}: any) => {
         name="Home"
         component={HomeScreen}
         options={{
+          title: 'Home',
           drawerIcon: () => (
             <University
               size={iconSize}
@@ -137,9 +141,10 @@ const AppDrawer = ({navigation}: any) => {
         }}
       />
       <Drawer.Screen
-        name="Trips"
+        name="Trip"
         component={TripsScreen}
         options={{
+          title: 'Trips',
           drawerIcon: () => (
             <Bus
               size={iconSize}
@@ -154,6 +159,7 @@ const AppDrawer = ({navigation}: any) => {
           name="Payments"
           component={PaymentsScreen}
           options={{
+            title: 'Payments',
             drawerIcon: () => (
               <HandCoins
                 size={iconSize}
@@ -166,9 +172,10 @@ const AppDrawer = ({navigation}: any) => {
       ) : null}
       {role == 1 ? (
         <Drawer.Screen
-          name="Vehicles"
+          name="Manage Vehicles"
           component={ManageVehiclesScreen}
           options={{
+            title: 'Vehicles',
             drawerIcon: () => (
               <KeySquare
                 size={iconSize}
@@ -184,6 +191,7 @@ const AppDrawer = ({navigation}: any) => {
           name="Manage Trip"
           component={ManageTripsScreen}
           options={{
+            title: 'Manage Trips',
             drawerIcon: () => (
               <BookUser
                 size={iconSize}
@@ -196,9 +204,10 @@ const AppDrawer = ({navigation}: any) => {
       ) : null}
       {role == 1 ? (
         <Drawer.Screen
-          name="Drivers"
+          name="Manage Drivers"
           component={ManageDriversScreen}
           options={{
+            title: 'Drivers',
             drawerIcon: () => (
               <ShipWheel
                 size={iconSize}
@@ -211,9 +220,10 @@ const AppDrawer = ({navigation}: any) => {
       ) : null}
       {role == 1 ? (
         <Drawer.Screen
-          name="Clients"
+          name="Manage Clients"
           component={ManageClientsScreen}
           options={{
+            title: 'Clients',
             drawerIcon: () => (
               <UsersRound
                 size={iconSize}
@@ -228,6 +238,7 @@ const AppDrawer = ({navigation}: any) => {
         name="Profile"
         component={ProfileScreen}
         options={{
+          title: 'Profile',
           drawerIcon: () => (
             <Bolt
               size={iconSize}
@@ -288,9 +299,10 @@ const AppDrawer = ({navigation}: any) => {
       />
       {role != 3 ? (
         <Drawer.Screen
-          name="Passengers"
+          name="Manage Passengers"
           component={ManagePassengerScreen}
           options={{
+            title: 'Passengers',
             drawerIcon: () => (
               <Baby
                 size={iconSize}
@@ -311,7 +323,6 @@ const AppDrawer = ({navigation}: any) => {
     </Drawer.Navigator>
   );
 };
-
 const styles = StyleSheet.create({
   header: {
     backgroundColor: '#20B2AA',

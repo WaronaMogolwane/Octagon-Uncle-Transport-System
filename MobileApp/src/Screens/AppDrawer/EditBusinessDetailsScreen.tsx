@@ -62,21 +62,25 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   const GetBusiness = async () => {
     if (role == 1) {
       await GetBusinessDetail(businessId).then((result: any) => {
-        setBusinessDetail(
-          new BusinessDetail(
-            result.businessDetailId,
-            result.businessName,
-            result.businessPhoneNumber,
-            result.addressLine1,
-            result.addressLine2,
-            result.suburb,
-            result.province,
-            result.city,
-            result.postalCode,
-            businessId,
-          ),
-        );
-        setIsLoading(false);
+        if (result[1] == 200) {
+          setBusinessDetail(
+            new BusinessDetail(
+              result.businessDetailId,
+              result.businessName,
+              result.businessPhoneNumber,
+              result.addressLine1,
+              result.addressLine2,
+              result.suburb,
+              result.province,
+              result.city,
+              result.postalCode,
+              businessId,
+            ),
+          );
+          setIsLoading(false);
+        } else {
+          setIsLoading(false);
+        }
       });
     } else {
       await GetBusinessDetailForParent(businessId).then((result: any) => {

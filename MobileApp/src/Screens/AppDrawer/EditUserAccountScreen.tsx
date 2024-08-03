@@ -59,6 +59,7 @@ import {ImageOrVideo} from 'react-native-image-crop-picker';
 import {Camera} from 'lucide-react';
 import {Images} from 'lucide-react';
 import {Aperture} from 'lucide-react';
+// import RNFetchBlob from 'rn-fetch-blob';
 
 const EditUserAccountScreen = ({navigation}: any) => {
   const {session, emailOtp, verifyOtp}: any = useContext(AuthContext);
@@ -535,6 +536,31 @@ const EditUserAccountScreen = ({navigation}: any) => {
       </Menu>
     );
   };
+
+  // const SaveImage = () => {
+  //   // send http request in a new thread (using native code)
+  //   RNFetchBlob.fetch('GET', 'http://www.example.com/images/img1.png', {
+  //     Authorization: 'Bearer access-token...',
+  //     // more headers  ..
+  //   }).then(res => {
+  //     let status = res.info().status;
+
+  //     if (status == 200) {
+  //       // the conversion is done in native code
+  //       let base64Str = res.base64();
+  //       // the following conversions are done in js, it's SYNC
+  //       let text = res.text();
+  //       let json = res.json();
+  //     } else {
+  //       // handle other status codes
+  //     }
+  //   });
+  //   // Something went wrong:
+  //   // .catch((errorMessage: any, statusCode: any) => {
+  //   //   //Error handling
+  //   // });
+  // };
+  // const SaveToCache = () => {};
 
   const emailInitialValues = {
     email: '',

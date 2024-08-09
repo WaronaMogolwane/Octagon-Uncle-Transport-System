@@ -24,6 +24,7 @@ import {AuthContext} from '../../Services/AuthenticationService';
 global.atob = decode;
 
 export default function PersonalDetailsScreen({route, navigation}: any) {
+  const {userRole, businessId} = route.params;
   const {sessionId} = route.params;
   const [[tokenIsLoading, authToken], setAuthToken] =
     useStorageState('authToken');
@@ -54,8 +55,16 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
       .then((r: any) => {
         if (r == 200) {
           //On success this cofe runs
-          SetSession(authToken!);
-          formik.resetForm();
+          if (auth.GetUserRole() == '1') {
+            navigation.navigate({
+              name: 'Business Details',
+              params: {sessionId: sessionId},
+              merge: true,
+            });
+          } else {
+            SetSession(authToken!);
+            formik.resetForm();
+          }
         } else {
           //On faluire this code runs
           toast.show({

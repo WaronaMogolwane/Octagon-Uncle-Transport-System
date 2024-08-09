@@ -118,6 +118,10 @@ dependencies {
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     // For animated GIF support
     implementation ('com.facebook.fresco:animated-gif:2.5.0')
+
+    //For rn-fetch-blob
+    implementation project(':rn-fetch-blob')
+    
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
         exclude group:'com.squareup.okhttp3', module:'okhttp'
     }

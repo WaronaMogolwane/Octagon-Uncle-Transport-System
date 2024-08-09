@@ -59,7 +59,10 @@ import {ImageOrVideo} from 'react-native-image-crop-picker';
 import {Camera} from 'lucide-react';
 import {Images} from 'lucide-react';
 import {Aperture} from 'lucide-react';
-// import RNFetchBlob from 'rn-fetch-blob';
+// import {DownloadImage} from '../../Services/ImageStorageService';
+import RNFetchBlob from 'rn-fetch-blob';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {RestoreImageViaAsyncStorage} from '../../Services/ImageStorageService';
 
 const EditUserAccountScreen = ({navigation}: any) => {
   const {session, emailOtp, verifyOtp}: any = useContext(AuthContext);
@@ -70,6 +73,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
   const [password, setPassword] = useState('');
 
   const [profileImage, setProfileImage] = useState('');
+  const [isChanged, setIsChanged] = useState(false);
   const [captureImageAlertTitle, setCaptureImageAlertTitle] = useState(
     'Successfully scanned',
   );
@@ -99,6 +103,12 @@ const EditUserAccountScreen = ({navigation}: any) => {
   useEffect(() => {
     GetCredentials();
   }, [refreshData]);
+
+  useEffect(() => {
+    RestoreImageViaAsyncStorage().then((result: any) => {
+      setProfileImage(result);
+    });
+  }, [isChanged]);
 
   const GetCredentials = async () => {
     await GetUser(userId).then((result: any) => {
@@ -433,6 +443,48 @@ const EditUserAccountScreen = ({navigation}: any) => {
       });
   }
 
+  const DownloadImage = async () => {
+    const storageUrl: string =
+      'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
+
+    // send http request in a new thread (using native code)
+    RNFetchBlob.config({
+      // add this option that makes response data to be stored as a file,
+      // this is much more performant.
+      fileCache: true,
+    })
+      .fetch(
+        'GET',
+        'https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg',
+        {
+          //   Authorization: 'Bearer access-token...',
+          // more headers  ..
+        },
+      )
+      .then(res => {
+        console.log(res);
+        let status = res.info().status;
+
+        if (status == 200) {
+          // // the conversion is done in native code
+          // let base64Str = res.base64();
+          // // the following conversions are done in js, it's SYNC
+          // let text = res.text();
+          // let json = res.json();
+
+          console.log('image saved');
+        } else {
+          // handle other status code
+          console.log('Something else happened');
+        }
+      })
+      // Something went wrong:
+      .catch((errorMessage: any) => {
+        // error handling
+        console.log(errorMessage);
+      });
+  };
+
   const CaptureImage = () => {
     OpenCamera(false, (result: any, error: any) => {
       if (error) {
@@ -440,9 +492,13 @@ const EditUserAccountScreen = ({navigation}: any) => {
         const image: ImageOrVideo = result;
         if (!profileImage) {
           console.log(image.path);
-          setProfileImage(image.path);
+
+          // setProfileImage(image.path);
+          SaveImageViaAsyncStorage(image.path);
+          setIsChanged(!isChanged);
+
           GetFileBlob(image.path, async function (imageUrl: string) {
-            //setProfileImage(imageUrl);
+            setProfileImage(imageUrl);
             setCaptureImageAlertTitle('Successfully scanned');
             setConfirmButtonTitle('Capture rear');
           });
@@ -470,7 +526,10 @@ const EditUserAccountScreen = ({navigation}: any) => {
         const image: ImageOrVideo = result;
         if (!profileImage) {
           GetFileBlob(image.path, async function (imageUrl: string) {
-            setProfileImage(imageUrl);
+            // setProfileImage(imageUrl);
+            SaveImageViaAsyncStorage(image.path);
+            setIsChanged(!isChanged);
+
             setCaptureImageAlertTitle('Successfully scanned');
             setConfirmButtonTitle('Capture rear');
           });
@@ -561,6 +620,15 @@ const EditUserAccountScreen = ({navigation}: any) => {
   //   // });
   // };
   // const SaveToCache = () => {};
+
+  const SaveImageViaAsyncStorage = async (value: string) => {
+    try {
+      await AsyncStorage.setItem('profileImage', value);
+    } catch (e) {
+      // saving error
+      console.error('There was an error saving the image path via async: ' + e);
+    }
+  };
 
   const emailInitialValues = {
     email: '',
@@ -662,7 +730,11 @@ const EditUserAccountScreen = ({navigation}: any) => {
       <View style={styles.avatarContainer}>
         <Image
           style={styles.avatar}
-          source={require('../../Images/default_avatar_image.jpg')}
+          source={
+            profileImage == ''
+              ? require('../../Images/default_avatar_image.jpg')
+              : {uri: profileImage}
+          }
         />
         <Text></Text>
         <FabMenu />

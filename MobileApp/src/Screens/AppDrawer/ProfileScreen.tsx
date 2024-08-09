@@ -39,6 +39,8 @@ import {
   TrashIcon,
 } from '@gluestack-ui/themed';
 import {GetUser} from '../../Controllers/UserController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {RestoreImageViaAsyncStorage} from '../../Services/ImageStorageService';
 
 const ProfileScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
@@ -47,7 +49,7 @@ const ProfileScreen = ({navigation}: any) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [showModal, setShowModal] = useState(false);
-
+  const [profileImage, setProfileImage] = useState('');
   const iconSize = 50;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';
@@ -66,6 +68,12 @@ const ProfileScreen = ({navigation}: any) => {
 
   useEffect(() => {
     GetUserName();
+  }, []);
+
+  useEffect(() => {
+    RestoreImageViaAsyncStorage().then((result: any) => {
+      setProfileImage(result);
+    });
   }, []);
 
   const iconSelector = (id: number) => {
@@ -210,7 +218,11 @@ const ProfileScreen = ({navigation}: any) => {
             <View style={styles.avatarContainer}>
               <Image
                 alt="profile photo"
-                source={require('../../Images/default_avatar_image.jpg')}
+                source={
+                  profileImage == ''
+                    ? require('../../Images/default_avatar_image.jpg')
+                    : {uri: profileImage}
+                }
                 style={styles.avatar}
               />
               <Text style={styles.name}>{firstName + ' ' + lastName}</Text>

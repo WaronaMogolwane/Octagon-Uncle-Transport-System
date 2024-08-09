@@ -340,6 +340,9 @@ const TripsScreen = ({navigation}: any) => {
   const HandleBackFabPress = () => {
     if (role == 2 || role == 3) {
       navigation.goBack();
+    }
+    if (role == tempRole) {
+      navigation.goBack();
     } else {
       setTempUserId(userId);
       setTempRole(role);

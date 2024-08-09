@@ -47,10 +47,16 @@ import {
 import {Auth} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {Dropdown} from 'react-native-element-dropdown';
+import {useStorageState} from '../../Services/StorageStateService';
 
-const BusinessDetailsScreen = ({navigation}: any) => {
-  const {session, isLoading}: any = useContext(AuthContext);
-  const [auth, setAuth] = useState(new Auth(session));
+const BusinessDetailsScreen = ({navigation, route}: any) => {
+  const {sessionId} = route.params;
+
+  const {session, isLoading, SetSession}: any = useContext(AuthContext);
+  const [[tokenIsLoading, authToken], setAuthToken] =
+    useStorageState('authToken');
+
+  const [auth, setAuth] = useState(new Auth(sessionId));
 
   const toast = useToast();
   const ref = React.useRef(null);
@@ -342,7 +348,8 @@ const BusinessDetailsScreen = ({navigation}: any) => {
           setShowModal(false);
           setIsLoading(false);
           SuccessToast();
-          navigation.navigate('Home');
+          SetSession(authToken!);
+          formik.resetForm();
         } else {
           setIsLoading(false);
           FaliureToast();

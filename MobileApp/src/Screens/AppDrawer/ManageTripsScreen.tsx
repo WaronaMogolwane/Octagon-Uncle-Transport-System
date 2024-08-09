@@ -16,6 +16,7 @@ import {
 import {AuthContext} from '../../Services/AuthenticationService';
 import {Auth} from '../../Classes/Auth';
 import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const ManageTripsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -85,13 +86,13 @@ const ManageTripsScreen = ({navigation}: any) => {
 
   const renderItemComponentVehicleInfo = (itemData: any) => (
     <VehicleCard
-      registrationNumber={itemData.registrationNumber}
+      registrationNumber={itemData.licenseNumber}
       make={itemData.make}
       model={itemData.model}
       color={itemData.color}
       fullName={itemData.fullName}
       onPress={() => {
-        navigation.push('Assign Passenger', {
+        navigation.navigate('Assign Passenger', {
           vehicleId: itemData.vehicleId,
         });
       }}
@@ -127,17 +128,19 @@ const ManageTripsScreen = ({navigation}: any) => {
   };
 
   return (
-    <View style={FlatlistStyles.container}>
-      {noLinkedVehicle ? EmtpyFlatListText() : null}
-      <FlatList
-        data={vehicleList}
-        renderItem={({item}) => renderItemComponentVehicleInfo(item)}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
-      <View>{GoBackFab()}</View>
-    </View>
+    <SafeAreaView style={{flex: 1}}>
+      <View style={FlatlistStyles.container}>
+        {noLinkedVehicle ? EmtpyFlatListText() : null}
+        <FlatList
+          data={vehicleList}
+          renderItem={({item}) => renderItemComponentVehicleInfo(item)}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+        <View>{GoBackFab()}</View>
+      </View>
+    </SafeAreaView>
   );
 };
 

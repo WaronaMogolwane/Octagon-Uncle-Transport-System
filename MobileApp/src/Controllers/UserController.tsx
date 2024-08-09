@@ -1,4 +1,5 @@
 import {
+  CheckDuplicateEmailFromDB,
   GetUserFromDB,
   UpdateUserEmailInDB,
   UpdateUserPasswordInDB,
@@ -6,6 +7,10 @@ import {
 
 export const GetUser = async (userId: string) => {
   return await GetUserFromDB(userId);
+};
+
+export const CheckDuplicateEmail = async (email: string) => {
+  return await CheckDuplicateEmailFromDB(email);
 };
 
 export const UpdateUserEmail = async (

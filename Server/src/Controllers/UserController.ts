@@ -1,5 +1,6 @@
 import { ErrorResponse } from "../Classes/ErrorResponse";
 import {
+  CheckUserEmailByEmail,
   GetUserByUserId,
   UpdateUserEmailByUserId,
   UpdateUserPasswordByUserId,
@@ -21,6 +22,34 @@ export const GetUser = async (req: any, res: any, next: any) => {
       res.status(200).json({
         RecordRetrieved: true,
         result: result[0],
+      });
+    }
+  });
+};
+
+export const CheckUserEmail = async (req: any, res: any, next: any) => {
+  let email = req.query.Email;
+  let answer: any;
+
+  await CheckUserEmailByEmail(email, (error, result) => {
+    if (result[0].length == 0) {
+      answer = true;
+    } else {
+      answer = false;
+    }
+
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: answer,
       });
     }
   });

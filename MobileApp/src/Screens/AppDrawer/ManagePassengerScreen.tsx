@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   GestureResponderEvent,
   RefreshControl,
@@ -63,6 +64,7 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import PassengerListAllCard from '../../Components/Cards/PassngerListForTransporterCard';
 import PassengerListPendingCard from '../../Components/Cards/PassengerListPendingCard';
 import {Auth} from '../../Classes/Auth';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const ManagePassengerScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -109,6 +111,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [showOther, setShowOther] = useState(false);
   const [showReasonField, setShowReasonField] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [IsLoading, setIsLoading] = useState(false);
 
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
@@ -134,6 +137,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
   }, []);
 
   useEffect(() => {
+    setIsLoading(true);
     GetPassengers();
   }, []);
 
@@ -145,8 +149,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
           setNoPassenger(false);
           setAllPassengers(result);
           setStatusCode(!statusCode);
+          setIsLoading(false);
         } else {
           setNoPassenger(true);
+          setIsLoading(false);
         }
       });
       await GetAllPendingPassengerForBusiness(businessId).then(
@@ -155,8 +161,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
             setNoPendingPassenger(false);
             setPendingPassengers(result);
             setStatusCode(!statusCode);
+            setIsLoading(false);
           } else {
             setNoPendingPassenger(true);
+            setIsLoading(false);
           }
         },
       );
@@ -167,8 +175,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
           setNoPassenger(false);
           setPassengerList(result);
           setStatusCode(!statusCode);
+          setIsLoading(false);
         } else {
           setNoPassenger(true);
+          setIsLoading(false);
         }
       });
     }
@@ -192,6 +202,8 @@ const ManagePassengerScreen = ({navigation}: any) => {
         setDestinationAddress(itemData.destinationAddress);
         setParentName(itemData.parentName);
         setIsActiveText(itemData.isActivetext);
+        setShowReasonField(false);
+        setShowButton(false);
         setShowPassengerSummary(true);
       }}
     />
@@ -220,6 +232,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
   );
 
   const UpdatePassengerDetails = async (values: any) => {
+    setIsLoading(true);
     const updatePassenger = new Passenger(
       passengerId,
       values.firstname != '' ? values.firstname.trim() : firstName,
@@ -242,11 +255,15 @@ const ManagePassengerScreen = ({navigation}: any) => {
         setUpdate(false);
         GetPassengers();
         ClearFields();
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
       }
     });
   };
 
   const CreatePassenger = async (values: any) => {
+    setIsLoading(false);
     const newPassenger = new Passenger(
       '',
       values.firstname.trim(),
@@ -268,8 +285,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
         GetPassengers();
         setStatusCode(!statusCode);
         ClearFields();
+        setIsLoading(false);
       } else {
         ShowToast();
+        setIsLoading(false);
       }
     });
   };
@@ -528,7 +547,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
         onClose={() => {
           setShowPassengerSummary(false);
           setShowButton(false);
-          setShowReasonField(true);
+          setShowReasonField(false);
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />
@@ -1114,6 +1133,23 @@ const ManagePassengerScreen = ({navigation}: any) => {
 
   return (
     <NavigationContainer independent={true}>
+      {IsLoading ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" />
+          <Text>Working</Text>
+        </View>
+      ) : null}
       {GoBackFab()}
       {role == 1 ? (
         <Tab.Navigator>
@@ -1121,39 +1157,41 @@ const ManagePassengerScreen = ({navigation}: any) => {
           <Tab.Screen name="Pending Removals" component={SecondRoute} />
         </Tab.Navigator>
       ) : (
-        <View style={{flex: 1}}>
-          <View>
-            <Text style={ManagePassengerScreenStyles.headingText}>
-              Add and view your passengers below.
-            </Text>
-            {showPassengerCardModal()}
+        <SafeAreaView style={{flex: 1}}>
+          <View style={{flex: 1}}>
+            <View>
+              <Text style={ManagePassengerScreenStyles.headingText}>
+                Add and view your passengers below.
+              </Text>
+              {showPassengerCardModal()}
+            </View>
+            <View>
+              <Button
+                size="md"
+                variant="solid"
+                action="secondary"
+                isDisabled={false}
+                isFocusVisible={false}
+                onPress={() => {
+                  setShowPModal(true);
+                }}>
+                <ButtonIcon as={AddIcon} />
+                <ButtonText>Create Passenger</ButtonText>
+              </Button>
+            </View>
+            <View>{showPopUpModal()}</View>
+            <View>{showReasonModal()}</View>
+            <View>{showUpdatePopUpModal()}</View>
+            <View style={{marginTop: 5, padding: 1}}>
+              {noPassenger ? EmtpyPassengerFlatListText() : null}
+              <FlatList
+                data={passengerList}
+                extraData={statusCode}
+                renderItem={({item}) => renderItemComponentPassengers(item)}
+              />
+            </View>
           </View>
-          <View>
-            <Button
-              size="md"
-              variant="solid"
-              action="secondary"
-              isDisabled={false}
-              isFocusVisible={false}
-              onPress={() => {
-                setShowPModal(true);
-              }}>
-              <ButtonIcon as={AddIcon} />
-              <ButtonText>Create Passenger</ButtonText>
-            </Button>
-          </View>
-          <View>{showPopUpModal()}</View>
-          <View>{showReasonModal()}</View>
-          <View>{showUpdatePopUpModal()}</View>
-          <View style={{marginTop: 5, padding: 1}}>
-            {noPassenger ? EmtpyPassengerFlatListText() : null}
-            <FlatList
-              data={passengerList}
-              extraData={statusCode}
-              renderItem={({item}) => renderItemComponentPassengers(item)}
-            />
-          </View>
-        </View>
+        </SafeAreaView>
       )}
     </NavigationContainer>
   );

@@ -8,7 +8,7 @@ import {GluestackUIProvider} from '@gluestack-ui/themed';
 import {config} from '@gluestack-ui/config';
 import {Camera} from 'react-native-vision-camera';
 function App(): JSX.Element {
-  const [cameraPermission, setCameraPermission] = useState<any>();
+  //const [cameraPermission, setCameraPermission] = useState<any>();
   const [pushNotificationsPermission, setPushNotificationsPermission] =
     useState<any>();
 
@@ -20,7 +20,7 @@ function App(): JSX.Element {
           PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
         );
       setPushNotificationsPermission(pushNotificationsPermissionStatus);
-      setCameraPermission(cameraPermissionStatus);
+      // setCameraPermission(cameraPermissionStatus);
     })();
   });
   const isDarkMode = useColorScheme() === 'dark';

@@ -35,6 +35,8 @@ export const AddUserDetailsToDB = async (userDetail: UserDetail) => {
 
 export const GetUserDetailsFromDB = async (userId: string) => {
   let res: any;
+  let statusCode: any;
+
   await axios
     .post(`${SERVER_HOST}:${SERVER_PORT}/user-profile/get-user-details`, {
       userDetails: {
@@ -59,12 +61,13 @@ export const GetUserDetailsFromDB = async (userId: string) => {
       );
 
       res = userDetail;
+      statusCode = response.status;
     })
     .catch(error => {
       console.log(error);
       res = error;
     });
-  return res;
+  return [res, statusCode];
 };
 
 export const UpdateUserDetailsInDB = async (userDetails: UserDetail) => {

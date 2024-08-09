@@ -1,12 +1,16 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
-import {CustomButton1} from '../../Components/Buttons';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Auth} from '../../Classes/Auth';
-import {FlatList, Pressable, StyleSheet, View} from 'react-native';
-import {Image, Text} from '@gluestack-ui/themed';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {Pressable, StyleSheet, View} from 'react-native';
+import {
+  Text,
+  Toast,
+  ToastDescription,
+  ToastTitle,
+  useToast,
+  VStack,
+} from '@gluestack-ui/themed';
 import {Baby, Bus, HandCoins, KeySquare} from 'lucide-react-native';
 import {
   GetAllPassengerForBusiness,
@@ -14,7 +18,8 @@ import {
 } from '../../Controllers/PassengerController';
 import {GetVehicles} from '../../Controllers/VehicleController';
 import {GetUser} from '../../Controllers/UserController';
-import {PassengerParentCard} from '../../Components/Cards/PassengerListForParentCard';
+import {CheckTrip, StartTrip} from '../../Services/TripServices';
+import {toast} from '@lucide/lab';
 
 const HomeScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
@@ -24,23 +29,14 @@ const HomeScreen = ({navigation}: any) => {
   const [vehicleCount, setVehicleCount] = useState('');
   const [userName, setUserName] = useState('');
   const [passengerList, setPassengerList] = useState([]);
+  const [tripCount, setTripCount] = useState('');
 
-  const [passengerId, setPassengerId] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [age, setAge] = useState('');
-  const [suburb, setSuburb] = useState('');
-  const [city, setCity] = useState('');
-  const [province, setProvince] = useState('');
-  const [postalCode, setPostalCode] = useState('');
-  const [homeAddress, setHomeAddress] = useState('');
-  const [destinationAddress, setDestinationAddress] = useState('');
-  const [isActive, setIsActive] = useState('');
-  const [isActiveText, setIsActiveText] = useState('');
+  const [isStarted, setIsStarted] = useState(false);
 
   const role: number = Number(auth.GetUserRole());
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
+  const toast = useToast();
   // const role: number = 3;
 
   const iconSize = 100;
@@ -61,6 +57,41 @@ const HomeScreen = ({navigation}: any) => {
       GetPassengers();
     }
   }, []);
+
+  useEffect(() => {
+    if (role == 3) {
+      CheckTrip().then((result: any) => {
+        setIsStarted(result);
+      });
+    }
+  }, []);
+
+  const onStartButtonPress = () => {
+    StartTrip().then((result: any) => {
+      if (result == true) {
+        navigation.navigate('Trip');
+        setIsStarted(true);
+      } else {
+      }
+    });
+  };
+
+  const ShowSuccessToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="attention" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Attention</ToastTitle>
+              <ToastDescription>The trip has already started.</ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
 
   const GetVehicleCount = async () => {
     await GetVehicles(businessId, (error: any, result: any) => {
@@ -111,36 +142,6 @@ const HomeScreen = ({navigation}: any) => {
       }
     });
   };
-
-  const PassengerContainer = async () => {
-    await passengerList.forEach((element: any) => {
-      <View style={{flexDirection: 'row'}}>
-        <Text>{element.firstName}</Text>
-        <Text>{element.lastName}</Text>
-        <Text>{element.isActiveText}</Text>
-      </View>;
-    });
-  };
-
-  const renderItemComponentPassengers = (itemData: any) => (
-    <PassengerParentCard
-      firstName={itemData.firstName}
-      lastName={itemData.lastName}
-      isActive={itemData.isActive}
-      isDeleted={itemData.isDeleted}
-      onPress={() => {
-        setPassengerId(itemData.passengerId);
-        setFirstName(itemData.firstName);
-        setLastName(itemData.lastName);
-        setAge(itemData.age);
-        setHomeAddress(itemData.homeAddress);
-        setDestinationAddress(itemData.destinationAddress);
-        setIsActiveText(itemData.isActiveText);
-        // setIsDeleted(itemData.isDeleted);
-        // setShowCard(true);
-      }}
-    />
-  );
 
   if (role == 1) {
     return (
@@ -300,7 +301,7 @@ const HomeScreen = ({navigation}: any) => {
                     fontSize: textSize,
                     fontWeight: '200',
                   }}>
-                  5
+                  {tripCount}
                 </Text>
               </View>
             </View>
@@ -336,7 +337,6 @@ const HomeScreen = ({navigation}: any) => {
                   }}>
                   Welcome
                 </Text>
-                {/* <HandCoins size={25} strokeWidth={2} color={iconColor} /> */}
               </View>
             </View>
             <View style={{marginStart: 60}}>
@@ -419,7 +419,7 @@ const HomeScreen = ({navigation}: any) => {
                     fontSize: textSize,
                     fontWeight: '200',
                   }}>
-                  5
+                  {tripCount}
                 </Text>
               </View>
             </View>
@@ -506,32 +506,34 @@ const HomeScreen = ({navigation}: any) => {
           </View>
         </Pressable>
 
-        <Pressable
-          onPress={() => {
-            navigation.navigate('Trip');
-          }}>
-          <View style={styles.avatarContainer}>
-            <View
-              style={{
-                paddingStart: 15,
-                backgroundColor: 'black',
-                width: 150,
-                height: 150,
-                borderRadius: 75,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Text
+        {isStarted == false ? (
+          <Pressable
+            onPress={() => {
+              onStartButtonPress();
+            }}>
+            <View style={styles.avatarContainer}>
+              <View
                 style={{
-                  color: 'red',
-                  fontSize: 40,
-                  fontWeight: '600',
+                  paddingStart: 15,
+                  backgroundColor: 'black',
+                  width: 150,
+                  height: 150,
+                  borderRadius: 75,
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}>
-                Start Trip
-              </Text>
+                <Text
+                  style={{
+                    color: 'red',
+                    fontSize: 40,
+                    fontWeight: '600',
+                  }}>
+                  Start Trip
+                </Text>
+              </View>
             </View>
-          </View>
-        </Pressable>
+          </Pressable>
+        ) : null}
       </SafeAreaView>
     );
   }

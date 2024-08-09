@@ -13,8 +13,8 @@ export const AddBankingDetailToDB = async (bankingDetail: BankingDetail) => {
         AccountName: bankingDetail.accountName,
         AccountNumber: bankingDetail.accountNumber,
         BusinessId: bankingDetail.businessId,
-        BankId: bankingDetail.paystackId,
-        BankCode: bankingDetail.payStackCode,
+        BankId: bankingDetail.bankId,
+        BankCode: bankingDetail.bankCode,
       },
     })
     .then((response: any) => {

@@ -30,14 +30,17 @@ import {
   UsersRound,
 } from 'lucide-react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {GetUser} from '../Controllers/UserController';
-import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
 
 const AppDrawer = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const [fullname, setFullname] = useState('');
+  const [profileImage, setProfileImage] = useState('');
 
   const role: number = Number(auth.GetUserRole());
   const userId = auth.GetUserId();
@@ -78,6 +81,12 @@ const AppDrawer = ({navigation}: any) => {
     GetUserName();
   }, []);
 
+  useEffect(() => {
+    RestoreImageViaAsyncStorage().then((result: any) => {
+      setProfileImage(result);
+    });
+  }, []);
+
   return (
     <Drawer.Navigator
       drawerContent={(props: any) => {
@@ -93,16 +102,20 @@ const AppDrawer = ({navigation}: any) => {
                   />
                 </View>
                 <View style={styles.avatarContainer}>
-                  <TouchableOpacity
+                  <Pressable
                     onPress={() => {
                       navigation.navigate('Profile');
                     }}>
                     <Image
                       alt="profile photo"
-                      source={require('../Images/default_avatar_image.jpg')}
+                      source={
+                        profileImage == ''
+                          ? require('../Images/default_avatar_image.jpg')
+                          : {uri: profileImage}
+                      }
                       style={styles.avatar}
                     />
-                  </TouchableOpacity>
+                  </Pressable>
                   <Text style={styles.name}>{fullname}</Text>
                   <Text
                     style={{fontSize: 16, color: '#111', paddingBottom: 10}}>
@@ -235,20 +248,6 @@ const AppDrawer = ({navigation}: any) => {
         />
       ) : null}
       <Drawer.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          title: 'Profile',
-          drawerIcon: () => (
-            <Bolt
-              size={iconSize}
-              strokeWidth={iconStrokeWidth}
-              color={iconColor}
-            />
-          ),
-        }}
-      />
-      <Drawer.Screen
         name="Edit Business Details"
         component={EditBusinessDetailsScreen}
         options={{
@@ -318,6 +317,20 @@ const AppDrawer = ({navigation}: any) => {
         component={AssignPassengerScreen}
         options={{
           drawerItemStyle: {display: 'none'},
+        }}
+      />
+      <Drawer.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          title: 'Profile',
+          drawerIcon: () => (
+            <Bolt
+              size={iconSize}
+              strokeWidth={iconStrokeWidth}
+              color={iconColor}
+            />
+          ),
         }}
       />
     </Drawer.Navigator>

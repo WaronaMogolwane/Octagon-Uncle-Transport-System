@@ -10,7 +10,7 @@ import ManageTripsScreen from '../Screens/AppDrawer/ManageTripsScreen';
 import AssignPassengerScreen from '../Screens/AppDrawer/AssignPassengerScreen';
 import ManagePassengerScreen from '../Screens/AppDrawer/ManagePassengerScreen';
 import EditUserAccountScreen from '../Screens/AppDrawer/EditUserAccountScreen';
-import BusinessDetailsScreen from '../Screens/AppDrawer/BusinessDetailsScreen';
+import BusinessDetailsScreen from '../Screens/AuthenticationStack/BusinessDetailsScreen';
 import ProfileScreen from '../Screens/AppDrawer/ProfileScreen';
 import EditBusinessDetailsScreen from '../Screens/AppDrawer/EditBusinessDetailsScreen';
 import EditUserDetailsScreen from '../Screens/AppDrawer/EditUserDetailsScreen';

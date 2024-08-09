@@ -88,7 +88,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
 
   const passwordExp: RegExp =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+    /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[-\#\$\.\%\&\*\?\!\_\,\+\=\@])(?=.*[a-zA-Z]).{8,16}$/;
 
   const userId = auth.GetUserId();
 
@@ -552,7 +552,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
       .string()
       .min(8, 'Password must be at least 8 characters')
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[-\#\$\.\%\&\*\?\!\_\,\+\=\@])(?=.*[a-zA-Z]).{8,16}$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
       )
       .required('Please enter old password'),
@@ -560,7 +560,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
       .string()
       .min(8, 'Password must be at least 8 characters')
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[-\#\$\.\%\&\*\?\!\_\,\+\=\@])(?=.*[a-zA-Z]).{8,16}$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
       )
       .required('Password is required'),

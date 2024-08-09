@@ -57,6 +57,29 @@ export const UpdateUserEmailInDB = async (
   return [data, statusCode, errorMessage];
 };
 
+export const CheckDuplicateEmailFromDB = async (email: string) => {
+  let statusCode: any;
+  let data: any;
+  let errorMessage: any;
+
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/user/check-user-email`, {
+      params: {
+        Email: email,
+      },
+    })
+    .then((response: any) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: any) => {
+      console.log(error);
+      errorMessage = error;
+    });
+
+  return [data, statusCode, errorMessage];
+};
+
 export const UpdateUserPasswordInDB = async (
   userId: string,
   newPassword: string,

@@ -6,12 +6,14 @@
   "scripts": {
     "dev": "npx tsc & nodemon --inspect-brk ./src/bin/build/server.js",
     "ts-serv": "npx ts-node --esm src/server.ts",
-    "build": "npx tsc --build",
     "rebuild": "npx tsc --build --clean && npx tsc --build",
     "clean": "npx tsc --build --clean",
     "debug": "node ./src/bin/build/server.js",
     "build-debug": "npm run build && npm run debug",
-    "rebuild-debug": "npm run rebuild && npm run debug"
+    "rebuild-debug": "npm run rebuild && npm run debug",
+    "start": "npm run build:live",
+    "build": "tsc -p .",
+    "build:live": "npx nodemon"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,7 @@
   },
   "homepage": "",
   "dependencies": {
+    "axios": "^1.7.2",
     "backblaze-b2": "^1.7.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -46,11 +49,11 @@
     "@types/jest": "^29.5.6",
     "@types/jsonwebtoken": "^9.0.4",
     "@types/multer": "^1.4.11",
-    "@types/node": "^20.8.9",
+    "@types/node": "^20.14.11",
     "@typescript-eslint/parser": "^6.9.0",
-    "nodemon": "^2.0.20",
-    "ts-node": "^10.9.1",
+    "nodemon": "^2.0.22",
+    "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.3.2"
+    "typescript": "^5.5.3"
   }
 }

@@ -39,6 +39,8 @@ import {
   TrashIcon,
 } from '@gluestack-ui/themed';
 import {GetUser} from '../../Controllers/UserController';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {RestoreImageViaAsyncStorage} from '../../Services/ImageStorageService';
 
 const ProfileScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
@@ -47,41 +49,15 @@ const ProfileScreen = ({navigation}: any) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [showModal, setShowModal] = useState(false);
-
+  const [profileImage, setProfileImage] = useState('');
   const iconSize = 50;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';
 
   const ref = React.useRef(null);
 
-  const data = [
-    {
-      id: 1,
-      label: 'User Account',
-      screen: 'Edit User Account',
-      icon: 'AddIcon',
-    },
-    {
-      id: 2,
-      label: 'Edit User Details',
-      screen: 'Edit User Details',
-      icon: 'ArrowLeftIcon',
-    },
-    {
-      id: 3,
-      label: 'Payment Details',
-      screen: 'Edit Payment Details',
-      icon: 'ArrowRightIcon',
-    },
-    {
-      id: 4,
-      label: 'Business Details',
-      screen: 'Edit Business Details',
-      icon: 'AtSignIcon',
-    },
-  ];
-
   const userId = auth.GetUserId();
+  const role: number = Number(auth.GetUserRole());
 
   const user = {
     avatar: 'https://www.bootdey.com/img/Content/avatar/avatar1.png',
@@ -92,6 +68,12 @@ const ProfileScreen = ({navigation}: any) => {
 
   useEffect(() => {
     GetUserName();
+  }, []);
+
+  useEffect(() => {
+    RestoreImageViaAsyncStorage().then((result: any) => {
+      setProfileImage(result);
+    });
   }, []);
 
   const iconSelector = (id: number) => {
@@ -226,34 +208,72 @@ const ProfileScreen = ({navigation}: any) => {
       <ScrollView>
         <View>
           <View>
-            <View style={styles.coverPhoto}></View>
+            <View>
+              <Image
+                style={styles.coverPhoto}
+                alt="profile photo"
+                source={require('../../Images/background_image.jpg')}
+              />
+            </View>
             <View style={styles.avatarContainer}>
               <Image
                 alt="profile photo"
-                source={{uri: user.avatar}}
+                source={
+                  profileImage == ''
+                    ? require('../../Images/default_avatar_image.jpg')
+                    : {uri: profileImage}
+                }
                 style={styles.avatar}
               />
               <Text style={styles.name}>{firstName + ' ' + lastName}</Text>
             </View>
           </View>
-          <View style={styles.body}>
-            <FlatList
-              data={data}
-              renderItem={({item}) => {
-                return (
-                  <TouchableOpacity
-                    onPress={() => {
-                      navigation.navigate(item.screen);
-                    }}>
-                    <View style={styles.box}>
-                      <View>{iconSelector(item.id)}</View>
 
-                      <Text style={styles.username}>{item.label}</Text>
-                    </View>
-                  </TouchableOpacity>
-                );
-              }}
-            />
+          <View style={styles.body}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Edit User Account');
+              }}>
+              <View style={styles.box}>
+                <View>{iconSelector(1)}</View>
+
+                <Text style={styles.username}>Account</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Edit User Details');
+              }}>
+              <View style={styles.box}>
+                <View>{iconSelector(2)}</View>
+
+                <Text style={styles.username}>Personal</Text>
+              </View>
+            </TouchableOpacity>
+            {role == 2 ? (
+              <TouchableOpacity
+                onPress={() => {
+                  //navigation.navigate('Edit Payment Details');
+                }}>
+                <View style={styles.box}>
+                  <View>{iconSelector(3)}</View>
+
+                  <Text style={styles.username}>Payments</Text>
+                </View>
+              </TouchableOpacity>
+            ) : null}
+
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Edit Business Details');
+              }}>
+              <View style={styles.box}>
+                <View>{iconSelector(4)}</View>
+
+                <Text style={styles.username}>Business</Text>
+              </View>
+            </TouchableOpacity>
           </View>
           <View>{SignOutModal()}</View>
           <View
@@ -301,26 +321,14 @@ const styles = StyleSheet.create({
     padding: 30,
     alignItems: 'center',
   },
-  // avatar: {
-  //   width: 130,
-  //   height: 130,
-  //   borderRadius: 63,
-  //   borderWidth: 4,
-  //   borderColor: '#FFFFFF',
-  //   marginBottom: 10,
-  // },
+
   image: {
     width: 40,
     height: 40,
   },
-  // name: {
-  //   fontSize: 22,
-  //   color: '#FFFFFF',
-  //   fontWeight: '600',
-  // },
+
   body: {
     padding: 30,
-    // backgroundColor: '#E6E6FA',
   },
   box: {
     padding: 5,
@@ -350,7 +358,6 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 130,
     resizeMode: 'cover',
-    backgroundColor: '#808080',
   },
   avatarContainer: {
     alignItems: 'center',
@@ -360,8 +367,6 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    borderWidth: 5,
-    borderColor: 'white',
   },
   name: {
     marginTop: 15,

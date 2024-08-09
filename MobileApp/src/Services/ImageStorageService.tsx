@@ -2,47 +2,47 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {err} from 'react-native-svg/lib/typescript/xml';
 import RNFetchBlob from 'rn-fetch-blob';
 
-export const DownloadImage = async () => {
-  const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
+// export const DownloadImage = async () => {
+//   const storageUrl: string =
+//     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
 
-  // send http request in a new thread (using native code)
-  RNFetchBlob.config({
-    // add this option that makes response data to be stored as a file,
-    // this is much more performant.
-    fileCache: true,
-  })
-    .fetch(
-      'GET',
-      'https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg',
-      {
-        //   Authorization: 'Bearer access-token...',
-        // more headers  ..
-      },
-    )
-    .then(res => {
-      console.log(res);
-      let status = res.info().status;
+//   // send http request in a new thread (using native code)
+//   RNFetchBlob.config({
+//     // add this option that makes response data to be stored as a file,
+//     // this is much more performant.
+//     fileCache: true,
+//   })
+//     .fetch(
+//       'GET',
+//       'https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg',
+//       {
+//         //   Authorization: 'Bearer access-token...',
+//         // more headers  ..
+//       },
+//     )
+//     .then(res => {
+//       console.log(res);
+//       let status = res.info().status;
 
-      if (status == 200) {
-        // // the conversion is done in native code
-        // let base64Str = res.base64();
-        // // the following conversions are done in js, it's SYNC
-        // let text = res.text();
-        // let json = res.json();
+//       if (status == 200) {
+//         // // the conversion is done in native code
+//         // let base64Str = res.base64();
+//         // // the following conversions are done in js, it's SYNC
+//         // let text = res.text();
+//         // let json = res.json();
 
-        console.log('image saved');
-      } else {
-        // handle other status code
-        console.log('Something else happened');
-      }
-    })
-    // Something went wrong:
-    .catch((errorMessage: any) => {
-      // error handling
-      console.log(errorMessage);
-    });
-};
+//         console.log('image saved');
+//       } else {
+//         // handle other status code
+//         console.log('Something else happened');
+//       }
+//     })
+//     // Something went wrong:
+//     .catch((errorMessage: any) => {
+//       // error handling
+//       console.log(errorMessage);
+//     });
+// };
 
 export const RestoreImageViaAsyncStorage = async () => {
   let image: string = '';

@@ -133,8 +133,10 @@ const SignUpScreen = ({route, navigation}: any) => {
         console.error(error);
       } else {
         ShowToast();
-        navigation.navigate('Personal Details', {
-          sessionId: result.headers.sessionid,
+        navigation.navigate({
+          name: 'Personal Details',
+          params: {sessionId: result.headers.sessionid},
+          merge: true,
         });
       }
     });

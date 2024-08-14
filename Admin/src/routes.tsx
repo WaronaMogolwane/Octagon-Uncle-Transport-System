@@ -6,10 +6,10 @@ import AdminLayout from "./layouts/AdminLayout";
 
 import { BASE_URL } from "./config/constant";
 
-export const renderRoutes = (routes = []) => (
+export const renderRoutes = (routes: any = []) => (
   <Suspense fallback={<Loader />}>
     <Routes>
-      {routes.map((route, i) => {
+      {routes.map((route: any, i: any) => {
         const Guard = route.guard || Fragment;
         const Layout = route.layout || Fragment;
         const Element = route.element;
@@ -107,8 +107,10 @@ const routes = [
       },
       {
         exact: "true",
-        path: "/messaging/pushnotifications",
-        element: lazy(() => import("./views/messaging/PushNotifications")),
+        path: "/messaging/managepushnotifications",
+        element: lazy(
+          () => import("./views/messaging/ManagePushNotifications")
+        ),
       },
       {
         exact: "true",

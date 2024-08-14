@@ -11,7 +11,8 @@ import {
   DropdownButton,
   Dropdown,
 } from "react-bootstrap";
-
+import { IconBase } from "react-icons";
+import { Trash2 } from "react-feather";
 const CreatePushNotification = () => {
   return (
     <React.Fragment>
@@ -49,23 +50,26 @@ const CreatePushNotification = () => {
                       controlId="exampleForm.ControlTextarea1"
                     >
                       <Form.Label>Push notification message</Form.Label>
-                      <Form.Control as="textarea" rows="3" />
+                      <Form.Control as="textarea" rows={3} />
                     </Form.Group>
-                    <Form.Group controlId="formFile" className="mb-3">
+                    <Form.Group controlId="formFile" className="mb-3 w-50">
                       <Form.Label>Image</Form.Label>
-                      <Form.Control type="file" />
+                      <div className="d-flex">
+                        <Form.Control type="file" />
+                        <Trash2 color="red" />
+                      </div>
                     </Form.Group>
+                    <Button variant="primary">Submit</Button>
                   </Col>
                   <Col md={6}>
-                    <Form.Group class="text-align-center">
+                    <Form.Group className="d-inline-flex">
                       <Form.Label>Image preview</Form.Label>
                       <Image
+                        className="w-50"
                         src="https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/Resources/Images/Octagon+Icon+Logo.png"
-                        fluid
                       />
                     </Form.Group>
                   </Col>
-                  <Button variant="primary">Submit</Button>
                 </Row>
               </Form>
             </Card.Body>

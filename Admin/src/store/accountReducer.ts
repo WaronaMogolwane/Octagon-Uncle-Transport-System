@@ -2,7 +2,7 @@
 import { REGISTER, LOGIN, LOGOUT } from './actions';
 
 // initial state
-export const initialState = {
+export const initialState: any = {
   isLoggedIn: false,
   isInitialized: false,
   user: null
@@ -10,7 +10,7 @@ export const initialState = {
 
 // ==============================|| AUTH REDUCER ||============================== //
 
-const auth = (state = initialState, action) => {
+const auth = (state = initialState, action: any) => {
   switch (action.type) {
     case REGISTER: {
       const { user } = action.payload;

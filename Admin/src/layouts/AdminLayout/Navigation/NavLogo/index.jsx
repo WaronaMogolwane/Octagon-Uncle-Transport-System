@@ -1,29 +1,36 @@
-import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from "react";
+import { Link } from "react-router-dom";
 
-import { ConfigContext } from '../../../../contexts/ConfigContext';
-import * as actionType from '../../../../store/actions';
+import { ConfigContext } from "../../../../contexts/ConfigContext";
+import * as actionType from "../../../../store/actions";
 
 const NavLogo = () => {
   const configContext = useContext(ConfigContext);
   const { collapseMenu } = configContext.state;
   const { dispatch } = configContext;
 
-  let toggleClass = ['mobile-menu'];
+  let toggleClass = ["mobile-menu"];
   if (collapseMenu) {
-    toggleClass = [...toggleClass, 'on'];
+    toggleClass = [...toggleClass, "on"];
   }
 
   return (
     <React.Fragment>
       <div className="navbar-brand header-logo">
         <Link to="#" className="b-brand">
-          <div className="b-bg">
-            <i className="feather icon-trending-up" />
-          </div>
-          <span className="b-title">Datta Able</span>
+          <img
+            class="img-fluid"
+            src="https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/Resources/Images/Octagon+Icon+Logo.png"
+            alt=""
+          />
+          <span className="b-title">Octagon Uncle</span>
         </Link>
-        <Link to="#" className={toggleClass.join(' ')} id="mobile-collapse" onClick={() => dispatch({ type: actionType.COLLAPSE_MENU })}>
+        <Link
+          to="#"
+          className={toggleClass.join(" ")}
+          id="mobile-collapse"
+          onClick={() => dispatch({ type: actionType.COLLAPSE_MENU })}
+        >
           <span />
         </Link>
       </div>

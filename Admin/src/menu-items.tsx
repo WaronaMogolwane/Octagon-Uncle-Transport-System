@@ -29,17 +29,17 @@ const menuItems = {
           children: [
             {
               id: "new-push-notifications",
-              title: "New Push Notification",
+              title: "Create Push Notification",
               type: "item",
               icon: "feather icon-plus-square",
               url: "/messaging/createpushnotification",
             },
             {
-              id: "view-push-notifications",
-              title: "All Push Notifications",
+              id: "manage-push-notifications",
+              title: "Manage Push Notifications",
               type: "item",
               icon: "feather icon-message-square",
-              url: "/messaging/pushnotifications",
+              url: "/messaging/managepushnotifications",
             },
           ],
         },

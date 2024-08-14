@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import PropTypes from "prop-types";
+import React from "react";
 
-const Container = ({ animationDuration, children, isFinished }) => {
+const Container = ({ animationDuration, children, isFinished }: any) => {
   return (
     <div
       style={{
         opacity: isFinished ? 0 : 1,
-        pointerEvents: 'none',
-        transition: `opacity ${animationDuration}ms linear`
+        pointerEvents: "none",
+        transition: `opacity ${animationDuration}ms linear`,
       }}
     >
       {children}
@@ -18,7 +18,7 @@ const Container = ({ animationDuration, children, isFinished }) => {
 Container.propTypes = {
   animationDuration: PropTypes.number,
   children: PropTypes.node,
-  isFinished: PropTypes.bool
+  isFinished: PropTypes.bool,
 };
 
 export default Container;

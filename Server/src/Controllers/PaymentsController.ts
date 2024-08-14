@@ -1,106 +1,43 @@
-import axios from "axios"
-const qs = require('qs');
-const PAYSTACK_SECRET_KEY = "sk_test_15b32363d5ec93adf4cb35693b162ac7f87d4224"
-export const CreateNewPlan = async (req: any, res: any, next: any) => {
-    let data = qs.stringify({
-        'name': 'Dailt 5000',
-        'interval': 'daily',
-        'amount': '500000',
-        'currency': 'ZAR',
-        'description': 'Daily 5000'
-    });
+import { NextFunction, Request, Response } from "express";
+import { Customer } from "../Classes/Customer";
+import { CreateNewPaystackCustomer } from "../Models/PaymentsModel";
 
-    let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: 'https://api.paystack.co/plan',
-        headers: {
-            'Authorization': 'Bearer ' + PAYSTACK_SECRET_KEY,
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        data: data
-    };
+export const HandleWebhookEvent = (req: Request, res: Response, next: NextFunction) => {
 
-    axios.request(config)
-        .then((response) => {
-            console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-            console.log(error);
-        });
 }
-export const CreateNewCustomer = async (req: any, res: any, next: any) => {
-    const data = qs.stringify({
-        "email": "customer@email2.com",
-        "first_name": "Zero",
-        "last_name": "Sum",
-        "phone": "+2348123456789"
+export const CreateNewCustomer = async (req: Request, res: Response, next: NextFunction) => {
+    let requestBody: any = req.body;
+    let newCustomer: Customer = ({
+        customerId: '',
+        customerEmail: requestBody.email,
+        firstName: requestBody.firstName,
+        lastName: requestBody.lastName,
+        customerCode: '',
+        domain: '',
+        dateCreated: '',
+        dateUpdated: '',
+        userId: requestBody.userId,
+        isActive: '1'
     })
-    let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: 'https://api.paystack.co/customer',
-        headers: {
-            'Authorization': 'Bearer ' + PAYSTACK_SECRET_KEY,
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        data: data
-    };
-
-    axios.request(config)
-        .then((response) => {
-            console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-            console.log(error.data);
-        });
+    await CreateNewPaystackCustomer(newCustomer, (error, result) => {
+        if (error) {
+            res.status(400).json(error);
+        }
+        else {
+            res.status(200).json(result);
+        }
+    })
 
 }
-export const CreateNewSubscription = async (req: any, res: any, next: any) => {
-    let data = qs.stringify({
-        'customer': 'CUS_jz592bca3frmv0k',
-        'plan': 'PLN_eeq6r3ymkhilhep',
-        'start_date': new Date() //'2017-05-16T00:30:13+01:00'
-    });
+export const CreateNewPlan = (req: Request, res: Response, next: NextFunction) => {
 
-    let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: 'https://api.paystack.co/subscription',
-        headers: {
-            'Authorization': 'Bearer ' + PAYSTACK_SECRET_KEY,
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        data: data
-    };
-
-    axios.request(config)
-        .then((response) => {
-            console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-            console.log(error.response.data);
-        });
 }
-export const TokenizePaymentInstrument = async (req: any, res: any, next: any) => {
-    let data: any = req.body;
+export const CreateNewSubscription = (req: Request, res: Response, next: NextFunction) => {
 
-    let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: 'https://api.paystack.co/charge/tokenize',
-        headers: {
-            'Authorization': 'Bearer ' + PAYSTACK_SECRET_KEY,
-            'Content-Type': 'application/json',
-        },
-        data: data
-    };
+}
+export const CreateTransactionLink = (req: Request, res: Response, next: NextFunction) => {
 
-    axios.request(config)
-        .then((response) => {
-            console.log(JSON.stringify(response.data));
-        })
-        .catch((error) => {
-            console.log(error.response.data);
-        });
+}
+export const ChargeAuthorization = (req: Request, res: Response, next: NextFunction) => {
+
 }

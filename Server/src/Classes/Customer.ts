@@ -5,9 +5,10 @@ export class Customer {
     lastName: string;
     customerCode: string;
     domain: string;
-    dateCreated: Date;
-    dateUpdated: Date;
+    dateCreated: string;
+    dateUpdated: string;
     userId: string;
+    isActive: string;
 
     constructor(
         customerId: string,
@@ -16,9 +17,10 @@ export class Customer {
         lastName: string,
         customerCode: string,
         domain: string,
-        dateCreated: Date,
-        dateUpdated: Date,
-        userId: string
+        dateCreated: string,
+        dateUpdated: string,
+        userId: string,
+        isActive: string
     ) {
         this.customerId = customerId;
         this.customerEmail = customerEmail;
@@ -29,5 +31,6 @@ export class Customer {
         this.dateCreated = dateCreated;
         this.dateUpdated = dateUpdated;
         this.userId = userId;
+        this.isActive = isActive;
     }
 }

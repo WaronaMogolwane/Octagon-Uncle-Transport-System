@@ -1,13 +1,13 @@
-import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import PropTypes from "prop-types";
+import React, { useState, useEffect } from "react";
 
-import friend from './friends';
-import Friend from './Friend';
-import Chat from './Chat';
+import friend from "./friends";
+import Friend from "./Friend";
+import Chat from "./Chat";
 
-const Friends = ({ listOpen }) => {
+const Friends = ({ listOpen }: any) => {
   const [chatOpen, setChatOpen] = useState(listOpen);
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState<any>([]);
 
   useEffect(() => {
     setChatOpen(false);
@@ -44,7 +44,7 @@ const Friends = ({ listOpen }) => {
 };
 
 Friends.propTypes = {
-  listOpen: PropTypes.bool
+  listOpen: PropTypes.bool,
 };
 
 export default Friends;

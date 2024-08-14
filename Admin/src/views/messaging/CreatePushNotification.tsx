@@ -59,7 +59,7 @@ const CreatePushNotification = () => {
                   <Col md={6}>
                     <Form.Group class="text-align-center">
                       <Form.Label>Image preview</Form.Label>
-                      <Image class=""
+                      <Image
                         src="https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/Resources/Images/Octagon+Icon+Logo.png"
                         fluid
                       />

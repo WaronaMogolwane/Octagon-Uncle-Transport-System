@@ -6,8 +6,8 @@ import PerfectScrollbar from "react-perfect-scrollbar";
 import NavGroup from "./NavGroup";
 import NavCard from "./NavCard";
 
-const NavContent = ({ navigation }) => {
-  const navItems = navigation.map((item) => {
+const NavContent = ({ navigation }: any) => {
+  const navItems = navigation.map((item: any) => {
     switch (item.type) {
       case "group":
         return <NavGroup key={"nav-group-" + item.id} group={item} />;
@@ -16,7 +16,7 @@ const NavContent = ({ navigation }) => {
     }
   });
 
-  let mainContent = "";
+  let mainContent: any = "";
 
   mainContent = (
     <div className="navbar-content datta-scroll">

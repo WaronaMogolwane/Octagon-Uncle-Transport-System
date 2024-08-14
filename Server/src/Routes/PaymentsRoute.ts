@@ -1,20 +1,17 @@
 import Router from "express-promise-router";
-import {
-  GetUser,
-  UpdateUserEmail,
-  UpdateUserPassword,
-} from "../Controllers/UserController";
-import { CreateNewCustomer, CreateNewPlan, CreateNewSubscription, TokenizePaymentInstrument } from "../Controllers/PaymentsController";
-
+import { ChargeAuthorization, CreateNewCustomer, CreateNewPlan, CreateNewSubscription, HandleWebhookEvent, CreateTransactionLink } from "../Controllers/PaymentsController";
+import { CardAuthorisation } from "../Classes/CardAuthorisation";
+import { stringFormat } from "../Extensions/StringExtensions";
+import crypto from 'crypto';
+import dotenv from "dotenv";
+const PAYSTACK_SECRET_KEY: string = process.env.OUTS_PAYSTACK_TEST_PUBLIC_KEY;
 const router = Router();
 
-router.post("/webhook", async (req, res, next) => {
-  res.status(200).send(req.body);
-  console.log(req.body)
-});
+router.post("/webhook", HandleWebhookEvent, async (req, res, next) => { });
 router.post("/create-new-customer", CreateNewCustomer, async (req, res, next) => { });
 router.post("/create-new-plan", CreateNewPlan, async (req, res, next) => { });
 router.post("/create-new-subscription", CreateNewSubscription, async (req, res, next) => { });
-router.post("/tokenize-payment-instrument", TokenizePaymentInstrument, async (req, res, next) => { });
+router.post("/initialize-transaction", CreateTransactionLink, async (req, res, next) => { });
+router.post("/charge-authorization", ChargeAuthorization, async (req, res, next) => { });
 
 export default router;

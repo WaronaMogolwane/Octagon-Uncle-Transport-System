@@ -22,18 +22,26 @@ const menuItems = {
       icon: "icon-navigation",
       children: [
         {
-          id: "new-push-notifications",
-          title: "New Push Notification",
-          type: "item",
-          icon: "feather icon-plus-square",
-          url: "/messaging/createpushnotification",
-        },
-        {
-          id: "view-push-notifications",
-          title: "All Push Notifications",
-          type: "item",
+          id: "push-notifications",
+          title: "Push Notifications",
+          type: "collapse",
           icon: "feather icon-message-square",
-          url: "/messaging/pushnotifications",
+          children: [
+            {
+              id: "new-push-notifications",
+              title: "Create Push Notification",
+              type: "item",
+              icon: "feather icon-plus-square",
+              url: "/messaging/createpushnotification",
+            },
+            {
+              id: "manage-push-notifications",
+              title: "Manage Push Notifications",
+              type: "item",
+              icon: "feather icon-message-square",
+              url: "/messaging/managepushnotifications",
+            },
+          ],
         },
       ],
     },

@@ -1,6 +1,6 @@
-export const BASE_URL = '/app/dashboard/default';
-export const BASE_TITLE = ' | Datta Able Free React Hooks + Admin Template';
+export const BASE_URL = "/app/dashboard/default";
+export const BASE_TITLE = " | Octagon Uncle Admin";
 
 export const CONFIG = {
-  layout: 'vertical'
+  layout: "vertical",
 };

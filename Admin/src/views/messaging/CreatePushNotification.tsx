@@ -41,6 +41,7 @@ const CreatePushNotification = (props: any) => {
         title: values.title,
         channelId: values.channel,
       };
+      console.log(pushNotification);
       SendPushNotification(pushNotification, (error, result) => {
         if (error) {
           console.error(error);

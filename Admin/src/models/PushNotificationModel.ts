@@ -10,16 +10,16 @@ export const SendPushNotification = async (pushNotification: PushNotificationObj
 
     await axios
         .post(
-            `${SERVER_HOST}:${SERVER_PORT}/push-notifications/send-to-device`,
+            `${SERVER_HOST}:${SERVER_PORT}/push-notifications/send-to-all`,
             {
-                params: {
-                    token: pushNotification.token,
-                    body: pushNotification.body,
-                    title: pushNotification.title,
-                    image: pushNotification.image,
-                    userInfo: null,
-                    channelId: pushNotification.channelId
-                },
+
+                token: pushNotification.token,
+                body: pushNotification.body,
+                title: pushNotification.title,
+                image: pushNotification.image,
+                userInfo: null,
+                channelId: pushNotification.channelId
+
             },
         )
         .then((response: any) => {

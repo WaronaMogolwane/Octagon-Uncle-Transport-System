@@ -1,8 +1,7 @@
 export class PushNotificationObj {
     title: string;
     body: string;
-    image: string;
-    icon?: string;
+    image?: string;
     userInfo?: any;
     channelId?: string;
     token?: string;
@@ -13,8 +12,7 @@ export class PushNotificationObj {
     constructor(
         title: string,
         body: string,
-        image: string,
-        icon?: string,
+        image?: string,
         userInfo?: any,
         channelId?: string,
         token?: string,
@@ -25,7 +23,6 @@ export class PushNotificationObj {
         this.title = title;
         this.body = body;
         this.image = image;
-        this.icon = icon;
         this.userInfo = userInfo;
         this.channelId = channelId;
         this.token = token;

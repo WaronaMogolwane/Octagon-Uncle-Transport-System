@@ -2,6 +2,7 @@
 // sendNotif.js
 import admin from "firebase-admin";
 import { PushNotificationObj } from "../../Classes/PushNotification";
+import { channel } from "diagnostics_channel";
 
 
 export const sendNotif = async (pushNotification: PushNotificationObj) => {
@@ -32,6 +33,29 @@ export const sendNotif = async (pushNotification: PushNotificationObj) => {
             token: pushNotification.token,
         };
         const response = await admin.messaging().send(message);
+        console.log("Successfully sent message:", response);
+    } catch (error) {
+        console.error("Error sending message:", error.message);
+        throw error;
+    }
+};
+export const sendNotifToAll = async (pushNotification: PushNotificationObj) => {
+    try {
+        // if (pushNotification.token || typeof pushNotification.token == 'string') {
+        //     throw new Error('Invalid FCM token provided');
+        // }
+        console.log(pushNotification)
+        const message = {
+            data: {
+                title: pushNotification.title,
+                body: pushNotification.body,
+                image: pushNotification.image,
+                channelId: pushNotification.channelId
+
+            }
+        }
+
+        const response = await admin.messaging().sendToTopic("General", message)
         console.log("Successfully sent message:", response);
     } catch (error) {
         console.error("Error sending message:", error.message);

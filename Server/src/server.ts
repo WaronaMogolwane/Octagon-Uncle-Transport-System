@@ -2,7 +2,6 @@ import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
 import express from "express";
-
 import authRoute from "./Routes/AuthenticationRoutes";
 import userProfileRoute from "./Routes/UserDetailRoutes";
 import passengerRoute from "./Routes/PassengerRoutes";
@@ -15,9 +14,12 @@ import businessDetailRoute from "./Routes/BusinessDetailRoutes";
 import bankingDetailRoute from "./Routes/BankingDetailRoutes";
 import userRoute from "./Routes/UserRoutes";
 import paymentsRoute from "./Routes/PaymentsRoute";
+import pushNotificationsRoute from "./Routes/PushNotificationsRoute";
 
 import ErrorHandler from "./Middleware/ErrorHandler";
-
+// myServerFile.js
+import { firebase } from "./firebase";
+// Use the Firebase Admin SDK here...
 import { StartSchedule } from "./Services/ScheduleService";
 
 const app = express();
@@ -44,13 +46,14 @@ app.use("/vehicle", vehicleRoute);
 app.use("/business-detail", businessDetailRoute);
 app.use("/banking-detail", bankingDetailRoute);
 app.use("/payments", paymentsRoute);
+app.use("/push-notifications", pushNotificationsRoute);
 app.use(
   "/passenger-driver-vehicle-linking",
   passengerDriverVehicleLinkingRoute
 );
 app.use("/passenger-schedule", passengerScheduleRoute);
 app.use("/driver-vehicle-linking", driverVehicleLinkingRoute);
-
+const fbp = firebase;
 StartSchedule();
 
 app.listen(PORT, function () {

@@ -2,7 +2,7 @@
 //require('dotenv').config()
 import axios from 'axios';
 import { PushNotificationObj } from '../classes/PushNotification';
-const SERVER_HOST = "http://172.14.0.43";
+const SERVER_HOST = "http://server.majorxp.co.za";
 const SERVER_PORT = '9999';
 
 export const SendPushNotification = async (pushNotification: PushNotificationObj, callback: (error: any, result: any) => void) => {

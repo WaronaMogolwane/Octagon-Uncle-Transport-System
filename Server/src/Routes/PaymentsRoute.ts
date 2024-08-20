@@ -1,9 +1,6 @@
 import Router from "express-promise-router";
-import { ChargeAuthorization, CreateNewCustomer, CreateNewPlan, CreateNewSubscription, HandleWebhookEvent, CreateTransactionLink } from "../Controllers/PaymentsController";
-import { CardAuthorisation } from "../Classes/CardAuthorisation";
-import { stringFormat } from "../Extensions/StringExtensions";
-import crypto from 'crypto';
-import dotenv from "dotenv";
+import { ChargeAuthorization, CreateNewCustomer, CreateNewPlan, CreateNewSubscription, CreateTransactionLink } from "../Controllers/PaymentsController";
+import { HandleWebhookEvent } from "../Services/PaystackService";
 const PAYSTACK_SECRET_KEY: string = process.env.OUTS_PAYSTACK_TEST_PUBLIC_KEY;
 const router = Router();
 

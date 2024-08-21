@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    //"module": "system",
+    "noImplicitAny": true,
+    "removeComments": true,
+    "preserveConstEnums": true,
+    "esModuleInterop": true,
+    //"outFile": "../../built/local/tsc.js",
+    "sourceMap": true,
+    "outDir": "build",
+    "module": "commonjs",
+    "target": "es5",
+    "lib": ["es6", "dom", "esnext"],
+    "allowJs": true,
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "types": ["vite/client"]
+    //"strictNullChecks": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["**/*.spec.ts"]
+}

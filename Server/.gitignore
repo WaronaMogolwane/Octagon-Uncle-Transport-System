@@ -43,5 +43,7 @@ yarn-error.*
 expo-env.d.ts
 # @end expo-cli
 
-.env
-service-account-key.json
+.env 
+service-account-key.json 
+.env 
+service-account-key.json 

@@ -34,6 +34,7 @@ export const AddBusinessDetailToDB = async (businessDetail: BusinessDetail) => {
 
 export const GetBusinessDetailFromDB = async (businessId: string) => {
   let res: any;
+  let statusCode: any;
 
   await axios
     .get(`${SERVER_HOST}:${SERVER_PORT}/business-detail/get-business-detail`, {
@@ -58,14 +59,14 @@ export const GetBusinessDetailFromDB = async (businessId: string) => {
       );
 
       res = businessDetail;
+      statusCode = response.status;
     })
     .catch((error: any) => {
       console.log(error);
       res = error;
     });
-  console.log(res);
 
-  return res;
+  return [res, statusCode];
 };
 
 export const GetBusinessDetailForParentFromDB = async (businessId: string) => {

@@ -1,4 +1,4 @@
-import {Heading, VStack} from '@gluestack-ui/themed';
+import {Button, ButtonText, Heading, VStack} from '@gluestack-ui/themed';
 import {View} from 'react-native';
 import {AddPassengerFormProps} from '../../Models/FormControlProps';
 import {CustomButton1} from '../Buttons';
@@ -58,6 +58,18 @@ export function AddPassengerForm(props: AddPassengerFormProps) {
         />
 
         <CustomFormControlInput
+          labelText="Destination Address"
+          placeHolder="destination address"
+          isInvalid={props.destinationAddressIsInvalid}
+          isRequired={false}
+          type="text"
+          onChangeText={props.destinationAddressOnChangeText}
+          errorText={props.destinationAddressErrorText}
+          onBlur={props.destinationAddressOnBlur}
+          value={props.destinationAddressValue}
+        />
+
+        <CustomFormControlInput
           labelText="Suburb"
           placeHolder="suburb"
           isInvalid={props.suburbIsInvalid}
@@ -104,19 +116,15 @@ export function AddPassengerForm(props: AddPassengerFormProps) {
           onBlur={props.postalCodeOnBlur}
           value={props.postalCodeValue}
         />
-
-        <CustomFormControlInput
-          labelText="Destination Address"
-          placeHolder="destination address"
-          isInvalid={props.destinationAddressIsInvalid}
-          isRequired={false}
-          type="text"
-          onChangeText={props.destinationAddressOnChangeText}
-          errorText={props.destinationAddressErrorText}
-          onBlur={props.destinationAddressOnBlur}
-          value={props.destinationAddressValue}
-        />
-        <CustomButton1 title={'Submit'} onPress={props.submitPassenger} />
+        <Button
+          size="md"
+          variant="solid"
+          action="primary"
+          isDisabled={false}
+          isFocusVisible={false}
+          onPress={props.submitPassenger}>
+          <ButtonText>Submit</ButtonText>
+        </Button>
       </VStack>
     </View>
   );

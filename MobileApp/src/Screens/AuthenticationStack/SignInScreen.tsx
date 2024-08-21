@@ -18,7 +18,7 @@ const SignInScreen = ({navigation}: any) => {
       .string()
       .min(8, 'Password must be at least 8 characters')
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[-\#\$\.\%\&\*\?\!\_\,\+\=\@])(?=.*[a-zA-Z]).{8,16}$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
       )
       .required('Password is required'),

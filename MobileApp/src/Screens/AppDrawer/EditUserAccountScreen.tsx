@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   Image,
   StyleSheet,
   Text,
@@ -30,6 +31,11 @@ import {
   ButtonText,
   TrashIcon,
   ButtonIcon,
+  Menu,
+  AddIcon,
+  MenuItem,
+  MenuItemLabel,
+  EditIcon,
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
 import {CustomButton1} from '../../Components/Buttons';
@@ -48,6 +54,15 @@ import {AuthContext} from '../../Services/AuthenticationService';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
 import {err} from 'react-native-svg/lib/typescript/xml';
 import {Auth} from '../../Classes/Auth';
+import {OpenCamera, OpenFilePicker} from '../../Services/CameraService';
+import {ImageOrVideo} from 'react-native-image-crop-picker';
+import {Camera} from 'lucide-react';
+import {Images} from 'lucide-react';
+import {Aperture} from 'lucide-react';
+// import {DownloadImage} from '../../Services/ImageStorageService';
+import RNFetchBlob from 'rn-fetch-blob';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {RestoreImageViaAsyncStorage} from '../../Services/ImageStorageService';
 
 const EditUserAccountScreen = ({navigation}: any) => {
   const {session, emailOtp, verifyOtp}: any = useContext(AuthContext);
@@ -57,18 +72,29 @@ const EditUserAccountScreen = ({navigation}: any) => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
 
+  const [profileImage, setProfileImage] = useState('');
+  const [isChanged, setIsChanged] = useState(false);
+  const [captureImageAlertTitle, setCaptureImageAlertTitle] = useState(
+    'Successfully scanned',
+  );
+  const [confirmButtonTitle, setConfirmButtonTitle] = useState('Capture front');
+  const [selected, setSelected] = React.useState(new Set([]));
+
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showEmailVerificationModal, setShowEmailVerificationModal] =
     useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
+  const [IsLoading, setIsLoading] = useState(false);
 
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
-  const passwordExp: RegExp =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+  const storageUrl: string =
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
 
-  // const userId = 'ffe121bd-de71-4016-813b-50e70e7fa298';
+  const passwordExp: RegExp =
+    /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[-\#\$\.\%\&\*\?\!\_\,\+\=\@])(?=.*[a-zA-Z]).{8,16}$/;
+
   const userId = auth.GetUserId();
 
   const ref = React.useRef(null);
@@ -77,6 +103,12 @@ const EditUserAccountScreen = ({navigation}: any) => {
   useEffect(() => {
     GetCredentials();
   }, [refreshData]);
+
+  useEffect(() => {
+    RestoreImageViaAsyncStorage().then((result: any) => {
+      setProfileImage(result);
+    });
+  }, [isChanged]);
 
   const GetCredentials = async () => {
     await GetUser(userId).then((result: any) => {
@@ -228,29 +260,6 @@ const EditUserAccountScreen = ({navigation}: any) => {
       },
     });
   };
-
-  // const VerifyOtp = async () => {
-  //   verifyOtp(
-  //     emailFormik.values.otp.toString().trim(),
-  //     emailFormik.values.email.toString().trim(),
-  //     (error: any, result: any) => {
-  //       //console.log(result.status);
-  //       if (error) {
-  //         console.warn(error);
-  //         ShowFaliureToast('Email');
-  //       } else {
-  //         if (result[0] == undefined) {
-  //           ShowFaliureToast('Email');
-  //         } else {
-  //           setIsEmailVerified(true);
-  //           setShowEmailVerificationModal(false);
-  //           emailFormik.resetForm();
-  //           UpdateEmail();
-  //         }
-  //       }
-  //     },
-  //   );
-  // };
 
   const VerifyOtp = async () => {
     verifyOtp(
@@ -421,6 +430,206 @@ const EditUserAccountScreen = ({navigation}: any) => {
     );
   };
 
+  async function GetFileBlob(url: string, callback: any) {
+    let data: Blob;
+    await fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        let reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = function (e) {
+          callback(e.target!.result.toString());
+        };
+      });
+  }
+
+  const DownloadImage = async () => {
+    const storageUrl: string =
+      'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
+
+    // send http request in a new thread (using native code)
+    RNFetchBlob.config({
+      // add this option that makes response data to be stored as a file,
+      // this is much more performant.
+      fileCache: true,
+    })
+      .fetch(
+        'GET',
+        'https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg',
+        {
+          //   Authorization: 'Bearer access-token...',
+          // more headers  ..
+        },
+      )
+      .then(res => {
+        console.log(res);
+        let status = res.info().status;
+
+        if (status == 200) {
+          // // the conversion is done in native code
+          // let base64Str = res.base64();
+          // // the following conversions are done in js, it's SYNC
+          // let text = res.text();
+          // let json = res.json();
+
+          console.log('image saved');
+        } else {
+          // handle other status code
+          console.log('Something else happened');
+        }
+      })
+      // Something went wrong:
+      .catch((errorMessage: any) => {
+        // error handling
+        console.log(errorMessage);
+      });
+  };
+
+  const CaptureImage = () => {
+    OpenCamera(false, (result: any, error: any) => {
+      if (error) {
+      } else {
+        const image: ImageOrVideo = result;
+        if (!profileImage) {
+          console.log(image.path);
+
+          // setProfileImage(image.path);
+          SaveImageViaAsyncStorage(image.path);
+          setIsChanged(!isChanged);
+
+          GetFileBlob(image.path, async function (imageUrl: string) {
+            setProfileImage(imageUrl);
+            setCaptureImageAlertTitle('Successfully scanned');
+            setConfirmButtonTitle('Capture rear');
+          });
+        }
+        // if (vehicleFrontImage && !vehicleRearImage) {
+        //   GetFileBlob(image.path, async function (imageUrl: string) {
+        //     setVehicleRearImage(imageUrl!);
+        //     let NewVehicle: Vehicle = route.params.NewVehicle;
+        //     NewVehicle.FrontImage = vehicleFrontImage;
+        //     NewVehicle.RearImage = vehicleRearImage;
+        //     setNewVehicle(NewVehicle!);
+        //     setShowCaptureImageAlert(false);
+        //     setShowNewVehicleDetailsModal(true);
+        //     navigation.setParams({NewVehicle: undefined});
+        //   });
+        // }
+      }
+    });
+  };
+
+  const OpenGallery = () => {
+    OpenFilePicker((result: any, error: any) => {
+      if (error) {
+      } else {
+        const image: ImageOrVideo = result;
+        if (!profileImage) {
+          GetFileBlob(image.path, async function (imageUrl: string) {
+            // setProfileImage(imageUrl);
+            SaveImageViaAsyncStorage(image.path);
+            setIsChanged(!isChanged);
+
+            setCaptureImageAlertTitle('Successfully scanned');
+            setConfirmButtonTitle('Capture rear');
+          });
+        }
+        // if (vehicleFrontImage && !vehicleRearImage) {
+        //   GetFileBlob(image.path, async function (imageUrl: string) {
+        //     setVehicleRearImage(imageUrl!);
+        //     let NewVehicle: Vehicle = route.params.NewVehicle;
+        //     NewVehicle.FrontImage = vehicleFrontImage;
+        //     NewVehicle.RearImage = vehicleRearImage;
+        //     setNewVehicle(NewVehicle!);
+        //     setShowCaptureImageAlert(false);
+        //     setShowNewVehicleDetailsModal(true);
+        //     navigation.setParams({NewVehicle: undefined});
+        //   });
+        // }
+      }
+    });
+  };
+
+  const FabMenu = () => {
+    return (
+      <Menu
+        selectionMode="single"
+        selectedKeys={selected}
+        onSelectionChange={keys => {
+          const selectedMenuItem: any = keys;
+          if (selectedMenuItem.currentKey === 'Camera') {
+            setIsLoading(true);
+            // ScanLicenseDisc({IsReScan: false});
+            CaptureImage();
+            setIsLoading(false);
+          }
+          if (selectedMenuItem.currentKey === 'Gallery') {
+            setIsLoading(true);
+            // ScanLicenseDisc({IsReScan: false});
+            OpenGallery();
+            setIsLoading(false);
+          }
+        }}
+        closeOnSelect={true}
+        placement="bottom"
+        trigger={({...triggerProps}) => {
+          return (
+            <Fab
+              {...triggerProps}
+              style={{zIndex: 1}}
+              size="md"
+              placement="bottom right"
+              isHovered={false}
+              isDisabled={false}
+              isPressed={false}>
+              <FabIcon as={EditIcon} />
+            </Fab>
+          );
+        }}>
+        <MenuItem key="Camera" textValue="Camera">
+          <MenuItemLabel size="sm">Camera</MenuItemLabel>
+        </MenuItem>
+        <MenuItem key="Gallery" textValue="Gallery">
+          <MenuItemLabel size="sm">Gallery</MenuItemLabel>
+        </MenuItem>
+      </Menu>
+    );
+  };
+
+  // const SaveImage = () => {
+  //   // send http request in a new thread (using native code)
+  //   RNFetchBlob.fetch('GET', 'http://www.example.com/images/img1.png', {
+  //     Authorization: 'Bearer access-token...',
+  //     // more headers  ..
+  //   }).then(res => {
+  //     let status = res.info().status;
+
+  //     if (status == 200) {
+  //       // the conversion is done in native code
+  //       let base64Str = res.base64();
+  //       // the following conversions are done in js, it's SYNC
+  //       let text = res.text();
+  //       let json = res.json();
+  //     } else {
+  //       // handle other status codes
+  //     }
+  //   });
+  //   // Something went wrong:
+  //   // .catch((errorMessage: any, statusCode: any) => {
+  //   //   //Error handling
+  //   // });
+  // };
+  // const SaveToCache = () => {};
+
+  const SaveImageViaAsyncStorage = async (value: string) => {
+    try {
+      await AsyncStorage.setItem('profileImage', value);
+    } catch (e) {
+      // saving error
+      console.error('There was an error saving the image path via async: ' + e);
+    }
+  };
+
   const emailInitialValues = {
     email: '',
     otp: '',
@@ -437,7 +646,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
       .string()
       .min(8, 'Password must be at least 8 characters')
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[-\#\$\.\%\&\*\?\!\_\,\+\=\@])(?=.*[a-zA-Z]).{8,16}$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
       )
       .required('Please enter old password'),
@@ -445,7 +654,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
       .string()
       .min(8, 'Password must be at least 8 characters')
       .matches(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
+        /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[-\#\$\.\%\&\*\?\!\_\,\+\=\@])(?=.*[a-zA-Z]).{8,16}$/,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
       )
       .required('Password is required'),
@@ -495,42 +704,40 @@ const EditUserAccountScreen = ({navigation}: any) => {
     },
   });
 
-  // const GoBackFab = () => {
-  //   return (
-  //     <Fab
-  //       onPress={navigation.navigate('Profile')}
-  //       size="sm"
-  //       placement="bottom right"
-  //       isHovered={false}
-  //       isDisabled={false}
-  //       isPressed={false}>
-  //       <FabIcon as={ArrowLeftIcon} mr="$1" />
-  //       <FabLabel>Back</FabLabel>
-  //     </Fab>
-  //   );
-  // };
-
   return (
     <View style={styles.container}>
+      {IsLoading ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" />
+          <Text>Saving</Text>
+        </View>
+      ) : null}
+
       <View>{EmailModal()}</View>
       <View>{EmailVerificationModal()}</View>
       <View>{ChangePasswordModal()}</View>
       <View style={styles.avatarContainer}>
         <Image
           style={styles.avatar}
-          source={{
-            uri: 'https://www.bootdey.com/img/Content/avatar/avatar3.png',
-          }}
+          source={
+            profileImage == ''
+              ? require('../../Images/default_avatar_image.jpg')
+              : {uri: profileImage}
+          }
         />
-        <TouchableOpacity
-          style={styles.changeAvatarButton}
-          onPress={() => {
-            /* open image picker */
-          }}>
-          <Text style={styles.changeAvatarButtonText}>
-            Change Profile Picture
-          </Text>
-        </TouchableOpacity>
+        <Text></Text>
+        <FabMenu />
       </View>
       <View style={styles.form}>
         <Text style={styles.label}>Email</Text>
@@ -633,9 +840,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 150,
+    height: 150,
+    borderRadius: 75,
   },
   changeAvatarButton: {
     marginTop: 10,

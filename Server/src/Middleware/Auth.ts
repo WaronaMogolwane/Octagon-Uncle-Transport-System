@@ -3,7 +3,7 @@ dotenv.config();
 import jwt from "jsonwebtoken";
 import { Session } from "../Classes/Session";
 
-const jwtSecret: any = process.env.JWT_SECRET_KEY;
+const jwtSecret: any = process.env.OUTS_JWT_SECRET_KEY;
 
 export const AuthenticateJWT = (req: any, res: any, next: any) => {
   const authHeader = req.headers.authorization;

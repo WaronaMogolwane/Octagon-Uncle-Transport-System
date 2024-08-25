@@ -37,3 +37,6 @@ yarn-error.*
 /Builds
 
 .env
+Server/.env
+Server/service-account-key.json
+MobileApp/.env

@@ -1,40 +1,82 @@
-import {View, Text, StyleSheet, TextInput} from 'react-native';
+import {View, Text, StyleSheet, TextInput, Pressable} from 'react-native';
 import React, {useState} from 'react';
-import {ArrowLeft, ArrowLeftIcon, FilePen, Icon} from 'lucide-react-native';
+import {
+  ArrowLeft,
+  ArrowLeftIcon,
+  CarFront,
+  FilePen,
+  Icon,
+  WalletMinimal,
+} from 'lucide-react-native';
 import {burger} from '@lucide/lab';
-import {Button, ButtonIcon, ButtonText, ClockIcon} from '@gluestack-ui/themed';
+import {
+  Button,
+  ButtonIcon,
+  ButtonText,
+  Card,
+  ClockIcon,
+} from '@gluestack-ui/themed';
 
 const EditPaymentDetailsScreen = ({navigation}: any) => {
   const [cardNumber, setCardNumber] = useState('Card Number');
   return (
-    <View>
-      <View>
-        <View style={{flexDirection: 'row', padding: 10}}>
-          <View
-            style={{
-              flexDirection: 'column',
-              width: '50%',
-              alignItems: 'center',
-            }}>
-            <Text style={{fontWeight: 'bold', fontSize: 20}}>
-              Next Payment Date
-            </Text>
-            <Text style={{fontSize: 18}}>08/05/2024</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'column',
-              width: '50%',
-              alignItems: 'center',
-            }}>
-            <Text style={{fontWeight: 'bold', fontSize: 20}}>Amount</Text>
-            <Text style={{fontSize: 18}}>R 230.00</Text>
-          </View>
-        </View>
+    <View style={{backgroundColor: '#e8f0f3', flex: 1}}>
+      <View
+        style={{
+          marginTop: 20,
+          flexDirection: 'row',
+          justifyContent: 'center',
+        }}>
+        <Card
+          size="sm"
+          variant="outline"
+          style={{
+            marginEnd: 15,
+            width: '41.7%',
+            backgroundColor: '#ffffff',
+            borderRadius: 5,
+            elevation: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text style={{fontWeight: 'bold', fontSize: 15, color: '#3ba2a9'}}>
+            Next Payment Date
+          </Text>
+          <Text style={{fontSize: 18}}>08/05/2024</Text>
+        </Card>
+
+        <Card
+          size="sm"
+          variant="outline"
+          style={{
+            marginStart: 15,
+            width: '41.7%',
+            backgroundColor: '#ffffff',
+            borderRadius: 5,
+            elevation: 10,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Text style={{fontWeight: 'bold', fontSize: 15, color: '#3ba2a9'}}>
+            Amount
+          </Text>
+          <Text style={{fontSize: 18}}>R 230.00</Text>
+        </Card>
       </View>
 
-      <View style={{flexDirection: 'column', marginHorizontal: 20}}>
-        <Text style={styles.label}>Email</Text>
+      <Card
+        size="sm"
+        variant="outline"
+        style={{
+          marginTop: 10,
+          marginHorizontal: 16,
+          backgroundColor: '#ffffff',
+          borderRadius: 5,
+          elevation: 10,
+        }}>
+        <Text style={{fontWeight: 'bold', fontSize: 15, color: '#3ba2a9'}}>
+          Card Number
+        </Text>
         <TextInput
           editable={false}
           style={styles.input}
@@ -49,9 +91,9 @@ const EditPaymentDetailsScreen = ({navigation}: any) => {
             // setShowEmailModal(true);
           }}
           style={styles.changeAvatarButtonText}>
-          Change Card
+          add new card
         </Text>
-      </View>
+      </Card>
 
       <View style={{flexDirection: 'column', marginVertical: 30}}>
         <View style={{alignItems: 'center'}}>
@@ -107,7 +149,7 @@ const EditPaymentDetailsScreen = ({navigation}: any) => {
                     isDisabled={false}
                     isFocusVisible={false}
                     onPress={() => {
-                      navigation.navigate('Profile');
+                      navigation.goBack();
                     }}>
                     <ButtonIcon as={ArrowLeftIcon} style={{marginEnd: 5}} />
                     <ButtonText>Back</ButtonText>
@@ -129,9 +171,6 @@ const styles = StyleSheet.create({
   },
   form: {
     width: '80%',
-  },
-  label: {
-    marginTop: 20,
   },
   input: {
     borderColor: '#ccc',
@@ -164,8 +203,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   changeAvatarButtonText: {
+    marginTop: 10,
     color: '#1E90FF',
-    fontSize: 18,
+    fontSize: 16,
   },
 });
 

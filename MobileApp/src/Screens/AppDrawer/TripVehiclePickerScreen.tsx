@@ -1,24 +1,23 @@
-import {FlatList, RefreshControl, Text, View} from 'react-native';
+import {FlatList, RefreshControl, SafeAreaView, Text, View} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
+import {Auth} from '../../Classes/Auth';
+import {AuthContext} from '../../Services/AuthenticationService';
 import {
   useToast,
   Toast,
   VStack,
-  ToastDescription,
   ToastTitle,
-  FabIcon,
+  ToastDescription,
   Fab,
+  FabIcon,
   FabLabel,
-  ArrowLeftIcon,
 } from '@gluestack-ui/themed';
-import {AuthContext} from '../../Services/AuthenticationService';
-import {Auth} from '../../Classes/Auth';
+import {ArrowLeftIcon} from 'lucide-react-native';
 import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
-const ManageTripsScreen = ({navigation}: any) => {
+const TripTransporter = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
 
@@ -92,7 +91,7 @@ const ManageTripsScreen = ({navigation}: any) => {
       color={itemData.color}
       fullName={itemData.fullName}
       onPress={() => {
-        navigation.navigate('Assign Passenger', {
+        navigation.navigate('Transport Trip', {
           vehicleId: itemData.vehicleId,
         });
       }}
@@ -102,7 +101,7 @@ const ManageTripsScreen = ({navigation}: any) => {
   const EmtpyFlatListText = () => {
     return (
       <View style={{backgroundColor: '#e8f0f3'}}>
-        <Text>
+        <Text style={{textAlign: 'center'}}>
           You currently have no linked vehicles. Please add vehicles and try
           again.
         </Text>
@@ -114,7 +113,7 @@ const ManageTripsScreen = ({navigation}: any) => {
     return (
       <Fab
         onPress={() => {
-          navigation.navigate('Home');
+          navigation.goBack();
         }}
         size="sm"
         placement="bottom right"
@@ -129,20 +128,18 @@ const ManageTripsScreen = ({navigation}: any) => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <View style={FlatlistStyles.container}>
-        {noLinkedVehicle ? EmtpyFlatListText() : null}
-        <FlatList
-          style={{backgroundColor: '#e8f0f3'}}
-          data={vehicleList}
-          renderItem={({item}) => renderItemComponentVehicleInfo(item)}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        />
-        <View>{GoBackFab()}</View>
-      </View>
+      {noLinkedVehicle ? EmtpyFlatListText() : null}
+      <FlatList
+        style={{backgroundColor: '#e8f0f3'}}
+        data={vehicleList}
+        renderItem={({item}) => renderItemComponentVehicleInfo(item)}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      />
+      <View>{GoBackFab()}</View>
     </SafeAreaView>
   );
 };
 
-export default ManageTripsScreen;
+export default TripTransporter;

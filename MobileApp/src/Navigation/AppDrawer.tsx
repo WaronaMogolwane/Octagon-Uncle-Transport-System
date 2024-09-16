@@ -18,13 +18,18 @@ import EditPaymentDetailsScreen from '../Screens/AppDrawer/EditPaymentDetailsScr
 import {Auth} from '../Classes/Auth';
 import {AuthContext} from '../Services/AuthenticationService';
 import {
+  AlignLeft,
   Aperture,
   Baby,
+  Bell,
   Bolt,
   BookUser,
   Bus,
+  CarFront,
+  GraduationCap,
   HandCoins,
   KeySquare,
+  Route,
   ShipWheel,
   University,
   UsersRound,
@@ -35,6 +40,9 @@ import {GetUser} from '../Controllers/UserController';
 import {ScrollView} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
+import TripVehiclePickerScreen from '../Screens/AppDrawer/TripVehiclePickerScreen';
+import {getHeaderTitle} from '@react-navigation/elements';
+import TripTransporterScreen from '../Screens/AppDrawer/TripTransporterScreen';
 
 const AppDrawer = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -130,19 +138,61 @@ const AppDrawer = ({navigation}: any) => {
       }}
       initialRouteName="Home"
       screenOptions={{
-        drawerStyle: {backgroundColor: '#fff', width: 250},
+        drawerStyle: {backgroundColor: '#e8f0f3', width: 250},
         headerStyle: {
-          backgroundColor: '#fff',
+          // backgroundColor: '#e8f0f3',
         },
-        headerTintColor: '#000000',
+        headerTintColor: '#e8f0f3',
         headerTitleStyle: {fontWeight: 'bold'},
         drawerActiveTintColor: 'blue',
         drawerLabelStyle: {color: '#111'},
+        header: ({navigation, route, options}) => {
+          const title = getHeaderTitle(options, route.name);
+
+          return (
+            <View style={{flexDirection: 'row', backgroundColor: '#e8f0f3'}}>
+              <View style={{width: '20%'}}>
+                <Pressable
+                  style={{marginVertical: 15, marginStart: 15}}
+                  onPress={() => {
+                    navigation.toggleDrawer();
+                  }}>
+                  <AlignLeft size={25} strokeWidth={2} color={'black'} />
+                </Pressable>
+              </View>
+              <View style={{width: '60%', justifyContent: 'center'}}>
+                <Text
+                  style={{
+                    fontSize: 25,
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    color: 'black',
+                  }}>
+                  {title != 'Home' ? title : ''}
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: '20%',
+                  alignItems: 'flex-end',
+                }}>
+                <Pressable
+                  style={{marginVertical: 15, marginEnd: 15}}
+                  onPress={() => {
+                    navigation.toggleDrawer();
+                  }}>
+                  <Bell size={25} strokeWidth={2} color={'black'} />
+                </Pressable>
+              </View>
+            </View>
+          );
+        },
       }}>
       <Drawer.Screen
         name="Home"
         component={HomeScreen}
         options={{
+          // headerShown: false,
           title: 'Home',
           drawerIcon: () => (
             <University
@@ -153,20 +203,40 @@ const AppDrawer = ({navigation}: any) => {
           ),
         }}
       />
-      <Drawer.Screen
-        name="Trip"
-        component={TripsScreen}
-        options={{
-          title: 'Trips',
-          drawerIcon: () => (
-            <Bus
-              size={iconSize}
-              strokeWidth={iconStrokeWidth}
-              color={iconColor}
-            />
-          ),
-        }}
-      />
+
+      {role != 1 ? (
+        <Drawer.Screen
+          name="Trip"
+          component={TripsScreen}
+          options={{
+            // drawerItemStyle: {display: 'none'},
+            title: 'Trips',
+            drawerIcon: () => (
+              <Route
+                size={iconSize}
+                strokeWidth={iconStrokeWidth}
+                color={iconColor}
+              />
+            ),
+          }}
+        />
+      ) : (
+        <Drawer.Screen
+          name="Trip Vehicle Picker"
+          component={TripVehiclePickerScreen}
+          options={{
+            title: 'Trips',
+            drawerIcon: () => (
+              <Route
+                size={iconSize}
+                strokeWidth={iconStrokeWidth}
+                color={iconColor}
+              />
+            ),
+          }}
+        />
+      )}
+
       {role == 1 ? (
         <Drawer.Screen
           name="Payments"
@@ -190,7 +260,7 @@ const AppDrawer = ({navigation}: any) => {
           options={{
             title: 'Vehicles',
             drawerIcon: () => (
-              <KeySquare
+              <CarFront
                 size={iconSize}
                 strokeWidth={iconStrokeWidth}
                 color={iconColor}
@@ -265,6 +335,7 @@ const AppDrawer = ({navigation}: any) => {
         name="Edit Payment Details"
         component={EditPaymentDetailsScreen}
         options={{
+          title: 'Payments',
           drawerItemStyle: {display: 'none'},
         }}
       />
@@ -303,7 +374,7 @@ const AppDrawer = ({navigation}: any) => {
           options={{
             title: 'Passengers',
             drawerIcon: () => (
-              <Baby
+              <GraduationCap
                 size={iconSize}
                 strokeWidth={iconStrokeWidth}
                 color={iconColor}
@@ -333,9 +404,18 @@ const AppDrawer = ({navigation}: any) => {
           ),
         }}
       />
+      <Drawer.Screen
+        name="Transport Trip"
+        component={TripTransporterScreen}
+        options={{
+          title: 'Trips',
+          drawerItemStyle: {display: 'none'},
+        }}
+      />
     </Drawer.Navigator>
   );
 };
+
 const styles = StyleSheet.create({
   header: {
     backgroundColor: '#20B2AA',

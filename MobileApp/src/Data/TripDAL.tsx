@@ -207,7 +207,7 @@ export const GetPastTripsDriverFromDB = async (driverId: string) => {
   return result;
 };
 
-export const GetUpcomingTripsBusinessFromDB = async (businessId: string) => {
+export const GetUpcomingTripsTransporterFromDB = async (businessId: string) => {
   let result: any;
   const tripData: {}[] = [];
   let trip = {};
@@ -247,7 +247,7 @@ export const GetUpcomingTripsBusinessFromDB = async (businessId: string) => {
   return result;
 };
 
-export const GetPastTripsBusinessFromDB = async (businessId: string) => {
+export const GetPastTripsTransporterFromDB = async (businessId: string) => {
   let result: any;
   const tripData: {}[] = [];
   let trip = {};

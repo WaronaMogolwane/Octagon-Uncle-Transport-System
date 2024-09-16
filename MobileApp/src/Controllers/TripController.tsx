@@ -10,8 +10,8 @@ import {
   EndTripInDB,
   UpdateTripDropOffTimeInDB,
   UpdateTripPickUpTimeInDB,
-  GetPastTripsBusinessFromDB,
-  GetUpcomingTripsBusinessFromDB,
+  GetPastTripsTransporterFromDB,
+  GetUpcomingTripsTransporterFromDB,
 } from '../Data/TripDAL';
 import {Trip} from '../Models/Trip';
 
@@ -40,11 +40,11 @@ export const GetPastTripsForDriver = async (driverId: string) => {
 };
 
 export const GetUpcomingTripsForTransporter = async (businessId: string) => {
-  return await GetUpcomingTripsDriverFromDB(businessId);
+  return await GetUpcomingTripsTransporterFromDB(businessId);
 };
 
 export const GetPastTripsForTransporter = async (businessId: string) => {
-  return await GetPastTripsDriverFromDB(businessId);
+  return await GetPastTripsTransporterFromDB(businessId);
 };
 
 export const UpdateTrip = async (trip: Trip) => {

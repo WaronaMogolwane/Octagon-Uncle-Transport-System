@@ -118,7 +118,8 @@ const ManagePassengerScreen = ({navigation}: any) => {
 
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
-  const role: number = Number(auth.GetUserRole());
+  // const role: number = Number(auth.GetUserRole());
+  const role: number = 1;
 
   const defaultReasons = [
     {

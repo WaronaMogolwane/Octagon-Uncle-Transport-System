@@ -139,7 +139,7 @@ export const TripCardParentStyles = StyleSheet.create({
 });
 export const AssignPassengerScreenStyles = StyleSheet.create({
   container: {
-    backgroundColor: 'white',
+    backgroundColor: '#e8f0f3',
     padding: 16,
   },
   dropdown: {

@@ -44,10 +44,11 @@ const TripsScreen = ({navigation}: any) => {
 
   const userId = auth.GetUserId();
   const role: number = Number(auth.GetUserRole());
+  // const role: number = 2;
 
-  const [tempUserId, setTempUserId] = useState(userId);
+  // const [userId, setTempUserId] = useState(userId);
 
-  const [tempRole, setTempRole] = useState(role);
+  // const [role, setTempRole] = useState(role);
 
   const [UpcomingTripList, setUpcomingTripList] = useState([]);
   const [PastTripList, setPastTripList] = useState([]);
@@ -58,12 +59,9 @@ const TripsScreen = ({navigation}: any) => {
 
   const [statusCode, setStatusCode] = useState(true);
 
-  const [vehicleList, setVehicleList] = useState([]);
-  const [refreshing, setRefreshing] = React.useState(false);
-
   const [showNoFutureTripText, setShowNoFutureTripText] = useState(false);
   const [showNoPastTripText, setShowNoPastTripText] = useState(false);
-  const [noLinkedVehicle, setNoLinkedVehicle] = useState(true);
+
   const [IsLoading, setIsLoading] = useState(false);
   const toast = useToast();
 
@@ -102,66 +100,14 @@ const TripsScreen = ({navigation}: any) => {
     setRefreshingUpcomingTrips(false);
   }, []);
 
-  const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
-    setNoLinkedVehicle(true);
-
-    setTimeout(() => {
-      //setRefreshing(true);
-
-      GetVehiclesAndDrivers(tempUserId)
-        .then(result => {
-          if (result.length == 0) {
-            setNoLinkedVehicle(true);
-            setRefreshing(false);
-          } else {
-          }
-          setVehicleList(result);
-          setRefreshing(false);
-          if (!noLinkedVehicle) {
-            ShowSelectVehilcleToast();
-          }
-        })
-        .catch(() => {
-          setRefreshing(false);
-        });
-    }, 2000);
-
-    setRefreshing(false);
-  }, []);
-
   useEffect(() => {
     setRefreshingUpcomingTrips(true);
-    if (tempRole != 1) {
-      setTimeout(() => {
-        GetUpcomingTrips();
-        GetPastTrips();
-        setRefreshingUpcomingTrips(false);
-      }, 2000);
-    } else {
-      setTimeout(() => {
-        setRefreshing(true);
-
-        GetVehiclesAndDrivers(tempUserId)
-          .then(result => {
-            if (result.length == 0) {
-              setNoLinkedVehicle(true);
-              setRefreshing(false);
-            } else {
-            }
-            setVehicleList(result);
-            setRefreshing(false);
-            setNoLinkedVehicle(false);
-            if (!noLinkedVehicle) {
-              ShowSelectVehilcleToast();
-            }
-          })
-          .catch(() => {
-            setRefreshing(false);
-          });
-      }, 2000);
-    }
-  }, [tempRole, userId, role]);
+    setTimeout(() => {
+      GetUpcomingTrips();
+      GetPastTrips();
+      setRefreshingUpcomingTrips(false);
+    }, 2000);
+  }, [role, userId, role]);
 
   const ShowSelectVehilcleToast = () => {
     toast.show({
@@ -280,24 +226,16 @@ const TripsScreen = ({navigation}: any) => {
 
   //Gets all upcoming Trips for all roles
   const GetUpcomingTrips = async () => {
-    if (tempRole == 3) {
-      return await GetUpcomingTripsForClient(tempUserId).then(trip => {
+    if (role == 2) {
+      return await GetUpcomingTripsForClient(userId).then(trip => {
         if (trip.length == 0) {
           setShowNoFutureTripText(true);
         } else {
           setUpcomingTripList(trip);
         }
       });
-    } else if (tempRole == 2) {
-      return await GetUpcomingTripsForDriver(tempUserId).then(trip => {
-        if (trip.length == 0) {
-          setShowNoFutureTripText(true);
-        } else {
-          setUpcomingTripList(trip);
-        }
-      });
-    } else if (tempRole == 1) {
-      return await GetUpcomingTripsForTransporter(tempUserId).then(trip => {
+    } else if (role == 3) {
+      return await GetUpcomingTripsForDriver(userId).then(trip => {
         if (trip.length == 0) {
           setShowNoFutureTripText(true);
         } else {
@@ -309,24 +247,16 @@ const TripsScreen = ({navigation}: any) => {
 
   //Gets all past Trips for all roles
   const GetPastTrips = async () => {
-    if (tempRole == 3) {
-      return await GetPastTripsForClient(tempUserId).then(trip => {
+    if (role == 2) {
+      return await GetPastTripsForClient(userId).then(trip => {
         if (trip.length == 0) {
           setShowNoPastTripText(true);
         } else {
           setPastTripList(trip);
         }
       });
-    } else if (tempRole == 2) {
-      return await GetPastTripsForDriver(tempUserId).then(trip => {
-        if (trip.length == 0) {
-          setShowNoPastTripText(true);
-        } else {
-          setPastTripList(trip);
-        }
-      });
-    } else if (tempRole == 1) {
-      return await GetPastTripsForTransporter(tempUserId).then(trip => {
+    } else if (role == 3) {
+      return await GetPastTripsForDriver(userId).then(trip => {
         if (trip.length == 0) {
           setShowNoPastTripText(true);
         } else {
@@ -341,11 +271,11 @@ const TripsScreen = ({navigation}: any) => {
     if (role == 2 || role == 3) {
       navigation.goBack();
     }
-    if (role == tempRole) {
+    if (role == role) {
       navigation.goBack();
     } else {
-      setTempUserId(userId);
-      setTempRole(role);
+      // setTempUserId(userId);
+      // setTempRole(role);
     }
   };
 
@@ -411,38 +341,9 @@ const TripsScreen = ({navigation}: any) => {
     />
   );
 
-  //Card defined to select Drivers Linked to Vehicle
-  const vehicleSelectorTransporter = (itemData: any) => (
-    <VehicleCard
-      registrationNumber={itemData.registrationNumber}
-      make={itemData.make}
-      model={itemData.model}
-      color={itemData.color}
-      fullName={itemData.fullName}
-      onPress={() => {
-        GetDriverId(itemData.vehicleId).then((result: any) => {
-          setTempUserId(result[0].DriverId);
-          setTempRole(2);
-        });
-      }}
-    />
-  );
-
-  //Card defined for Transporter
-  const renderItemComponentTransporter = (itemData: any) => (
-    <TripCardDriver
-      passengerName={itemData.passengerName}
-      pickUpTime={itemData.pickUpTime}
-      pickUpDate={itemData.pickUpDate}
-      pickUpLocation={itemData.pickUpLocation}
-      tripStatus={itemData.tripStatus}
-      dropOffTime={itemData.dropOffTime}
-    />
-  );
-
   //Contains Upcoming Flatlist for all roles
   function FirstRoute() {
-    if (tempRole == 2) {
+    if (role == 2) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoFutureTripText ? EmtpyFlatListText() : null}
@@ -459,7 +360,7 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 3) {
+    } else if (role == 3) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoFutureTripText ? EmtpyFlatListText() : null}
@@ -476,25 +377,12 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 1) {
-      return (
-        <View style={FlatlistStyles.container}>
-          {showNoFutureTripText ? EmtpyFlatListText() : null}
-          <FlatList
-            data={vehicleList}
-            renderItem={({item}) => vehicleSelectorTransporter(item)}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
-        </View>
-      );
     }
   }
 
   //Contains Past Flatlist for all roles
   function SecondRoute() {
-    if (tempRole == 2) {
+    if (role == 2) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoPastTripText ? EmtpyFlatListText() : null}
@@ -511,7 +399,7 @@ const TripsScreen = ({navigation}: any) => {
           />
         </View>
       );
-    } else if (tempRole == 3) {
+    } else if (role == 3) {
       return (
         <View style={FlatlistStyles.container}>
           {showNoPastTripText ? EmtpyFlatListText() : null}
@@ -519,23 +407,6 @@ const TripsScreen = ({navigation}: any) => {
             data={PastTripList}
             extraData={statusCode}
             renderItem={({item}) => renderItemComponentDriver(item)}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshingPastTrips}
-                onRefresh={onRefreshPastTrips}
-              />
-            }
-          />
-        </View>
-      );
-    } else if (tempRole == 1) {
-      return (
-        <View style={FlatlistStyles.container}>
-          {showNoPastTripText ? EmtpyFlatListText() : null}
-          <FlatList
-            data={PastTripList}
-            extraData={statusCode}
-            renderItem={({item}) => renderItemComponentTransporter(item)}
             refreshControl={
               <RefreshControl
                 refreshing={refreshingPastTrips}
@@ -568,24 +439,10 @@ const TripsScreen = ({navigation}: any) => {
           <Text>Working</Text>
         </View>
       ) : null}
-      {tempRole != 1 ? (
-        <Tab.Navigator>
-          <Tab.Screen name="Upcoming Trips" component={FirstRoute} />
-          <Tab.Screen name="Past Trips" component={SecondRoute} />
-        </Tab.Navigator>
-      ) : (
-        <View style={FlatlistStyles.container}>
-          {noLinkedVehicle ? EmtpyVehicleFlatListText() : null}
-          <FlatList
-            data={vehicleList}
-            renderItem={({item}) => vehicleSelectorTransporter(item)}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
-          <View>{GoBackFab()}</View>
-        </View>
-      )}
+      <Tab.Navigator>
+        <Tab.Screen name="Upcoming Trips" component={FirstRoute} />
+        <Tab.Screen name="Past Trips" component={SecondRoute} />
+      </Tab.Navigator>
     </NavigationContainer>
   );
 };

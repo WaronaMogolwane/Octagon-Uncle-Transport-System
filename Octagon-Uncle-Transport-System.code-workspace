@@ -1,16 +1,7 @@
 {
   "folders": [
     {
-      "path": "Admin"
-    },
-    {
-      "path": "Server"
-    },
-    {
-      "path": "DatabaseScripts"
-    },
-    {
-      "path": "MobileApp"
+      "path": "."
     }
   ],
   "settings": {

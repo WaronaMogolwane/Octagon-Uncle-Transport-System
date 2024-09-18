@@ -11,7 +11,7 @@ const bucketId = process.env.OUTS_BACKBLAZE_BUCKET_ID;
 
 // create B2 object instance
 const b2 = new B2({
-    applicationKeyId: process.env.OUTS_BACKBLAZE_BUCKET_ID, // or accountId: 'accountId'
+    applicationKeyId: process.env.OUTS_BACKBLAZE_APP_ID, // or accountId: 'accountId'
     applicationKey: process.env.OUTS_BACKLAZE_APP_KEY  // or masterApplicationKeycheck dns
 });
 

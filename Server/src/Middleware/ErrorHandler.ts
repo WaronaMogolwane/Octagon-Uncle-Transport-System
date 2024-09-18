@@ -8,7 +8,6 @@ const ErrorHandler: ErrorRequestHandler = (
   res: any,
   next: any
 ) => {
-  console.error(error);
   let statusCode: number = 500;
   let errorMessage: string = "An unknown error occured";
 
@@ -16,6 +15,7 @@ const ErrorHandler: ErrorRequestHandler = (
     statusCode = error.status;
     errorMessage = error.message;
   }
+  console.error(error);
   res.status(statusCode).json({ error: { message: errorMessage } });
 };
 

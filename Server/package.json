@@ -26,6 +26,7 @@
   },
   "homepage": "",
   "dependencies": {
+    "@tsconfig/react-native": "^3.0.5",
     "axios": "^1.7.2",
     "backblaze-b2": "^1.7.0",
     "bcryptjs": "^2.4.3",
@@ -50,7 +51,7 @@
     "@types/jest": "^29.5.6",
     "@types/jsonwebtoken": "^9.0.4",
     "@types/multer": "^1.4.11",
-    "@types/node": "^20.14.11",
+    "@types/node": "^20.16.5",
     "@typescript-eslint/parser": "^6.9.0",
     "nodemon": "^2.0.22",
     "ts-node": "^10.9.2",

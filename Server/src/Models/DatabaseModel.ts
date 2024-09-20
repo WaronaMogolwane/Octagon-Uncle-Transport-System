@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import mysql from "mysql2";
 import mysql2 from "mysql2/promise";
+import WinstonLogger from "../Utilities/WinstonLogger";
 const host = process.env.OUTS_DATABASE_HOST;
 const dbUser = process.env.OUTS_DATABASE_USER;
 const dbPassword = process.env.OUTS_DATABASE_PASSWORD;
@@ -49,7 +50,7 @@ function AddNewUser(user) {
   return AddNewUserPromise;
 }
 export const SaveUserOtp = async (otp: string, req, res, next) => {
-  console.log(otp);
+  WinstonLogger.info(otp);
   let UserRegistration;
   try {
     var user = await GetUserByEmail(req.body.userDetails.Email);
@@ -70,7 +71,7 @@ export const SaveUserOtp = async (otp: string, req, res, next) => {
         ON DUPLICATE KEY UPDATE OTP = '${req.body.otp}', DateCreated = CURRENT_TIMESTAMP(), OTPExpireDate = ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0")`,
     function (error, results, fields) {
       if (error) {
-        console.log(error);
+        WinstonLogger.info(error);
       } else {
         res.status(201);
         res.send(
@@ -109,10 +110,10 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`,
     function (error, results) {
       if (error) {
-        console.log(error.message);
+        WinstonLogger.info(error.message);
         return;
       } else {
-        console.log("Database successfully initialised");
+        WinstonLogger.info("Database successfully initialised");
       }
     }
   );
@@ -126,10 +127,10 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`,
     function (error, results) {
       if (error) {
-        console.log(error.message);
+        WinstonLogger.info(error.message);
         return;
       } else {
-        console.log("Database successfully initialised");
+        WinstonLogger.info("Database successfully initialised");
       }
     }
   );
@@ -137,7 +138,7 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 function dbConnect() {
   pool.connect((error) => {
     if (error) {
-      console.log(error);
+      WinstonLogger.info(error);
       return;
     }
   });
@@ -156,7 +157,7 @@ module.exports = {
 // function dbConnect() {
 //   pool.execute((error) => {
 //     if (error) {
-//       console.log(error);
+//       logger.info(error);
 //       return;
 //     }
 //   });

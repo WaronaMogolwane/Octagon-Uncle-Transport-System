@@ -1,17 +1,14 @@
-<<<<<<<< HEAD: Server / src / Data / database - helper.js
 require("dotenv").config();
 const { promises } = require("nodemailer/lib/xoauth2");
-const mysql = require("mysql2");
-========
 import dotenv from "dotenv";
 dotenv.config();
 import mysql from "mysql2";
 import mysql2 from "mysql2/promise";
->>>>>>>> 3ee3b93 (Typescript and Modules compatibility):Server/src/Models/DatabaseModel.ts
-const host = process.env.HOST;
-const dbUser = process.env.DB_USER;
-const dbPassword = process.env.DB_PASSWORD;
-const databaseName = process.env.DATABASE;
+import WinstonLogger from "../Utilities/WinstonLogger";
+const host = process.env.OUTS_DATABASE_HOST;
+const dbUser = process.env.OUTS_DATABASE_USER;
+const dbPassword = process.env.OUTS_DATABASE_PASSWORD;
+const databaseName = process.env.OUTS_DATABASE_NAME;
 const UserTable = "User";
 const userOtpTable = "User_OTP";
 const pool = mysql.createPool({
@@ -51,15 +48,10 @@ function AddNewUser(user) {
     );
   });
   return AddNewUserPromise;
-<<<<<<<< HEAD:Server/src/Data/database-helper.js
 }
-async function SaveUserOtp(req, res, next) {
-========
-};
 export const SaveUserOtp = async (otp: string, req, res, next) => {
-  console.log(otp);
+  WinstonLogger.info(otp);
   let UserRegistration;
->>>>>>>> 3ee3b93 (Typescript and Modules compatibility):Server/src/Models/DatabaseModel.ts
   try {
     var user = await GetUserByEmail(req.body.userDetails.Email);
   } catch (error) {
@@ -79,7 +71,7 @@ export const SaveUserOtp = async (otp: string, req, res, next) => {
         ON DUPLICATE KEY UPDATE OTP = '${req.body.otp}', DateCreated = CURRENT_TIMESTAMP(), OTPExpireDate = ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0")`,
     function (error, results, fields) {
       if (error) {
-        console.log(error);
+        WinstonLogger.info(error);
       } else {
         res.status(201);
         res.send(
@@ -91,37 +83,20 @@ export const SaveUserOtp = async (otp: string, req, res, next) => {
       }
     }
   );
-<<<<<<<< HEAD:Server/src/Data/database-helper.js
 }
-async function GetUserByEmail(email) {
-========
-};
 export const GetUserByEmail = async (email) => {
->>>>>>>> 3ee3b93 (Typescript and Modules compatibility):Server/src/Models/DatabaseModel.ts
   var sqlQuery = `SELECT * FROM User WHERE Email= "${email}" `;
-  const mysql2 = require("mysql2/promise");
   const connection = await mysql2.createConnection(dbConnectObj);
   const [rows] = await connection.execute(sqlQuery);
   return rows[0];
-<<<<<<<< HEAD:Server/src/Data/database-helper.js
 }
-async function CheckOtp(otpDetails) {
-========
-};
 export const CheckOtp = async (otpDetails) => {
->>>>>>>> 3ee3b93 (Typescript and Modules compatibility):Server/src/Models/DatabaseModel.ts
   var sqlQuery = `SELECT * FROM User_OTP WHERE Email= "${otpDetails.email}" AND OTP = '${otpDetails.otp}' `;
-  const mysql2 = require("mysql2/promise");
   const connection = await mysql2.createConnection(dbConnectObj);
   const [rows] = await connection.execute(sqlQuery);
   return rows[0];
-<<<<<<<< HEAD:Server/src/Data/database-helper.js
 }
-function InitDatabaseTables() {
-========
-};
 export const InitDatabaseTables = () => {
->>>>>>>> 3ee3b93 (Typescript and Modules compatibility):Server/src/Models/DatabaseModel.ts
   pool.query(
     `CREATE TABLE IF NOT EXISTS ${UserTable}(
 User_ID CHAR(36) PRIMARY KEY,
@@ -135,10 +110,10 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`,
     function (error, results) {
       if (error) {
-        console.log(error.message);
+        WinstonLogger.info(error.message);
         return;
       } else {
-        console.log("Database successfully initialised");
+        WinstonLogger.info("Database successfully initialised");
       }
     }
   );
@@ -152,19 +127,18 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`,
     function (error, results) {
       if (error) {
-        console.log(error.message);
+        WinstonLogger.info(error.message);
         return;
       } else {
-        console.log("Database successfully initialised");
+        WinstonLogger.info("Database successfully initialised");
       }
     }
   );
-<<<<<<<< HEAD:Server/src/Data/database-helper.js
 }
 function dbConnect() {
-  pool.execute((error) => {
+  pool.connect((error) => {
     if (error) {
-      console.log(error);
+      WinstonLogger.info(error);
       return;
     }
   });
@@ -180,12 +154,10 @@ module.exports = {
   CheckOtp,
   GetUserByEmail,
 };
-========
-};
 // function dbConnect() {
 //   pool.execute((error) => {
 //     if (error) {
-//       console.log(error);
+//       logger.info(error);
 //       return;
 //     }
 //   });
@@ -193,4 +165,3 @@ module.exports = {
 // function dbDisconnect() {
 //   pool.end();
 // }
->>>>>>>> 3ee3b93 (Typescript and Modules compatibility):Server/src/Models/DatabaseModel.ts

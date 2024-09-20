@@ -21,6 +21,7 @@ import ErrorHandler from "./Middleware/ErrorHandler";
 import { firebase } from "./firebase";
 // Use the Firebase Admin SDK here...
 import { StartSchedule } from "./Services/ScheduleService";
+import WinstonLogger from "./Utilities/WinstonLogger";
 
 const app = express();
 
@@ -57,7 +58,7 @@ const fbp = firebase;
 StartSchedule();
 
 app.listen(PORT, function () {
-  console.log(`Server is live on Port ${PORT}`);
+  WinstonLogger.info(`Server is live on Port ${PORT}`);
 });
 
 app.use(ErrorHandler);

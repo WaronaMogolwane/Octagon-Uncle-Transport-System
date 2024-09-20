@@ -3,6 +3,7 @@
 import admin from "firebase-admin";
 import { PushNotificationObj } from "../../Classes/PushNotification";
 import { channel } from "diagnostics_channel";
+import WinstonLogger from "../../Utilities/WinstonLogger";
 
 
 export const sendNotif = async (pushNotification: PushNotificationObj) => {
@@ -10,7 +11,7 @@ export const sendNotif = async (pushNotification: PushNotificationObj) => {
         if (!pushNotification.token || typeof pushNotification.token !== 'string') {
             throw new Error('Invalid FCM token provided');
         }
-        console.log(pushNotification)
+        WinstonLogger.info(pushNotification)
         const message = {
             notification: {
                 title: pushNotification.title,
@@ -33,7 +34,7 @@ export const sendNotif = async (pushNotification: PushNotificationObj) => {
             token: pushNotification.token,
         };
         const response = await admin.messaging().send(message);
-        console.log("Successfully sent message:", response);
+        WinstonLogger.info("Successfully sent message:", response);
     } catch (error) {
         console.error("Error sending message:", error.message);
         throw error;
@@ -44,7 +45,7 @@ export const sendNotifToAll = async (pushNotification: PushNotificationObj) => {
         // if (pushNotification.token || typeof pushNotification.token == 'string') {
         //     throw new Error('Invalid FCM token provided');
         // }
-        console.log(pushNotification)
+        WinstonLogger.info(pushNotification)
         const message = {
             data: {
                 title: pushNotification.title,
@@ -56,7 +57,7 @@ export const sendNotifToAll = async (pushNotification: PushNotificationObj) => {
         }
 
         const response = await admin.messaging().sendToTopic("General", message)
-        console.log("Successfully sent message:", response);
+        WinstonLogger.info("Successfully sent message:", response);
     } catch (error) {
         console.error("Error sending message:", error.message);
         throw error;

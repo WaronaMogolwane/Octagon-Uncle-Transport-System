@@ -1,16 +1,18 @@
+import dotenv from "dotenv";
+dotenv.config();
 import B2 from 'backblaze-b2';
 // Include fs module
 var fs = require('node:fs');
 import { response } from 'express';
 import { buffer } from 'stream/consumers';
-const bucketId = '5780427db51ccc8086d40a1f';
+const bucketId = process.env.OUTS_BACKBLAZE_BUCKET_ID;
 // All functions on the b2 instance return the response from the B2 API in the success callback
 // i.e. b2.foo(...).then((b2JsonResponse) => {})
 
 // create B2 object instance
 const b2 = new B2({
-    applicationKeyId: '005702d5cc064af0000000004', // or accountId: 'accountId'
-    applicationKey: 'K005wovGa7ADZXygd88GkUHpfDetgH0' // or masterApplicationKeycheck dns
+    applicationKeyId: process.env.OUTS_BACKBLAZE_APP_ID, // or accountId: 'accountId'
+    applicationKey: process.env.OUTS_BACKLAZE_APP_KEY  // or masterApplicationKeycheck dns
 });
 
 // common arguments - you can use these in any of the functions below

@@ -1,7 +1,9 @@
 import { ErrorRequestHandler } from "express";
 import { isHttpError } from "http-errors";
-import { ErrorResponse } from "../Classes/ErrorResponse";
-
+import WinstonLogger from "../Utilities/WinstonLogger"; import { platform } from 'node:process';
+import WindowsLogger from "../Utilities/WindowsLogger";
+import { CustomLogger } from "../Classes/CustomLogger";
+const Logger: CustomLogger = new CustomLogger();
 const ErrorHandler: ErrorRequestHandler = (
   error: any,
   req: any,
@@ -12,10 +14,10 @@ const ErrorHandler: ErrorRequestHandler = (
   let errorMessage: string = "An unknown error occured";
 
   if (isHttpError(error) || error) {
-    statusCode = error.status;
-    errorMessage = error.message;
+    statusCode = error.status ? error.status : statusCode;
+    errorMessage = error.message ? error.message : errorMessage;
   }
-  console.error(error);
+  Logger.Error(errorMessage)
   res.status(statusCode).json({ error: { message: errorMessage } });
 };
 

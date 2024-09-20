@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A server that handles HTTP requests from the Octagon Uncle Transport System",
   "main": "server.ts",
+  "bin": "./bin/build/server.js",
   "scripts": {
     "dev": "npx tsc & nodemon --inspect-brk ./src/bin/build/server.js",
     "ts-serv": "npx ts-node --esm src/server.ts",
@@ -17,12 +18,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MajorXp/Octagon-Uncle-Transport-Solutions-System.git"
+    "url": "git+https://github.com/WaronaMogolwane/Octagon-Uncle-Transport-System"
   },
   "author": "Nicholai Jamusi & Warona Mogolwane",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/MajorXp/Octagon-Uncle-Transport-Solutions-System/issues"
+    "url": "https://github.com/MajorXp/Octagon-Uncle-Transport-System/issues"
   },
   "homepage": "",
   "dependencies": {
@@ -41,9 +42,12 @@
     "mysql": "^2.18.1",
     "mysql2": "^2.3.3",
     "node-schedule": "^2.1.1",
+    "node-windows": "^1.0.0-beta.8",
     "nodemailer": "^6.8.0",
     "pg": "^8.11.3",
-    "uuid": "^9.0.0"
+    "pino-pretty": "^11.2.2",
+    "uuid": "^9.0.0",
+    "winston": "^3.14.2"
   },
   "devDependencies": {
     "@types/backblaze-b2": "^1.5.6",
@@ -52,6 +56,7 @@
     "@types/jsonwebtoken": "^9.0.4",
     "@types/multer": "^1.4.11",
     "@types/node": "^20.16.5",
+    "@types/node-windows": "^0.1.6",
     "@typescript-eslint/parser": "^6.9.0",
     "nodemon": "^2.0.22",
     "ts-node": "^10.9.2",

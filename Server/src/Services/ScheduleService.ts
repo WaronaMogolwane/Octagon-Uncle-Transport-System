@@ -5,6 +5,7 @@ import {
 } from "../Models/PassengerScheduleModel";
 import { AutoInsertTrip } from "../Models/TripModel";
 import { TruncatePassengerDriverVehicleLinking } from "../Models/PassengerDriverVehicleLinkingModel";
+import WinstonLogger from "../Utilities/WinstonLogger";
 
 export const StartSchedule = () => {
   const AddPassengerDriverLinkingSchedule = schedule.scheduleJob(
@@ -15,10 +16,10 @@ export const StartSchedule = () => {
 
       AutoInsertPassengerSchedule(day, (error, result) => {
         if (result) {
-          console.log("Passengers inserted into PDVL table succesfully");
-          console.log(
+          WinstonLogger.info("Passengers inserted into PDVL table succesfully");
+          WinstonLogger.info(
             "This job was supposed to run at 1205 but actually ran at " +
-              new Date()
+            new Date()
           );
         }
       });
@@ -28,10 +29,10 @@ export const StartSchedule = () => {
   const AddTripSchedule = schedule.scheduleJob("10 0 * * *", function () {
     AutoInsertTrip((error, result) => {
       if (result) {
-        console.log("Trips succesfully added to table");
-        console.log(
+        WinstonLogger.info("Trips succesfully added to table");
+        WinstonLogger.info(
           "This job was supposed to run at 1210 but actually ran at " +
-            new Date()
+          new Date()
         );
       }
     });
@@ -42,10 +43,10 @@ export const StartSchedule = () => {
     function () {
       TruncatePassengerDriverVehicleLinking((error, result) => {
         if (result) {
-          console.log("PDVL table truncated");
-          console.log(
+          WinstonLogger.info("PDVL table truncated");
+          WinstonLogger.info(
             "This job was supposed to run at 1201 but actually ran at " +
-              new Date()
+            new Date()
           );
         }
       });
@@ -57,10 +58,10 @@ export const StartSchedule = () => {
     function () {
       TruncateTempPassengerSchedule((error, result) => {
         if (result) {
-          console.log("TempPassengerTable table truncated");
-          console.log(
+          WinstonLogger.info("TempPassengerTable table truncated");
+          WinstonLogger.info(
             "This job was supposed to run at 1159 but actually ran at " +
-              new Date()
+            new Date()
           );
         }
       });

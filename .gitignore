@@ -41,3 +41,4 @@ Server/.env
 Server/logs
 Server/service-account-key.json
 MobileApp/.env
+firebase.ts

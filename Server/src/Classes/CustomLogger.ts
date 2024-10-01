@@ -4,7 +4,7 @@ import WinstonLogger from "../Utilities/WinstonLogger";
 
 export class CustomLogger {
     Log = (message: string) => {
-        WinstonLogger.debug(message);
+        WinstonLogger.info(message);
         if (platform == "win32") {
             WindowsLogger.info(message);
         }

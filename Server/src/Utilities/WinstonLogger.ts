@@ -1,16 +1,32 @@
-import winston from 'winston';
+import winston, { format } from 'winston';
+import ErrorHandler from '../Middleware/ErrorHandler';
 
 const WinstonLogger = winston.createLogger({
-    level: 'info',
-    format: winston.format.json(),
-    defaultMeta: { service: 'user-service' },
+    format: winston.format.combine(
+        winston.format.timestamp({
+            format: 'YYYY-MM-DD HH:mm:ss',
+        }),
+        winston.format.printf(({ level, message, timestamp }) => {
+            return `${timestamp} [${level}]: ${message}`;
+        })),
     transports: [
         //
         // - Write all logs with importance level of `error` or less to `error.log`
         // - Write all logs with importance level of `info` or less to `combined.log`
         //
-        new winston.transports.File({ filename: './Logs/error.log', level: 'error' }),
-        new winston.transports.File({ filename: './Logs/combined.log' }),
+        new winston.transports.File({
+            filename: './Logs/error.log',
+            level: 'error',
+            format: winston.format.printf(({ level, message, timestamp }) => {
+                return `${timestamp} [${level}]: ${message}`;
+            })
+        }),
+        new winston.transports.File({
+            filename: './Logs/combined.log',
+            format: winston.format.printf(({ level, message, timestamp }) => {
+                return `${timestamp} [${level}]: ${message}`;
+            })
+        }),
     ],
 });
 

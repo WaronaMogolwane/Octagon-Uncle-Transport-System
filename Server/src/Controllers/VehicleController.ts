@@ -52,40 +52,29 @@ export const AddNewVehicle = async (req: any, res: any, next: any) => {
   const rearImageName = filePath + "Rear-Image.jpeg";
 
   await UploadFile(
-    newVehicle.FrontImage,
-    frontImageName,
+    newVehicle.RearImage,
+    rearImageName,
     req.body.FileType,
     async (error, result) => {
       if (error) {
-        next(new ErrorResponse(501, error));
+        next(new ErrorResponse(501, error.response.data));
       } else {
-        await UploadFile(
-          newVehicle.RearImage,
-          rearImageName,
-          req.body.FileType,
-          async (error, result) => {
-            if (error) {
-              next(new ErrorResponse(501, error));
-            } else {
-              newVehicle.FrontImage = frontImageName;
-              newVehicle.RearImage = rearImageName;
-              await InsertNewVehicle(newVehicle, async (error, result) => {
-                if (error) {
-                  next(new ErrorResponse(501, error.message));
-                } else {
-                  res.status(200).json({
-                    VehicleAdded: true,
-                    result: result,
-                  });
-                }
-              });
-            }
+        newVehicle.FrontImage = frontImageName;
+        newVehicle.RearImage = rearImageName;
+        await InsertNewVehicle(newVehicle, async (error, result) => {
+          if (error) {
+            next(new ErrorResponse(501, error.message));
+          } else {
+            res.status(200).json({
+              VehicleAdded: true,
+              result: result,
+            });
           }
-        );
+        });
       }
     }
   );
-};
+}
 export const CheckIfVehicleExists = async (req: any, res: any, next: any) => {
   const businessId: string = req.query.BusinessId;
   const licenseNumber: string = req.query.LicenseNumber;

@@ -1,26 +1,27 @@
 export class Transaction {
-    customerEmail: string;
-    amount: string;
+    transactionId: number;
+    userId: string;
+    amount: number;
     currency: string;
     status: string;
     reference: string;
     dateCreated: Date;
     datePaid: Date;
     transactionType: string;
-    authorizationCode: string;
 
     constructor(
-        customerEmail: string,
-        amount: string,
+        transactionId: number,
+        userId: string,
+        amount: number,
         currency: string,
         status: string,
         reference: string,
         dateCreated: Date,
         datePaid: Date,
         transactionType: string,
-        authorizationCode: string
     ) {
-        this.customerEmail = customerEmail;
+        this.transactionId = transactionId;
+        this.userId = userId;
         this.amount = amount;
         this.currency = currency;
         this.status = status;
@@ -28,6 +29,5 @@ export class Transaction {
         this.dateCreated = dateCreated;
         this.datePaid = datePaid;
         this.transactionType = transactionType;
-        this.authorizationCode = authorizationCode;
     }
 }

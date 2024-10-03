@@ -3,9 +3,10 @@ import { Authorization, Data, WebhookEvent } from './../Classes/WebhookEvent';
 import { NextFunction, Request, Response } from "express";
 import { Customer } from "../Classes/Customer";
 import { CreateNewPaystackCustomer, CreatePaystackTransactionLink } from "../Services/PaystackService";
-import { InsertCardAuthorisation } from '../Models/PaymentsModel';
+import { InsertCardAuthorisation, InsertNewTransaction } from '../Models/PaymentsModel';
 import { ErrorResponse } from '../Classes/ErrorResponse';
 import { stringFormat } from '../Extensions/StringExtensions';
+import { Transaction } from '../Classes/Transaction';
 
 
 export const CreateNewCustomer = async (req: Request, res: Response, next: NextFunction) => {
@@ -59,11 +60,33 @@ export const CreateNewCardAuthorisation = async (webhookEvent: WebhookEvent, req
             const err: ErrorResponse = ({ status: 400, message: error })
             next(err);
         }
-        else {
-            res.status(200).send({ message: "Card authorisation successfully added." })
-        }
-
+        // else {
+        //     res.status(200).send({ message: "Card authorisation successfully added." })
+        // }
     })
 }
 export const ChargeAuthorization = (req: Request, res: Response, next: NextFunction) => {
+}
+export const CreateNewTransaction = async (webhookEvent: WebhookEvent, req: Request, res: Response, next: NextFunction) => {
+    const data: Data = webhookEvent.data;
+    let newTransaction: Transaction = ({
+        transactionId: data.id,
+        userId: data.metadata.custom_fields[0].user_id,
+        amount: data.amount,
+        currency: data.currency,
+        status: data.status,
+        reference: data.reference,
+        dateCreated: new Date(data.created_at),
+        datePaid: new Date(data.paid_at),
+        transactionType: data.channel
+    })
+    await InsertNewTransaction(newTransaction, (error, result) => {
+        if (error) {
+            const err: ErrorResponse = ({ status: 400, message: error })
+            next(err);
+        }
+        else {
+            res.status(200).send({ message: "Transaction successfully created." })
+        }
+    })
 }

@@ -64,12 +64,8 @@ export class Customer {
 }
 
 export class Metadata {
-    custom_fields: CustomField[];
-}
-
-export class CustomField {
     user_id: string;
-    deviceId: string;
+    transporter_user_id: string;
 }
 
 export class Plan {

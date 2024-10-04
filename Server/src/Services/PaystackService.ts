@@ -8,6 +8,27 @@ import axios from "axios";
 const payStackPublicKey: string = process.env.OUTS_PAYSTACK_TEST_PUBLIC_KEY;
 const payStackApiUrl: string = process.env.OUTS_PAYSTACK_API_URL;
 export const CreateNewPaystackCustomer = async (customer: Customer, callback: (error: any, result: any) => void) => { }
+export const CreateNewPaystackRefund = async (req: Request, res: Response, callback: (error: any, result: any) => void) => {
+    let data = req.body;
+    const axios = require('axios');
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: stringFormat(payStackApiUrl, '/refund'),
+        headers: {
+            'Authorization': stringFormat('Bearer {0}', payStackPublicKey),
+            'Content-Type': 'application/json',
+        },
+        data: data
+    };
+    axios.request(config)
+        .then((response: any) => {
+            callback(null, response.data);
+        })
+        .catch((error: any) => {
+            callback(error.response.data, null);
+        });
+}
 export const CreatePaystackTransactionLink = async (req: Request, res: Response, callback: (error: any, result: any) => void) => {
     let data = req.body;
     let config = {
@@ -25,7 +46,7 @@ export const CreatePaystackTransactionLink = async (req: Request, res: Response,
             callback(null, response.data);
         })
         .catch((error) => {
-            callback(error, null);
+            callback(error.response.data, null);
         });
 }
 export const ChargeAuthorization = async (req: Request, res: Response, callback: (error: any, result: any) => void) => {
@@ -46,9 +67,8 @@ export const ChargeAuthorization = async (req: Request, res: Response, callback:
             callback(null, response.data);
         })
         .catch((error: any) => {
-            callback(error, null);
+            callback(error.response.data, null);
         });
-
 }
 export const HandleWebhookEvent = async (req: Request, res: Response, next: NextFunction) => {
     const webHookEvent: WebhookEvent = Object.assign(new WebhookEvent(), req.body);

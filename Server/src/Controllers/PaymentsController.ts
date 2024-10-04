@@ -1,4 +1,4 @@
-import { ChargeAuthorization } from './../Services/PaystackService';
+import { ChargeAuthorization, CreateNewPaystackRefund } from './../Services/PaystackService';
 import { Authorization, Data, WebhookEvent } from './../Classes/WebhookEvent';
 import { NextFunction, Request, Response } from "express";
 import { Customer } from "../Classes/Customer";
@@ -106,6 +106,17 @@ export const CreateNewTransaction = async (webhookEvent: WebhookEvent, req: Requ
         }
         else {
             res.status(200).send({ message: "Transaction successfully created." })
+        }
+    })
+}
+export const RefundTransaction = async (req: Request, res: Response, next: NextFunction) => {
+    await CreateNewPaystackRefund(req, res, (error: any, response: any) => {
+        if (error) {
+            const err: ErrorResponse = ({ status: 400, message: error })
+            next(err);
+        }
+        else {
+            res.status(200).send(response)
         }
     })
 }

@@ -3,14 +3,14 @@ import { Customer } from "../Classes/Customer";
 import { Transaction } from "../Classes/Transaction";
 import { WebhookEvent } from "../Classes/WebhookEvent";
 import { stringFormat } from '../Extensions/StringExtensions';
-import { CreateNewCardAuthorisation, CreateNewTransaction } from "../Controllers/PaymentsController";
+import { CreateNewCardAuthorisation, CreateNewRefund, CreateNewTransaction } from "../Controllers/PaymentsController";
 import axios from "axios";
+import { Refund } from "../Classes/Refund";
+import { ErrorResponse } from "../Classes/ErrorResponse";
 const payStackPublicKey: string = process.env.OUTS_PAYSTACK_TEST_PUBLIC_KEY;
 const payStackApiUrl: string = process.env.OUTS_PAYSTACK_API_URL;
 export const CreateNewPaystackCustomer = async (customer: Customer, callback: (error: any, result: any) => void) => { }
-export const CreateNewPaystackRefund = async (req: Request, res: Response, callback: (error: any, result: any) => void) => {
-    let data = req.body;
-    const axios = require('axios');
+export const CreateNewPaystackRefund = async (newRefund: Refund, callback: (error: any, result: any) => void) => {
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
@@ -19,7 +19,7 @@ export const CreateNewPaystackRefund = async (req: Request, res: Response, callb
             'Authorization': stringFormat('Bearer {0}', payStackPublicKey),
             'Content-Type': 'application/json',
         },
-        data: data
+        data: newRefund
     };
     axios.request(config)
         .then((response: any) => {
@@ -75,11 +75,29 @@ export const HandleWebhookEvent = async (req: Request, res: Response, next: Next
     switch (true) {
         case (webHookEvent.event === "charge.success"):
             {
-                if (webHookEvent.data.amount === 100) {
-                    await CreateNewCardAuthorisation(webHookEvent, req, res, next)
+                {
+                    if (webHookEvent.data.amount === 100) {
+                        await CreateNewCardAuthorisation(webHookEvent, req, res, next)
+                        let newRefund: Refund = ({
+                            transaction: webHookEvent.data.id,
+                            amount: webHookEvent.data.amount,
+                            currency: webHookEvent.data.currency,
+                            merchant_note: "Card authorization refund",
+                        })
+                        CreateNewPaystackRefund(newRefund, (error: any, result: any) => {
+                            if (error) {
+                                const err: ErrorResponse = ({ status: 400, message: error })
+                                next(err);
+                            }
+                        })
+                    }
                 }
                 await CreateNewTransaction(webHookEvent, req, res, next)
                 break;
+            }
+        case (webHookEvent.event === "refund.processed"):
+            {
+                await CreateNewRefund(webHookEvent, req, res, next);
             }
     }
 }

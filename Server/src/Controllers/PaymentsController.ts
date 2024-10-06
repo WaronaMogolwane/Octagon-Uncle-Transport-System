@@ -3,11 +3,12 @@ import { Authorization, Data, WebhookEvent } from './../Classes/WebhookEvent';
 import { NextFunction, Request, Response } from "express";
 import { Customer } from "../Classes/Customer";
 import { CreateNewPaystackCustomer, CreatePaystackTransactionLink } from "../Services/PaystackService";
-import { InsertCardAuthorisation, InsertNewTransaction } from '../Models/PaymentsModel';
+import { InsertCardAuthorisation, InsertNewRefund, InsertNewTransaction } from '../Models/PaymentsModel';
 import { ErrorResponse } from '../Classes/ErrorResponse';
 import { stringFormat } from '../Extensions/StringExtensions';
 import { Transaction } from '../Classes/Transaction';
 import { CardAuthorisation } from '../Classes/CardAuthorisation';
+import { Refund } from '../Classes/Refund';
 
 
 export const CreateNewCustomer = async (req: Request, res: Response, next: NextFunction) => {
@@ -70,9 +71,6 @@ export const CreateNewCardAuthorisation = async (webhookEvent: WebhookEvent, req
             const err: ErrorResponse = ({ status: 400, message: error })
             next(err);
         }
-        // else {
-        //     res.status(200).send({ message: "Card authorisation successfully added." })
-        // }
     })
 }
 export const CreateNewCharge = async (req: Request, res: Response, next: NextFunction) => {
@@ -109,14 +107,40 @@ export const CreateNewTransaction = async (webhookEvent: WebhookEvent, req: Requ
         }
     })
 }
+
 export const RefundTransaction = async (req: Request, res: Response, next: NextFunction) => {
-    await CreateNewPaystackRefund(req, res, (error: any, response: any) => {
+    let newRefund: Refund = ({
+        transaction: req.body.transaction,
+        amount: req.body.amount,
+        currency: req.body.currency,
+        merchant_note: req.body.merchant_note,
+    })
+    await CreateNewPaystackRefund(newRefund, (error: any, response: any) => {
         if (error) {
             const err: ErrorResponse = ({ status: 400, message: error })
             next(err);
         }
         else {
             res.status(200).send(response)
+        }
+    })
+}
+export const CreateNewRefund = async (webHookEvent: WebhookEvent, req: Request, res: Response, next: NextFunction) => {
+    let reqBody: any = req.body;
+    let newRefund: Refund = ({
+        transaction: webHookEvent.data.id,
+        amount: webHookEvent.data.amount,
+        currency: webHookEvent.data.currency,
+        merchant_note: req.body.data.merchant_note,
+        customer_note: req.body.data.customer_note
+    })
+    await InsertNewRefund(newRefund, (error: any, result: any) => {
+        if (error) {
+            const err: ErrorResponse = ({ status: 400, message: error })
+            next(err);
+        }
+        else {
+            res.status(200).send({ message: "Refund successfully created." })
         }
     })
 }

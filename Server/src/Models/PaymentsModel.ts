@@ -86,4 +86,21 @@ export const InsertNewRefund = async (
         }
     );
 };
+export const GetBulkCharges = async (
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetBulkCharges();",
+            timeout: 40000,
+        },
+        function (error, results, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
 

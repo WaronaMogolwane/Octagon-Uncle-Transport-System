@@ -8,12 +8,8 @@ router.post("/webhook", HandleWebhookEvent, async (req, res, next) => { });
 router.post("/create-new-customer", CreateNewCustomer, async (req, res, next) => { });
 router.post("/create-new-plan", CreateNewPlan, async (req, res, next) => { });
 router.post("/create-new-subscription", CreateNewSubscription, async (req, res, next) => { });
-router.post("/initialize-transaction", CreateTransactionLink, async (req, res, next) => {
-});
-router.post("/charge-authorization", CreateNewCharge, async (req, res, next) => {
-});
-router.post("/refund-transaction", RefundTransaction, async (req, res, next) => {
-
-});
+router.post("/initialize-transaction", CreateTransactionLink, async (req, res, next) => { });
+router.post("/charge-authorization", CreateNewCharge, async (req, res, next) => { });
+router.post("/refund-transaction", RefundTransaction, async (req, res, next) => { });
 
 export default router;

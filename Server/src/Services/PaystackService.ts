@@ -1,14 +1,12 @@
 import { NextFunction, Response, Request } from "express";
 import { Customer } from "../Classes/Customer";
-import { Transaction } from "../Classes/Transaction";
 import { WebhookEvent } from "../Classes/WebhookEvent";
 import { stringFormat } from '../Extensions/StringExtensions';
 import { CreateNewCardAuthorisation, CreateNewRefund, CreateNewTransaction } from "../Controllers/PaymentsController";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { Refund } from "../Classes/Refund";
 import { ErrorResponse } from "../Classes/ErrorResponse";
-import { Charge } from "../Classes/Charge";
-import { BulkCharge } from "../Classes/BulkCharge";
+import { BulkCharge, BulkChargeReponse } from "../Classes/BulkCharge";
 const payStackPublicKey: string = process.env.OUTS_PAYSTACK_TEST_PUBLIC_KEY;
 const payStackApiUrl: string = process.env.OUTS_PAYSTACK_API_URL;
 export const CreateNewPaystackCustomer = async (customer: Customer, callback: (error: any, result: any) => void) => { }
@@ -73,24 +71,20 @@ export const ChargeAuthorization = async (req: Request, res: Response, callback:
         });
 }
 export const BulkChargeAuthorization = async (charges: BulkCharge[], callback: (error: any, result: any) => void) => {
-    const axios = require('axios');
-
-
     let config = {
         method: 'post',
         maxBodyLength: Infinity,
-        url: 'https://api.paystack.co/bulkcharge',
+        url: stringFormat(payStackApiUrl, '/bulkcharge'),
         headers: {
-            'Authorization': 'Bearer sk_test_15b32363d5ec93adf4cb35693b162ac7f87d4224',
+            'Authorization': stringFormat('Bearer {0}', payStackPublicKey),
             'Content-Type': 'application/json',
-            'Cookie': '__cf_bm=JvIMyai_OUd_QsjOoV3B1n4kLnaGLnA7WaKKyBFLBGk-1728253039-1.0.1.1-oXWgXCU.TWQpAAQhuroa._KC.h5Hgq8Gnc6PowpoQU6ffZx7vRkAjS1TBeP9NW6bEowTkNJJhEouLunKGmu90g; sails.sid=s%3AGTusPT1KzWZTyUq2wSozo2OVkZDxiMiM.uHgovHB0z6kNP1Y1usoPiWjg23WV3khLAwSpvvJzT7U'
         },
         data: charges
     };
 
     axios.request(config)
-        .then((response: any) => {
-            callback(null, response.data);
+        .then((response: AxiosResponse) => {
+            callback(null, response);
         })
         .catch((error: any) => {
             callback(error.response.data, null);

@@ -2,6 +2,7 @@ CREATE DEFINER=`sqladmin`@`%` PROCEDURE `UndoTripDropOffTime`(in _TripId varchar
 BEGIN
 UPDATE Trip
  SET DropoffTime = null,
+	 IsCompleted = 0,
 	 TripStatus = 2
 WHERE TripId = _TripId;
 END

@@ -42,3 +42,5 @@ Server/logs
 Server/service-account-key.json
 MobileApp/.env
 firebase.ts
+Server/OUTS.env
+.gitignore

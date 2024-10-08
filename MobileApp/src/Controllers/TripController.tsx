@@ -12,6 +12,9 @@ import {
   UpdateTripPickUpTimeInDB,
   GetPastTripsTransporterFromDB,
   GetUpcomingTripsTransporterFromDB,
+  UndoTripDropOffTimeInDB,
+  UndoTripEndInDB,
+  UndoTripPickUpTimeInDB,
 } from '../Data/TripDAL';
 import {Trip} from '../Models/Trip';
 
@@ -65,4 +68,16 @@ export const SetTripDropOffPickUpTime = async (tripId: string) => {
 
 export const EndTrip = async (tripId: string) => {
   return await EndTripInDB(tripId);
+};
+
+export const UndoTripDropOffTime = async (tripId: string) => {
+  return await UndoTripDropOffTimeInDB(tripId);
+};
+
+export const UndoTripPickUpTime = async (tripId: string) => {
+  return await UndoTripPickUpTimeInDB(tripId);
+};
+
+export const UndoTripEnd = async (tripId: string) => {
+  return await UndoTripEndInDB(tripId);
 };

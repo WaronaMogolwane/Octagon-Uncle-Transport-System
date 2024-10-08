@@ -1,12 +1,12 @@
 import { NextFunction, Response, Request } from "express";
 import { Customer } from "../Classes/Customer";
-import { Transaction } from "../Classes/Transaction";
 import { WebhookEvent } from "../Classes/WebhookEvent";
 import { stringFormat } from '../Extensions/StringExtensions';
 import { CreateNewCardAuthorisation, CreateNewRefund, CreateNewTransaction } from "../Controllers/PaymentsController";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { Refund } from "../Classes/Refund";
 import { ErrorResponse } from "../Classes/ErrorResponse";
+import { BulkCharge, BulkChargeReponse } from "../Classes/BulkCharge";
 const payStackPublicKey: string = process.env.OUTS_PAYSTACK_TEST_PUBLIC_KEY;
 const payStackApiUrl: string = process.env.OUTS_PAYSTACK_API_URL;
 export const CreateNewPaystackCustomer = async (customer: Customer, callback: (error: any, result: any) => void) => { }
@@ -70,6 +70,27 @@ export const ChargeAuthorization = async (req: Request, res: Response, callback:
             callback(error.response.data, null);
         });
 }
+export const BulkChargeAuthorization = async (charges: BulkCharge[], callback: (error: any, result: any) => void) => {
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: stringFormat(payStackApiUrl, '/bulkcharge'),
+        headers: {
+            'Authorization': stringFormat('Bearer {0}', payStackPublicKey),
+            'Content-Type': 'application/json',
+        },
+        data: charges
+    };
+
+    axios.request(config)
+        .then((response: AxiosResponse) => {
+            callback(null, response);
+        })
+        .catch((error: any) => {
+            callback(error.response.data, null);
+        });
+}
+
 export const HandleWebhookEvent = async (req: Request, res: Response, next: NextFunction) => {
     const webHookEvent: WebhookEvent = Object.assign(new WebhookEvent(), req.body);
     switch (true) {

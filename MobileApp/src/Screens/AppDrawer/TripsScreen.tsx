@@ -327,6 +327,12 @@ const TripsScreen = ({navigation}: any) => {
       handleAbsentPassenger={() => {
         if (itemData.tripStatus == 0) {
           ChangeTripStatus(itemData.tripId, 1);
+        } else if (itemData.tripStatus == 2) {
+          UndoTripPickUpTime(itemData.tripId).then(() => {
+            setIsLoading(true);
+            GetUpcomingTrips();
+            GetPastTrips();
+          });
         }
       }}
     />

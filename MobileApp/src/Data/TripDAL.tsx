@@ -404,3 +404,66 @@ export const EndTripInDB = async (tripId: string) => {
 
   return [data, statusCode];
 };
+
+export const UndoTripDropOffTimeInDB = async (tripId: string) => {
+  let statusCode: any;
+  let data: any;
+
+  await axios
+    .patch(`${SERVER_HOST}:${SERVER_PORT}/trip/undo-trip-dropoff`, {
+      trip: {
+        TripId: tripId,
+      },
+    })
+    .then((response: any) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: any) => {
+      console.log(error);
+    });
+
+  return [data, statusCode];
+};
+
+export const UndoTripPickUpTimeInDB = async (tripId: string) => {
+  let statusCode: any;
+  let data: any;
+
+  await axios
+    .patch(`${SERVER_HOST}:${SERVER_PORT}/trip/undo-trip-pickuptime`, {
+      trip: {
+        TripId: tripId,
+      },
+    })
+    .then((response: any) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: any) => {
+      console.log(error);
+    });
+
+  return [data, statusCode];
+};
+
+export const UndoTripEndInDB = async (tripId: string) => {
+  let statusCode: any;
+  let data: any;
+
+  await axios
+    .patch(`${SERVER_HOST}:${SERVER_PORT}/trip/undo-trip-end`, {
+      trip: {
+        TripId: tripId,
+      },
+    })
+    .then((response: any) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: any) => {
+      console.log(error);
+    });
+
+  return [data, statusCode];
+};

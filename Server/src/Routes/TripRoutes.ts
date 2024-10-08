@@ -13,6 +13,9 @@ import {
   UpdateTripPickUpTime,
   GetPastTripsForBusiness,
   GetUpcomingTripsForBusiness,
+  UndoTripAbsentEnd,
+  UndoTripDropOffTime,
+  UndoTripPickUpTime,
 } from "../Controllers/TripController";
 
 const router = Router();
@@ -78,5 +81,19 @@ router.patch(
 router.patch("/end-trip", UpdateTripEndTrip, async (req, res, next) => {});
 
 router.patch("/update-trip", UpdateTripDetail, async (req, res, next) => {});
+
+router.patch(
+  "/undo-trip-dropoff",
+  UndoTripDropOffTime,
+  async (req, res, next) => {}
+);
+
+router.patch(
+  "/undo-trip-pickuptime",
+  UndoTripPickUpTime,
+  async (req, res, next) => {}
+);
+
+router.patch("/undo-trip-end", UndoTripAbsentEnd, async (req, res, next) => {});
 
 export default router;

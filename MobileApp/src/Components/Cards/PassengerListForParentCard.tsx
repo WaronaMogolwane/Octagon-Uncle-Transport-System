@@ -3,8 +3,6 @@ import {
   TouchableOpacity,
   Text,
   View,
-  ScrollView,
-  Pressable,
 } from 'react-native';
 import React from 'react';
 import COLORS from '../../Const/colors';
@@ -26,7 +24,8 @@ type PassengerParentCardCardProps = {
 };
 
 export const PassengerParentCard = (props: PassengerParentCardCardProps) => {
-  const passengerName = `${props.firstName} ${props.lastName}`;
+  const passengerName = props.firstName + props.lastName;
+
   const iconSize = 15;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';

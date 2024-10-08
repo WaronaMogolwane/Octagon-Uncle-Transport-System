@@ -14,23 +14,86 @@ type tripCardProps = {
 };
 
 export const TripCardParent = (props: tripCardProps) => {
-  const tripCompletion = () => {
+  const tripStatus = () => {
     if (props.tripStatus == 0) {
-      return null;
+      return (
+        <View
+          style={{
+            borderRadius: 20, // Half of the width or height
+            backgroundColor: '#fadcdc',
+          }}>
+          <Text
+            style={{
+              textAlign: 'center',
+              color: '#c26b71',
+              fontWeight: '500',
+              padding: 5,
+            }}>
+            Uncompleted
+          </Text>
+        </View>
+      );
     } else if (props.tripStatus == 1) {
       return (
-        <Text style={{color: COLORS.red, fontWeight: 'bold'}}>Uncompleted</Text>
+        <View
+          style={{
+            borderRadius: 20, // Half of the width or height
+            backgroundColor: '#fadcdc',
+          }}>
+          <Text
+            style={{
+              textAlign: 'center',
+              color: '#c26b71',
+              fontWeight: '500',
+              padding: 5,
+            }}>
+            Uncompleted
+          </Text>
+        </View>
       );
     } else if (props.tripStatus == 2) {
       return (
-        <Text style={{color: COLORS.green, fontWeight: 'bold'}}>Completed</Text>
+        <View
+          style={{
+            borderRadius: 20, // Half of the width or height
+            backgroundColor: '#f5eede',
+          }}>
+          <Text
+            style={{
+              textAlign: 'center',
+              color: '#e89d0e',
+              fontWeight: '500',
+              padding: 5,
+            }}>
+            Picked-up
+          </Text>
+        </View>
+      );
+    } else if (props.tripStatus == 3) {
+      return (
+        <View
+          style={{
+            borderRadius: 20, // Half of the width or height
+            backgroundColor: '#d6f3f1',
+          }}>
+          <Text
+            style={{
+              textAlign: 'center',
+              color: '#3ba2a9',
+              fontWeight: '500',
+              padding: 5,
+            }}>
+            Completed
+          </Text>
+        </View>
       );
     }
   };
 
+
   return (
     <View style={TripCardParentStyles.cardBorder}>
-      <View style={TripCardParentStyles.cardContainer}>{tripCompletion()}</View>
+      <View style={TripCardParentStyles.cardContainer}>{tripStatus()}</View>
       <View style={TripCardParentStyles.cardContainer}>
         <View style={{marginEnd: 5}}>
           <Text style={TripCardParentStyles.cardText}>Driver:</Text>

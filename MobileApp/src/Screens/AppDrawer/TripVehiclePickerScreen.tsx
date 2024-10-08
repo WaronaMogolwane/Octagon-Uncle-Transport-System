@@ -2,8 +2,9 @@ import {
   FlatList,
   RefreshControl,
   SafeAreaView,
+  StyleSheet,
   Text,
-  TouchableOpacity,
+  TextInput,
   View,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
@@ -24,7 +25,8 @@ import {
 } from '@gluestack-ui/themed';
 import {ArrowLeftIcon} from 'lucide-react-native';
 import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
-// import filter from 'lodash.filter';
+import {SearchBar} from 'react-native-screens';
+import filter from 'lodash.filter';
 
 const TripTransporter = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -36,7 +38,7 @@ const TripTransporter = ({navigation}: any) => {
   const [vehicleList, setVehicleList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
   const [noLinkedVehicle, setNoLinkedVehicle] = useState(true);
-  const [query, setQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [fullData, setFullData] = useState([]);
 
   const onRefresh = React.useCallback(() => {
@@ -137,8 +139,45 @@ const TripTransporter = ({navigation}: any) => {
     );
   };
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    const formattedQuery = query.toLowerCase();
+    const filterData: any = filter(fullData, (user: any) => {
+      return contains(user, formattedQuery);
+    });
+
+    setVehicleList(filterData);
+  };
+
+  const contains = (
+    {color, fullName, licenseNumber, make, model}: any,
+    query: any,
+  ) => {
+    if (
+      color.toLowerCase().includes(query) ||
+      fullName.toLowerCase().includes(query) ||
+      licenseNumber.toLowerCase().includes(query) ||
+      make.toLowerCase().includes(query) ||
+      model.toLowerCase().includes(query)
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
+      <TextInput
+        placeholder="Search"
+        clearButtonMode="always"
+        autoCapitalize="none"
+        style={styles.searchBox}
+        autoCorrect={false}
+        value={searchQuery}
+        onChangeText={(query: string) => handleSearch(query)}
+      />
+
       {noLinkedVehicle ? EmtpyFlatListText() : null}
       <FlatList
         style={{backgroundColor: '#e8f0f3'}}
@@ -152,5 +191,17 @@ const TripTransporter = ({navigation}: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  searchBox: {
+    marginHorizontal: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+  },
+});
 
 export default TripTransporter;

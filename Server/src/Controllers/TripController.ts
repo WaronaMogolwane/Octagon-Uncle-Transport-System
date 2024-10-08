@@ -12,6 +12,9 @@ import {
   GetPastTripsByDriverId,
   UpdateTripSetPickUpTime,
   UpdateTripSetDropOffTime,
+  UndoDropOffTime,
+  UndoPickUpTime,
+  UndoTripEnd,
 } from "../Models/TripModel";
 import { TripStatus } from "../Classes/TripStatus";
 import { ErrorResponse } from "../Classes/ErrorResponse";
@@ -312,6 +315,69 @@ export const UpdateTripDropOffTime = async (req: any, res: any, next: any) => {
   let tripId = req.body.trip.TripId;
 
   await UpdateTripSetDropOffTime(tripId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        TripStatusUpdated: true,
+        result: result[0],
+      });
+    }
+  });
+};
+
+export const UndoTripDropOffTime = async (req: any, res: any, next: any) => {
+  let tripId = req.body.trip.TripId;
+
+  await UndoDropOffTime(tripId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        TripStatusUpdated: true,
+        result: result[0],
+      });
+    }
+  });
+};
+
+export const UndoTripPickUpTime = async (req: any, res: any, next: any) => {
+  let tripId = req.body.trip.TripId;
+
+  await UndoPickUpTime(tripId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else if (result.affectedRows == 0) {
+      let err: any = {
+        status: 499,
+        message: "Something went wrong",
+      };
+      next(err);
+    } else {
+      res.status(200).json({
+        TripStatusUpdated: true,
+        result: result[0],
+      });
+    }
+  });
+};
+
+export const UndoTripAbsentEnd = async (req: any, res: any, next: any) => {
+  let tripId = req.body.trip.TripId;
+
+  await UndoTripEnd(tripId, (error, result) => {
     if (error) {
       next(new ErrorResponse(501, error.message));
     } else if (result.affectedRows == 0) {

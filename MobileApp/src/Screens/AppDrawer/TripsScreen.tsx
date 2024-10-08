@@ -1,5 +1,11 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, RefreshControl, View} from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  GestureResponderEvent,
+  RefreshControl,
+  View,
+} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {TripCardParent} from '../../Components/Cards/TripListForParentCard';
@@ -13,6 +19,9 @@ import {
   GetUpcomingTripsForTransporter,
   SetTripDropOffPickUpTime as SetDropOffTime,
   SetTripPickUpTime,
+  UndoTripDropOffTime,
+  UndoTripEnd,
+  UndoTripPickUpTime,
   UpdatePassengerStatus,
 } from '../../Controllers/TripController';
 import {TripCardDriverSwipable} from '../../Components/Cards/TripListCardForDriverSwipable';
@@ -46,10 +55,6 @@ const TripsScreen = ({navigation}: any) => {
   const role: number = Number(auth.GetUserRole());
   // const role: number = 2;
 
-  // const [userId, setTempUserId] = useState(userId);
-
-  // const [role, setTempRole] = useState(role);
-
   const [UpcomingTripList, setUpcomingTripList] = useState([]);
   const [PastTripList, setPastTripList] = useState([]);
 
@@ -70,16 +75,17 @@ const TripsScreen = ({navigation}: any) => {
     setShowNoPastTripText(false);
 
     setTimeout(() => {
-      setRefreshingUpcomingTrips(true);
+      // setRefreshingPastTrips(true);
       GetPastTrips()
         .then(() => {
           setRefreshingPastTrips(false);
         })
-        .catch(() => {
+        .catch((error: any) => {
+          console.error(error);
           setRefreshingPastTrips(false);
         });
     }, 2000);
-    setRefreshingPastTrips(false);
+    // setRefreshingPastTrips(false);
   }, []);
 
   const onRefreshUpcomingTrips = React.useCallback(() => {
@@ -87,7 +93,7 @@ const TripsScreen = ({navigation}: any) => {
     setRefreshingUpcomingTrips(true);
 
     setTimeout(() => {
-      setRefreshingUpcomingTrips(true);
+      // setRefreshingUpcomingTrips(true);
       GetUpcomingTrips()
         .then(() => {
           setRefreshingUpcomingTrips(false);
@@ -97,7 +103,7 @@ const TripsScreen = ({navigation}: any) => {
         });
     }, 2000);
 
-    setRefreshingUpcomingTrips(false);
+    // setRefreshingUpcomingTrips(false);
   }, []);
 
   useEffect(() => {
@@ -109,41 +115,11 @@ const TripsScreen = ({navigation}: any) => {
     }, 2000);
   }, [role, userId, role]);
 
-  const ShowSelectVehilcleToast = () => {
-    toast.show({
-      placement: 'top',
-      render: ({id}) => {
-        const toastId = 'toast-' + id;
-        return (
-          <Toast nativeID={toastId} action="attention" variant="solid">
-            <VStack space="xs">
-              <ToastTitle>Select Vehicle</ToastTitle>
-              <ToastDescription>
-                Please a select a vehicle to contine.
-              </ToastDescription>
-            </VStack>
-          </Toast>
-        );
-      },
-    });
-  };
-
   //Empty flatlist text is defined
   const EmtpyFlatListText = () => {
     return (
-      <View>
-        <Text>You currently have no trips.</Text>
-      </View>
-    );
-  };
-
-  const EmtpyVehicleFlatListText = () => {
-    return (
-      <View>
-        <Text>
-          You currently have no linked vehicles. Please add vehicles and try
-          again.
-        </Text>
+      <View style={{backgroundColor: '#e8f0f3'}}>
+        <Text style={{textAlign: 'center'}}>You currently have no trips.</Text>
       </View>
     );
   };
@@ -221,6 +197,23 @@ const TripsScreen = ({navigation}: any) => {
           setIsLoading(false);
         }
       });
+    } else if (tripStatus == 0) {
+      await SetDropOffTime(tripId).then(result => {
+        if (result[1] == 200) {
+          UpdatePassengerStatus(tripId, tripStatus).then(result2 => {});
+          EndTrip(tripId).then(result3 => {
+            if (result3[1] == 200) {
+              GetUpcomingTrips();
+              GetPastTrips();
+              setStatusCode(!statusCode);
+              setIsLoading(false);
+            } else {
+              ShowToast();
+              setIsLoading(false);
+            }
+          });
+        }
+      });
     }
   };
 
@@ -237,9 +230,12 @@ const TripsScreen = ({navigation}: any) => {
     } else if (role == 3) {
       return await GetUpcomingTripsForDriver(userId).then(trip => {
         if (trip.length == 0) {
+          setUpcomingTripList([]);
           setShowNoFutureTripText(true);
+          setIsLoading(false);
         } else {
           setUpcomingTripList(trip);
+          setIsLoading(false);
         }
       });
     }
@@ -259,8 +255,13 @@ const TripsScreen = ({navigation}: any) => {
       return await GetPastTripsForDriver(userId).then(trip => {
         if (trip.length == 0) {
           setShowNoPastTripText(true);
+
+          setPastTripList([]);
+          setIsLoading(false);
         } else {
           setPastTripList(trip);
+          setShowNoPastTripText(false);
+          setIsLoading(false);
         }
       });
     }
@@ -324,7 +325,9 @@ const TripsScreen = ({navigation}: any) => {
         ChangeTripStatus(itemData.tripId, 3);
       }}
       handleAbsentPassenger={() => {
-        ChangeTripStatus(itemData.tripId, 1);
+        if (itemData.tripStatus == 0) {
+          ChangeTripStatus(itemData.tripId, 1);
+        }
       }}
     />
   );
@@ -338,6 +341,21 @@ const TripsScreen = ({navigation}: any) => {
       pickUpLocation={itemData.pickUpLocation}
       tripStatus={itemData.tripStatus}
       dropOffTime={itemData.dropOffTime}
+      handleUndo={() => {
+        if (itemData.tripStatus == 1) {
+          UndoTripEnd(itemData.tripId).then(() => {
+            setIsLoading(true);
+            GetUpcomingTrips();
+            GetPastTrips();
+          });
+        } else if (itemData.tripStatus == 3) {
+          UndoTripDropOffTime(itemData.tripId).then(() => {
+            setIsLoading(true);
+            GetUpcomingTrips();
+            GetPastTrips();
+          });
+        }
+      }}
     />
   );
 
@@ -348,6 +366,7 @@ const TripsScreen = ({navigation}: any) => {
         <View style={FlatlistStyles.container}>
           {showNoFutureTripText ? EmtpyFlatListText() : null}
           <FlatList
+            style={{backgroundColor: '#e8f0f3'}}
             data={UpcomingTripList}
             extraData={statusCode}
             renderItem={({item}) => renderItemComponentParent(item)}
@@ -365,6 +384,7 @@ const TripsScreen = ({navigation}: any) => {
         <View style={FlatlistStyles.container}>
           {showNoFutureTripText ? EmtpyFlatListText() : null}
           <FlatList
+            style={{backgroundColor: '#e8f0f3'}}
             data={UpcomingTripList}
             extraData={statusCode}
             renderItem={({item}) => renderItemComponentDriverSwipable(item)}
@@ -387,6 +407,7 @@ const TripsScreen = ({navigation}: any) => {
         <View style={FlatlistStyles.container}>
           {showNoPastTripText ? EmtpyFlatListText() : null}
           <FlatList
+            style={{backgroundColor: '#e8f0f3'}}
             data={PastTripList}
             extraData={statusCode}
             renderItem={({item}) => renderItemComponentParent(item)}
@@ -404,6 +425,7 @@ const TripsScreen = ({navigation}: any) => {
         <View style={FlatlistStyles.container}>
           {showNoPastTripText ? EmtpyFlatListText() : null}
           <FlatList
+            style={{backgroundColor: '#e8f0f3'}}
             data={PastTripList}
             extraData={statusCode}
             renderItem={({item}) => renderItemComponentDriver(item)}
@@ -439,7 +461,10 @@ const TripsScreen = ({navigation}: any) => {
           <Text>Working</Text>
         </View>
       ) : null}
-      <Tab.Navigator>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarStyle: {backgroundColor: '#e8f0f3', elevation: 10},
+        }}>
         <Tab.Screen name="Upcoming Trips" component={FirstRoute} />
         <Tab.Screen name="Past Trips" component={SecondRoute} />
       </Tab.Navigator>

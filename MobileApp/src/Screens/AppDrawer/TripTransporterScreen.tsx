@@ -1,4 +1,11 @@
-import {FlatList, RefreshControl, StyleSheet, Text, View} from 'react-native';
+import {
+  FlatList,
+  GestureResponderEvent,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
@@ -7,9 +14,14 @@ import {TripCardDriver} from '../../Components/Cards/TripListCardForDriver';
 import {
   GetPastTripsForTransporter,
   GetUpcomingTripsForTransporter,
+  UndoTripDropOffTime,
 } from '../../Controllers/TripController';
 import {Auth} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
+import {
+  TripCardTransporter,
+  TripCardTransporterComplete,
+} from '../../Components/Cards/TripCardTransporter';
 
 const TripTransporterScreen = () => {
   const Tab = createMaterialTopTabNavigator();
@@ -74,7 +86,19 @@ const TripTransporterScreen = () => {
 
   //Card defined for Transporter
   const renderItemComponentTransporter = (itemData: any) => (
-    <TripCardDriver
+    <TripCardTransporter
+      passengerName={itemData.passengerName}
+      pickUpTime={itemData.pickUpTime}
+      pickUpDate={itemData.pickUpDate}
+      pickUpLocation={itemData.pickUpLocation}
+      tripStatus={itemData.tripStatus}
+      dropOffTime={itemData.dropOffTime}
+    />
+  );
+
+  //Card defined for Transporter
+  const renderItemComponentTransporterComplete = (itemData: any) => (
+    <TripCardTransporterComplete
       passengerName={itemData.passengerName}
       pickUpTime={itemData.pickUpTime}
       pickUpDate={itemData.pickUpDate}
@@ -142,7 +166,7 @@ const TripTransporterScreen = () => {
           style={{backgroundColor: '#e8f0f3'}}
           data={PastTripList}
           extraData
-          renderItem={({item}) => renderItemComponentTransporter(item)}
+          renderItem={({item}) => renderItemComponentTransporterComplete(item)}
           refreshControl={
             <RefreshControl
               refreshing={refreshingPastTrips}
@@ -155,7 +179,10 @@ const TripTransporterScreen = () => {
   }
   return (
     <NavigationContainer independent={true}>
-      <Tab.Navigator>
+      <Tab.Navigator
+        screenOptions={{
+          tabBarStyle: {backgroundColor: '#e8f0f3', elevation: 10},
+        }}>
         <Tab.Screen name="Upcoming Trips" component={FirstRoute} />
         <Tab.Screen name="Past Trips" component={SecondRoute} />
       </Tab.Navigator>

@@ -1,4 +1,11 @@
-import {FlatList, RefreshControl, Text, View} from 'react-native';
+import {
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
 import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
@@ -17,18 +24,20 @@ import {AuthContext} from '../../Services/AuthenticationService';
 import {Auth} from '../../Classes/Auth';
 import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import filter from 'lodash.filter';
 
 const ManageTripsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
 
   const businessId = auth.GetBusinessId();
-
   const toast = useToast();
 
   const [vehicleList, setVehicleList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
   const [noLinkedVehicle, setNoLinkedVehicle] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [fullData, setFullData] = useState([]);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -127,9 +136,45 @@ const ManageTripsScreen = ({navigation}: any) => {
     );
   };
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    const formattedQuery = query;
+    const filterData: any = filter(fullData, (user: any) => {
+      return contains(user, formattedQuery);
+    });
+
+    setVehicleList(filterData);
+  };
+
+  const contains = (
+    {color, fullName, licenseNumber, make, model}: any,
+    query: any,
+  ) => {
+    if (
+      color.includes(query) ||
+      fullName.includes(query) ||
+      licenseNumber.includes(query) ||
+      make.includes(query) ||
+      model.includes(query)
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
   return (
     <SafeAreaView style={{flex: 1}}>
       <View style={FlatlistStyles.container}>
+        <TextInput
+          placeholder="Search"
+          clearButtonMode="always"
+          autoCapitalize="none"
+          style={styles.searchBox}
+          autoCorrect={false}
+          value={searchQuery}
+          onChangeText={(query: string) => handleSearch(query)}
+        />
         {noLinkedVehicle ? EmtpyFlatListText() : null}
         <FlatList
           style={{backgroundColor: '#e8f0f3'}}
@@ -144,5 +189,17 @@ const ManageTripsScreen = ({navigation}: any) => {
     </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  searchBox: {
+    marginHorizontal: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    backgroundColor: '#fff',
+  },
+});
 
 export default ManageTripsScreen;

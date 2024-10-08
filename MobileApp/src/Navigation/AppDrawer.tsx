@@ -323,6 +323,7 @@ const AppDrawer = ({navigation}: any) => {
         name="Edit Business Details"
         component={EditBusinessDetailsScreen}
         options={{
+          title: 'Business',
           drawerItemStyle: {display: 'none'},
           drawerIcon: () => (
             <Aperture
@@ -345,6 +346,7 @@ const AppDrawer = ({navigation}: any) => {
         name="Edit User Account"
         component={EditUserAccountScreen}
         options={{
+          title: 'User Account',
           drawerItemStyle: {display: 'none'},
         }}
       />
@@ -352,6 +354,7 @@ const AppDrawer = ({navigation}: any) => {
         name="Edit User Details"
         component={EditUserDetailsScreen}
         options={{
+          title: 'Personal Details',
           drawerItemStyle: {display: 'none'},
         }}
       />

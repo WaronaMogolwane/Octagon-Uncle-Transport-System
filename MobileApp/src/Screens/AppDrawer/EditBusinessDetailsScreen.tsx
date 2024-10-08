@@ -34,6 +34,7 @@ import {
 import {FilePen} from 'lucide-react-native';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {Auth} from '../../Classes/Auth';
+import {RestoreImageViaAsyncStorage} from '../../Services/ImageStorageService';
 
 const EditBusinessDetailsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -49,6 +50,7 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   const [businessName, setBusinessName] = useState('');
   const [businessPhoneNumber, setBusinessPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
+  const [profileImage, setProfileImage] = useState('');
 
   const [IsLoading, setIsLoading] = useState(false);
 
@@ -58,6 +60,12 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
       GetBusiness();
     }
   }, [businessDetail]);
+
+  useEffect(() => {
+    RestoreImageViaAsyncStorage().then((result: any) => {
+      setProfileImage(result);
+    });
+  }, []);
 
   const GetBusiness = async () => {
     if (role == 1) {
@@ -370,28 +378,34 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
               <View style={styles.avatarContainer}>
                 <Image
                   alt="profile photo"
-                  source={require('../../Images/default_avatar_image.jpg')}
+                  source={
+                    profileImage == ''
+                      ? require('./../../Images/default_avatar_image.jpg')
+                      : {uri: profileImage}
+                  }
                   style={styles.avatar}
                 />
               </View>
-              <View style={styles.nameContainer}>
-                <Text style={styles.name}>{businessName}</Text>
-              </View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Transporter Name:</Text>
-                <Text style={styles.infoText}>{transporterName}</Text>
-              </View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Phone number:</Text>
-                <Text style={styles.infoText}>{businessPhoneNumber}</Text>
-              </View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Business Email:</Text>
-                <Text style={styles.infoText}>{email}</Text>
-              </View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Location:</Text>
-                <Text style={styles.infoText}>{address}</Text>
+              <View style={{marginHorizontal: 10, alignItems: 'center'}}>
+                <View style={styles.nameContainer}>
+                  <Text style={styles.name}>{businessName}</Text>
+                </View>
+                <View style={styles.infoContainer}>
+                  <Text style={styles.infoLabel}>Transporter Name:</Text>
+                  <Text style={styles.infoText}>{transporterName}</Text>
+                </View>
+                <View style={styles.infoContainer}>
+                  <Text style={styles.infoLabel}>Phone number:</Text>
+                  <Text style={styles.infoText}>{businessPhoneNumber}</Text>
+                </View>
+                <View style={styles.infoContainer}>
+                  <Text style={styles.infoLabel}>Business Email:</Text>
+                  <Text style={styles.infoText}>{email}</Text>
+                </View>
+                <View style={styles.infoContainer}>
+                  <Text style={styles.infoLabel}>Location:</Text>
+                  <Text style={styles.infoText}>{address}</Text>
+                </View>
               </View>
             </View>
             <View

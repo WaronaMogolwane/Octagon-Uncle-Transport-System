@@ -13,7 +13,7 @@ export const BulkChargeJob = () => {
             Logger.Log('Recurring Payment')
             await GetAllCharges((error: any, result: BulkChargeReponse) => {
                 if (error) {
-                    throw new ErrorResponse(400, error)
+                    Logger.Error(error)
                 }
                 else {
                     Logger.Log(JSON.stringify(result))

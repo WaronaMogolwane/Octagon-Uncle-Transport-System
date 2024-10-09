@@ -15,8 +15,9 @@ import { BulkCharge, BulkChargeReponse as BulkChargeResponse } from '../Classes/
 import { ifError } from 'assert';
 import { randomUUID } from 'crypto';
 import { AxiosResponse } from 'axios';
+import { CustomLogger } from '../Classes/CustomLogger';
 
-
+const Logger: CustomLogger = new CustomLogger();
 export const CreateNewCustomer = async (req: Request, res: Response, next: NextFunction) => {
     let requestBody: any = req.body;
     let newCustomer: Customer = ({
@@ -183,7 +184,7 @@ export const GetAllCharges = async (callback: (error: any, result: any) => void)
             })
             BulkChargeAuthorization(bulkCharge, (error: any, result: AxiosResponse) => {
                 if (error) {
-                    throw new ErrorResponse(400, error);
+                    Logger.Error(error);
                 } else {
                     const response: BulkChargeResponse = Object.assign(new BulkChargeResponse(), result.data);
                     callback(null, response)

@@ -743,7 +743,7 @@ const HomeScreen = ({navigation}: any) => {
                       alignItems: 'flex-start',
                       marginHorizontal: 15,
                     }}>
-                    {activePassengers.map(item => {
+                    {activePassengers.map((item: any) => {
                       return (
                         <View
                           style={{

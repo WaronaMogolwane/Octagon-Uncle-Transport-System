@@ -7,6 +7,7 @@ import {
   GetVehicleAndDriverByBusiness,
   GetVehicleByLicenseNumberAndBusinessId,
   GetVehiclesByBusinessId,
+  GetVehiclesByDriverId,
   InsertNewDriverVehicleLink,
   InsertNewVehicle,
 } from "../Models/VehicleModel";
@@ -74,7 +75,7 @@ export const AddNewVehicle = async (req: any, res: any, next: any) => {
       }
     }
   );
-}
+};
 export const CheckIfVehicleExists = async (req: any, res: any, next: any) => {
   const businessId: string = req.query.BusinessId;
   const licenseNumber: string = req.query.LicenseNumber;
@@ -192,6 +193,22 @@ export const DeleteVehicle = async (req: any, res: any, next: any) => {
 export const GetVehicles = async (req: any, res: any, next: any) => {
   let businessId = req.query.businessId;
   await GetVehiclesByBusinessId(businessId, (error, result) => {
+    if (error) {
+      next(new ErrorResponse(400, error.message));
+    } else {
+      if (result[0]) {
+        res.status(200).send(result[0]);
+      } else {
+        res.status(400).send(new ErrorResponse(400, "No vehicles found."));
+      }
+    }
+  });
+};
+export const GetDriverVehicle = async (req: any, res: any, next: any) => {
+  let driverId = req.query.DriverId;
+
+  await GetVehiclesByDriverId(driverId, (error, result) => {
+
     if (error) {
       next(new ErrorResponse(400, error.message));
     } else {

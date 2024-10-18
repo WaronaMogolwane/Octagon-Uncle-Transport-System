@@ -35,6 +35,9 @@ const TripTransporter = ({navigation}: any) => {
   const businessId = auth.GetBusinessId();
   const toast = useToast();
 
+  const storageUrl: string =
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
+
   const [vehicleList, setVehicleList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
   const [noLinkedVehicle, setNoLinkedVehicle] = useState(true);
@@ -108,6 +111,7 @@ const TripTransporter = ({navigation}: any) => {
           vehicleId: itemData.vehicleId,
         });
       }}
+      urlFront={storageUrl + itemData.FrontImageUrl}
     />
   );
 

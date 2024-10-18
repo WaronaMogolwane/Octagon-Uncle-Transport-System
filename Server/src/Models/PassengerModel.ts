@@ -127,6 +127,26 @@ export const GetActivePassengersByBusinessId = async (
   );
 };
 
+export const GetActivePassengersByParentId = async (
+  parentId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "call GetPassengerActiveByParentId(?)",
+      timeout: 40000,
+      values: [parentId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
 export const GetAllPassengersByParentId = async (
   ParentId: string,
   callback: (error, result) => void

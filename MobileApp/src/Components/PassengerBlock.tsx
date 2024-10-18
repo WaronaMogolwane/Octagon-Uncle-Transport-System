@@ -40,7 +40,7 @@ export const PassengerBlock = ({tripList}: {tripList: any[]}) => {
       variant="outline"
       style={{
         margin: 12,
-        marginBottom: -90,
+        marginBottom: 100,
         backgroundColor: '#ffffff',
         borderRadius: 5,
         elevation: 10,

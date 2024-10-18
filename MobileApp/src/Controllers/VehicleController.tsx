@@ -3,6 +3,7 @@ import {
   DeleteDriverVehicleLinkByDriverId,
   DeleteVehicleByDriverIdAndVehicleId,
   GetVehicleAndDriverFromDB,
+  GetVehicleByDriverId,
   GetVehicleByLicenseNumberAndBusinessId,
   GetVehiclesByBusinessId,
   InsertNewDriverVehicleLink,
@@ -110,4 +111,7 @@ export const GetVehicles = async (
       callback(null, result);
     }
   });
+};
+export const GetDriverVehicle = async (driverId: string) => {
+  return await GetVehicleByDriverId(driverId);
 };

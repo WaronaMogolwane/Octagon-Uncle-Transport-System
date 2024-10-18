@@ -48,41 +48,62 @@ export const TripsBlock = ({tripList}: {tripList: any[]}) => {
   let dayName = day[d.getDay()];
 
   return (
-    <Card
-      size="sm"
-      variant="outline"
-      style={{
-        marginHorizontal: 12,
-        marginTop: 5,
-        marginBottom: 50,
-        backgroundColor: '#ffffff',
-        borderRadius: 5,
-        elevation: 10,
-      }}>
-      <Text
-        style={{
-          fontSize: 14,
-          fontWeight: '500',
-          marginBottom: 10,
-          alignItems: 'flex-start',
-          marginHorizontal: 15,
-        }}>
-        {dayName} <Text style={{fontWeight: '700'}}>Trips</Text>
-      </Text>
-      <ScrollView>
-        <View>
-          {isEmpty ? (
-            <View
-              style={{
-                marginBottom: 10,
-                alignItems: 'flex-start',
-                marginHorizontal: 15,
-              }}>
-              <Text style={{fontSize: 14, fontWeight: '600'}}>
-                You have no trip today
-              </Text>
-            </View>
-          ) : (
+    <View>
+      {isEmpty ? (
+        <Card
+          size="sm"
+          variant="outline"
+          style={{
+            marginHorizontal: 17,
+            marginBottom: 'auto',
+            backgroundColor: '#ffffff',
+            borderRadius: 5,
+            elevation: 10,
+          }}>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: '500',
+              marginBottom: 10,
+              alignItems: 'flex-start',
+              marginHorizontal: 15,
+            }}>
+            {dayName} <Text style={{fontWeight: '700'}}>Trips</Text>
+          </Text>
+
+          <View
+            style={{
+              marginBottom: 10,
+              alignItems: 'flex-start',
+              marginHorizontal: 15,
+            }}>
+            <Text style={{fontSize: 14, fontWeight: '600'}}>
+              You have no trip today
+            </Text>
+          </View>
+        </Card>
+      ) : (
+        <Card
+          size="sm"
+          variant="outline"
+          style={{
+            marginHorizontal: 17,
+            marginBottom: '5%',
+            backgroundColor: '#ffffff',
+            borderRadius: 5,
+            elevation: 10,
+          }}>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: '500',
+              marginBottom: 10,
+              alignItems: 'flex-start',
+              marginHorizontal: 15,
+            }}>
+            {dayName} <Text style={{fontWeight: '700'}}>Trips</Text>
+          </Text>
+          <ScrollView>
             <View
               style={{
                 marginBottom: 10,
@@ -136,9 +157,9 @@ export const TripsBlock = ({tripList}: {tripList: any[]}) => {
                 );
               })}
             </View>
-          )}
-        </View>
-      </ScrollView>
-    </Card>
+          </ScrollView>
+        </Card>
+      )}
+    </View>
   );
 };

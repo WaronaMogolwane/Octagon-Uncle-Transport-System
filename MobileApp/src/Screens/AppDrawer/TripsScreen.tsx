@@ -53,6 +53,7 @@ const TripsScreen = ({navigation}: any) => {
 
   const userId = auth.GetUserId();
   const role: number = Number(auth.GetUserRole());
+  console.log(role);
   // const role: number = 2;
 
   const [UpcomingTripList, setUpcomingTripList] = useState([]);

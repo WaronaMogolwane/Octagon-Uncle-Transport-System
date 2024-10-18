@@ -17,6 +17,7 @@ import {
   ToastTitle,
   useToast,
   VStack,
+  Image,
 } from '@gluestack-ui/themed';
 import {
   AlignLeft,
@@ -28,17 +29,34 @@ import {
   WalletMinimal,
 } from 'lucide-react-native';
 import {
+  GetAllActivePassengerForParent,
   GetAllPassengerForBusiness,
   GetParentPassengers,
 } from '../../Controllers/PassengerController';
-import {GetVehicles} from '../../Controllers/VehicleController';
+import {
+  GetDriverVehicle,
+  GetVehicles,
+} from '../../Controllers/VehicleController';
 import {GetUser} from '../../Controllers/UserController';
 import {CheckTrip, StartTrip} from '../../Services/TripServices';
 import Carousel from 'react-native-reanimated-carousel';
-import {SpendingBlock} from '../../Components/TripsBlocks';
-import {GetUpcomingTripsForClient} from '../../Controllers/TripController';
+import {TripsBlock} from '../../Components/TripsBlock';
+import {
+  GetUpcomingTripsForClient,
+  GetUpcomingTripsForDriver,
+} from '../../Controllers/TripController';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {PassengerBlock} from '../../Components/PassengerBlock';
+import {TripsBlockDiver} from '../../Components/TripsBlockDriver';
+import filter from 'lodash.filter';
+
+interface IVehicle {
+  Make: string;
+  Model: string;
+  FrontImageUrl: string;
+  Colour: string;
+  LicenseNumber: string;
+}
 
 const HomeScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
@@ -47,25 +65,35 @@ const HomeScreen = ({navigation}: any) => {
   const [vehicleCount, setVehicleCount] = useState('10');
   const [userName, setUserName] = useState('Nicholai');
   const [tripData, setTripData] = useState(['']);
+  const [fullData, setFullData] = useState([]);
+  const [activePassengers, setActivePasengers] = useState([]);
   const [amount, setAmount] = useState('1300.00');
   const [passengerList, setPassengerList] = useState([]);
   const [tripCount, setTripCount] = useState('');
 
-  const [isStarted, setIsStarted] = useState(false);
+  const [isStarted, setIsStarted] = useState(true);
+  const [noActivePassenger, setNoActivePassenger] = useState(true);
 
-  // const role: number = Number(auth.GetUserRole());
+  const [vehicle, setVehicle] = useState<IVehicle>({
+    Make: 'undefined',
+    Model: 'undefined',
+    FrontImageUrl: 'undefined',
+    Colour: 'undefined',
+    LicenseNumber: 'undefined',
+  });
+
+  const role: number = Number(auth.GetUserRole());
+  // const role: number = 3;
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
   const toast = useToast();
-  const role: number = 2;
 
-  const iconSize = 100;
+  const iconSize = 15;
   const iconStrokeWidth = 1;
-  const iconColor = '#FFFFFF';
-  const textSize = 50;
+  const iconColor = '#000000';
 
-  const windowWidth = Dimensions.get('window').width;
-  const windowHeight = Dimensions.get('window').height;
+  const storageUrl: string =
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
 
   const data = [
     {
@@ -99,10 +127,11 @@ const HomeScreen = ({navigation}: any) => {
       GetVehicleCount();
     } else if (role == 2) {
       GetPassengers();
-      GetPassegersByParent();
+      GetActivePasengers();
       GetUpcomingTrips();
     } else if (role == 3) {
-      GetPassengers();
+      GetVehicleInfomation();
+      GetUpcomingTrips();
     }
   }, []);
 
@@ -113,6 +142,12 @@ const HomeScreen = ({navigation}: any) => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    if (fullData[0] != '' && fullData.length != 0) {
+      handleSearch();
+    }
+  }, [fullData]);
 
   const CustomView = () => {
     const width = Dimensions.get('window').width;
@@ -205,10 +240,15 @@ const HomeScreen = ({navigation}: any) => {
   };
 
   const GetUpcomingTrips = async () => {
-    GetUpcomingTripsForClient(userId).then((response: any) => {
-      setTripData(response);
-      console.log(tripData);
-    });
+    if (role == 2) {
+      await GetUpcomingTripsForClient(userId).then((response: any) => {
+        setFullData(response);
+      });
+    } else if (role == 3) {
+      await GetUpcomingTripsForDriver(userId).then(response => {
+        setFullData(response);
+      });
+    }
   };
 
   const GetVehicleCount = async () => {
@@ -237,6 +277,27 @@ const HomeScreen = ({navigation}: any) => {
     });
   };
 
+  const GetVehicleInfomation = async () => {
+    GetDriverVehicle(userId).then(result => {
+      if (result != undefined) {
+        setVehicle(result[0]);
+      } else {
+        //it failed.
+      }
+    });
+  };
+
+  const GetActivePasengers = async () => {
+    GetAllActivePassengerForParent(userId).then(result => {
+      if (result[0] != '') {
+        setNoActivePassenger(false);
+        setActivePasengers(result);
+      } else {
+        setNoActivePassenger(true);
+      }
+    });
+  };
+
   const GetUserName = async () => {
     await GetUser(userId)
       .then((result: any) => {
@@ -260,6 +321,33 @@ const HomeScreen = ({navigation}: any) => {
       }
     });
   };
+
+  const handleSearch = () => {
+    const date = new Date().toLocaleDateString('en-CA');
+    const formattedQuery = date;
+
+    const filterData: any = filter(fullData, (user: any) => {
+      return contains(user, formattedQuery);
+    });
+
+    setTripData(filterData);
+  };
+
+  const contains = ({pickUpDate}: any, query: any) => {
+    if (pickUpDate.toLowerCase().includes(query)) {
+      return true;
+    }
+
+    return false;
+  };
+
+  const universityIcon = (
+    <GraduationCap
+      size={iconSize}
+      strokeWidth={iconStrokeWidth}
+      color={iconColor}
+    />
+  );
 
   if (role == 1) {
     return (
@@ -409,6 +497,7 @@ const HomeScreen = ({navigation}: any) => {
               borderRadius: 5,
               elevation: 10,
               justifyContent: 'center',
+              marginBottom: 10,
             }}
             onPress={() => {
               navigation.navigate('Manage Passengers');
@@ -444,7 +533,7 @@ const HomeScreen = ({navigation}: any) => {
                     {passengerCount}
                   </Text>
                   <Text style={{fontSize: 10, textAlign: 'center'}}>
-                    Passengers
+                    Active Passengers
                   </Text>
                 </View>
               </View>
@@ -452,7 +541,7 @@ const HomeScreen = ({navigation}: any) => {
           </Pressable>
 
           <View style={{height: '29%'}}>
-            <SpendingBlock tripList={tripData} />
+            <TripsBlock tripList={tripData} />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -598,11 +687,119 @@ const HomeScreen = ({navigation}: any) => {
               </Card>
             </Pressable>
           </View>
-          <View style={{height: '29%'}}>
-            <PassengerBlock tripList={data} />
+          <View style={{maxHeight: '33.3%'}}>
+            {noActivePassenger ? (
+              <Card
+                size="sm"
+                variant="outline"
+                style={{
+                  marginHorizontal: 17,
+                  marginTop: 10,
+                  marginBottom: 10,
+                  backgroundColor: '#ffffff',
+                  borderRadius: 5,
+                  elevation: 10,
+                }}>
+                <Text style={{fontWeight: 'bold', textAlign: 'center'}}>
+                  Active Passengers
+                </Text>
+                <View
+                  style={{
+                    marginTop: 10,
+                    marginBottom: 10,
+                    alignItems: 'flex-start',
+                    marginHorizontal: 15,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: '600',
+                    }}>
+                    You have no active passengers
+                  </Text>
+                </View>
+              </Card>
+            ) : (
+              <Card
+                size="sm"
+                variant="outline"
+                style={{
+                  marginHorizontal: 17,
+                  margin: 12,
+                  backgroundColor: '#ffffff',
+                  borderRadius: 5,
+                  elevation: 10,
+                  marginBottom: 40,
+                }}>
+                <Text style={{fontWeight: 'bold', textAlign: 'center'}}>
+                  Active Passengers
+                </Text>
+
+                <ScrollView>
+                  <View
+                    style={{
+                      marginVertical: 10,
+                      marginBottom: 5,
+                      alignItems: 'flex-start',
+                      marginHorizontal: 15,
+                    }}>
+                    {activePassengers.map(item => {
+                      return (
+                        <View
+                          style={{
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginVertical: 10,
+                            backgroundColor: '#ffffff',
+                          }}
+                          key={item.passengerId}>
+                          <View
+                            style={{
+                              flex: 1,
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              borderRadius: 20,
+                            }}>
+                            <View>
+                              <Text style={{fontSize: 16, fontWeight: '600'}}>
+                                {universityIcon} {item.editedName}
+                              </Text>
+                            </View>
+                            <View>
+                              <Text style={{fontSize: 16, fontWeight: '600'}}>
+                                <View
+                                  style={{
+                                    flex: 1,
+                                    display: 'flex',
+                                    // padding: -100,
+                                    borderRadius: 20, // Half of the width or
+                                    backgroundColor: '#d6f3f1',
+                                  }}>
+                                  <Text
+                                    style={{
+                                      padding: -100,
+                                      color: '#3ba2a9',
+                                      fontWeight: '500',
+                                    }}>
+                                    Active
+                                  </Text>
+                                </View>
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </ScrollView>
+              </Card>
+            )}
           </View>
-          <View style={{height: '29%'}}>
-            <SpendingBlock tripList={data} />
+          <View style={{maxHeight: '33.3%'}}>
+            <TripsBlock tripList={tripData} />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -636,110 +833,77 @@ const HomeScreen = ({navigation}: any) => {
             </View>
           </View>
 
-          <View
+          <Card
+            size="sm"
+            variant="outline"
             style={{
-              flexDirection: 'row',
-              justifyContent: 'center',
+              marginHorizontal: 12,
+              marginBottom: 10,
+              backgroundColor: '#ffffff',
+              borderRadius: 5,
+              elevation: 10,
             }}>
-            <Card
-              size="sm"
-              variant="outline"
+            <Text
               style={{
-                marginEnd: 15,
-                width: '41.7%',
-                backgroundColor: '#ffffff',
-                borderRadius: 5,
-                elevation: 10,
-                justifyContent: 'center',
-              }}>
-              <View
-                style={{
-                  alignItems: 'center', // Align items vertically
-                  justifyContent: 'center',
-                  display: 'flex', // Flexbox layout
-                }}>
-                <View
-                  style={{
-                    marginHorizontal: 12,
-                    width: 100,
-                    height: 100,
-                    borderRadius: 50, // Half of the width or height
-                    backgroundColor: '#d6f3f1',
-                    flexDirection: 'row', // Horizontal arrangement
-                    alignItems: 'center', // Align items vertically
-                    justifyContent: 'center',
-                  }}>
-                  <WalletMinimal size={25} strokeWidth={2} color={'#3ba2a9'} />
-                </View>
-                <View>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      marginBottom: 0,
-                      fontWeight: 'bold',
-                      color: '#4b4842',
-                    }}>
-                    R{amount}
-                  </Text>
-                  <Text style={{fontSize: 10, textAlign: 'center'}}>
-                    Monthly Earnings
-                  </Text>
-                </View>
-              </View>
-            </Card>
-
-            <Card
-              size="sm"
-              variant="outline"
-              style={{
+                // fontSize: 15,
                 marginStart: 15,
-                width: '41.7%',
-                backgroundColor: '#ffffff',
-                borderRadius: 5,
-                elevation: 10,
-                justifyContent: 'center',
+                fontWeight: '500',
+                textAlign: 'left',
+                marginTop: 5,
+                marginBottom: 15,
               }}>
-              <View
-                style={{
-                  alignItems: 'center', // Align items vertically
-                  justifyContent: 'center',
-                  display: 'flex', // Flexbox layout
-                }}>
-                <View
+              Your Vehicle
+            </Text>
+            <View style={{flexDirection: 'row', flex: 1, marginBottom: 10}}>
+              <View style={{width: '33%'}}>
+                <Image
                   style={{
-                    marginHorizontal: 12,
                     width: 100,
+                    aspectRatio: 1 / 1,
+                    marginHorizontal: 12,
                     height: 100,
                     borderRadius: 50, // Half of the width or height
-                    backgroundColor: '#fadcdc',
                     display: 'flex', // Flexbox layout
                     flexDirection: 'row', // Horizontal arrangement
                     alignItems: 'center', // Align items vertically
                     justifyContent: 'center',
+                  }}
+                  source={{
+                    uri:
+                      storageUrl + vehicle.FrontImageUrl ||
+                      'https://eu.amcdn.co.za/cars/toyota-quantum-2-5d-4d-ses-fikile-2012-id-64381431-type-main.jpg',
+                  }}
+                  alt="Vehicle front picture."
+                />
+              </View>
+
+              <View style={{width: '67%'}}>
+                <View
+                  style={{
+                    marginTop: 15,
+                    marginBottom: 30,
+                    flexDirection: 'row',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'flex-start',
                   }}>
-                  <CarFront size={25} strokeWidth={2} color={'#c26b71'} />
+                  <Text style={styles.cardText}>{vehicle.Make}</Text>
+                  <Text style={styles.cardText}>{vehicle.Model}</Text>
                 </View>
-                <View>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      marginBottom: 0,
-                      fontWeight: 'bold',
-                      color: '#4b4842',
-                    }}>
-                    {vehicleCount}
-                  </Text>
-                  <Text style={{fontSize: 10, textAlign: 'center'}}>
-                    Vehicles
-                  </Text>
+                <View
+                  style={{
+                    marginStart: 12,
+                    flexDirection: 'row',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'flex-start',
+                  }}>
+                  <Text style={styles.cardText}>{vehicle.Colour}</Text>
+                  <Text style={styles.cardText}>{vehicle.LicenseNumber}</Text>
                 </View>
               </View>
-            </Card>
-          </View>
+            </View>
+          </Card>
 
-          <View style={{height: '29%'}}>
-            <SpendingBlock tripList={tripData} />
-          </View>
+          <TripsBlockDiver tripList={tripData} />
         </ScrollView>
       </SafeAreaView>
     );
@@ -750,6 +914,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#20B2AA',
   },
+  cardText: {fontWeight: '500', fontSize: 16},
   headerContent: {
     padding: 30,
     alignItems: 'center',

@@ -48,7 +48,6 @@ export const AddVehicleToDatabase = async (
       callback(error, null);
     });
 };
-
 export const UpdateVehicleDetails = async (
   vehicleDetails: Vehicle,
   transporterUid: string,
@@ -56,12 +55,10 @@ export const UpdateVehicleDetails = async (
   let response;
   return response;
 };
-
 export const GetAllVehiclesFromDatabase = async (transporterUid: string) => {
   let response;
   return response;
 };
-
 export const GetVehicleAndDriverFromDB = async (businessId: string) => {
   let result: any;
   let vehicle = {};
@@ -234,4 +231,23 @@ export const GetVehiclesByBusinessId = async (
     .catch(error => {
       callback(error, null);
     });
+};
+export const GetVehicleByDriverId = async (driverId: string) => {
+  let res: any;
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/vehicle/get-driver-vehicle`, {
+      params: {
+        DriverId: driverId,
+      },
+    })
+    .then((response: any) => {
+      let result = response.data;
+
+      res = result;
+    })
+    .catch(error => {
+      // console.log(error);
+      res = error;
+    });
+  return res;
 };

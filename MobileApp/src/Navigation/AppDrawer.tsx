@@ -51,7 +51,7 @@ const AppDrawer = ({navigation}: any) => {
   const [profileImage, setProfileImage] = useState('');
 
   const role: number = Number(auth.GetUserRole());
-  // const role: number = 3;
+  // const role: number = 1;
 
   const userId = auth.GetUserId();
 

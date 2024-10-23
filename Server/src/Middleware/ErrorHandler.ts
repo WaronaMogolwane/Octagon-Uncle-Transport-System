@@ -12,13 +12,22 @@ const ErrorHandler: ErrorRequestHandler = (
 ) => {
   let statusCode: number = 500;
   let errorMessage: string = "An unknown error occured";
-
+  let stackTrace: string = "";
   if (isHttpError(error) || error) {
     statusCode = error.status ? error.status : statusCode;
     errorMessage = error.message ? error.message : errorMessage;
+    stackTrace = error.stack ? error.stack : stackTrace;
   }
-  Logger.Error(errorMessage)
-  res.status(statusCode).json({ error: { message: errorMessage } });
+  Logger.Error(JSON.stringify({
+    message: errorMessage,
+    stack: stackTrace
+  }))
+  res.status(statusCode).json(
+    {
+      message: errorMessage,
+      stack: stackTrace
+    }
+  );
 };
 
 export default ErrorHandler;

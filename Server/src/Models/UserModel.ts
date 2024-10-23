@@ -2,7 +2,7 @@ import { DbPool } from "../Services/DatabaseService";
 
 export const GetUserByUserId = async (
   userId: string,
-  callback: (error, result) => void
+  callback: (error: any, result: any) => void
 ) => {
   DbPool.query(
     {
@@ -22,7 +22,7 @@ export const GetUserByUserId = async (
 
 export const CheckUserEmailByEmail = async (
   email: string,
-  callback: (error, result) => void
+  callback: (error: any, result: any) => void
 ) => {
   DbPool.query(
     {
@@ -42,7 +42,7 @@ export const CheckUserEmailByEmail = async (
 
 export const UpdateUserEmailByUserId = async (
   user: any,
-  callback: (error, result) => void
+  callback: (error: any, result: any) => void
 ) => {
   DbPool.query(
     {
@@ -62,7 +62,7 @@ export const UpdateUserEmailByUserId = async (
 
 export const UpdateUserPasswordByUserId = async (
   user: any,
-  callback: (error, result) => void
+  callback: (error: any, result: any) => void
 ) => {
   DbPool.query(
     {

@@ -1,4 +1,4 @@
-import { BulkChargeJob } from "../Jobs/RecurringPayments"
+import { BulkChargeJob } from "../Jobs/RecurringPaymentsJobs"
 import { TripsSchedulerJob } from "../Jobs/Trips";
 
 export class MainWorker {

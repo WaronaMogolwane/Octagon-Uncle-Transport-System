@@ -66,6 +66,7 @@ export class Customer {
 export class Metadata {
     user_id: string;
     transporter_user_id: string;
+    charge_type: string;
 }
 
 export class Plan {

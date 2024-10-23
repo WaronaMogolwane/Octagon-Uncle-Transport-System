@@ -8,4 +8,5 @@ export interface Charge {
 export interface Metadata {
     user_id: string;
     transporter_user_id: string;
+    charge_type: string;
 }

@@ -1,4 +1,4 @@
-CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetBulkCharges`()
+CREATE DEFINER=`sqladmin`@`%` PROCEDURE `CreateNewBulkCharge`()
 BEGIN
 SELECT 
     ps.Amount,

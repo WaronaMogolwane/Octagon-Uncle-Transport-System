@@ -38,8 +38,8 @@ export const GetUserDetailsFromDB = async (userId: string) => {
   let statusCode: any;
 
   await axios
-    .post(`${SERVER_HOST}:${SERVER_PORT}/user-profile/get-user-details`, {
-      userDetails: {
+    .get(`${SERVER_HOST}:${SERVER_PORT}/user-profile/get-user-details`, {
+      params: {
         UserId: userId,
       },
     })
@@ -67,6 +67,7 @@ export const GetUserDetailsFromDB = async (userId: string) => {
       console.log(error);
       res = error;
     });
+
   return [res, statusCode];
 };
 

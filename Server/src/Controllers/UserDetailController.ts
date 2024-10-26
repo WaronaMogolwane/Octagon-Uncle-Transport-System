@@ -41,7 +41,8 @@ export const AddUserDetail = async (req: any, res: any, next: any) => {
 };
 
 export const GetUserDetail = async (req: any, res: any, next: any) => {
-  let userId = req.body.userDetails.UserId;
+  let userId = req.query.UserId;
+
   await GetUserDetailByUserId(userId, (error, result) => {
     if (error) {
       next(new ErrorResponse(501, error.message));

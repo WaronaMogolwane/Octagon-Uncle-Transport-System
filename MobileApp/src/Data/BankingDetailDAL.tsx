@@ -229,9 +229,20 @@ export const GetBankListFromDB = async () => {
 
       res.forEach((data: any) => {
         bank = {
-          bankName: data.name,
-          bankId: data.id,
-          bankCode: data.code,
+          id: data.id,
+          name: data.name,
+          code: data.code,
+          longcode: data.longcode,
+          gateway: data.gateway,
+          pay_with_bank: data.pay_with_bank,
+          supports_transfer: data.supports_transfer,
+          active: data.active,
+          country: data.country,
+          currency: data.currency,
+          type: data.type,
+          is_deleted: data.is_deleted,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
         };
 
         bankData.push(bank);

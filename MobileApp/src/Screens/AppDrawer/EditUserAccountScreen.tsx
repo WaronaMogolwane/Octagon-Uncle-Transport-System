@@ -36,6 +36,7 @@ import {
   MenuItem,
   MenuItemLabel,
   EditIcon,
+  Card,
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
 import {CustomButton1} from '../../Components/Buttons';
@@ -739,40 +740,62 @@ const EditUserAccountScreen = ({navigation}: any) => {
         <Text></Text>
         <FabMenu />
       </View>
-      <View style={styles.form}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          editable={false}
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <Text
-          onPress={() => {
-            setShowEmailModal(true);
-          }}
-          style={styles.changeAvatarButtonText}>
-          Change Email
-        </Text>
 
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          editable={false}
-          secureTextEntry={true}
-          textContentType="password"
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-        />
-        <Text
-          onPress={() => {
-            setShowChangePassword(true);
-          }}
-          style={styles.changeAvatarButtonText}>
-          Change Password
-        </Text>
+      <View style={styles.form}>
+        <Card
+          size="sm"
+          variant="outline"
+          style={{
+            marginBottom: 20,
+            backgroundColor: '#ffffff',
+            borderRadius: 5,
+            elevation: 10,
+            justifyContent: 'center',
+          }}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            editable={false}
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <Text
+            onPress={() => {
+              setShowEmailModal(true);
+            }}
+            style={styles.changeAvatarButtonText}>
+            Change Email
+          </Text>
+        </Card>
+
+        <Card
+          size="sm"
+          variant="outline"
+          style={{
+            backgroundColor: '#ffffff',
+            borderRadius: 5,
+            elevation: 10,
+            justifyContent: 'center',
+          }}>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            editable={false}
+            secureTextEntry={true}
+            textContentType="password"
+            style={styles.input}
+            placeholder="Password"
+            value={password}
+            onChangeText={setPassword}
+          />
+          <Text
+            onPress={() => {
+              setShowChangePassword(true);
+            }}
+            style={styles.changeAvatarButtonText}>
+            Change Password
+          </Text>
+        </Card>
 
         <View
           style={{
@@ -810,9 +833,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    backgroundColor: '#e8f0f3',
   },
   form: {
-    width: '80%',
+    width: '90%',
   },
   label: {
     marginTop: 20,
@@ -849,7 +873,7 @@ const styles = StyleSheet.create({
   },
   changeAvatarButtonText: {
     color: '#1E90FF',
-    fontSize: 18,
+    fontSize: 16,
   },
 });
 

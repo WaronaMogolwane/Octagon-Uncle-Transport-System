@@ -1,3 +1,4 @@
+import { PendingChargesJob } from "../Jobs/PendingChargesJob";
 import { BulkChargeJob } from "../Jobs/RecurringPaymentsJobs"
 import { TripsSchedulerJob } from "../Jobs/Trips";
 
@@ -8,6 +9,7 @@ export class MainWorker {
      */
     StartJobs = (): void => {
         BulkChargeJob();
+        PendingChargesJob()
         TripsSchedulerJob();
     }
 }

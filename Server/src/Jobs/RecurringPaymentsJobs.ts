@@ -1,6 +1,6 @@
 import schedule, { scheduleJob } from "node-schedule";
 import { CustomLogger } from "../Classes/CustomLogger";
-import { BulkChargeAuthorizations, GetAllBulkForCurrentDayCharges } from "../Controllers/PaymentsController";
+import { BulkChargeAuthorizations, GetAllBulkChargesForCurrentDay } from "../Controllers/PaymentsController";
 import { BulkChargeReponse } from "../Classes/BulkCharge";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 const TWELVE_NOON: string = "0 12 * * *"
@@ -29,7 +29,7 @@ export const BulkChargeJob = () => {
         })
 }
 const IsRecurringPaymentChargedToday = (callback: (error: any, result: any) => void): any => {
-    GetAllBulkForCurrentDayCharges((error: any, result: any) => {
+    GetAllBulkChargesForCurrentDay((error: any, result: any) => {
         if (error) {
             callback(error, null)
         } else {

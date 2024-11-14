@@ -4,6 +4,7 @@ import { CardAuthorisation } from "../Classes/CardAuthorisation";
 import { Refund } from "../Classes/Refund";
 import { Transaction } from "../Classes/Transaction";
 import { DbPool } from "../Services/DatabaseService";
+import { BankTransfer, Transfer } from "../Classes/Transfer";
 
 export const InsertCardAuthorisation = async (
     cardAuthorisation: CardAuthorisation,
@@ -63,6 +64,35 @@ export const InsertNewTransaction = async (
         }
     );
 };
+export const InsertNewTransfer = async (
+    newTransfer: Transfer,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL InsertNewTransfer(?,?,?,?,?,?,?,?,?);",
+            timeout: 40000,
+            values: [
+                newTransfer.transferCode,
+                newTransfer.amount,
+                newTransfer.currency,
+                newTransfer.status,
+                newTransfer.reference,
+                newTransfer.reason,
+                newTransfer.dateCreated,
+                newTransfer.dateUpdated,
+                newTransfer.transactionType
+            ],
+        },
+        function (error, results, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
 export const InsertNewRefund = async (
     refund: Refund,
     callback: (error: any, result: any) => void
@@ -100,6 +130,7 @@ export const GetNewBulkCharge = async (
             if (error) {
                 callback(error, null);
             } else {
+                console.log(results);
                 callback(null, results);
             }
         }
@@ -111,6 +142,40 @@ export const GetBulkChargesForToday = async (
     DbPool.query(
         {
             sql: "CALL GetBulkChargesForToday();",
+            timeout: 40000,
+        },
+        function (error, results: RowDataPacket[], fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results[0]);
+            }
+        }
+    );
+};
+export const AreRecurringChargesPendingToday = async (
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL AreRecurringChargesPendingToday();",
+            timeout: 40000,
+        },
+        function (error, results: RowDataPacket[], fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results[0][0].AreRecurringChargesPendingToday);
+            }
+        }
+    );
+};
+export const InsertPendingCharges = async (
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL CreatePendingCharges();",
             timeout: 40000,
         },
         function (error, results: RowDataPacket[], fields) {

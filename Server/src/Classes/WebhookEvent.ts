@@ -1,4 +1,4 @@
-export class WebhookEvent {
+export class TransactionWebhookEvent {
     event: string;
     data: Data;
 }

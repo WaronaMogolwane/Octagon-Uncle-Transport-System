@@ -1,6 +1,4 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {err} from 'react-native-svg/lib/typescript/xml';
-import RNFetchBlob from 'rn-fetch-blob';
 
 // export const DownloadImage = async () => {
 //   const storageUrl: string =
@@ -54,9 +52,20 @@ export const RestoreImageViaAsyncStorage = async () => {
     }
   } catch (e) {
     // error reading value
-    console.error('There was an retrieving the image path via async: ' + e);
+    console.error(
+      'There was an error retrieving the image path via async: ' + e,
+    );
   }
   return image;
+};
+
+export const SaveImageViaAsyncStorage = async (imageUri: string) => {
+  try {
+    await AsyncStorage.setItem('profileImage', imageUri);
+  } catch (e) {
+    // saving error
+    console.error('There was an error saving the image path via async: ' + e);
+  }
 };
 
 // const getExtention = (filename: string) => {

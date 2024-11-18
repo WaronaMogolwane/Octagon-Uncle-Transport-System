@@ -15,6 +15,7 @@ import ProfileScreen from '../Screens/AppDrawer/ProfileScreen';
 import EditBusinessDetailsScreen from '../Screens/AppDrawer/EditBusinessDetailsScreen';
 import EditUserDetailsScreen from '../Screens/AppDrawer/EditUserDetailsScreen';
 import EditPaymentDetailsScreen from '../Screens/AppDrawer/EditPaymentDetailsScreen';
+
 import {Auth} from '../Classes/Auth';
 import {AuthContext} from '../Services/AuthenticationService';
 import {
@@ -43,6 +44,7 @@ import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
 import TripVehiclePickerScreen from '../Screens/AppDrawer/TripVehiclePickerScreen';
 import {getHeaderTitle} from '@react-navigation/elements';
 import TripTransporterScreen from '../Screens/AppDrawer/TripTransporterScreen';
+import EditBankingDetailsScreen from '../Screens/AppDrawer/EditBankingDetailsScreen';
 
 const AppDrawer = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -60,6 +62,9 @@ const AppDrawer = ({navigation}: any) => {
   const iconSize = 20;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';
+
+  const storageUrl: string =
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const user = {
     avatar: 'https://www.bootdey.com/img/Content/avatar/avatar1.png',
@@ -95,7 +100,7 @@ const AppDrawer = ({navigation}: any) => {
     RestoreImageViaAsyncStorage().then((result: any) => {
       setProfileImage(result);
     });
-  }, []);
+  }, [fullname]);
 
   return (
     <Drawer.Navigator
@@ -121,7 +126,7 @@ const AppDrawer = ({navigation}: any) => {
                       source={
                         profileImage == ''
                           ? require('../Images/default_avatar_image.jpg')
-                          : {uri: profileImage}
+                          : {uri: storageUrl + profileImage}
                       }
                       style={styles.avatar}
                     />
@@ -355,6 +360,14 @@ const AppDrawer = ({navigation}: any) => {
         component={EditUserDetailsScreen}
         options={{
           title: 'Personal Details',
+          drawerItemStyle: {display: 'none'},
+        }}
+      />
+      <Drawer.Screen
+        name="Edit Banking Details"
+        component={EditBankingDetailsScreen}
+        options={{
+          title: 'Banking Information',
           drawerItemStyle: {display: 'none'},
         }}
       />

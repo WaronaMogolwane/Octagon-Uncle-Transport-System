@@ -17,6 +17,7 @@ import {
   Banknote,
   BookUser,
   BriefcaseBusiness,
+  CreditCard,
   LogOut,
   User,
 } from 'lucide-react-native';
@@ -65,6 +66,8 @@ const ProfileScreen = ({navigation}: any) => {
       'https://www.tarkett-asia.com/media/img/M/THH_25094221_25187221_001.jpg',
     name: 'John Smith',
   };
+  const storageUrl: string =
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   useEffect(() => {
     GetUserName();
@@ -74,7 +77,7 @@ const ProfileScreen = ({navigation}: any) => {
     RestoreImageViaAsyncStorage().then((result: any) => {
       setProfileImage(result);
     });
-  }, []);
+  }, [firstName]);
 
   const iconSelector = (id: number) => {
     if (id == 1) {
@@ -114,6 +117,17 @@ const ProfileScreen = ({navigation}: any) => {
       return (
         <View>
           <BriefcaseBusiness
+            size={iconSize}
+            strokeWidth={iconStrokeWidth}
+            color={iconColor}
+            style={styles.image}
+          />
+        </View>
+      );
+    } else if (id == 5) {
+      return (
+        <View>
+          <CreditCard
             size={iconSize}
             strokeWidth={iconStrokeWidth}
             color={iconColor}
@@ -221,7 +235,7 @@ const ProfileScreen = ({navigation}: any) => {
                 source={
                   profileImage == ''
                     ? require('../../Images/default_avatar_image.jpg')
-                    : {uri: profileImage}
+                    : {uri: storageUrl + profileImage}
                 }
                 style={styles.avatar}
               />
@@ -274,6 +288,19 @@ const ProfileScreen = ({navigation}: any) => {
                 <Text style={styles.username}>Business</Text>
               </View>
             </TouchableOpacity>
+
+            {role == 1 ? (
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('Edit Banking Details');
+                }}>
+                <View style={styles.box}>
+                  <View>{iconSelector(5)}</View>
+
+                  <Text style={styles.username}>Banking information</Text>
+                </View>
+              </TouchableOpacity>
+            ) : null}
           </View>
           <View>{SignOutModal()}</View>
           <View

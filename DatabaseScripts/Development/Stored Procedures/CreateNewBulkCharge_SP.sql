@@ -1,15 +1,16 @@
-CREATE DEFINER=`sqladmin`@`%` PROCEDURE `CreateNewBulkCharge`()
+CREATE DEFINER=`sqladmin`@`156.155.26.176` PROCEDURE `CreateNewBulkCharge`()
 BEGIN
 SELECT 
-    ps.Amount,
+	t.Reference,
+    t.Amount,
     ca.AuthorizationCode,
     ca.UserId,
-    UUID() AS 'Transporter User Id'
+    UUID() AS TransporterUserId
 FROM
-    PaymentsSchedule ps
+    Transaction t
         INNER JOIN
-    CardAuthorisation ca ON ca.CardAuthorisationId = ps.CardAuthorisationId
+    CardAuthorisation ca ON ca.UserId = t.UserId
 WHERE
-    ps.PaymentDay = DAYOFMONTH(CURRENT_TIMESTAMP())
-        AND ps.IsActive = '1';
+   t.Status = 'Pending'
+   AND t.Attempts = 0;
 END

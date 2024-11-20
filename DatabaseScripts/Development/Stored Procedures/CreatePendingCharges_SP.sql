@@ -11,7 +11,7 @@ UserId,
 Amount,
 Currency,
 Status,
-Refernece,
+Reference,
 DateCreated,
 TransactionType
 )

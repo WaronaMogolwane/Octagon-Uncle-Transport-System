@@ -1,6 +1,6 @@
-import { Recipient, Transfer, TransferRecipient, TransferWebHookEvent } from './../Classes/Transfer';
+import { BankTransfer, Recipient, Transfer, TransferRecipient, TransferWebHookEvent } from './../Classes/Transfer';
 import { GetBulkChargesForToday, InsertNewBulkCharge, GetNewBulkCharge, InsertNewTransfer, AreRecurringChargesPendingToday, InsertPendingCharges } from './../Models/PaymentsModel';
-import { InitiateBulkCharge, ChargeAuthorization, CreateNewPaystackRefund, CreateTransferRecipient } from './../Services/PaystackService';
+import { InitiateBulkCharge, ChargeAuthorization, CreateNewPaystackRefund, CreateTransferRecipient, InitiateTransfer } from './../Services/PaystackService';
 import { Authorization, Data, TransactionWebhookEvent } from './../Classes/WebhookEvent';
 import { NextFunction, Request, Response } from "express";
 import { Customer } from "../Classes/Customer";
@@ -18,6 +18,7 @@ import { randomUUID } from 'crypto';
 import { AxiosResponse } from 'axios';
 import { CustomLogger } from '../Classes/CustomLogger';
 import { QueryError } from 'mysql2';
+import { TransferResponse } from '../Classes/BankTransferResponse';
 const bulkChargeSize: number = 1000;
 
 const Logger: CustomLogger = new CustomLogger();
@@ -186,7 +187,29 @@ export const CreateNewRefund = async (webHookEvent: TransactionWebhookEvent, req
         }
     })
 }
-export const SaveNewTransfer = async (webHookEvent: TransferWebHookEvent, req: Request, res: Response, callback: (error: any, result: any) => void) => {
+export const SaveNewTransfer = async (transferResponse: TransferResponse, callback: (error: any, result: any) => void) => {
+    let newTransfer: Transfer = ({
+        transferCode: transferResponse.data.transfer_code,
+        amount: transferResponse.data.amount,
+        currency: transferResponse.data.currency,
+        status: "Pending",
+        reference: transferResponse.data.reference,
+        reason: transferResponse.data.reason,
+        dateCreated: new Date(transferResponse.data.createdAt || transferResponse.data.created_at),
+        dateUpdated: new Date(transferResponse.data.updatedAt || transferResponse.data.updated_at) || null,
+        transactionType: "Bank Transfer",
+        paystackId: transferResponse.data.id
+    })
+    await InsertNewTransfer(newTransfer, (error: any, result: any) => {
+        if (error) {
+            callback(error, null);
+        }
+        else {
+            callback(null, result);
+        }
+    })
+}
+export const UpdateTransfer = async (webHookEvent: TransferWebHookEvent, req: Request, res: Response, callback: (error: any, result: any) => void) => {
     let newTransfer: Transfer = ({
         transferCode: webHookEvent.data.transfer_code,
         amount: webHookEvent.data.amount,
@@ -196,7 +219,9 @@ export const SaveNewTransfer = async (webHookEvent: TransferWebHookEvent, req: R
         reason: webHookEvent.data.reason,
         dateCreated: new Date(webHookEvent.data.createdAt || webHookEvent.data.created_at),
         dateUpdated: new Date(webHookEvent.data.updatedAt || webHookEvent.data.update_at) || null,
-        transactionType: "Bank Transfer"
+        transactionType: "Bank Transfer",
+        paystackId: webHookEvent.data.id
+
     })
     await InsertNewTransfer(newTransfer, (error: any, result: any) => {
         if (error) {
@@ -204,6 +229,40 @@ export const SaveNewTransfer = async (webHookEvent: TransferWebHookEvent, req: R
         }
         else {
             callback(null, result);
+        }
+    })
+}
+export const CreateTransfer = async (req: Request, res: Response, next: NextFunction) => {
+    const reqBody = req.body;
+    let newBankTransfer: BankTransfer = ({
+        amount: reqBody.amount,
+        source: reqBody.source,
+        reference: stringFormat("BT-{0}", randomUUID()),
+        recipient: reqBody.recipientCode,
+        reason: reqBody.reason
+    })
+    InitiateTransfer(newBankTransfer, async (error: any, result: any) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            const transferResponse: TransferResponse = Object.assign(new TransferResponse(), result.data);
+            if (transferResponse.status == false) {
+                const err: Error = new Error(transferResponse.toString())
+                next(new ErrorResponse(400, err.message, err.stack));
+            }
+            else {
+                await SaveNewTransfer(transferResponse, (error: any, result: any) => {
+                    if (error) {
+                        const err: Error = new Error(error.message)
+                        next(new ErrorResponse(400, err.message, err.stack));
+                    }
+                    else {
+                        res.status(200).json(transferResponse.message)
+                    }
+                })
+            }
         }
     })
 }
@@ -219,6 +278,7 @@ export const BulkChargeAuthorizations = async (callback: (error: any, result: an
                 let newCharge: any = ({
                     amount: value.Amount,
                     authorization: value.AuthorizationCode,
+                    reference: value.Reference,
                     metadata: {
                         user_id: value.UserId,
                         transporter_user_id: value.TransporterUserId

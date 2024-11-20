@@ -91,5 +91,6 @@ export class Transfer {
     dateCreated: Date;
     dateUpdated: Date;
     transactionType: string;
+    paystackId?: number;
 }
 

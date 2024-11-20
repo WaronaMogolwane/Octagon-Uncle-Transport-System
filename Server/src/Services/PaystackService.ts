@@ -3,7 +3,7 @@ import { NextFunction, Response, Request } from "express";
 import { Customer } from "../Classes/Customer";
 import { TransactionWebhookEvent } from "../Classes/WebhookEvent";
 import { stringFormat } from '../Extensions/StringExtensions';
-import { CreateNewCardAuthorisation, CreateNewRefund, CreateNewTransaction, SaveNewTransfer } from "../Controllers/PaymentsController";
+import { CreateNewCardAuthorisation, CreateNewRefund, CreateNewTransaction, SaveNewTransfer, UpdateTransfer } from "../Controllers/PaymentsController";
 import axios, { AxiosResponse } from "axios";
 import { Refund } from "../Classes/Refund";
 import { ErrorResponse } from "../Classes/ErrorResponse";
@@ -123,7 +123,6 @@ export const InitiateTransfer = async (newTransfer: BankTransfer, callback: (err
         },
         data: newTransfer
     };
-
     axios.request(config)
         .then((response: AxiosResponse) => {
             callback(null, response);
@@ -192,7 +191,7 @@ async function HandleRefund(webHookEvent: TransactionWebhookEvent, req: Request,
     });
 }
 async function HandleTransfer(webHookEvent: TransferWebHookEvent, req: Request, res: Response<any, Record<string, any>>, next: NextFunction) {
-    await SaveNewTransfer(webHookEvent, req, res, (error: QueryError, result: any) => {
+    await UpdateTransfer(webHookEvent, req, res, (error: QueryError, result: any) => {
         if (error) {
             if (error.code === 'ER_DUP_ENTRY') {
                 res.status(200).json({ message: "Transfer already exists." });

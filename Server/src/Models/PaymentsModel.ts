@@ -41,10 +41,9 @@ export const InsertNewTransaction = async (
 ) => {
     DbPool.query(
         {
-            sql: "CALL InsertNewTransaction(?,?,?,?,?,?,?,?,?);",
+            sql: "CALL InsertNewTransaction(?,?,?,?,?,?,?,?);",
             timeout: 40000,
             values: [
-                transaction.transactionId,
                 transaction.userId,
                 transaction.amount,
                 transaction.currency,
@@ -70,7 +69,7 @@ export const InsertNewTransfer = async (
 ) => {
     DbPool.query(
         {
-            sql: "CALL InsertNewTransfer(?,?,?,?,?,?,?,?,?);",
+            sql: "CALL InsertNewTransfer(?,?,?,?,?,?,?,?,?,?);",
             timeout: 40000,
             values: [
                 newTransfer.transferCode,
@@ -81,7 +80,8 @@ export const InsertNewTransfer = async (
                 newTransfer.reason,
                 newTransfer.dateCreated,
                 newTransfer.dateUpdated,
-                newTransfer.transactionType
+                newTransfer.transactionType,
+                newTransfer.paystackId
             ],
         },
         function (error, results, fields) {
@@ -130,7 +130,6 @@ export const GetNewBulkCharge = async (
             if (error) {
                 callback(error, null);
             } else {
-                console.log(results);
                 callback(null, results);
             }
         }

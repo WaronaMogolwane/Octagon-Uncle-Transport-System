@@ -9,7 +9,7 @@ import { ErrorResponse } from "../Classes/ErrorResponse";
 export const InsertOtp = async (
   email: string,
   otp: string,
-  callback: (error, result) => void,
+  callback: (error: any, result: any) => void,
 ) => {
   DbPool.query(
     {
@@ -31,7 +31,7 @@ export const InsertOtp = async (
 export const GetOtp = async (
   email: string,
   otp: string,
-  callback: (error, result) => void,
+  callback: (error: any, result: any) => void,
 ) => {
   DbPool.query(
     {
@@ -50,7 +50,7 @@ export const GetOtp = async (
 };
 export const GetUserByEmailPassword = async (
   user: UserCredentials,
-  callback: (error, result) => void,
+  callback: (error: any, result: any) => void,
 ) => {
   DbPool.query(
     {
@@ -75,7 +75,7 @@ export const GetUserByEmailPassword = async (
 };
 export const InsertNewUser = async (
   user: User,
-  callback: (error, result) => void,
+  callback: (error: any, result: any) => void,
 ) => {
   DbPool.query(
     {
@@ -98,7 +98,7 @@ export const GetUserByEmail = async (x: any) => {
 };
 export const InsertUserInvitation = async (
   userInvitation: UserInvitation,
-  callback: (error, result) => void,
+  callback: (error: any, result: any) => void,
 ) => {
   DbPool.query(
     {
@@ -145,7 +145,7 @@ export const InsertUserBusinessLink = async (
 export const GetUserInvitation = async (
   invitationCode: string,
   userRole: string,
-  callback: (error, result) => void,
+  callback: (error: any, result: any) => void,
 ) => {
   DbPool.query(
     {
@@ -170,7 +170,7 @@ export const IsUserInvitationValid = (userInvitationExpireDate: Date) => {
 export const UpdateOtpToUsed = async (
   email: string,
   otp: string,
-  callback: (error, result) => void,
+  callback: (error: any, result: any) => void,
 ) => {
   DbPool.query(
     {
@@ -189,7 +189,7 @@ export const UpdateOtpToUsed = async (
 };
 export const UpdateUserInvitationToUsed = async (
   invitationCode: string, userRole: string,
-  callback: (error, result) => void,
+  callback: (error: any, result: any) => void,
 ) => {
   DbPool.query(
     {
@@ -205,7 +205,7 @@ export const UpdateUserInvitationToUsed = async (
       }
     })
 }
-export const GetInvitationsByBusinessIdUserRole = async (businessId: string, userRole: string, callback: (error, result) => void) => {
+export const GetInvitationsByBusinessIdUserRole = async (businessId: string, userRole: string, callback: (error: any, result: any) => void) => {
   DbPool.query({
     sql: "CALL GetInvitationsByBusinessIdUserRole(?,?)",
     timeout: 40000,
@@ -224,7 +224,7 @@ export const GetInvitationsByBusinessIdUserRole = async (businessId: string, use
       }
     })
 }
-export const GetDriversByBusinessId = async (businessId: string, callback: (error, result) => void) => {
+export const GetDriversByBusinessId = async (businessId: string, callback: (error: any, result: any) => void) => {
   DbPool.query({
     sql: "CALL GetDriversByBusinessId(?)",
     timeout: 40000,
@@ -242,7 +242,7 @@ export const GetDriversByBusinessId = async (businessId: string, callback: (erro
       }
     })
 }
-export const GetClientsByBusinessId = async (businessId: string, callback: (error, result) => void) => {
+export const GetClientsByBusinessId = async (businessId: string, callback: (error: any, result: any) => void) => {
   DbPool.query({
     sql: "CALL GetClientsByBusinessId(?)",
     timeout: 40000,
@@ -260,7 +260,7 @@ export const GetClientsByBusinessId = async (businessId: string, callback: (erro
       }
     })
 }
-export const GetParentsByBusinessId = async (businessId: string, callback: (error, result) => void) => {
+export const GetParentsByBusinessId = async (businessId: string, callback: (error: any, result: any) => void) => {
   DbPool.query({
     sql: "CALL GetParentsByBusinessId(?)",
     timeout: 40000,
@@ -299,7 +299,7 @@ export const DeleteUserInvitation = async (userInvitationId: string, userRole: n
 export const UpdateUserToNotActive = async (
   userId: string,
   userRole: string,
-  callback: (error, result) => void,
+  callback: (error: any, result: any) => void,
 ) => {
   DbPool.query(
     {

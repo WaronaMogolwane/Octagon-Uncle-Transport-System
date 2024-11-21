@@ -1,6 +1,7 @@
-import { GetBulkCharges } from './../Models/PaymentsModel';
-import { BulkChargeAuthorization, ChargeAuthorization, CreateNewPaystackRefund } from './../Services/PaystackService';
-import { Authorization, Data, WebhookEvent } from './../Classes/WebhookEvent';
+import { BankTransfer, Recipient, Transfer, TransferRecipient, TransferWebHookEvent } from './../Classes/Transfer';
+import { GetBulkChargesForToday, InsertNewBulkCharge, GetNewBulkCharge, InsertNewTransfer, AreRecurringChargesPendingToday, InsertPendingCharges } from './../Models/PaymentsModel';
+import { InitiateBulkCharge, ChargeAuthorization, CreateNewPaystackRefund, CreateTransferRecipient, InitiateTransfer } from './../Services/PaystackService';
+import { Authorization, Data, TransactionWebhookEvent } from './../Classes/WebhookEvent';
 import { NextFunction, Request, Response } from "express";
 import { Customer } from "../Classes/Customer";
 import { CreateNewPaystackCustomer, CreatePaystackTransactionLink } from "../Services/PaystackService";
@@ -16,6 +17,9 @@ import { ifError } from 'assert';
 import { randomUUID } from 'crypto';
 import { AxiosResponse } from 'axios';
 import { CustomLogger } from '../Classes/CustomLogger';
+import { QueryError } from 'mysql2';
+import { TransferResponse } from '../Classes/BankTransferResponse';
+const bulkChargeSize: number = 1000;
 
 const Logger: CustomLogger = new CustomLogger();
 export const CreateNewCustomer = async (req: Request, res: Response, next: NextFunction) => {
@@ -46,18 +50,38 @@ export const CreateNewPlan = (req: Request, res: Response, next: NextFunction) =
 }
 export const CreateNewSubscription = (req: Request, res: Response, next: NextFunction) => {
 }
-export const CreateTransactionLink = async (req: Request, res: Response, next: NextFunction) => {
-    await CreatePaystackTransactionLink(req, res, (error: any, response: any) => {
+export const CreateNewTransferRecipient = async (req: Request, res: Response, next: NextFunction) => {
+    const reqBody: any = req.body;
+    let newTransferRecipient: TransferRecipient = ({
+        type: reqBody.type,
+        description: reqBody.description,
+        name: reqBody.name,
+        account_number: reqBody.accountNumber,
+        bank_code: reqBody.bankCode,
+        currency: reqBody.currency
+    })
+    await CreateTransferRecipient(newTransferRecipient, (error: any, result: any) => {
         if (error) {
-            const err: ErrorResponse = ({ status: 400, message: error })
-            next(err);
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
         }
         else {
-            res.status(200).send(response)
+            res.status(200).json({ message: "Transfer recipient successfully created." })
         }
     })
 }
-export const CreateNewCardAuthorisation = async (webhookEvent: WebhookEvent, req: Request, res: Response, next: NextFunction) => {
+export const CreateTransactionLink = async (req: Request, res: Response, next: NextFunction) => {
+    await CreatePaystackTransactionLink(req, res, (error: any, response: any) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json(response)
+        }
+    })
+}
+export const CreateNewCardAuthorisation = async (webhookEvent: TransactionWebhookEvent, callback: (error: any, result: any) => void) => {
     const data: Data = webhookEvent.data;
     const authorisation: Authorization = data.authorization;
     const cardAuthorisation: CardAuthorisation = ({
@@ -76,34 +100,38 @@ export const CreateNewCardAuthorisation = async (webhookEvent: WebhookEvent, req
     await InsertCardAuthorisation(cardAuthorisation, (error: any, result: any) => {
         if (error) {
             const err: ErrorResponse = ({ status: 400, message: error })
-            next(err);
+            callback(err, null);
+        }
+        else {
+            callback(null, result);
         }
     })
 }
 export const CreateNewCharge = async (req: Request, res: Response, next: NextFunction) => {
     await ChargeAuthorization(req, res, (error: any, response: any) => {
         if (error) {
-            const err: ErrorResponse = ({ status: 400, message: error })
-            next(err);
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
         }
         else {
-            res.status(200).send({ message: "Authorization successfully charged." })
+            res.status(200).json({ message: "Authorization successfully charged." })
         }
     })
 }
 export const CreateNewBulkCharge = async (req: Request, res: Response, next: NextFunction) => {
     let charges: any = [{}];
-    await BulkChargeAuthorization(charges, (error: any, response: any) => {
+    await InitiateBulkCharge(charges, (error: any, result: any) => {
         if (error) {
-            const err: ErrorResponse = ({ status: 400, message: error })
-            next(err);
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
         }
         else {
-            res.status(200).send({ message: "Bulk charge successfully initiated." })
+            const response: BulkChargeResponse = Object.assign(new BulkChargeResponse(), result.data);
+            res.status(200).json({ message: "Bulk charge successfully initiated." })
         }
     })
 }
-export const CreateNewTransaction = async (webhookEvent: WebhookEvent, req: Request, res: Response, next: NextFunction) => {
+export const CreateNewTransaction = async (webhookEvent: TransactionWebhookEvent, req: Request, res: Response, callback: (error: any, result: any) => void) => {
     const data: Data = webhookEvent.data;
     let newTransaction: Transaction = ({
         transactionId: data.id,
@@ -116,13 +144,12 @@ export const CreateNewTransaction = async (webhookEvent: WebhookEvent, req: Requ
         datePaid: new Date(data.paid_at),
         transactionType: data.channel
     })
-    await InsertNewTransaction(newTransaction, (error, result) => {
+    await InsertNewTransaction(newTransaction, (error: QueryError, result) => {
         if (error) {
-            const err: ErrorResponse = ({ status: 400, message: error })
-            next(err);
+            callback(error, null);
         }
         else {
-            res.status(200).send({ message: "Transaction successfully created." })
+            callback(null, result);
         }
     })
 }
@@ -135,16 +162,15 @@ export const RefundTransaction = async (req: Request, res: Response, next: NextF
     })
     await CreateNewPaystackRefund(newRefund, (error: any, response: any) => {
         if (error) {
-            const err: ErrorResponse = ({ status: 400, message: error })
-            next(err);
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
         }
         else {
-            res.status(200).send(response)
+            res.status(200).json(response)
         }
     })
 }
-export const CreateNewRefund = async (webHookEvent: WebhookEvent, req: Request, res: Response, next: NextFunction) => {
-    let reqBody: any = req.body;
+export const CreateNewRefund = async (webHookEvent: TransactionWebhookEvent, req: Request, res: Response, callback: (error: any, result: any) => void) => {
     let newRefund: Refund = ({
         transaction: webHookEvent.data.id,
         amount: webHookEvent.data.amount,
@@ -154,27 +180,105 @@ export const CreateNewRefund = async (webHookEvent: WebhookEvent, req: Request, 
     })
     await InsertNewRefund(newRefund, (error: any, result: any) => {
         if (error) {
-            const err: ErrorResponse = ({ status: 400, message: error })
-            next(err);
+            callback(error, null);
         }
         else {
-            res.status(200).send({ message: "Refund successfully created." })
+            callback(null, result);
         }
     })
 }
-export const GetAllCharges = async (callback: (error: any, result: any) => void) => {
-    await GetBulkCharges((error: any, response: Array<any>) => {
+export const SaveNewTransfer = async (transferResponse: TransferResponse, callback: (error: any, result: any) => void) => {
+    let newTransfer: Transfer = ({
+        transferCode: transferResponse.data.transfer_code,
+        amount: transferResponse.data.amount,
+        currency: transferResponse.data.currency,
+        status: "Pending",
+        reference: transferResponse.data.reference,
+        reason: transferResponse.data.reason,
+        dateCreated: new Date(transferResponse.data.createdAt || transferResponse.data.created_at),
+        dateUpdated: new Date(transferResponse.data.updatedAt || transferResponse.data.updated_at) || null,
+        transactionType: "Bank Transfer",
+        paystackId: transferResponse.data.id
+    })
+    await InsertNewTransfer(newTransfer, (error: any, result: any) => {
         if (error) {
-            throw new ErrorResponse(400, error)
+            callback(error, null);
+        }
+        else {
+            callback(null, result);
+        }
+    })
+}
+export const UpdateTransfer = async (webHookEvent: TransferWebHookEvent, req: Request, res: Response, callback: (error: any, result: any) => void) => {
+    let newTransfer: Transfer = ({
+        transferCode: webHookEvent.data.transfer_code,
+        amount: webHookEvent.data.amount,
+        currency: webHookEvent.data.currency,
+        status: webHookEvent.data.status,
+        reference: webHookEvent.data.reference,
+        reason: webHookEvent.data.reason,
+        dateCreated: new Date(webHookEvent.data.createdAt || webHookEvent.data.created_at),
+        dateUpdated: new Date(webHookEvent.data.updatedAt || webHookEvent.data.update_at) || null,
+        transactionType: "Bank Transfer",
+        paystackId: webHookEvent.data.id
+
+    })
+    await InsertNewTransfer(newTransfer, (error: any, result: any) => {
+        if (error) {
+            callback(error, null);
+        }
+        else {
+            callback(null, result);
+        }
+    })
+}
+export const CreateTransfer = async (req: Request, res: Response, next: NextFunction) => {
+    const reqBody = req.body;
+    let newBankTransfer: BankTransfer = ({
+        amount: reqBody.amount,
+        source: reqBody.source,
+        reference: stringFormat("BT-{0}", randomUUID()),
+        recipient: reqBody.recipientCode,
+        reason: reqBody.reason
+    })
+    InitiateTransfer(newBankTransfer, async (error: any, result: any) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            const transferResponse: TransferResponse = Object.assign(new TransferResponse(), result.data);
+            if (transferResponse.status == false) {
+                const err: Error = new Error(transferResponse.toString())
+                next(new ErrorResponse(400, err.message, err.stack));
+            }
+            else {
+                await SaveNewTransfer(transferResponse, (error: any, result: any) => {
+                    if (error) {
+                        const err: Error = new Error(error.message)
+                        next(new ErrorResponse(400, err.message, err.stack));
+                    }
+                    else {
+                        res.status(200).json(transferResponse.message)
+                    }
+                })
+            }
+        }
+    })
+}
+export const BulkChargeAuthorizations = async (callback: (error: any, result: any) => void) => {
+    await GetNewBulkCharge((error: any, response: Array<any>) => {
+        if (error) {
+            callback(error, null);
         }
         else {
             let data: [] = response[0];
-            //console.log(response[0].length)
             let bulkCharge: BulkCharge[] = [];
             data.forEach((value: any, index: number) => {
                 let newCharge: any = ({
                     amount: value.Amount,
                     authorization: value.AuthorizationCode,
+                    reference: value.Reference,
                     metadata: {
                         user_id: value.UserId,
                         transporter_user_id: value.TransporterUserId
@@ -182,14 +286,56 @@ export const GetAllCharges = async (callback: (error: any, result: any) => void)
                 })
                 bulkCharge.push(newCharge);
             })
-            BulkChargeAuthorization(bulkCharge, (error: any, result: AxiosResponse) => {
-                if (error) {
-                    Logger.Error(error);
-                } else {
-                    const response: BulkChargeResponse = Object.assign(new BulkChargeResponse(), result.data);
-                    callback(null, response)
-                }
-            })
+            for (let i = 0; i < bulkCharge.length; i += bulkChargeSize) {
+                const chunk: BulkCharge[] = bulkCharge.slice(i, i + bulkChargeSize);
+                InitiateBulkCharge(chunk, (error: any, result: AxiosResponse) => {
+                    if (error) {
+                        callback(error, null);
+                    } else {
+                        let response: BulkChargeResponse = Object.assign(new BulkChargeResponse(), result.data);
+                        response.data.createdAt = new Date(response.data.createdAt);
+                        response.data.updatedAt = new Date(response.data.updatedAt);
+                        InsertNewBulkCharge(response, (error: any, result: any) => {
+                            if (error) {
+                                callback(error, null)
+                            } else {
+                                callback(null, response)
+                            }
+                        })
+
+                    }
+                })
+            }
+        }
+    })
+}
+export const GetAllBulkChargesForCurrentDay = async (callback: (error: any, result: any) => void) => {
+    await GetBulkChargesForToday((error: any, result: any) => {
+        if (error) {
+            callback(error, null)
+        }
+        else {
+            callback(null, result);
+        }
+    })
+}
+export const CreatePendingCharges = async (callback: (error: any, result: any) => void) => {
+    await InsertPendingCharges((error: any, result: any) => {
+        if (error) {
+            callback(error, null)
+        }
+        else {
+            callback(null, result);
+        }
+    })
+}
+export const CheckIfRecurringChargesPendingToday = async (callback: (error: any, result: any) => void) => {
+    await AreRecurringChargesPendingToday((error: any, result: any) => {
+        if (error) {
+            callback(error, null)
+        }
+        else {
+            callback(null, result);
         }
     })
 }

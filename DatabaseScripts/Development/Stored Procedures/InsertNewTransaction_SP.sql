@@ -1,33 +1,34 @@
-CREATE DEFINER=`sqladmin`@`%` PROCEDURE `InsertNewTransaction`(
-in _TransactionId varchar(100),
+CREATE DEFINER=`sqladmin`@`156.155.26.176` PROCEDURE `InsertNewTransaction`(
 in _UserId varchar(100),
 in _Amount INT,
-in _Currency VARCHAR(20),
+in _Currency VARCHAR(50),
 in _Status VARCHAR(20),
-in _Refernece varchar(100),
-in _DateCreated TIMESTAMP,
-in _DatePaid TIMESTAMP,
+in _Reference varchar(100),
+in _DateCreated DATETIME,
+in _DatePaid DATETIME,
 in _TransactionType VARCHAR(50)
 )
 BEGIN
 INSERT INTO `Transaction`
-(`TransactionId`,
+(
 `UserId`,
 `Amount`,
 `Currency`,
 `Status`,
-`Refernece`,
+`Reference`,
 `DateCreated`,
 `DatePaid`,
 `TransactionType`)
 VALUES
-(_TransactionId,
-_UserId,
+(_UserId,
 _Amount,
 _Currency,
 _Status,
-_Refernece,
+_Reference,
 _DateCreated,
 _DatePaid,
-_TransactionType);
+_TransactionType)
+ON DUPLICATE KEY UPDATE
+Status = _Status,
+DatePaid = _DatePaid;
 END

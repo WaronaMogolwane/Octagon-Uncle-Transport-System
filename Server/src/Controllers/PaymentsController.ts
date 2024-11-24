@@ -17,7 +17,7 @@ import { ifError } from 'assert';
 import { randomUUID } from 'crypto';
 import { AxiosResponse } from 'axios';
 import { CustomLogger } from '../Classes/CustomLogger';
-import { QueryError } from 'mysql2';
+import { OkPacket, QueryError } from 'mysql2';
 import { TransferResponse } from '../Classes/BankTransferResponse';
 const bulkChargeSize: number = 1000;
 
@@ -320,7 +320,7 @@ export const GetAllBulkChargesForCurrentDay = async (callback: (error: any, resu
     })
 }
 export const CreatePendingCharges = async (callback: (error: any, result: any) => void) => {
-    await InsertPendingCharges((error: any, result: any) => {
+    await InsertPendingCharges((error: any, result: OkPacket) => {
         if (error) {
             callback(error, null)
         }

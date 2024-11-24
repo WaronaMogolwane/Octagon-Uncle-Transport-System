@@ -1,4 +1,4 @@
-import { QueryError, RowDataPacket } from "mysql2";
+import { OkPacket, QueryError, RowDataPacket } from "mysql2";
 import { BulkChargeReponse } from "../Classes/BulkCharge";
 import { CardAuthorisation } from "../Classes/CardAuthorisation";
 import { Refund } from "../Classes/Refund";
@@ -177,11 +177,11 @@ export const InsertPendingCharges = async (
             sql: "CALL CreatePendingCharges();",
             timeout: 40000,
         },
-        function (error, results: RowDataPacket[], fields) {
+        function (error, results: OkPacket, fields) {
             if (error) {
                 callback(error, null);
             } else {
-                callback(null, results[0]);
+                callback(null, results);
             }
         }
     );

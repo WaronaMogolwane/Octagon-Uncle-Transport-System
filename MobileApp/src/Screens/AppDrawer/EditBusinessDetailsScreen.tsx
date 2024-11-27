@@ -44,6 +44,9 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   const businessId = auth.GetBusinessId();
   const role: number = Number(auth.GetUserRole());
 
+  const storageUrl: string =
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
+
   const [businessDetail, setBusinessDetail] = useState<BusinessDetail>();
   const [email, setEmail] = useState('');
   const [transporterName, setTransporterName] = useState('');
@@ -69,35 +72,45 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
 
   const GetBusiness = async () => {
     if (role == 1) {
-      await GetBusinessDetail(businessId).then((result: any) => {
-        if (result[1] == 200) {
-          setBusinessDetail(
-            new BusinessDetail(
-              result.businessDetailId,
-              result.businessName,
-              result.businessPhoneNumber,
-              result.addressLine1,
-              result.addressLine2,
-              result.suburb,
-              result.province,
-              result.city,
-              result.postalCode,
-              businessId,
-            ),
-          );
+      await GetBusinessDetail(businessId)
+        .then((result: any) => {
+          if (result[1] == 200) {
+            setBusinessDetail(
+              new BusinessDetail(
+                result[0].businessDetailId,
+                result[0].businessName,
+                result[0].businessPhoneNumber,
+                result[0].addressLine1,
+                result[0].addressLine2,
+                result[0].suburb,
+                result[0].province,
+                result[0].city,
+                result[0].postalCode,
+                businessId,
+              ),
+            );
+            setIsLoading(false);
+          } else {
+            setIsLoading(false);
+          }
+        })
+        .catch((error: any) => {
+          console.log(error);
           setIsLoading(false);
-        } else {
-          setIsLoading(false);
-        }
-      });
+        });
     } else {
-      await GetBusinessDetailForParent(businessId).then((result: any) => {
-        setEmail(result.email);
-        setTransporterName(result.name);
-        setBusinessName(result.businessName);
-        setBusinessPhoneNumber(result.businessPhoneNumber);
-        setAddress(result.address);
-      });
+      await GetBusinessDetailForParent(businessId)
+        .then((result: any) => {
+          setEmail(result.email);
+          setTransporterName(result.name);
+          setBusinessName(result.businessName);
+          setBusinessPhoneNumber(result.businessPhoneNumber);
+          setAddress(result.address);
+        })
+        .catch((error: any) => {
+          console.log(error);
+          setIsLoading(false);
+        });
       setIsLoading(false);
     }
   };
@@ -116,6 +129,8 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
       values.postalCode.trim(),
       businessId,
     );
+
+    console.log(businessDetail);
 
     await UpdateBusinessDetail(businessDetail)
       .then((response: any) => {
@@ -231,40 +246,52 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   });
 
   return (
-    <ScrollView>
-      <SafeAreaView
-        style={
-          role == 1
-            ? {
-                ...{
-                  flex: 1,
-                  backgroundColor: '#fff',
-                  alignItems: 'center',
-                },
-              }
-            : styles.container
-        }>
-        {IsLoading ? (
-          <View
-            style={{
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: '#ffffff75',
-              zIndex: 100,
-            }}>
-            <ActivityIndicator size="large" />
-            <Text>Working</Text>
-          </View>
-        ) : null}
-        {role == 1 ? (
-          <View>
-            <Heading mb="$3">Update business details below.</Heading>
-            <View style={{paddingBottom: 15, paddingTop: 15}}>
+    <SafeAreaView
+      style={
+        role == 1
+          ? {
+              ...{
+                flex: 1,
+                // backgroundColor: '#e8f0f3',
+                alignItems: 'center',
+              },
+            }
+          : styles.container
+      }>
+      {IsLoading ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" />
+          <Text>Working</Text>
+        </View>
+      ) : null}
+      {role == 1 ? (
+        <View
+          style={{
+            // alignItems: 'center',
+            width: '100%',
+            backgroundColor: '#e8f0f3',
+          }}>
+          <ScrollView style={{width: '100%'}}>
+            <Heading style={{textAlign: 'center'}} mb="$3">
+              Update business details below.
+            </Heading>
+            <View
+              style={{
+                alignItems: 'center',
+                paddingBottom: 15,
+                paddingTop: 15,
+              }}>
               <BusinessDetailForm
                 showButton={false}
                 buttonText={'Update Details'}
@@ -328,7 +355,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
             </View>
             <View
               style={{
-                justifyContent: 'center',
                 alignItems: 'center',
               }}>
               <View
@@ -371,82 +397,85 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
                 </View>
               </View>
             </View>
-          </View>
-        ) : (
-          <View>
-            <View style={styles.body}>
-              <View style={styles.avatarContainer}>
-                <Image
-                  alt="profile photo"
-                  source={
-                    profileImage == ''
-                      ? require('./../../Images/default_avatar_image.jpg')
-                      : {uri: profileImage}
-                  }
-                  style={styles.avatar}
-                />
+          </ScrollView>
+        </View>
+      ) : (
+        <View>
+          <View style={styles.body}>
+            <View style={styles.avatarContainer}>
+              <Image
+                alt="profile photo"
+                source={
+                  profileImage == ''
+                    ? require('./../../Images/default_avatar_image.jpg')
+                    : {uri: storageUrl + profileImage}
+                }
+                style={styles.avatar}
+              />
+            </View>
+            <View style={{marginHorizontal: 10, alignItems: 'center'}}>
+              <View style={styles.nameContainer}>
+                <Text style={styles.name}>{businessName}</Text>
               </View>
-              <View style={{marginHorizontal: 10, alignItems: 'center'}}>
-                <View style={styles.nameContainer}>
-                  <Text style={styles.name}>{businessName}</Text>
-                </View>
-                <View style={styles.infoContainer}>
-                  <Text style={styles.infoLabel}>Transporter Name:</Text>
-                  <Text style={styles.infoText}>{transporterName}</Text>
-                </View>
-                <View style={styles.infoContainer}>
-                  <Text style={styles.infoLabel}>Phone number:</Text>
-                  <Text style={styles.infoText}>{businessPhoneNumber}</Text>
-                </View>
-                <View style={styles.infoContainer}>
-                  <Text style={styles.infoLabel}>Business Email:</Text>
-                  <Text style={styles.infoText}>{email}</Text>
-                </View>
-                <View style={styles.infoContainer}>
-                  <Text style={styles.infoLabel}>Location:</Text>
-                  <Text style={styles.infoText}>{address}</Text>
-                </View>
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoLabel}>Transporter Name:</Text>
+                <Text style={styles.infoText}>{transporterName}</Text>
+              </View>
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoLabel}>Phone number:</Text>
+                <Text style={styles.infoText}>{businessPhoneNumber}</Text>
+              </View>
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoLabel}>Business Email:</Text>
+                <Text style={styles.infoText}>{email}</Text>
+              </View>
+              <View style={styles.infoContainer}>
+                <Text style={styles.infoLabel}>Location:</Text>
+                <Text style={styles.infoText}>{address}</Text>
               </View>
             </View>
+          </View>
+          <View
+            style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 35,
+            }}>
             <View
               style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: 35,
+                flex: 1,
+                flexDirection: 'row',
               }}>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                }}>
-                <View style={{padding: 5}}>
-                  <Button
-                    size="md"
-                    variant="solid"
-                    action="secondary"
-                    isDisabled={false}
-                    isFocusVisible={false}
-                    onPress={() => {
-                      navigation.navigate('Profile');
-                    }}>
-                    <ButtonIcon as={ArrowLeftIcon} />
-                    <ButtonText>Back</ButtonText>
-                  </Button>
-                </View>
+              <View style={{padding: 5, marginBottom: '100%'}}>
+                <Button
+                  size="md"
+                  variant="solid"
+                  action="secondary"
+                  isDisabled={false}
+                  isFocusVisible={false}
+                  onPress={() => {
+                    navigation.navigate('Profile');
+                  }}>
+                  <ButtonIcon as={ArrowLeftIcon} />
+                  <ButtonText>Back</ButtonText>
+                </Button>
               </View>
             </View>
           </View>
-        )}
-      </SafeAreaView>
-    </ScrollView>
+        </View>
+      )}
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#e8f0f3',
+    height: 'auto',
   },
   body: {
+    // backgroundColor: '#e8f0f3',
     marginTop: 50,
     alignItems: 'center',
     justifyContent: 'center',

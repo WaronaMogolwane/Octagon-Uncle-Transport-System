@@ -51,6 +51,8 @@ const AppDrawer = ({navigation}: any) => {
   const [auth, setAuth] = useState(new Auth(session));
   const [fullname, setFullname] = useState('');
   const [profileImage, setProfileImage] = useState('');
+  const [isReloading, setIsReloading] = useState(false);
+  const [tracker, setTracker] = useState(false);
 
   const role: number = Number(auth.GetUserRole());
   // const role: number = 1;
@@ -98,9 +100,13 @@ const AppDrawer = ({navigation}: any) => {
 
   useEffect(() => {
     RestoreImageViaAsyncStorage().then((result: any) => {
-      setProfileImage(result);
+      if (result == '') {
+        setIsReloading(!isReloading);
+      } else {
+        setProfileImage(result);
+      }
     });
-  }, [fullname]);
+  }, [fullname, isReloading]);
 
   return (
     <Drawer.Navigator
@@ -163,6 +169,7 @@ const AppDrawer = ({navigation}: any) => {
                   style={{marginVertical: 15, marginStart: 15}}
                   onPress={() => {
                     navigation.toggleDrawer();
+                    setIsReloading(!isReloading);
                   }}>
                   <AlignLeft size={25} strokeWidth={2} color={'black'} />
                 </Pressable>

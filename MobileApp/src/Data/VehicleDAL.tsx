@@ -1,5 +1,5 @@
 import {SERVER_HOST, SERVER_PORT} from '@env';
-import axios from 'axios';
+import axios, {AxiosError, AxiosResponse} from 'axios';
 import {Vehicle} from '../Models/VehicleModel';
 
 export const InsertNewDriverVehicleLink = async (
@@ -240,13 +240,13 @@ export const GetVehicleByDriverId = async (driverId: string) => {
         DriverId: driverId,
       },
     })
-    .then((response: any) => {
+    .then((response: AxiosResponse) => {
       let result = response.data;
 
       res = result;
     })
-    .catch(error => {
-      // console.log(error);
+    .catch((error: AxiosError) => {
+      console.log(error);
       res = error;
     });
   return res;

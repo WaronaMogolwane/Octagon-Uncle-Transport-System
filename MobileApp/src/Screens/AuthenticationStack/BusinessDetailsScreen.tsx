@@ -51,6 +51,8 @@ import {useStorageState} from '../../Services/StorageStateService';
 
 const BusinessDetailsScreen = ({navigation, route}: any) => {
   const {sessionId} = route.params;
+  // const sessionId: string =
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2MjNjYzQ5ZC05Y2FiLTQxOWUtYWE0YS01NzlmMmMyZGZiOGQiLCJVc2VyUm9sZSI6IjEiLCJFbWFpbCI6IlF3ZXJ0eTEyM0BnbWFpbC5jb20iLCJCdXNpbmVzc0lkIjoiNjIzY2M0OWQtOWNhYi00MTllLWFhNGEtNTc5ZjJjMmRmYjhkIiwiRGF0ZUNyZWF0ZWQiOiIxMC8yNC8yMDI0LCAxMTo0ODoyOSBBTSIsImlhdCI6MTcyOTc2MzMwOX0.cOtT9eHrPb71eET9JouPudAXIyw3XgrepE5xZ4sq-ok';
 
   const {session, isLoading, SetSession}: any = useContext(AuthContext);
   const [[tokenIsLoading, authToken], setAuthToken] =
@@ -64,8 +66,9 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
   const [showModal, setShowModal] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
   const [bankName, setBankName] = useState('');
-  const [bankCode, setBankCode] = useState('');
-  const [bankId, setBankId] = useState('');
+  const [paystackBankCode, setPaystackBankCode] = useState('');
+  const [paystackBankId, setPaystackBankId] = useState('');
+  const [recipientCode, setRecipientCode] = useState('');
 
   const [IsLoading, setIsLoading] = useState(false);
 
@@ -75,7 +78,7 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
     BankList();
   }, []);
 
-  const businessId = auth.GetUserId();
+  const businessId = auth.GetBusinessId();
 
   const BankList = async () => {
     await GetBanksList().then((result: any) => {
@@ -223,17 +226,17 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
                   data={bankList}
                   search={true}
                   maxHeight={300}
-                  labelField="bankName"
-                  valueField="bankName"
+                  labelField="name"
+                  valueField="name"
                   placeholder={!isFocus ? 'Select bank name' : 'tap here...'}
                   searchPlaceholder="Search..."
                   value={bankList}
                   onFocus={() => setIsFocus(true)}
                   onBlur={() => setIsFocus(false)}
                   onChange={(item: any) => {
-                    setBankName(item.bankName);
-                    setBankId(item.bankId);
-                    setBankCode(item.bankCode);
+                    setBankName(item.name);
+                    setPaystackBankId(item.id);
+                    setPaystackBankCode(item.code);
                     setIsFocus(false);
                   }}
                 />
@@ -331,13 +334,14 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
   const SubmitBankingDetail = async (values: any) => {
     setIsLoading(true);
     let bankingDetail = new BankingDetail(
-      values.bankName.trim(),
+      bankName,
       values.branchNumber.trim(),
       values.accountName.trim(),
       values.accountNumber.trim(),
       businessId,
-      bankId,
-      bankCode,
+      paystackBankId,
+      paystackBankCode,
+      '',
     );
 
     await AddBankingDetail(bankingDetail)

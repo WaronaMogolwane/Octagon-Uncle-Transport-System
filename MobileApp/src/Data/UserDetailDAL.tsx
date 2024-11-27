@@ -1,5 +1,5 @@
 import {UserDetail} from '../Models/UserDetail';
-import axios from 'axios';
+import axios, {AxiosError, AxiosResponse} from 'axios';
 import {SERVER_HOST, SERVER_PORT} from '@env';
 
 export const AddUserDetailsToDB = async (userDetail: UserDetail) => {
@@ -27,8 +27,6 @@ export const AddUserDetailsToDB = async (userDetail: UserDetail) => {
     .catch((error: any) => {
       console.log(error);
     });
-
-  [];
 
   return statusCode;
 };
@@ -64,7 +62,31 @@ export const GetUserDetailsFromDB = async (userId: string) => {
       statusCode = response.status;
     })
     .catch(error => {
-      console.log(error);
+      console.error(error);
+      res = error;
+    });
+
+  return [res, statusCode];
+};
+
+export const GetUserProfileImageFromDB = async (userId: string) => {
+  let res: any;
+  let statusCode: any;
+
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/user-profile/get-user-profile-image`, {
+      params: {
+        UserId: userId,
+      },
+    })
+    .then((response: any) => {
+      let result = response.data.result;
+
+      res = result[0].ProfileImageUrl;
+      statusCode = response.status;
+    })
+    .catch(error => {
+      console.error(error);
       res = error;
     });
 
@@ -96,6 +118,35 @@ export const UpdateUserDetailsInDB = async (userDetails: UserDetail) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
+      console.log(error);
+    });
+
+  return [data, statusCode];
+};
+
+export const UpdateProfileImageUrlInDB = async (
+  userId: string,
+  profileUrl: string,
+) => {
+  let statusCode: any;
+  let data: any;
+
+  await axios
+    .patch(
+      `${SERVER_HOST}:${SERVER_PORT}/user-profile/update-user-detail-profile-url`,
+      {
+        params: {
+          ProfileImageUrl: profileUrl,
+          UserId: userId,
+          FileType: 'image/jpeg',
+        },
+      },
+    )
+    .then((response: AxiosResponse) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: AxiosError) => {
       console.log(error);
     });
 

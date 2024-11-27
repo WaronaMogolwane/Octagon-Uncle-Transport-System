@@ -1,5 +1,6 @@
-import {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import { GestureResponderEvent } from 'react-native/Libraries/Types/CoreEventTypes';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
 
 export type InputProps = {
   isInvalid: boolean;
@@ -32,6 +33,7 @@ export type ButtonProps = {
       | React.FormEvent<HTMLFormElement>
       | undefined,
   ) => void;
+  styles?: StyleProp<ViewStyle>;
 };
 
 export type SignInFormProps = {

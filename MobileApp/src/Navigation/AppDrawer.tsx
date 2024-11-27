@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {createDrawerNavigator, DrawerItemList} from '@react-navigation/drawer';
 import HomeScreen from '../Screens/AppDrawer/HomeScreen';
 import TripsScreen from '../Screens/AppDrawer/TripsScreen';
-import PaymentsScreen from '../Screens/AppDrawer/PaymentsScreen';
+import PaymentsScreen from '../Screens/AppDrawer/Payments/PaymentsScreen';
 import ManageVehiclesScreen from '../Screens/AppDrawer/Vehicles/ManageVehiclesScreen';
 import ManageDriversScreen from '../Screens/AppDrawer/ManageDrivers/ManageDriversScreen';
 import ManageClientsScreen from '../Screens/AppDrawer/ManageClients/ManageClientsScreen';

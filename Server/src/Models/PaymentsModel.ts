@@ -215,4 +215,25 @@ export const InsertNewBulkCharge = async (
     );
 };
 
+export const GetAvailableBalanceByBusinessId = async (
+    businessId: string,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetBalanceByBusinessId(?);",
+            timeout: 40000,
+            values: [
+                businessId
+            ],
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
 

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {setStorageItemAsync, useStorageState} from './StorageStateService';
 import {AuthenticationResponseModel} from '../Models/AuthenticationResponseModel';
-import axios from 'axios';
+import axios, {AxiosError, AxiosResponse} from 'axios';
 import {UserSignIn} from '../Controllers/AuthenticationController';
 //import {SERVER_HOST, SERVER_PORT} from '../Const/colors';
 import {SERVER_HOST, SERVER_PORT} from '@env';
@@ -199,10 +199,10 @@ export const LoginWithEmailPassword = async (
       email: userEmail,
       password: userPassword,
     })
-    .then((response: any) => {
+    .then((response: AxiosResponse) => {
       callback(null, response);
     })
-    .catch(error => {
+    .catch((error: AxiosError) => {
       callback(error, null);
     });
 };

@@ -12,7 +12,8 @@ export const CustomButton1 = (props: ButtonProps) => {
       action={props.action}
       isDisabled={props.isDisabled}
       isFocusVisible={props.isFocusVisible}
-      onPress={props.onPress}>
+      onPress={props.onPress}
+      borderRadius={32}>
       <ButtonText>{props.title}</ButtonText>
     </Button>
   );

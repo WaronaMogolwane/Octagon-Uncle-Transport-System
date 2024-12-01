@@ -236,4 +236,67 @@ export const GetAvailableBalanceByBusinessId = async (
         }
     );
 };
+export const GetPaymentsSummaryForThisMonthByBusinessId = async (
+    businessId: string,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetPaymentsForThisMonthByBusinessId(?);",
+            timeout: 40000,
+            values: [
+                businessId
+            ],
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
+export const GetUpcomingPaymentSummaryByBusinessId = async (
+    businessId: string,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetUpcomingPaymentsSummaryByBusinessId(?);",
+            timeout: 40000,
+            values: [
+                businessId
+            ],
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
+export const GetDeclinedPaymentSummaryByBusinessId = async (
+    businessId: string,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetDeclinedPaymentsSummaryByBusinessId(?);",
+            timeout: 40000,
+            values: [
+                businessId
+            ],
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
 

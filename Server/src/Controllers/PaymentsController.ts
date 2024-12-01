@@ -1,5 +1,5 @@
 import { BankTransfer, Recipient, Transfer, TransferRecipient, TransferWebHookEvent } from './../Classes/Transfer';
-import { GetBulkChargesForToday, InsertNewBulkCharge, GetNewBulkCharge, InsertNewTransfer, AreRecurringChargesPendingToday, InsertPendingCharges, GetAvailableBalanceByBusinessId } from './../Models/PaymentsModel';
+import { GetBulkChargesForToday, InsertNewBulkCharge, GetNewBulkCharge, InsertNewTransfer, AreRecurringChargesPendingToday, InsertPendingCharges, GetAvailableBalanceByBusinessId, GetUpcomingPaymentSummaryByBusinessId, GetDeclinedPaymentSummaryByBusinessId, GetPaymentsSummaryForThisMonthByBusinessId } from './../Models/PaymentsModel';
 import { InitiateBulkCharge, ChargeAuthorization, CreateNewPaystackRefund, CreateTransferRecipient, InitiateTransfer } from './../Services/PaystackService';
 import { Authorization, Data, TransactionWebhookEvent } from './../Classes/WebhookEvent';
 import { NextFunction, Request, Response } from "express";
@@ -342,6 +342,42 @@ export const CheckIfRecurringChargesPendingToday = async (callback: (error: any,
 export const GetAvailableBalance = async (req: Request, res: Response, next: NextFunction) => {
     const businessId: string = req.query.businessId.toString();
     await GetAvailableBalanceByBusinessId(businessId, (error: any, result: OkPacket) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json(result[0][0])
+        }
+    })
+}
+export const GetUpcomingPaymentSummary = async (req: Request, res: Response, next: NextFunction) => {
+    const businessId: string = req.query.businessId.toString();
+    await GetUpcomingPaymentSummaryByBusinessId(businessId, (error: any, result: OkPacket) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json(result[0][0])
+        }
+    })
+}
+export const GetPaymentsSummaryForThisMonth = async (req: Request, res: Response, next: NextFunction) => {
+    const businessId: string = req.query.businessId.toString();
+    await GetPaymentsSummaryForThisMonthByBusinessId(businessId, (error: any, result: OkPacket) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json(result[0][0])
+        }
+    })
+}
+export const GetDeclinedPaymentSummary = async (req: Request, res: Response, next: NextFunction) => {
+    const businessId: string = req.query.businessId.toString();
+    await GetDeclinedPaymentSummaryByBusinessId(businessId, (error: any, result: OkPacket) => {
         if (error) {
             const err: Error = new Error(error.message)
             next(new ErrorResponse(400, err.message, err.stack));

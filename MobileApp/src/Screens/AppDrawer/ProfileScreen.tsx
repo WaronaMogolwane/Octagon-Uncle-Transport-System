@@ -69,6 +69,8 @@ const ProfileScreen = ({navigation}: any) => {
   const storageUrl: string =
     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
+  const date = new Date();
+
   useEffect(() => {
     GetUserName();
   }, []);
@@ -235,7 +237,14 @@ const ProfileScreen = ({navigation}: any) => {
                 source={
                   profileImage == ''
                     ? require('../../Images/default_avatar_image.jpg')
-                    : {uri: storageUrl + profileImage}
+                    : {
+                        uri:
+                          storageUrl +
+                          profileImage +
+                          '?xc=' +
+                          date.getTime() +
+                          date.getDate(),
+                      }
                 }
                 style={styles.avatar}
               />

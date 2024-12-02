@@ -1158,7 +1158,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
       ) : null}
       {GoBackFab()}
       {role == 1 ? (
-        <Tab.Navigator>
+        <Tab.Navigator
+          screenOptions={{
+            tabBarStyle: {backgroundColor: '#e8f0f3', elevation: 10},
+          }}>
           <Tab.Screen name="All Passengers" component={FirstRoute} />
           <Tab.Screen name="Pending Removals" component={SecondRoute} />
         </Tab.Navigator>

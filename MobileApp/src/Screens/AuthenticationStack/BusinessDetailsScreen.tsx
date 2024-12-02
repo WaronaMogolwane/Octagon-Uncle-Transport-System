@@ -9,8 +9,15 @@ import {
   Button,
   ButtonText,
   CloseIcon,
+  EditIcon,
+  Fab,
+  FabIcon,
   Heading,
   Icon,
+  Image,
+  Menu,
+  MenuItem,
+  MenuItemLabel,
   Modal,
   ModalBackdrop,
   ModalBody,
@@ -48,11 +55,13 @@ import {Auth} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {Dropdown} from 'react-native-element-dropdown';
 import {useStorageState} from '../../Services/StorageStateService';
+import {OpenCamera, OpenFilePicker} from '../../Services/CameraService';
+import {ImageOrVideo} from 'react-native-image-crop-picker';
 
 const BusinessDetailsScreen = ({navigation, route}: any) => {
-  const {sessionId} = route.params;
-  // const sessionId: string =
-  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2MjNjYzQ5ZC05Y2FiLTQxOWUtYWE0YS01NzlmMmMyZGZiOGQiLCJVc2VyUm9sZSI6IjEiLCJFbWFpbCI6IlF3ZXJ0eTEyM0BnbWFpbC5jb20iLCJCdXNpbmVzc0lkIjoiNjIzY2M0OWQtOWNhYi00MTllLWFhNGEtNTc5ZjJjMmRmYjhkIiwiRGF0ZUNyZWF0ZWQiOiIxMC8yNC8yMDI0LCAxMTo0ODoyOSBBTSIsImlhdCI6MTcyOTc2MzMwOX0.cOtT9eHrPb71eET9JouPudAXIyw3XgrepE5xZ4sq-ok';
+  // const {sessionId} = route.params;
+  const sessionId: string =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiI2MjNjYzQ5ZC05Y2FiLTQxOWUtYWE0YS01NzlmMmMyZGZiOGQiLCJVc2VyUm9sZSI6IjEiLCJFbWFpbCI6IlF3ZXJ0eTEyM0BnbWFpbC5jb20iLCJCdXNpbmVzc0lkIjoiNjIzY2M0OWQtOWNhYi00MTllLWFhNGEtNTc5ZjJjMmRmYjhkIiwiRGF0ZUNyZWF0ZWQiOiIxMC8yNC8yMDI0LCAxMTo0ODoyOSBBTSIsImlhdCI6MTcyOTc2MzMwOX0.cOtT9eHrPb71eET9JouPudAXIyw3XgrepE5xZ4sq-ok';
 
   const {session, isLoading, SetSession}: any = useContext(AuthContext);
   const [[tokenIsLoading, authToken], setAuthToken] =
@@ -73,6 +82,9 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
   const [IsLoading, setIsLoading] = useState(false);
 
   const [bankList, setBankList] = useState(['']);
+  const [imageUri, setImageUri] = useState('');
+
+  const [selected, setSelected] = React.useState(new Set([]));
 
   useEffect(() => {
     BankList();
@@ -472,6 +484,88 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
     },
   });
 
+  async function GetFileBlob(url: string, callback: any) {
+    let data: Blob;
+    await fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        let reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = function (e) {
+          callback(e.target!.result.toString());
+        };
+      });
+  }
+  const CaptureImage = () => {
+    OpenCamera(false, (result: any, error: any) => {
+      if (error) {
+      } else {
+        const image: ImageOrVideo = result;
+        GetFileBlob(image.path, async function (imageUrl: string) {
+          setImageUri(imageUrl);
+        });
+      }
+    });
+  };
+
+  const OpenGallery = () => {
+    OpenFilePicker((result: any, error: any) => {
+      if (error) {
+      } else {
+        const image: ImageOrVideo = result;
+        GetFileBlob(image.path, async function (imageUrl: string) {
+          setImageUri(imageUrl);
+        });
+      }
+    });
+  };
+
+  const FabMenu = () => {
+    return (
+      <Menu
+        selectionMode="single"
+        selectedKeys={selected}
+        onSelectionChange={keys => {
+          const selectedMenuItem: any = keys;
+          if (selectedMenuItem.currentKey === 'Camera') {
+            setIsLoading(true);
+            // ScanLicenseDisc({IsReScan: false});
+            CaptureImage();
+            setIsLoading(false);
+          }
+          if (selectedMenuItem.currentKey === 'Gallery') {
+            setIsLoading(true);
+            // ScanLicenseDisc({IsReScan: false});
+            OpenGallery();
+            setIsLoading(false);
+          }
+        }}
+        closeOnSelect={true}
+        placement="bottom"
+        trigger={({...triggerProps}) => {
+          return (
+            <Fab
+              {...triggerProps}
+              style={{zIndex: 1}}
+              size="md"
+              placement="bottom right"
+              isHovered={false}
+              isDisabled={false}
+              isPressed={false}>
+              <FabIcon as={EditIcon} />
+            </Fab>
+          );
+        }}>
+        <MenuItem key="Camera" textValue="Camera">
+          <MenuItemLabel size="sm">Camera</MenuItemLabel>
+        </MenuItem>
+        <MenuItem key="Gallery" textValue="Gallery">
+          <MenuItemLabel size="sm">Gallery</MenuItemLabel>
+        </MenuItem>
+      </Menu>
+    );
+  };
+
   return (
     <ScrollView>
       <SafeAreaView style={ThemeStyles.container}>
@@ -493,6 +587,18 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
           </View>
         ) : null}
         <View style={{paddingBottom: 15, paddingTop: 15}}>
+          <View style={{margin: 5}}>
+            <Image
+              size="xl"
+              alt="Logo of Company"
+              borderRadius={30}
+              source={{
+                uri: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
+              }}
+            />
+            <Text></Text>
+            <FabMenu />
+          </View>
           {BankingDetailModal()}
           <BusinessDetailForm
             showButton={true}

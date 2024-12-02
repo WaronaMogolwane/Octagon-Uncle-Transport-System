@@ -68,6 +68,8 @@ const AppDrawer = ({navigation}: any) => {
   const storageUrl: string =
     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
+  const date = new Date();
+
   const user = {
     avatar: 'https://www.bootdey.com/img/Content/avatar/avatar1.png',
     coverPhoto:
@@ -100,7 +102,7 @@ const AppDrawer = ({navigation}: any) => {
 
   useEffect(() => {
     RestoreImageViaAsyncStorage().then((result: any) => {
-      if (result == '') {
+      if (result == '' || result == null) {
         setIsReloading(!isReloading);
       } else {
         setProfileImage(result);
@@ -132,7 +134,14 @@ const AppDrawer = ({navigation}: any) => {
                       source={
                         profileImage == ''
                           ? require('../Images/default_avatar_image.jpg')
-                          : {uri: storageUrl + profileImage}
+                          : {
+                              uri:
+                                storageUrl +
+                                profileImage +
+                                '?xc=' +
+                                date.getTime() +
+                                date.getDate(),
+                            }
                       }
                       style={styles.avatar}
                     />
@@ -382,7 +391,7 @@ const AppDrawer = ({navigation}: any) => {
         name="Business Detail"
         component={BusinessDetailsScreen}
         options={{
-          drawerItemStyle: {display: 'none'},
+          // drawerItemStyle: {display: 'none'},
           drawerIcon: () => (
             <Aperture
               size={iconSize}

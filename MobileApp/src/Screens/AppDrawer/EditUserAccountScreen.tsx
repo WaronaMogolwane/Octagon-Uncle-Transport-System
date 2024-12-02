@@ -60,12 +60,18 @@ import {ImageOrVideo} from 'react-native-image-crop-picker';
 import {Camera} from 'lucide-react';
 import {Images} from 'lucide-react';
 import {Aperture} from 'lucide-react';
-// import {DownloadImage} from '../../Services/ImageStorageService';
-import RNFetchBlob from 'rn-fetch-blob';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {RestoreImageViaAsyncStorage} from '../../Services/ImageStorageService';
+import {
+  RestoreImageViaAsyncStorage,
+  SaveImageViaAsyncStorage,
+} from '../../Services/ImageStorageService';
+import {
+  GetUserProfileImage,
+  UpdateProfileUrl,
+} from '../../Controllers/UserDetailController';
 
 const EditUserAccountScreen = ({navigation}: any) => {
+  1111;
   const {session, emailOtp, verifyOtp}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
 
@@ -74,10 +80,10 @@ const EditUserAccountScreen = ({navigation}: any) => {
   const [password, setPassword] = useState('');
 
   const [profileImage, setProfileImage] = useState('');
+  const [imageUri, setImageUri] = useState('');
   const [isChanged, setIsChanged] = useState(false);
-  const [captureImageAlertTitle, setCaptureImageAlertTitle] = useState(
-    'Successfully scanned',
-  );
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const [confirmButtonTitle, setConfirmButtonTitle] = useState('Capture front');
   const [selected, setSelected] = React.useState(new Set([]));
 
@@ -91,7 +97,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
   const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const passwordExp: RegExp =
     /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[-\#\$\.\%\&\*\?\!\_\,\+\=\@])(?=.*[a-zA-Z]).{8,16}$/;
@@ -101,15 +107,34 @@ const EditUserAccountScreen = ({navigation}: any) => {
   const ref = React.useRef(null);
   const toast = useToast();
 
+  const date = new Date();
+
   useEffect(() => {
     GetCredentials();
   }, [refreshData]);
 
   useEffect(() => {
-    RestoreImageViaAsyncStorage().then((result: any) => {
-      setProfileImage(result);
-    });
+    if (isUpdating) {
+      SaveImageViaAsyncStorage(profileImage);
+    }
+  }, [profileImage]);
+
+  useEffect(() => {
+    if (!isUpdating) {
+      RestoreImageViaAsyncStorage().then((result: any) => {
+        if (result != '') {
+          setProfileImage(result);
+        }
+      });
+    }
   }, [isChanged]);
+
+  useEffect(() => {
+    if (imageUri != '') {
+      setIsUpdating(true);
+      UploadImage();
+    }
+  }, [imageUri]);
 
   const GetCredentials = async () => {
     await GetUser(userId).then((result: any) => {
@@ -444,78 +469,14 @@ const EditUserAccountScreen = ({navigation}: any) => {
       });
   }
 
-  const DownloadImage = async () => {
-    const storageUrl: string =
-      'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
-
-    // send http request in a new thread (using native code)
-    RNFetchBlob.config({
-      // add this option that makes response data to be stored as a file,
-      // this is much more performant.
-      fileCache: true,
-    })
-      .fetch(
-        'GET',
-        'https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg',
-        {
-          //   Authorization: 'Bearer access-token...',
-          // more headers  ..
-        },
-      )
-      .then(res => {
-        console.log(res);
-        let status = res.info().status;
-
-        if (status == 200) {
-          // // the conversion is done in native code
-          // let base64Str = res.base64();
-          // // the following conversions are done in js, it's SYNC
-          // let text = res.text();
-          // let json = res.json();
-
-          console.log('image saved');
-        } else {
-          // handle other status code
-          console.log('Something else happened');
-        }
-      })
-      // Something went wrong:
-      .catch((errorMessage: any) => {
-        // error handling
-        console.log(errorMessage);
-      });
-  };
-
   const CaptureImage = () => {
     OpenCamera(false, (result: any, error: any) => {
       if (error) {
       } else {
         const image: ImageOrVideo = result;
-        if (!profileImage) {
-          console.log(image.path);
-
-          // setProfileImage(image.path);
-          SaveImageViaAsyncStorage(image.path);
-          setIsChanged(!isChanged);
-
-          GetFileBlob(image.path, async function (imageUrl: string) {
-            setProfileImage(imageUrl);
-            setCaptureImageAlertTitle('Successfully scanned');
-            setConfirmButtonTitle('Capture rear');
-          });
-        }
-        // if (vehicleFrontImage && !vehicleRearImage) {
-        //   GetFileBlob(image.path, async function (imageUrl: string) {
-        //     setVehicleRearImage(imageUrl!);
-        //     let NewVehicle: Vehicle = route.params.NewVehicle;
-        //     NewVehicle.FrontImage = vehicleFrontImage;
-        //     NewVehicle.RearImage = vehicleRearImage;
-        //     setNewVehicle(NewVehicle!);
-        //     setShowCaptureImageAlert(false);
-        //     setShowNewVehicleDetailsModal(true);
-        //     navigation.setParams({NewVehicle: undefined});
-        //   });
-        // }
+        GetFileBlob(image.path, async function (imageUrl: string) {
+          setImageUri(imageUrl);
+        });
       }
     });
   };
@@ -525,28 +486,9 @@ const EditUserAccountScreen = ({navigation}: any) => {
       if (error) {
       } else {
         const image: ImageOrVideo = result;
-        if (!profileImage) {
-          GetFileBlob(image.path, async function (imageUrl: string) {
-            // setProfileImage(imageUrl);
-            SaveImageViaAsyncStorage(image.path);
-            setIsChanged(!isChanged);
-
-            setCaptureImageAlertTitle('Successfully scanned');
-            setConfirmButtonTitle('Capture rear');
-          });
-        }
-        // if (vehicleFrontImage && !vehicleRearImage) {
-        //   GetFileBlob(image.path, async function (imageUrl: string) {
-        //     setVehicleRearImage(imageUrl!);
-        //     let NewVehicle: Vehicle = route.params.NewVehicle;
-        //     NewVehicle.FrontImage = vehicleFrontImage;
-        //     NewVehicle.RearImage = vehicleRearImage;
-        //     setNewVehicle(NewVehicle!);
-        //     setShowCaptureImageAlert(false);
-        //     setShowNewVehicleDetailsModal(true);
-        //     navigation.setParams({NewVehicle: undefined});
-        //   });
-        // }
+        GetFileBlob(image.path, async function (imageUrl: string) {
+          setImageUri(imageUrl);
+        });
       }
     });
   };
@@ -597,38 +539,17 @@ const EditUserAccountScreen = ({navigation}: any) => {
     );
   };
 
-  // const SaveImage = () => {
-  //   // send http request in a new thread (using native code)
-  //   RNFetchBlob.fetch('GET', 'http://www.example.com/images/img1.png', {
-  //     Authorization: 'Bearer access-token...',
-  //     // more headers  ..
-  //   }).then(res => {
-  //     let status = res.info().status;
-
-  //     if (status == 200) {
-  //       // the conversion is done in native code
-  //       let base64Str = res.base64();
-  //       // the following conversions are done in js, it's SYNC
-  //       let text = res.text();
-  //       let json = res.json();
-  //     } else {
-  //       // handle other status codes
-  //     }
-  //   });
-  //   // Something went wrong:
-  //   // .catch((errorMessage: any, statusCode: any) => {
-  //   //   //Error handling
-  //   // });
-  // };
-  // const SaveToCache = () => {};
-
-  const SaveImageViaAsyncStorage = async (value: string) => {
-    try {
-      await AsyncStorage.setItem('profileImage', value);
-    } catch (e) {
-      // saving error
-      console.error('There was an error saving the image path via async: ' + e);
-    }
+  const UploadImage = async () => {
+    await UpdateProfileUrl(userId, imageUri).then((response: any) => {
+      if (response[1] == 200) {
+        GetUserProfileImage(userId).then((result: any) => {
+          if (result[1] == 200) {
+            setProfileImage(result[0]);
+            setIsUpdating(false);
+          }
+        });
+      }
+    });
   };
 
   const emailInitialValues = {
@@ -729,12 +650,39 @@ const EditUserAccountScreen = ({navigation}: any) => {
       <View>{EmailVerificationModal()}</View>
       <View>{ChangePasswordModal()}</View>
       <View style={styles.avatarContainer}>
+        {isUpdating ? (
+          <View
+            style={{
+              width: 150,
+              height: 150,
+              borderRadius: 75,
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#ffffff75',
+              zIndex: 100,
+            }}>
+            <ActivityIndicator size="large" />
+            <Text>Working</Text>
+          </View>
+        ) : null}
         <Image
           style={styles.avatar}
           source={
             profileImage == ''
               ? require('../../Images/default_avatar_image.jpg')
-              : {uri: profileImage}
+              : {
+                  uri:
+                    storageUrl +
+                    profileImage +
+                    '?xc=' +
+                    date.getTime() +
+                    date.getDate(),
+                }
           }
         />
         <Text></Text>
@@ -742,60 +690,39 @@ const EditUserAccountScreen = ({navigation}: any) => {
       </View>
 
       <View style={styles.form}>
-        <Card
-          size="sm"
-          variant="outline"
-          style={{
-            marginBottom: 20,
-            backgroundColor: '#ffffff',
-            borderRadius: 5,
-            elevation: 10,
-            justifyContent: 'center',
-          }}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            editable={false}
-            style={styles.input}
-            placeholder="Email"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <Text
-            onPress={() => {
-              setShowEmailModal(true);
-            }}
-            style={styles.changeAvatarButtonText}>
-            Change Email
-          </Text>
-        </Card>
+        <Text style={styles.label}>Email</Text>
+        <TextInput
+          editable={false}
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <Text
+          onPress={() => {
+            setShowEmailModal(true);
+          }}
+          style={styles.changeAvatarButtonText}>
+          Change Email
+        </Text>
 
-        <Card
-          size="sm"
-          variant="outline"
-          style={{
-            backgroundColor: '#ffffff',
-            borderRadius: 5,
-            elevation: 10,
-            justifyContent: 'center',
-          }}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            editable={false}
-            secureTextEntry={true}
-            textContentType="password"
-            style={styles.input}
-            placeholder="Password"
-            value={password}
-            onChangeText={setPassword}
-          />
-          <Text
-            onPress={() => {
-              setShowChangePassword(true);
-            }}
-            style={styles.changeAvatarButtonText}>
-            Change Password
-          </Text>
-        </Card>
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          editable={false}
+          secureTextEntry={true}
+          textContentType="password"
+          style={styles.input}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+        />
+        <Text
+          onPress={() => {
+            setShowChangePassword(true);
+          }}
+          style={styles.changeAvatarButtonText}>
+          Change Password
+        </Text>
 
         <View
           style={{
@@ -847,6 +774,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     fontSize: 18,
+    backgroundColor: '#fff',
   },
   button: {
     marginTop: 20,

@@ -49,6 +49,11 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {PassengerBlock} from '../../Components/PassengerBlock';
 import {TripsBlockDiver} from '../../Components/TripsBlockDriver';
 import filter from 'lodash.filter';
+import {GetUserProfileImage} from '../../Controllers/UserDetailController';
+import {
+  RestoreImageViaAsyncStorage,
+  SaveImageViaAsyncStorage,
+} from '../../Services/ImageStorageService';
 
 interface IVehicle {
   Make: string;
@@ -148,6 +153,18 @@ const HomeScreen = ({navigation}: any) => {
       handleSearch();
     }
   }, [fullData]);
+
+  useEffect(() => {
+    RestoreImageViaAsyncStorage().then((result: any) => {
+      if (result == '' || result == null) {
+        GetUserProfileImage(userId).then(response => {
+          if (response[1] == 200) {
+            SaveImageViaAsyncStorage(response[0]);
+          }
+        });
+      }
+    });
+  }, []);
 
   const CustomView = () => {
     const width = Dimensions.get('window').width;
@@ -351,7 +368,8 @@ const HomeScreen = ({navigation}: any) => {
 
   if (role == 1) {
     return (
-      <SafeAreaView style={{flex: 1, backgroundColor: '#e8f0f3'}}>
+      <SafeAreaView
+        style={{flex: 1, backgroundColor: '#e8f0f3', height: '100%'}}>
         <ScrollView>
           <View>
             <View style={{marginStart: 15}}>
@@ -548,7 +566,8 @@ const HomeScreen = ({navigation}: any) => {
     );
   } else if (role == 2) {
     return (
-      <SafeAreaView style={{flex: 1, backgroundColor: '#e8f0f3'}}>
+      <SafeAreaView
+        style={{flex: 1, backgroundColor: '#e8f0f3', height: '100%'}}>
         <ScrollView>
           <View>
             <View style={{marginStart: 15}}>
@@ -806,7 +825,8 @@ const HomeScreen = ({navigation}: any) => {
     );
   } else if (role == 3) {
     return (
-      <SafeAreaView style={{flex: 1, backgroundColor: '#e8f0f3'}}>
+      <SafeAreaView
+        style={{flex: 1, backgroundColor: '#e8f0f3', height: '100%'}}>
         <ScrollView>
           <View>
             <View style={{marginStart: 15}}>

@@ -1,5 +1,6 @@
 import {
   AddUserDetailsToDB,
+  DeleteProfileImageUrlInDB,
   // GetAllUserDetailsFromDatabase,
   GetUserDetailsFromDB,
   GetUserProfileImageFromDB,
@@ -35,4 +36,8 @@ export const UpdateUserDetail = async (userDetail: UserDetail) => {
 
 export const UpdateProfileUrl = async (userId: string, profileUrl: string) => {
   return await UpdateProfileImageUrlInDB(userId, profileUrl);
+};
+
+export const DeleteProfileUrl = async (userId: string) => {
+  return await DeleteProfileImageUrlInDB(userId);
 };

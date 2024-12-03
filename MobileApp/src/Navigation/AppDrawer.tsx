@@ -103,7 +103,7 @@ const AppDrawer = ({navigation}: any) => {
   useEffect(() => {
     RestoreImageViaAsyncStorage().then((result: any) => {
       if (result == '' || result == null) {
-        setIsReloading(!isReloading);
+        setProfileImage(result);
       } else {
         setProfileImage(result);
       }
@@ -391,7 +391,7 @@ const AppDrawer = ({navigation}: any) => {
         name="Business Detail"
         component={BusinessDetailsScreen}
         options={{
-          // drawerItemStyle: {display: 'none'},
+          drawerItemStyle: {display: 'none'},
           drawerIcon: () => (
             <Aperture
               size={iconSize}

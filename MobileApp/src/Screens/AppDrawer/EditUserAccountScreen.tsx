@@ -62,10 +62,12 @@ import {Images} from 'lucide-react';
 import {Aperture} from 'lucide-react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
+  ClearImageViaAsyncStorage,
   RestoreImageViaAsyncStorage,
   SaveImageViaAsyncStorage,
 } from '../../Services/ImageStorageService';
 import {
+  DeleteProfileUrl,
   GetUserProfileImage,
   UpdateProfileUrl,
 } from '../../Controllers/UserDetailController';
@@ -493,6 +495,17 @@ const EditUserAccountScreen = ({navigation}: any) => {
     });
   };
 
+  const ClearImage = () => {
+    DeleteProfileUrl(userId).then((response: any) => {
+      if (response[1] == 200) {
+        ClearImageViaAsyncStorage().then(() => {
+          setProfileImage('');
+          setIsUpdating(false);
+        });
+      }
+    });
+  };
+
   const FabMenu = () => {
     return (
       <Menu
@@ -501,16 +514,14 @@ const EditUserAccountScreen = ({navigation}: any) => {
         onSelectionChange={keys => {
           const selectedMenuItem: any = keys;
           if (selectedMenuItem.currentKey === 'Camera') {
-            setIsLoading(true);
-            // ScanLicenseDisc({IsReScan: false});
             CaptureImage();
-            setIsLoading(false);
           }
           if (selectedMenuItem.currentKey === 'Gallery') {
-            setIsLoading(true);
-            // ScanLicenseDisc({IsReScan: false});
             OpenGallery();
-            setIsLoading(false);
+          }
+          if (selectedMenuItem.currentKey === 'Delete Image') {
+            setIsUpdating(true);
+            ClearImage();
           }
         }}
         closeOnSelect={true}
@@ -534,6 +545,9 @@ const EditUserAccountScreen = ({navigation}: any) => {
         </MenuItem>
         <MenuItem key="Gallery" textValue="Gallery">
           <MenuItemLabel size="sm">Gallery</MenuItemLabel>
+        </MenuItem>
+        <MenuItem key="Delete Image" textValue="Delete Image">
+          <MenuItemLabel size="sm">Delete Image</MenuItemLabel>
         </MenuItem>
       </Menu>
     );

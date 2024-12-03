@@ -1,6 +1,7 @@
 import Router from "express-promise-router";
 import {
   AddUserDetail,
+  DeleteProfileImageUrl,
   GetUserDetail,
   GetUserProfileImage,
   UpdateProfileImageUrl,
@@ -26,6 +27,12 @@ router.patch(
 router.patch(
   "/update-user-detail-profile-url",
   UpdateProfileImageUrl,
+  async (req, res, next) => {}
+);
+
+router.patch(
+  "/delete-user-detail-profile-url",
+  DeleteProfileImageUrl,
   async (req, res, next) => {}
 );
 

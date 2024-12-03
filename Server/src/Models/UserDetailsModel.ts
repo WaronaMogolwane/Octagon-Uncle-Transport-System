@@ -126,3 +126,23 @@ export const UpdateProfileImageUrlByUserId = async (
     }
   );
 };
+
+export const DeleteProfileImageUrlByUserId = async (
+  userId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL DeleteUserDetailImage(?);",
+      timeout: 40000,
+      values: userId,
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};

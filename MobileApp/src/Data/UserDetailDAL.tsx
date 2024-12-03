@@ -153,6 +153,30 @@ export const UpdateProfileImageUrlInDB = async (
   return [data, statusCode];
 };
 
+export const DeleteProfileImageUrlInDB = async (userId: string) => {
+  let statusCode: any;
+  let data: any;
+
+  await axios
+    .patch(
+      `${SERVER_HOST}:${SERVER_PORT}/user-profile/delete-user-detail-profile-url`,
+      {
+        params: {
+          UserId: userId,
+        },
+      },
+    )
+    .then((response: AxiosResponse) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+
+  return [data, statusCode];
+};
+
 // export const GetAllUserDetailsFromDatabase = async () => {};
 
 // export const DeleteUserDetailsFromDatabase = async (uid: string) => {};

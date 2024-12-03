@@ -7,6 +7,7 @@ import {
   UpdateUserDetail,
   UpdateProfileImageUrlByUserId,
   GetUserDetailProfileImageByUserId,
+  DeleteProfileImageUrlByUserId,
 } from "../Models/UserDetailsModel";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 import { UploadFile } from "../Services/BlobStorageService";
@@ -160,6 +161,21 @@ export const UpdateProfileImageUrl = async (req: any, res: any, next: any) => {
       }
     }
   );
+};
+
+export const DeleteProfileImageUrl = async (req: any, res: any, next: any) => {
+  const userId = req.body.params.UserId;
+
+  await DeleteProfileImageUrlByUserId(userId, async (error, result) => {
+    if (error) {
+      next(new ErrorResponse(501, error.message));
+    } else {
+      res.status(200).json({
+        profileImageDeleted: true,
+        result: result,
+      });
+    }
+  });
 };
 
 // export const AddNewVehicle = async (req: any, res: any, next: any) => {

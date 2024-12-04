@@ -7,6 +7,8 @@ import {
 import React from 'react';
 
 import {TripCardDriverStyles} from '../../Stylesheets/GlobalStyles';
+import {Card, Image} from '@gluestack-ui/themed';
+import {Car} from 'lucide-react-native';
 
 type tripCardProps = {
   registrationNumber: string;
@@ -14,6 +16,7 @@ type tripCardProps = {
   model: string;
   color: string;
   fullName: string;
+  urlFront: string;
   onPress: (
     values:
       | GestureResponderEvent
@@ -23,34 +26,126 @@ type tripCardProps = {
 };
 
 export const VehicleCard = (props: tripCardProps) => {
+  const iconSize = 15;
+  const iconStrokeWidth = 1.5;
+  const iconColor = '#000000';
+
+  const carIcon = (
+    <Car size={30} strokeWidth={iconStrokeWidth} color={'#c26b71'} />
+  );
+
   return (
     <TouchableOpacity onPress={props.onPress}>
-      <View style={TripCardDriverStyles.cardBorder}>
-        <View style={TripCardDriverStyles.cardContainer}>
-          <View style={{marginEnd: 5}}>
-            <Text style={TripCardDriverStyles.cardText}>License Plate:</Text>
+      <Card
+        size="sm"
+        variant="outline"
+        style={{
+          marginHorizontal: 12,
+          marginVertical: 7,
+          backgroundColor: '#ffffff',
+          borderRadius: 30,
+          elevation: 5,
+        }}>
+        <View
+          style={{
+            marginBottom: 5,
+            alignItems: 'flex-start',
+            marginHorizontal: 15,
+            flexDirection: 'row',
+            marginVertical: 10,
+            backgroundColor: '#ffffff',
+            flex: 1,
+            // justifyContent: 'space-evenly',
+            borderRadius: 20,
+          }}>
+          <View style={{alignItems: 'center', width: '50%'}}>
+            <Image
+              style={{
+                width: 100,
+                aspectRatio: 1 / 1,
+                display: 'flex',
+                marginHorizontal: 12,
+                height: 100,
+                borderRadius: 50, // Half of the width or height
+                flexDirection: 'row', // Horizontal arrangement
+              }}
+              source={{
+                uri:
+                  props.urlFront ||
+                  'https://eu.amcdn.co.za/cars/toyota-quantum-2-5d-4d-ses-fikile-2012-id-64381431-type-main.jpg',
+              }}
+              alt="Vehicle front picture."
+            />
+
+            <View>
+              <Text style={{marginTop: 10, fontSize: 16, fontWeight: 'bold'}}>
+                {props.registrationNumber}
+              </Text>
+            </View>
           </View>
-          <View>
-            <Text>{props.registrationNumber}</Text>
+          <View
+            style={{
+              alignItems: 'flex-start',
+              width: '50%',
+            }}>
+            <View style={{flexDirection: 'row', marginBottom: 15}}>
+              <View>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                  }}>
+                  Driver
+                </Text>
+              </View>
+              <View>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 'normal',
+                    textAlign: 'center',
+                  }}>
+                  {' '}
+                  {props.fullName}
+                </Text>
+              </View>
+            </View>
+
+            <View style={{flexDirection: 'row', marginBottom: 15}}>
+              <View>
+                <Text style={{fontSize: 16, fontWeight: 'bold'}}>Make </Text>
+              </View>
+              <View>
+                <Text style={{fontSize: 16, fontWeight: 'normal'}}>
+                  {props.make}
+                </Text>
+              </View>
+            </View>
+            <View style={{flexDirection: 'row', marginBottom: 15}}>
+              <View>
+                <Text style={{fontSize: 16, fontWeight: 'bold'}}>Model </Text>
+              </View>
+              <View>
+                <Text style={{fontSize: 16, fontWeight: 'normal'}}>
+                  {props.model}
+                </Text>
+              </View>
+            </View>
+
+            <View style={{flexDirection: 'row'}}>
+              <View>
+                <Text style={{fontSize: 16, fontWeight: 'bold'}}>Color </Text>
+              </View>
+              <View>
+                <Text style={{fontSize: 16, fontWeight: 'normal'}}>
+                  {props.color}
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
-        <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Model: </Text>
-          <Text style={{marginEnd: 20}}>{props.model}</Text>
-        </View>
-        <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Make: </Text>
-          <Text style={{marginEnd: 20}}>{props.make}</Text>
-        </View>
-        <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Color: </Text>
-          <Text>{props.color}</Text>
-        </View>
-        <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Driver: </Text>
-          <Text>{props.fullName}</Text>
-        </View>
-      </View>
+      </Card>
     </TouchableOpacity>
   );
 };

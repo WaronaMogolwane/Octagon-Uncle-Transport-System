@@ -24,7 +24,7 @@ const app = express();
 app.use(cors());
 
 const PORT = process.env.OUTS_SERVER_PORT || 8081;
-var bodyParser = require('body-parser');
+var bodyParser = require("body-parser");
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
   bodyParser.urlencoded({

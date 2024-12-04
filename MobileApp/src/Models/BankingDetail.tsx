@@ -4,8 +4,9 @@ export class BankingDetail {
   accountName: string;
   accountNumber: string;
   businessId: string;
-  bankId: string;
-  bankCode: string;
+  paystackBankId: string;
+  paystackBankCode: string;
+  recipientCode: string;
   bankingDetailId?: string;
 
   constructor(
@@ -16,6 +17,7 @@ export class BankingDetail {
     businessId: string,
     bankId: string,
     bankCode: string,
+    recipientCode: string,
     bankingDetailId?: string,
   ) {
     this.bankName = bankName;
@@ -23,8 +25,9 @@ export class BankingDetail {
     this.accountName = accountName;
     this.accountNumber = accountNumber;
     this.businessId = businessId;
-    this.bankId = bankId;
-    this.bankCode = bankCode;
+    this.paystackBankId = bankId;
+    this.paystackBankCode = bankCode;
+    this.recipientCode = recipientCode;
     this.bankingDetailId = bankingDetailId;
   }
 }

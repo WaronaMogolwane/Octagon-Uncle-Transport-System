@@ -130,6 +130,25 @@ export const GetVehiclesByBusinessId = async (
     }
   );
 };
+export const GetVehiclesByDriverId = async (
+  driverId: string,
+  callback: (error: any, result: any) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetVehicleLinkedToDriver(?);",
+      timeout: 40000,
+      values: [driverId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
 export const GetVehicleByLicenseNumberAndBusinessId = async (
   businessId: string,
   licenseNumber: string,

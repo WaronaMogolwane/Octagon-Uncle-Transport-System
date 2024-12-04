@@ -10,14 +10,14 @@ export const InsertBankingDetail = async (
       sql: "call InsertNewBankingDetail(?,?,?,?,?,?,?,?)",
       timeout: 40000,
       values: [
-        bankingDetail.bankingDetailId,
         bankingDetail.bankName,
         bankingDetail.branchNumber,
         bankingDetail.accountName,
         bankingDetail.accountNumber,
         bankingDetail.businessId,
-        bankingDetail.paystackId,
-        bankingDetail.payStackCode,
+        bankingDetail.paystackBankId,
+        bankingDetail.paystackBankCode,
+        bankingDetail.recipientCode,
       ],
     },
     function (error, results, fields) {
@@ -36,7 +36,7 @@ export const UpdateBankingDetail = async (
 ) => {
   DbPool.query(
     {
-      sql: "CALL UpdateBankingDetail(?,?,?,?,?,?,?,?)",
+      sql: "CALL UpdateBankingDetail(?,?,?,?,?,?,?,?,?)",
       timeout: 40000,
       values: [
         bankingDetail.bankingDetailId,
@@ -45,9 +45,30 @@ export const UpdateBankingDetail = async (
         bankingDetail.accountName,
         bankingDetail.accountNumber,
         bankingDetail.businessId,
-        bankingDetail.paystackId,
-        bankingDetail.payStackCode,
+        bankingDetail.paystackBankId,
+        bankingDetail.paystackBankCode,
+        bankingDetail.recipientCode,
       ],
+    },
+    (err, res) => {
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, res);
+      }
+    }
+  );
+};
+
+export const GetBankingDetailByBankingId = async (
+  businessId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetBankingDetail(?)",
+      timeout: 40000,
+      values: [businessId],
     },
     (err, res) => {
       if (err) {

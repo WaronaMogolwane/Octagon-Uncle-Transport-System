@@ -1,7 +1,10 @@
 import {
   AddUserDetailsToDB,
+  DeleteProfileImageUrlInDB,
   // GetAllUserDetailsFromDatabase,
   GetUserDetailsFromDB,
+  GetUserProfileImageFromDB,
+  UpdateProfileImageUrlInDB,
   // DeleteUserDetailsFromDatabase,
   UpdateUserDetailsInDB,
 } from '../Data/UserDetailDAL';
@@ -15,6 +18,10 @@ export const GetUserDetail = async (userId: string) => {
   return await GetUserDetailsFromDB(userId);
 };
 
+export const GetUserProfileImage = async (userId: string) => {
+  return await GetUserProfileImageFromDB(userId);
+};
+
 export const GetAllUserDetails = async () => {
   //return await GetAllUserDetailsFromDatabase();
 };
@@ -25,4 +32,12 @@ export const DeleteUserDetail = async (uid: string) => {
 
 export const UpdateUserDetail = async (userDetail: UserDetail) => {
   return await UpdateUserDetailsInDB(userDetail);
+};
+
+export const UpdateProfileUrl = async (userId: string, profileUrl: string) => {
+  return await UpdateProfileImageUrlInDB(userId, profileUrl);
+};
+
+export const DeleteProfileUrl = async (userId: string) => {
+  return await DeleteProfileImageUrlInDB(userId);
 };

@@ -1,7 +1,7 @@
-CREATE DEFINER=`sqladmin`@`%` PROCEDURE `InsertNewBankingDetail`(_BankingDetailId VARCHAR(100), _BankName VARCHAR(100), _BranchNumber BIGINT,_AccountName VARCHAR(100), _AccountNumber BIGINT, _BusinessId VARCHAR(1000), _PaystackId VARCHAR(1000), _PaystackCode VARCHAR(1000))
+CREATE DEFINER=`sqladmin`@`%` PROCEDURE `InsertNewBankingDetail`(_BankName VARCHAR(100), _BranchNumber BIGINT,_AccountName VARCHAR(100), _AccountNumber BIGINT, _BusinessId VARCHAR(1000), _PaystackBankId VARCHAR(1000), _PaystackBankCode VARCHAR(1000), _RecipientCode VARCHAR(1000))
 BEGIN
 INSERT INTO BankingDetail
-(BankingDetailId, BankName, BranchNumber, AccountNumber,AccountName, BusinessId, PaystackId, PaystackCode)
+(BankName, BranchNumber, AccountNumber,AccountName, BusinessId, PaystackBankId, PaystackBankCode, RecipientCode)
 VALUES
-(_BankingDetailId, _BankName, _BranchNumber, _AccountNumber,_AccountName, _BusinessId, _PaystackId, _PaystackCode);
+(_BankName, _BranchNumber, _AccountNumber,_AccountName, _BusinessId, _PaystackBankId, _PaystackBankCode, _RecipientCode);
 END

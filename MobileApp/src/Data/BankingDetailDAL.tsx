@@ -13,8 +13,9 @@ export const AddBankingDetailToDB = async (bankingDetail: BankingDetail) => {
         AccountName: bankingDetail.accountName,
         AccountNumber: bankingDetail.accountNumber,
         BusinessId: bankingDetail.businessId,
-        BankId: bankingDetail.bankId,
-        BankCode: bankingDetail.bankCode,
+        PaystackBankId: bankingDetail.paystackBankId,
+        PaystackBankCode: bankingDetail.paystackBankCode,
+        RecipientCode: bankingDetail.recipientCode,
       },
     })
     .then((response: any) => {
@@ -28,6 +29,26 @@ export const AddBankingDetailToDB = async (bankingDetail: BankingDetail) => {
   [];
 
   return statusCode;
+};
+
+export const GetBankingDetailFromDB = async (businessId: string) => {
+  let statusCode: any;
+  let data: any;
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/banking-detail/get-banking-detail`, {
+      params: {
+        BusinessId: businessId,
+      },
+    })
+    .then((response: any) => {
+      statusCode = response.status;
+      data = response.data;
+    })
+    .catch((error: any) => {
+      console.log(error);
+    });
+
+  return [data, statusCode];
 };
 
 export const UpdateBankingDetailToDB = async (bankingDetail: BankingDetail) => {
@@ -44,6 +65,9 @@ export const UpdateBankingDetailToDB = async (bankingDetail: BankingDetail) => {
           AccountName: bankingDetail.accountName,
           AccountNumber: bankingDetail.accountNumber,
           BusinessId: bankingDetail.businessId,
+          PaystackBankId: bankingDetail.paystackBankId,
+          PaystackBankCode: bankingDetail.paystackBankCode,
+          RecipientCode: bankingDetail.recipientCode,
         },
       },
     )
@@ -164,44 +188,44 @@ export const UpdateBankingDetailToDB = async (bankingDetail: BankingDetail) => {
 //     return [data, statusCode];
 //   };
 
-export const GetActivePassengerForBusinessFromDB = async (
-  businessId: string,
-) => {
-  let result: any;
-  const tripData: {}[] = [];
-  let passsengers = {};
+// export const GetActivePassengerForBusinessFromDB = async (
+//   businessId: string,
+// ) => {
+//   let result: any;
+//   const tripData: {}[] = [];
+//   let passsengers = {};
 
-  await axios
-    .get(`${SERVER_HOST}:${SERVER_PORT}/passenger/get-business-passengers`, {
-      params: {
-        BusinessId: businessId,
-      },
-    })
-    .then((response: any) => {
-      let res = [...response.data.result];
+//   await axios
+//     .get(`${SERVER_HOST}:${SERVER_PORT}/passenger/get-business-passengers`, {
+//       params: {
+//         BusinessId: businessId,
+//       },
+//     })
+//     .then((response: any) => {
+//       let res = [...response.data.result];
 
-      res.forEach(data => {
-        passsengers = {
-          passengerId: data.PassengerId,
-          passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
-          editedName: `${data.FirstName} ${data.LastName}`,
-          age: data.Age,
-          homeAddress: data.HomeAddress,
-          destinationAddress: data.DestinationAddress,
-          parentId: data.ParentId,
-        };
+//       res.forEach(data => {
+//         passsengers = {
+//           passengerId: data.PassengerId,
+//           passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
+//           editedName: `${data.FirstName} ${data.LastName}`,
+//           age: data.Age,
+//           homeAddress: data.HomeAddress,
+//           destinationAddress: data.DestinationAddress,
+//           parentId: data.ParentId,
+//         };
 
-        tripData.push(passsengers);
-      });
+//         tripData.push(passsengers);
+//       });
 
-      result = tripData;
-    })
-    .catch((error: any) => {
-      result = error;
-    });
+//       result = tripData;
+//     })
+//     .catch((error: any) => {
+//       result = error;
+//     });
 
-  return result;
-};
+//   return result;
+// };
 
 export const GetBankListFromDB = async () => {
   let result: any;
@@ -229,9 +253,20 @@ export const GetBankListFromDB = async () => {
 
       res.forEach((data: any) => {
         bank = {
-          bankName: data.name,
-          bankId: data.id,
-          bankCode: data.code,
+          id: data.id,
+          name: data.name,
+          code: data.code,
+          longcode: data.longcode,
+          gateway: data.gateway,
+          pay_with_bank: data.pay_with_bank,
+          supports_transfer: data.supports_transfer,
+          active: data.active,
+          country: data.country,
+          currency: data.currency,
+          type: data.type,
+          is_deleted: data.is_deleted,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
         };
 
         bankData.push(bank);

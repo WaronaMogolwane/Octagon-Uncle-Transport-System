@@ -9,8 +9,15 @@ import {
   Button,
   ButtonText,
   CloseIcon,
+  EditIcon,
+  Fab,
+  FabIcon,
   Heading,
   Icon,
+  Image,
+  Menu,
+  MenuItem,
+  MenuItemLabel,
   Modal,
   ModalBackdrop,
   ModalBody,
@@ -48,10 +55,11 @@ import {Auth} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {Dropdown} from 'react-native-element-dropdown';
 import {useStorageState} from '../../Services/StorageStateService';
+import {OpenCamera, OpenFilePicker} from '../../Services/CameraService';
+import {ImageOrVideo} from 'react-native-image-crop-picker';
 
 const BusinessDetailsScreen = ({navigation, route}: any) => {
   const {sessionId} = route.params;
-
   const {session, isLoading, SetSession}: any = useContext(AuthContext);
   const [[tokenIsLoading, authToken], setAuthToken] =
     useStorageState('authToken');
@@ -64,18 +72,22 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
   const [showModal, setShowModal] = useState(false);
   const [isFocus, setIsFocus] = useState(false);
   const [bankName, setBankName] = useState('');
-  const [bankCode, setBankCode] = useState('');
-  const [bankId, setBankId] = useState('');
+  const [paystackBankCode, setPaystackBankCode] = useState('');
+  const [paystackBankId, setPaystackBankId] = useState('');
+  const [recipientCode, setRecipientCode] = useState('');
 
   const [IsLoading, setIsLoading] = useState(false);
 
   const [bankList, setBankList] = useState(['']);
+  const [imageUri, setImageUri] = useState('');
+
+  const [selected, setSelected] = React.useState(new Set([]));
 
   useEffect(() => {
     BankList();
   }, []);
 
-  const businessId = auth.GetUserId();
+  const businessId = auth.GetBusinessId();
 
   const BankList = async () => {
     await GetBanksList().then((result: any) => {
@@ -223,17 +235,17 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
                   data={bankList}
                   search={true}
                   maxHeight={300}
-                  labelField="bankName"
-                  valueField="bankName"
+                  labelField="name"
+                  valueField="name"
                   placeholder={!isFocus ? 'Select bank name' : 'tap here...'}
                   searchPlaceholder="Search..."
                   value={bankList}
                   onFocus={() => setIsFocus(true)}
                   onBlur={() => setIsFocus(false)}
                   onChange={(item: any) => {
-                    setBankName(item.bankName);
-                    setBankId(item.bankId);
-                    setBankCode(item.bankCode);
+                    setBankName(item.name);
+                    setPaystackBankId(item.id);
+                    setPaystackBankCode(item.code);
                     setIsFocus(false);
                   }}
                 />
@@ -331,13 +343,14 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
   const SubmitBankingDetail = async (values: any) => {
     setIsLoading(true);
     let bankingDetail = new BankingDetail(
-      values.bankName.trim(),
+      bankName,
       values.branchNumber.trim(),
       values.accountName.trim(),
       values.accountNumber.trim(),
       businessId,
-      bankId,
-      bankCode,
+      paystackBankId,
+      paystackBankCode,
+      '',
     );
 
     await AddBankingDetail(bankingDetail)

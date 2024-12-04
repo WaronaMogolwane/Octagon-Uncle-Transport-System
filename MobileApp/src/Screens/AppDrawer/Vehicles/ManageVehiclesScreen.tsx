@@ -204,6 +204,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       if (error) {
         console.error(error.response.data);
       } else {
+        console.log(result.data[0]);
         setVehicleList(result.data);
       }
     });

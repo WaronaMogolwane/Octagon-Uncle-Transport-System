@@ -76,6 +76,7 @@ const PaymentsScreen = ({navigation}: any) => {
         if (error) {
           console.error(error.response.data);
         } else {
+          console.log(result.Balance);
           setAvailableBalance(FormatBalance(result.Balance || '0'));
         }
       },
@@ -89,6 +90,7 @@ const PaymentsScreen = ({navigation}: any) => {
           console.error(error.response.data);
         } else {
           const expectedPayments: any = result;
+          console.log(expectedPayments.Amount);
           expectedPayments.Amount = FormatBalance(
             expectedPayments.Amount || '0',
           );

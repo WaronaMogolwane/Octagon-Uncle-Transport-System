@@ -2,59 +2,141 @@ import React, {useContext, useEffect, useState} from 'react';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Auth} from '../../Classes/Auth';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {
+  Dimensions,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  View,
+} from 'react-native';
 import {
   Text,
+  Card,
   Toast,
   ToastDescription,
   ToastTitle,
   useToast,
   VStack,
+  Image,
 } from '@gluestack-ui/themed';
-import {Baby, Bus, HandCoins, KeySquare} from 'lucide-react-native';
 import {
+  AlignLeft,
+  Baby,
+  Bell,
+  CarFront,
+  GraduationCap,
+  Route,
+  WalletMinimal,
+} from 'lucide-react-native';
+import {
+  GetAllActivePassengerForParent,
   GetAllPassengerForBusiness,
   GetParentPassengers,
 } from '../../Controllers/PassengerController';
-import {GetVehicles} from '../../Controllers/VehicleController';
+import {
+  GetDriverVehicle,
+  GetVehicles,
+} from '../../Controllers/VehicleController';
 import {GetUser} from '../../Controllers/UserController';
 import {CheckTrip, StartTrip} from '../../Services/TripServices';
-import {toast} from '@lucide/lab';
+import Carousel from 'react-native-reanimated-carousel';
+import {TripsBlock} from '../../Components/TripsBlock';
+import {
+  GetUpcomingTripsForClient,
+  GetUpcomingTripsForDriver,
+} from '../../Controllers/TripController';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {PassengerBlock} from '../../Components/PassengerBlock';
+import {TripsBlockDiver} from '../../Components/TripsBlockDriver';
+import filter from 'lodash.filter';
+import {GetUserProfileImage} from '../../Controllers/UserDetailController';
+import {
+  RestoreImageViaAsyncStorage,
+  SaveImageViaAsyncStorage,
+} from '../../Services/ImageStorageService';
+
+interface IVehicle {
+  Make: string;
+  Model: string;
+  FrontImageUrl: string;
+  Colour: string;
+  LicenseNumber: string;
+}
 
 const HomeScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
-
   const [passengerCount, setPassengerCount] = useState('');
-  const [vehicleCount, setVehicleCount] = useState('');
-  const [userName, setUserName] = useState('');
+  const [vehicleCount, setVehicleCount] = useState('10');
+  const [userName, setUserName] = useState('Nicholai');
+  const [tripData, setTripData] = useState(['']);
+  const [fullData, setFullData] = useState([]);
+  const [activePassengers, setActivePasengers] = useState([]);
+  const [amount, setAmount] = useState('1300.00');
   const [passengerList, setPassengerList] = useState([]);
   const [tripCount, setTripCount] = useState('');
 
-  const [isStarted, setIsStarted] = useState(false);
+  const [isStarted, setIsStarted] = useState(true);
+  const [noActivePassenger, setNoActivePassenger] = useState(true);
+
+  const [vehicle, setVehicle] = useState<IVehicle>({
+    Make: 'undefined',
+    Model: 'undefined',
+    FrontImageUrl: 'undefined',
+    Colour: 'undefined',
+    LicenseNumber: 'undefined',
+  });
 
   const role: number = Number(auth.GetUserRole());
+  // const role: number = 3;
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
   const toast = useToast();
-  // const role: number = 3;
 
-  const iconSize = 100;
+  const iconSize = 15;
   const iconStrokeWidth = 1;
-  const iconColor = '#FFFFFF';
-  const textSize = 50;
+  const iconColor = '#000000';
+
+  const storageUrl: string =
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
+
+  const data = [
+    {
+      tripId: '1',
+      driverName: 'Driver Dan',
+      pickUpDate: '08/07/2005',
+      passengerName: 'Kelcie Cash',
+      isActive: false,
+    },
+    {
+      tripId: '2',
+      driverName: 'Driver Dan',
+      pickUpDate: '08/07/2005',
+      passengerName: 'Tsephi Ncube',
+      isActive: true,
+    },
+    {
+      tripId: '3',
+      driverName: 'Driver Dan',
+      pickUpDate: '08/07/2005',
+      passengerName: 'Sockman Grootman',
+      isActive: false,
+    },
+  ];
 
   useEffect(() => {
+    GetUserName();
+
     if (role == 1) {
       GetPassengers();
       GetVehicleCount();
     } else if (role == 2) {
-      GetUserName();
       GetPassengers();
-      GetPassegersByParent();
+      GetActivePasengers();
+      GetUpcomingTrips();
     } else if (role == 3) {
-      GetUserName();
-      GetPassengers();
+      GetVehicleInfomation();
+      GetUpcomingTrips();
     }
   }, []);
 
@@ -65,6 +147,87 @@ const HomeScreen = ({navigation}: any) => {
       });
     }
   }, []);
+
+  useEffect(() => {
+    if (fullData[0] != '' && fullData.length != 0) {
+      handleSearch();
+    }
+  }, [fullData]);
+
+  useEffect(() => {
+    RestoreImageViaAsyncStorage().then((result: any) => {
+      if (result == '' || result == null) {
+        GetUserProfileImage(userId).then(response => {
+          if (response[1] == 200) {
+            SaveImageViaAsyncStorage(response[0]);
+          }
+        });
+      }
+    });
+  }, []);
+
+  const CustomView = () => {
+    const width = Dimensions.get('window').width;
+    return (
+      <View style={{flex: 1, alignItems: 'center'}}>
+        <Carousel
+          loop
+          width={width / 1.5}
+          height={width / 2}
+          autoPlay={false}
+          data={[...new Array(6).keys()]}
+          scrollAnimationDuration={2000}
+          onSnapToItem={index => console.log('current index:', index)}
+          renderItem={({index}) => (
+            <View
+              style={{
+                alignItems: 'center',
+                alignContent: 'center',
+                justifyContent: 'center',
+              }}>
+              <Card
+                size="sm"
+                variant="outline"
+                style={{margin: 12, backgroundColor: '#ffffff'}}>
+                <View>
+                  <View
+                    style={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: 50, // Half of the width or height
+                      backgroundColor: '#d6f3f1',
+                      display: 'flex', // Flexbox layout
+                      flexDirection: 'row', // Horizontal arrangement
+                      alignItems: 'center', // Align items vertically
+                    }}>
+                    <WalletMinimal
+                      size={25}
+                      strokeWidth={2}
+                      color={'#3ba2a9'}
+                      style={{
+                        marginStart: 35,
+                      }}
+                    />
+                  </View>
+                  <View style={{marginStart: 16}}>
+                    <Text
+                      style={{
+                        marginBottom: 0,
+                        fontWeight: 'bold',
+                        color: '#4b4842',
+                      }}>
+                      R{amount}
+                    </Text>
+                    <Text style={{fontSize: 10}}>Monthly Earnings</Text>
+                  </View>
+                </View>
+              </Card>
+            </View>
+          )}
+        />
+      </View>
+    );
+  };
 
   const onStartButtonPress = () => {
     StartTrip().then((result: any) => {
@@ -93,6 +256,18 @@ const HomeScreen = ({navigation}: any) => {
     });
   };
 
+  const GetUpcomingTrips = async () => {
+    if (role == 2) {
+      await GetUpcomingTripsForClient(userId).then((response: any) => {
+        setFullData(response);
+      });
+    } else if (role == 3) {
+      await GetUpcomingTripsForDriver(userId).then(response => {
+        setFullData(response);
+      });
+    }
+  };
+
   const GetVehicleCount = async () => {
     await GetVehicles(businessId, (error: any, result: any) => {
       if (error) {
@@ -115,6 +290,27 @@ const HomeScreen = ({navigation}: any) => {
       } else {
         setPassengerCount('0');
         // setIsLoading(false);
+      }
+    });
+  };
+
+  const GetVehicleInfomation = async () => {
+    GetDriverVehicle(userId).then(result => {
+      if (result != undefined) {
+        setVehicle(result[0]);
+      } else {
+        //it failed.
+      }
+    });
+  };
+
+  const GetActivePasengers = async () => {
+    GetAllActivePassengerForParent(userId).then(result => {
+      if (result[0] != '') {
+        setNoActivePassenger(false);
+        setActivePasengers(result);
+      } else {
+        setNoActivePassenger(true);
       }
     });
   };
@@ -143,397 +339,592 @@ const HomeScreen = ({navigation}: any) => {
     });
   };
 
+  const handleSearch = () => {
+    const date = new Date().toLocaleDateString('en-CA');
+    const formattedQuery = date;
+
+    const filterData: any = filter(fullData, (user: any) => {
+      return contains(user, formattedQuery);
+    });
+
+    setTripData(filterData);
+  };
+
+  const contains = ({pickUpDate}: any, query: any) => {
+    if (pickUpDate.toLowerCase().includes(query)) {
+      return true;
+    }
+
+    return false;
+  };
+
+  const universityIcon = (
+    <GraduationCap
+      size={iconSize}
+      strokeWidth={iconStrokeWidth}
+      color={iconColor}
+    />
+  );
+
   if (role == 1) {
     return (
-      <SafeAreaView style={{flex: 1, backgroundColor: '#ffffff75'}}>
-        <Pressable
-          onPress={() => {
-            navigation.navigate('Payments');
-          }}
-          style={{
-            alignItems: 'center',
-            height: '33%',
-            backgroundColor: '#59d863',
-            marginHorizontal: 15,
-            marginTop: 10,
-            marginBottom: 5,
-            borderRadius: 5,
-          }}>
-          <View
-            style={{
-              alignItems: 'center',
-            }}>
-            <View>
-              <View style={{flexDirection: 'row', marginTop: 5}}>
-                <Text
-                  style={{
-                    fontSize: 25,
-                    color: 'white',
-                    marginEnd: 5,
-                    fontWeight: 'bold',
-                  }}>
-                  Balance
-                </Text>
-                <HandCoins size={25} strokeWidth={2} color={iconColor} />
-              </View>
+      <SafeAreaView
+        style={{flex: 1, backgroundColor: '#e8f0f3', height: '100%'}}>
+        <ScrollView>
+          <View>
+            <View style={{marginStart: 15}}>
+              <Text
+                style={{
+                  fontSize: 40,
+                  fontWeight: 'bold',
+                  color: 'black',
+                }}>
+                Hello
+              </Text>
             </View>
-            <View>
-              <Text style={{fontSize: 70, color: 'white', fontWeight: '200'}}>
-                R1000.00
+
+            <View style={{marginStart: 50}}>
+              <Text
+                style={{
+                  fontSize: 40,
+                  fontWeight: 'bold',
+                  color: 'black',
+                  marginBottom: 50,
+                }}>
+                {userName}
               </Text>
             </View>
           </View>
-        </Pressable>
 
-        <View
-          style={{
-            flexDirection: 'row',
-            height: '33%',
-            justifyContent: 'center',
-          }}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+            }}>
+            <Pressable
+              onPress={() => {
+                navigation.navigate('Payments');
+              }}
+              style={{
+                marginEnd: 15,
+                width: '41.7%',
+                backgroundColor: '#ffffff',
+                borderRadius: 5,
+                elevation: 10,
+                justifyContent: 'center',
+              }}>
+              <Card size="sm" variant="outline">
+                <View
+                  style={{
+                    alignItems: 'center', // Align items vertically
+                    justifyContent: 'center',
+                    display: 'flex', // Flexbox layout
+                  }}>
+                  <View
+                    style={{
+                      marginHorizontal: 12,
+                      width: 100,
+                      height: 100,
+                      borderRadius: 50, // Half of the width or height
+                      backgroundColor: '#d6f3f1',
+                      flexDirection: 'row', // Horizontal arrangement
+                      alignItems: 'center', // Align items vertically
+                      justifyContent: 'center',
+                    }}>
+                    <WalletMinimal
+                      size={25}
+                      strokeWidth={2}
+                      color={'#3ba2a9'}
+                    />
+                  </View>
+                  <View>
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        marginBottom: 0,
+                        fontWeight: 'bold',
+                        color: '#4b4842',
+                      }}>
+                      R{amount}
+                    </Text>
+                    <Text style={{fontSize: 10, textAlign: 'center'}}>
+                      Monthly Earnings
+                    </Text>
+                  </View>
+                </View>
+              </Card>
+            </Pressable>
+
+            <Pressable
+              onPress={() => {
+                navigation.navigate('Manage Vehicles');
+              }}
+              style={{
+                marginStart: 15,
+                width: '41.7%',
+                backgroundColor: '#ffffff',
+                borderRadius: 5,
+                elevation: 10,
+                justifyContent: 'center',
+              }}>
+              <Card size="sm" variant="outline">
+                <View
+                  style={{
+                    alignItems: 'center', // Align items vertically
+                    justifyContent: 'center',
+                    display: 'flex', // Flexbox layout
+                  }}>
+                  <View
+                    style={{
+                      marginHorizontal: 12,
+                      width: 100,
+                      height: 100,
+                      borderRadius: 50, // Half of the width or height
+                      backgroundColor: '#fadcdc',
+                      display: 'flex', // Flexbox layout
+                      flexDirection: 'row', // Horizontal arrangement
+                      alignItems: 'center', // Align items vertically
+                      justifyContent: 'center',
+                    }}>
+                    <CarFront size={25} strokeWidth={2} color={'#c26b71'} />
+                  </View>
+                  <View>
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        marginBottom: 0,
+                        fontWeight: 'bold',
+                        color: '#4b4842',
+                      }}>
+                      {vehicleCount}
+                    </Text>
+                    <Text style={{fontSize: 10, textAlign: 'center'}}>
+                      Vehicles
+                    </Text>
+                  </View>
+                </View>
+              </Card>
+            </Pressable>
+          </View>
+
           <Pressable
+            style={{
+              marginTop: 15,
+              marginHorizontal: 15,
+              backgroundColor: '#ffffff',
+              borderRadius: 5,
+              elevation: 10,
+              justifyContent: 'center',
+              marginBottom: 10,
+            }}
             onPress={() => {
               navigation.navigate('Manage Passengers');
-            }}
-            style={{
-              alignItems: 'center',
-              backgroundColor: '#e47501',
-              width: '45%',
-              borderRadius: 5,
-              margin: 5,
             }}>
-            <View>
-              <View>
-                <Text
-                  style={{color: 'white', fontWeight: 'bold', fontSize: 18}}>
-                  Passengers
-                </Text>
-              </View>
-              <View style={{alignItems: 'center'}}>
-                <View>
-                  <Baby
-                    size={iconSize}
-                    strokeWidth={iconStrokeWidth}
-                    color={iconColor}
-                  />
+            <Card size="sm" variant="outline">
+              <View
+                style={{
+                  alignItems: 'center', // Align items vertically
+                  justifyContent: 'center',
+                  display: 'flex', // Flexbox layout
+                }}>
+                <View
+                  style={{
+                    marginHorizontal: 12,
+                    width: 100,
+                    height: 100,
+                    borderRadius: 50, // Half of the width or height
+                    backgroundColor: '#f5eede',
+                    flexDirection: 'row', // Horizontal arrangement
+                    alignItems: 'center', // Align items vertically
+                    justifyContent: 'center',
+                  }}>
+                  <GraduationCap size={25} strokeWidth={2} color={'#e89d0e'} />
                 </View>
                 <View>
                   <Text
                     style={{
-                      color: 'white',
-                      fontSize: textSize,
-                      fontWeight: '200',
+                      textAlign: 'center',
+                      marginBottom: 0,
+                      fontWeight: 'bold',
+                      color: '#4b4842',
                     }}>
                     {passengerCount}
                   </Text>
-                </View>
-              </View>
-            </View>
-          </Pressable>
-
-          <Pressable
-            onPress={() => {
-              navigation.navigate('Manage Vehicles');
-            }}
-            style={{
-              alignItems: 'center',
-              backgroundColor: '#3ebec9',
-              width: '45%',
-              borderRadius: 5,
-              margin: 5,
-            }}>
-            <View>
-              <View>
-                <Text
-                  style={{color: 'white', fontWeight: 'bold', fontSize: 18}}>
-                  Active Vehicles
-                </Text>
-              </View>
-              <View style={{alignItems: 'center'}}>
-                <KeySquare
-                  size={iconSize}
-                  strokeWidth={iconStrokeWidth}
-                  color={iconColor}
-                />
-                <View>
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontSize: textSize,
-                      fontWeight: '200',
-                    }}>
-                    {vehicleCount}
+                  <Text style={{fontSize: 10, textAlign: 'center'}}>
+                    Active Passengers
                   </Text>
                 </View>
               </View>
-            </View>
+            </Card>
           </Pressable>
-        </View>
 
-        <Pressable
-          onPress={() => {
-            navigation.navigate('Trip');
-          }}
-          style={{
-            alignItems: 'center',
-            height: '33%',
-            backgroundColor: '#f8e648',
-            marginTop: 5,
-            marginHorizontal: 15,
-            borderRadius: 5,
-          }}>
-          <View>
-            <View>
-              <Text style={{color: 'white', fontWeight: 'bold', fontSize: 25}}>
-                Today's trips
-              </Text>
-            </View>
-            <View style={{alignItems: 'center'}}>
-              <Bus
-                size={iconSize}
-                strokeWidth={iconStrokeWidth}
-                color={iconColor}
-              />
-              <View>
-                <Text
-                  style={{
-                    color: 'white',
-                    fontSize: textSize,
-                    fontWeight: '200',
-                  }}>
-                  {tripCount}
-                </Text>
-              </View>
-            </View>
+          <View style={{height: '29%'}}>
+            <TripsBlock tripList={tripData} />
           </View>
-        </Pressable>
+        </ScrollView>
       </SafeAreaView>
     );
   } else if (role == 2) {
     return (
-      <SafeAreaView style={{flex: 1, backgroundColor: '#ffffff75'}}>
-        <Pressable
-          onPress={() => {
-            navigation.navigate('Payments');
-          }}
-          style={{
-            alignItems: 'flex-start',
-            height: '33%',
-            backgroundColor: '#3ebec9',
-            marginHorizontal: 15,
-            marginTop: 10,
-            marginBottom: 5,
-            borderRadius: 5,
-          }}>
+      <SafeAreaView
+        style={{flex: 1, backgroundColor: '#e8f0f3', height: '100%'}}>
+        <ScrollView>
           <View>
-            <View>
-              <View style={{marginStart: 10, marginTop: 5}}>
-                <Text
-                  style={{
-                    fontSize: 50,
-                    color: 'white',
-                    marginEnd: 5,
-                    fontWeight: '400',
-                  }}>
-                  Welcome
-                </Text>
-              </View>
+            <View style={{marginStart: 15}}>
+              <Text
+                style={{
+                  fontSize: 40,
+                  fontWeight: 'bold',
+                  color: 'black',
+                }}>
+                Hello
+              </Text>
             </View>
-            <View style={{marginStart: 60}}>
-              <Text style={{fontSize: 60, color: 'white', fontWeight: '200'}}>
+
+            <View style={{marginStart: 50}}>
+              <Text
+                style={{
+                  fontSize: 40,
+                  fontWeight: 'bold',
+                  color: 'black',
+                  marginBottom: 50,
+                }}>
                 {userName}
               </Text>
             </View>
           </View>
-        </Pressable>
-
-        <Pressable
-          onPress={() => {
-            navigation.navigate('Manage Passengers');
-          }}
-          style={{
-            justifyContent: 'center',
-            height: '33%',
-            alignItems: 'center',
-            backgroundColor: '#d86b68',
-            marginHorizontal: 15,
-            borderRadius: 5,
-            margin: 5,
-          }}>
-          <View>
-            <View>
-              <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18}}>
-                Passengers
-              </Text>
-            </View>
-            <View style={{alignItems: 'center'}}>
-              <View>
-                <Baby
-                  size={iconSize}
-                  strokeWidth={iconStrokeWidth}
-                  color={iconColor}
-                />
-              </View>
-              <View>
-                <Text
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+            }}>
+            <Pressable
+              onPress={() => {
+                navigation.navigate('Edit Payment Details');
+              }}
+              style={{
+                marginEnd: 15,
+                width: '41.7%',
+                backgroundColor: '#ffffff',
+                borderRadius: 5,
+                elevation: 10,
+                justifyContent: 'center',
+              }}>
+              <Card size="sm" variant="outline">
+                <View
                   style={{
-                    color: 'white',
-                    fontSize: textSize,
-                    fontWeight: '200',
+                    alignItems: 'center', // Align items vertically
+                    justifyContent: 'center',
+                    display: 'flex', // Flexbox layout
                   }}>
-                  {passengerCount}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </Pressable>
+                  <View
+                    style={{
+                      marginHorizontal: 12,
+                      width: 100,
+                      height: 100,
+                      borderRadius: 50, // Half of the width or height
+                      backgroundColor: '#d6f3f1',
+                      flexDirection: 'row', // Horizontal arrangement
+                      alignItems: 'center', // Align items vertically
+                      justifyContent: 'center',
+                    }}>
+                    <WalletMinimal
+                      size={25}
+                      strokeWidth={2}
+                      color={'#3ba2a9'}
+                    />
+                  </View>
+                  <View>
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        marginBottom: 0,
+                        fontWeight: 'bold',
+                        color: '#4b4842',
+                      }}>
+                      R{amount}
+                    </Text>
+                    <Text style={{fontSize: 10, textAlign: 'center'}}>
+                      Amount Due
+                    </Text>
+                  </View>
+                </View>
+              </Card>
+            </Pressable>
 
-        <Pressable
-          onPress={() => {
-            navigation.navigate('Trip');
-          }}
-          style={{
-            alignItems: 'center',
-            height: '33%',
-            backgroundColor: '#ad5ce9',
-            marginTop: 5,
-            marginHorizontal: 15,
-            borderRadius: 5,
-          }}>
-          <View>
-            <View>
-              <Text style={{color: 'white', fontWeight: 'bold', fontSize: 25}}>
-                Today's trips
-              </Text>
-            </View>
-            <View style={{alignItems: 'center'}}>
-              <Bus
-                size={iconSize}
-                strokeWidth={iconStrokeWidth}
-                color={iconColor}
-              />
-              <View>
-                <Text
+            <Pressable
+              onPress={() => {
+                navigation.navigate('Manage Passengers');
+              }}
+              style={{
+                marginStart: 15,
+                width: '41.7%',
+                backgroundColor: '#ffffff',
+                borderRadius: 5,
+                elevation: 10,
+                justifyContent: 'center',
+              }}>
+              <Card size="sm" variant="outline">
+                <View
                   style={{
-                    color: 'white',
-                    fontSize: textSize,
-                    fontWeight: '200',
+                    alignItems: 'center', // Align items vertically
+                    justifyContent: 'center',
+                    display: 'flex', // Flexbox layout
                   }}>
-                  {tripCount}
-                </Text>
-              </View>
-            </View>
+                  <View
+                    style={{
+                      marginHorizontal: 12,
+                      width: 100,
+                      height: 100,
+                      borderRadius: 50, // Half of the width or height
+                      backgroundColor: '#f5eede',
+                      flexDirection: 'row', // Horizontal arrangement
+                      alignItems: 'center', // Align items vertically
+                      justifyContent: 'center',
+                    }}>
+                    <GraduationCap
+                      size={25}
+                      strokeWidth={2}
+                      color={'#e89d0e'}
+                    />
+                  </View>
+                  <View>
+                    <Text
+                      style={{
+                        textAlign: 'center',
+                        marginBottom: 0,
+                        fontWeight: 'bold',
+                        color: '#4b4842',
+                      }}>
+                      {passengerCount}
+                    </Text>
+                    <Text style={{fontSize: 10, textAlign: 'center'}}>
+                      All Passengers
+                    </Text>
+                  </View>
+                </View>
+              </Card>
+            </Pressable>
           </View>
-        </Pressable>
+          <View style={{maxHeight: '33.3%'}}>
+            {noActivePassenger ? (
+              <Card
+                size="sm"
+                variant="outline"
+                style={{
+                  marginHorizontal: 17,
+                  marginTop: 10,
+                  marginBottom: 10,
+                  backgroundColor: '#ffffff',
+                  borderRadius: 5,
+                  elevation: 10,
+                }}>
+                <Text style={{fontWeight: 'bold', textAlign: 'center'}}>
+                  Active Passengers
+                </Text>
+                <View
+                  style={{
+                    marginTop: 10,
+                    marginBottom: 10,
+                    alignItems: 'flex-start',
+                    marginHorizontal: 15,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      fontWeight: '600',
+                    }}>
+                    You have no active passengers
+                  </Text>
+                </View>
+              </Card>
+            ) : (
+              <Card
+                size="sm"
+                variant="outline"
+                style={{
+                  marginHorizontal: 17,
+                  margin: 12,
+                  backgroundColor: '#ffffff',
+                  borderRadius: 5,
+                  elevation: 10,
+                  marginBottom: 40,
+                }}>
+                <Text style={{fontWeight: 'bold', textAlign: 'center'}}>
+                  Active Passengers
+                </Text>
+
+                <ScrollView>
+                  <View
+                    style={{
+                      marginVertical: 10,
+                      marginBottom: 5,
+                      alignItems: 'flex-start',
+                      marginHorizontal: 15,
+                    }}>
+                    {activePassengers.map((item: any) => {
+                      return (
+                        <View
+                          style={{
+                            flex: 1,
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            marginVertical: 10,
+                            backgroundColor: '#ffffff',
+                          }}
+                          key={item.passengerId}>
+                          <View
+                            style={{
+                              flex: 1,
+                              flexDirection: 'row',
+                              justifyContent: 'space-between',
+                              alignItems: 'center',
+                              borderRadius: 20,
+                            }}>
+                            <View>
+                              <Text style={{fontSize: 16, fontWeight: '600'}}>
+                                {universityIcon} {item.editedName}
+                              </Text>
+                            </View>
+                            <View>
+                              <Text style={{fontSize: 16, fontWeight: '600'}}>
+                                <View
+                                  style={{
+                                    flex: 1,
+                                    display: 'flex',
+                                    // padding: -100,
+                                    borderRadius: 20, // Half of the width or
+                                    backgroundColor: '#d6f3f1',
+                                  }}>
+                                  <Text
+                                    style={{
+                                      padding: -100,
+                                      color: '#3ba2a9',
+                                      fontWeight: '500',
+                                    }}>
+                                    Active
+                                  </Text>
+                                </View>
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </ScrollView>
+              </Card>
+            )}
+          </View>
+          <View style={{maxHeight: '33.3%'}}>
+            <TripsBlock tripList={tripData} />
+          </View>
+        </ScrollView>
       </SafeAreaView>
     );
   } else if (role == 3) {
     return (
-      <SafeAreaView style={{flex: 1, backgroundColor: '#ffffff75'}}>
-        <Pressable
-          onPress={() => {
-            // navigation.navigate('Profile');
-          }}
-          style={{
-            alignItems: 'flex-start',
-            height: '33%',
-            backgroundColor: '#e47501',
-            marginHorizontal: 15,
-            marginTop: 10,
-            marginBottom: 5,
-            borderRadius: 5,
-          }}>
+      <SafeAreaView
+        style={{flex: 1, backgroundColor: '#e8f0f3', height: '100%'}}>
+        <ScrollView>
           <View>
-            <View>
-              <View style={{marginStart: 10, marginTop: 5}}>
-                <Text
-                  style={{
-                    fontSize: 50,
-                    color: 'white',
-                    marginEnd: 5,
-                    fontWeight: '400',
-                  }}>
-                  Welcome
-                </Text>
-              </View>
+            <View style={{marginStart: 15}}>
+              <Text
+                style={{
+                  fontSize: 40,
+                  fontWeight: 'bold',
+                  color: 'black',
+                }}>
+                Hello
+              </Text>
             </View>
-            <View style={{marginStart: 60}}>
-              <Text style={{fontSize: 60, color: 'white', fontWeight: '200'}}>
+
+            <View style={{marginStart: 50}}>
+              <Text
+                style={{
+                  fontSize: 40,
+                  fontWeight: 'bold',
+                  color: 'black',
+                  marginBottom: 50,
+                }}>
                 {userName}
               </Text>
             </View>
           </View>
-        </Pressable>
 
-        <Pressable
-          onPress={() => {
-            // navigation.navigate('Trips');
-          }}
-          style={{
-            alignItems: 'center',
-            height: '33%',
-            backgroundColor: '#59d863',
-            marginHorizontal: 15,
-            marginTop: 10,
-            marginBottom: 100,
-            borderRadius: 5,
-          }}>
-          <View>
-            <View>
-              <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18}}>
-                Pickups left
-              </Text>
-            </View>
-            <View style={{alignItems: 'center'}}>
-              <View>
-                <Baby
-                  size={iconSize}
-                  strokeWidth={iconStrokeWidth}
-                  color={iconColor}
+          <Card
+            size="sm"
+            variant="outline"
+            style={{
+              marginHorizontal: 12,
+              marginBottom: 10,
+              backgroundColor: '#ffffff',
+              borderRadius: 5,
+              elevation: 10,
+            }}>
+            <Text
+              style={{
+                // fontSize: 15,
+                marginStart: 15,
+                fontWeight: '500',
+                textAlign: 'left',
+                marginTop: 5,
+                marginBottom: 15,
+              }}>
+              Your Vehicle
+            </Text>
+            <View style={{flexDirection: 'row', flex: 1, marginBottom: 10}}>
+              <View style={{width: '33%'}}>
+                <Image
+                  style={{
+                    width: 100,
+                    aspectRatio: 1 / 1,
+                    marginHorizontal: 12,
+                    height: 100,
+                    borderRadius: 50, // Half of the width or height
+                    display: 'flex', // Flexbox layout
+                    flexDirection: 'row', // Horizontal arrangement
+                    alignItems: 'center', // Align items vertically
+                    justifyContent: 'center',
+                  }}
+                  source={{
+                    uri:
+                      storageUrl + vehicle.FrontImageUrl ||
+                      'https://eu.amcdn.co.za/cars/toyota-quantum-2-5d-4d-ses-fikile-2012-id-64381431-type-main.jpg',
+                  }}
+                  alt="Vehicle front picture."
                 />
               </View>
-              <View>
-                <Text
-                  style={{
-                    color: 'white',
-                    fontSize: textSize,
-                    fontWeight: '200',
-                  }}>
-                  {passengerCount}
-                </Text>
-              </View>
-            </View>
-          </View>
-        </Pressable>
 
-        {isStarted == false ? (
-          <Pressable
-            onPress={() => {
-              onStartButtonPress();
-            }}>
-            <View style={styles.avatarContainer}>
-              <View
-                style={{
-                  paddingStart: 15,
-                  backgroundColor: 'black',
-                  width: 150,
-                  height: 150,
-                  borderRadius: 75,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Text
+              <View style={{width: '67%'}}>
+                <View
                   style={{
-                    color: 'red',
-                    fontSize: 40,
-                    fontWeight: '600',
+                    marginTop: 15,
+                    marginBottom: 30,
+                    flexDirection: 'row',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'flex-start',
                   }}>
-                  Start Trip
-                </Text>
+                  <Text style={styles.cardText}>{vehicle.Make}</Text>
+                  <Text style={styles.cardText}>{vehicle.Model}</Text>
+                </View>
+                <View
+                  style={{
+                    marginStart: 12,
+                    flexDirection: 'row',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'flex-start',
+                  }}>
+                  <Text style={styles.cardText}>{vehicle.Colour}</Text>
+                  <Text style={styles.cardText}>{vehicle.LicenseNumber}</Text>
+                </View>
               </View>
             </View>
-          </Pressable>
-        ) : null}
+          </Card>
+
+          <TripsBlockDiver tripList={tripData} />
+        </ScrollView>
       </SafeAreaView>
     );
   }
@@ -543,6 +934,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#20B2AA',
   },
+  cardText: {fontWeight: '500', fontSize: 16},
   headerContent: {
     padding: 30,
     alignItems: 'center',
@@ -599,6 +991,22 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: '#000000',
+  },
+  quicksandLight: {
+    fontFamily: 'Quicksand-Light',
+    fontSize: 20,
+  },
+  quicksandRegular: {
+    fontFamily: 'Quicksand-Regular',
+    fontSize: 20,
+  },
+  ralewayItalic: {
+    fontFamily: 'Raleway-Italic',
+    fontSize: 20,
+  },
+  ralewayThin: {
+    fontFamily: 'Raleway-ThinItalic',
+    fontSize: 20,
   },
 });
 

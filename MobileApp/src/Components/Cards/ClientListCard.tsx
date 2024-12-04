@@ -1,25 +1,9 @@
 import {
   Box,
-  FlatList,
-  Button,
   Text,
-  Fab,
-  FabIcon,
-  AddIcon,
-  FabLabel,
-  AlertDialog,
-  AlertDialogBackdrop,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  ButtonText,
-  CheckCircleIcon,
   HStack,
   Heading,
-  Icon,
   View,
-  Image,
   Divider,
   Pressable,
   Avatar,
@@ -27,9 +11,8 @@ import {
   AvatarImage,
   VStack,
 } from '@gluestack-ui/themed';
-import {CustomButton1, CustomButton3} from '../Buttons';
+import {CustomButton3} from '../Buttons';
 import {GestureResponderEvent} from 'react-native';
-import {Vehicle} from '../../Models/VehicleModel';
 
 export const PendingClientListCard = (props: {
   firstName: string;

@@ -2,6 +2,7 @@ import {
   ActivityIndicator,
   FlatList,
   GestureResponderEvent,
+  Pressable,
   RefreshControl,
   StyleSheet,
   Text,
@@ -46,6 +47,7 @@ import {
   ArrowLeftIcon,
   TrashIcon,
   EditIcon,
+  Card,
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
@@ -65,6 +67,7 @@ import PassengerListAllCard from '../../Components/Cards/PassngerListForTranspor
 import PassengerListPendingCard from '../../Components/Cards/PassengerListPendingCard';
 import {Auth} from '../../Classes/Auth';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {WalletMinimal} from 'lucide-react-native';
 
 const ManagePassengerScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -115,7 +118,8 @@ const ManagePassengerScreen = ({navigation}: any) => {
 
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
-  const role: number = Number(auth.GetUserRole());
+  // const role: number = Number(auth.GetUserRole());
+  const role: number = 1;
 
   const defaultReasons = [
     {
@@ -1099,6 +1103,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
           <View>{showPassengerSummaryModal()}</View>
           {noPassenger ? EmtpyFlatListText() : null}
           <FlatList
+            style={{backgroundColor: '#e8f0f3'}}
             data={allPassengers}
             extraData={statusCode}
             renderItem={({item}) => renderItemComponentAllPassengers(item)}
@@ -1119,6 +1124,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
           <View>{showPassengerSummaryModal()}</View>
           {noPendingPassenger ? EmtpyPassengerFlatListText() : null}
           <FlatList
+            style={{backgroundColor: '#e8f0f3'}}
             data={allPendingPassengers}
             extraData={statusCode}
             renderItem={({item}) => renderItemComponentPendingPassengers(item)}
@@ -1152,33 +1158,71 @@ const ManagePassengerScreen = ({navigation}: any) => {
       ) : null}
       {GoBackFab()}
       {role == 1 ? (
-        <Tab.Navigator>
+        <Tab.Navigator
+          screenOptions={{
+            tabBarStyle: {backgroundColor: '#e8f0f3', elevation: 10},
+          }}>
           <Tab.Screen name="All Passengers" component={FirstRoute} />
           <Tab.Screen name="Pending Removals" component={SecondRoute} />
         </Tab.Navigator>
       ) : (
-        <SafeAreaView style={{flex: 1}}>
+        <SafeAreaView style={{flex: 1, backgroundColor: '#e8f0f3'}}>
           <View style={{flex: 1}}>
-            <View>
-              <Text style={ManagePassengerScreenStyles.headingText}>
-                Add and view your passengers below.
-              </Text>
-              {showPassengerCardModal()}
-            </View>
-            <View>
-              <Button
-                size="md"
-                variant="solid"
-                action="secondary"
-                isDisabled={false}
-                isFocusVisible={false}
-                onPress={() => {
-                  setShowPModal(true);
+            <Card
+              size="sm"
+              variant="outline"
+              style={{
+                marginHorizontal: 12,
+                backgroundColor: '#ffffff',
+                borderRadius: 5,
+                elevation: 10,
+                justifyContent: 'center',
+              }}>
+              <View>
+                <Text
+                  style={{
+                    fontWeight: 'bold',
+                    fontSize: 15,
+                    color: '#e89d0e',
+                  }}>
+                  Create Passenger
+                </Text>
+                <Text
+                  style={{
+                    marginTop: 20,
+                    fontSize: 18,
+                    marginBottom: 30,
+                    color: '#4b4842',
+                  }}>
+                  Press "Create Passenger" button to add new passenger.
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  alignItems: 'center', // Align items vertically
+                  justifyContent: 'center',
+                  display: 'flex', // Flexbox layout
                 }}>
-                <ButtonIcon as={AddIcon} />
-                <ButtonText>Create Passenger</ButtonText>
-              </Button>
-            </View>
+                <View>
+                  {showPassengerCardModal()}
+                  <Button
+                    style={{width: '50%'}}
+                    size="md"
+                    variant="solid"
+                    action="primary"
+                    isDisabled={false}
+                    isFocusVisible={false}
+                    onPress={() => {
+                      setShowPModal(true);
+                    }}>
+                    <ButtonIcon as={AddIcon} />
+                    <ButtonText>Create Passenger</ButtonText>
+                  </Button>
+                </View>
+              </View>
+            </Card>
+
             <View>{showPopUpModal()}</View>
             <View>{showReasonModal()}</View>
             <View>{showUpdatePopUpModal()}</View>

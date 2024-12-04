@@ -15,7 +15,6 @@ import {
   ArrowLeftIcon,
   ButtonIcon,
   ButtonText,
-  ArrowUpIcon,
   Button,
 } from '@gluestack-ui/themed';
 import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
@@ -50,28 +49,33 @@ export default function EditUserDetailsScreen({navigation}: any) {
   }, [userDetail]);
 
   const GetUser = async () => {
-    await GetUserDetail(userId).then((result: any) => {
-      if (result[1] == 200) {
-        setUserDetail(
-          new UserDetail(
-            result.userDetailId.trim(),
-            result.firstName.trim(),
-            result.lastName.trim(),
-            result.phoneNumber.trim(),
-            result.addressLine1.trim(),
-            result.addressLine2.trim(),
-            result.suburb.trim(),
-            result.province.trim(),
-            result.city.trim(),
-            result.postalCode.trim(),
-            userId,
-          ),
-        );
+    await GetUserDetail(userId)
+      .then((result: any) => {
+        if (result[1] == 200) {
+          setUserDetail(
+            new UserDetail(
+              result[0].userDetailId,
+              result[0].firstName,
+              result[0].lastName,
+              result[0].phoneNumber,
+              result[0].addressLine1,
+              result[0].addressLine2,
+              result[0].suburb,
+              result[0].province,
+              result[0].city,
+              result[0].postalCode,
+              userId,
+            ),
+          );
+          setIsLoading(false);
+        } else {
+          setIsLoading(false);
+        }
+      })
+      .catch((error: any) => {
+        console.error(error);
         setIsLoading(false);
-      } else {
-        setIsLoading(false);
-      }
-    });
+      });
   };
 
   const userDetailHelper = async (values: any) => {
@@ -208,7 +212,7 @@ export default function EditUserDetailsScreen({navigation}: any) {
     },
   });
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#e8f0f3'}}>
       {IsLoading ? (
         <View
           style={{

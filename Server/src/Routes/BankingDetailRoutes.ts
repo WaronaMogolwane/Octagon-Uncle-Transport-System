@@ -1,6 +1,7 @@
 import Router from "express-promise-router";
 import {
   AddBankingDetail,
+  GetBankingDetail,
   ModifyBankingDetail,
 } from "../Controllers/BankingDetailController";
 
@@ -15,6 +16,12 @@ router.post(
 router.patch(
   "/update-banking-detail",
   ModifyBankingDetail,
+  async (req, res, next) => {}
+);
+
+router.get(
+  "/get-banking-detail",
+  GetBankingDetail,
   async (req, res, next) => {}
 );
 

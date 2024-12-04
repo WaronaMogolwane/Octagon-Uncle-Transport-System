@@ -10,6 +10,7 @@ import {
   GetPendingPassengersByBusiness,
   DeletePassenger,
   DeletePassengerRequest,
+  GetActivePassengersByParent,
 } from "../Controllers/PassengerController";
 
 const router = Router();
@@ -39,6 +40,12 @@ router.get(
 router.get(
   "/get-business-passengers",
   GetPassengersByBusiness,
+  async (req, res, next) => {}
+);
+
+router.get(
+  "/get-active-parent-passengers",
+  GetActivePassengersByParent,
   async (req, res, next) => {}
 );
 

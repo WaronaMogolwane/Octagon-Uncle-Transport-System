@@ -34,7 +34,7 @@ function AddNewUser(user) {
         VALUES (
             UUID(),  '${user.FirstName}',  '${user.LastName}', '${user.Email}', '${user.Phone}', '${user.Password}' , CURRENT_TIMESTAMP()
         )`,
-      function (error, results, fields) {
+      function (error, results) {
         // error will be an Error if one occurred during the query
         // results will contain the results of the query
         // fields will contain information about the returned results fields (if any)
@@ -49,7 +49,7 @@ function AddNewUser(user) {
   });
   return AddNewUserPromise;
 }
-export const SaveUserOtp = async (otp: string, req, res, next) => {
+export const SaveUserOtp = async (otp: string, req, res) => {
   WinstonLogger.info(otp);
   let UserRegistration;
   try {
@@ -69,7 +69,7 @@ export const SaveUserOtp = async (otp: string, req, res, next) => {
         User_ID, Email, OTP, DateCreated, OTPExpireDate)
         VALUES (${userId}, '${req.body.userDetails.Email}', '${otp}', CURRENT_TIMESTAMP(), ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0"))
         ON DUPLICATE KEY UPDATE OTP = '${req.body.otp}', DateCreated = CURRENT_TIMESTAMP(), OTPExpireDate = ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0")`,
-    function (error, results, fields) {
+    function (error) {
       if (error) {
         WinstonLogger.info(error);
       } else {
@@ -84,7 +84,7 @@ export const SaveUserOtp = async (otp: string, req, res, next) => {
     }
   );
 }
-export const GetUserByEmail = async (email) => {
+export const GetUserByEmail = async (email: any) => {
   var sqlQuery = `SELECT * FROM User WHERE Email= "${email}" `;
   const connection = await mysql2.createConnection(dbConnectObj);
   const [rows] = await connection.execute(sqlQuery);
@@ -108,7 +108,7 @@ Password VARCHAR(40) NOT NULL,
 AvatarURL VARCHAR(500),
 DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`,
-    function (error, results) {
+    function (error) {
       if (error) {
         WinstonLogger.info(error.message);
         return;
@@ -125,7 +125,7 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         DateCreated TIMESTAMP,
         OTPExpireDate TIMESTAMP
         )`,
-    function (error, results) {
+    function (error) {
       if (error) {
         WinstonLogger.info(error.message);
         return;
@@ -134,17 +134,6 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       }
     }
   );
-}
-function dbConnect() {
-  pool.connect((error) => {
-    if (error) {
-      WinstonLogger.info(error);
-      return;
-    }
-  });
-}
-function dbDisconnect() {
-  pool.end();
 }
 
 module.exports = {

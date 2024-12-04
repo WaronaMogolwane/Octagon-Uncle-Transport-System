@@ -71,7 +71,6 @@ export const GetBusinessDetailFromDB = async (businessId: string) => {
 
 export const GetBusinessDetailForParentFromDB = async (businessId: string) => {
   let res: any;
-
   await axios
     .get(
       `${SERVER_HOST}:${SERVER_PORT}/business-detail/get-business-detail-for-parent`,

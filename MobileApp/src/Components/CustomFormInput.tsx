@@ -49,6 +49,7 @@ export const CustomFormControlInput = (props: InputProps) => {
         </FormControlLabel>
         <Input>
           <InputField
+            style={{backgroundColor: '#fff'}}
             type={showInputText ? 'text' : 'password'}
             defaultValue={props.defaultValue}
             placeholder={props.placeHolder}
@@ -105,6 +106,7 @@ export const CustomFormControlInputNumber = (props: InputProps) => {
         </FormControlLabel>
         <Input>
           <InputField
+            style={{backgroundColor: '#fff'}}
             keyboardType={'numeric'}
             type={showInputText ? 'text' : 'password'}
             defaultValue={props.defaultValue}
@@ -162,6 +164,7 @@ export const CustomFormControlInputEmail = (props: InputProps) => {
         </FormControlLabel>
         <Input>
           <InputField
+            style={{backgroundColor: '#fff'}}
             keyboardType={'email-address'}
             type={showInputText ? 'text' : 'password'}
             defaultValue={props.defaultValue}
@@ -219,6 +222,7 @@ export const CustomFormControlInputPhone = (props: InputProps) => {
         </FormControlLabel>
         <Input>
           <InputField
+            style={{backgroundColor: '#fff'}}
             keyboardType={'phone-pad'}
             type={showInputText ? 'text' : 'password'}
             defaultValue={props.defaultValue}

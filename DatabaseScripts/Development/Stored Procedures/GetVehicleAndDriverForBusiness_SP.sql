@@ -9,6 +9,7 @@ SELECT
     v.EngineNumber,
     v.Colour,
     v.LicenseNumber,
+    v.FrontImageUrl,
     dvl.DriverId,
     ud.FirstName, 
     ud.LastName

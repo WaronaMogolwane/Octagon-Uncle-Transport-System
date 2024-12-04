@@ -44,6 +44,9 @@ import {
   ArrowLeftIcon,
   FabLabel,
   Fab,
+  Card,
+  AddIcon,
+  ButtonIcon,
 } from '@gluestack-ui/themed';
 import {
   AddPassengerSchedule,
@@ -136,6 +139,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       }
     });
     GetPassengerDriverVehicleLinking(businessId).then(passengers => {
+      console.log(passengers);
       setpassengerList(passengers);
       setStatusCode(!statusCode);
     });
@@ -192,31 +196,14 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       </Fab>
     );
   };
+
   const renderItemComponentPassengers = (itemData: any) => (
     <PassengerCard
       passengerName={itemData.fullName}
       age={itemData.age}
-      pickUpLocation={itemData.suburb}
+      pickUpLocation={itemData.pickUpLocation}
       dropOffLocation={itemData.dropOffLocation}
       onPress={() => {
-        // GetPassengerSchedule(itemData.passengerId).then((result: any) => {
-        //   result.monday == 1 ? setMonday(true) : setMonday(true);
-        //   result.tuesday == 1 ? setTuesday(true) : setTuesday(false);
-        //   result.wednesday == 1 ? setWednesday(true) : setWednesday(false);
-        //   result.thursday == 1 ? setThursday(true) : setThursday(false);
-        //   result.friday == 1 ? setFriday(true) : setFriday(false);
-        //   result.saturday == 1 ? setSaturday(true) : setSaturday(false);
-        //   result.sunday == 1 ? setSunday(true) : setSunday(false);
-
-        //   setShowModal(true);
-        //   setPassngerId(itemData.passengerId);
-        //   setPDVLId(itemData.pDVLId);
-        //   sethomeAddress(itemData.pickUpLocation);
-        //   setpassengerName(itemData.fullName);
-        //   setdestinationAdress(itemData.dropOffLocation);
-        //   setAge(itemData.age);
-        // });
-
         setShowModal(true);
         setPassngerId(itemData.passengerId);
         setPDVLId(itemData.pDVLId);
@@ -596,7 +583,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{flex: 1, backgroundColor: '#e8f0f3'}}>
       {IsLoading ? (
         <View
           style={{
@@ -614,43 +601,62 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
           <Text>Working</Text>
         </View>
       ) : null}
-      <View>
-        <View style={AssignPassengerScreenStyles.container}>
-          {renderLabel()}
-          <Dropdown
-            style={[
-              AssignPassengerScreenStyles.dropdown,
-              isFocus && {borderColor: 'blue'},
-            ]}
-            placeholderStyle={AssignPassengerScreenStyles.placeholderStyle}
-            selectedTextStyle={AssignPassengerScreenStyles.selectedTextStyle}
-            inputSearchStyle={AssignPassengerScreenStyles.inputSearchStyle}
-            iconStyle={AssignPassengerScreenStyles.iconStyle}
-            data={passengers}
-            search={true}
-            disable={isDisabled}
-            maxHeight={300}
-            labelField="passengerName"
-            valueField="passengerId"
-            placeholder={!isFocus ? 'Select passenger' : '...'}
-            searchPlaceholder="Search..."
-            value={newPassengerId}
-            onFocus={() => setIsFocus(true)}
-            onBlur={() => setIsFocus(false)}
-            onChange={(item: any) => {
-              setNewPassengerId(item.passengerId);
-              setpassengerName(item.editedName);
-              setIsFocus(false);
-            }}
-          />
+      <Card
+        size="sm"
+        variant="outline"
+        style={{
+          paddingTop: 0,
+          height: '32%',
+          marginHorizontal: 12,
+          backgroundColor: '#ffffff',
+          borderRadius: 5,
+          elevation: 10,
+          justifyContent: 'center',
+        }}>
+        <View>
+          <Text
+            style={{
+              fontWeight: 'bold',
+              fontSize: 15,
+              color: '#e89d0e',
+              marginBottom: 20,
+            }}>
+            Assign Passengers
+          </Text>
         </View>
-      </View>
-      <View>{CalenderModal()}</View>
-      <View>
+        {renderLabel()}
+        <Dropdown
+          style={[
+            AssignPassengerScreenStyles.dropdown,
+            isFocus && {borderColor: 'blue'},
+          ]}
+          placeholderStyle={AssignPassengerScreenStyles.placeholderStyle}
+          selectedTextStyle={AssignPassengerScreenStyles.selectedTextStyle}
+          inputSearchStyle={AssignPassengerScreenStyles.inputSearchStyle}
+          iconStyle={AssignPassengerScreenStyles.iconStyle}
+          data={passengers}
+          search={true}
+          disable={isDisabled}
+          maxHeight={300}
+          labelField="passengerName"
+          valueField="passengerId"
+          placeholder={!isFocus ? 'Select passenger' : '...'}
+          searchPlaceholder="Search..."
+          value={newPassengerId}
+          onFocus={() => setIsFocus(true)}
+          onBlur={() => setIsFocus(false)}
+          onChange={(item: any) => {
+            setNewPassengerId(item.passengerId);
+            setpassengerName(item.editedName);
+            setIsFocus(false);
+          }}
+        />
         <View
           style={{
+            marginTop: 25,
             justifyContent: 'center',
             alignItems: 'center',
+            marginBottom: 25,
           }}>
           <View
             style={{
@@ -696,15 +702,16 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             </View>
           </View>
         </View>
-      </View>
+      </Card>
+      <FlatList
+        style={{backgroundColor: '#e8f0f3'}}
+        data={passengerList}
+        extraData={statusCode}
+        renderItem={({item}) => renderItemComponentPassengers(item)}
+      />
+      <View>{CalenderModal()}</View>
       <View>{showPopUp()}</View>
-      <View>
-        <FlatList
-          data={passengerList}
-          extraData={statusCode}
-          renderItem={({item}) => renderItemComponentPassengers(item)}
-        />
-      </View>
+
       {GoBackFab()}
     </View>
   );

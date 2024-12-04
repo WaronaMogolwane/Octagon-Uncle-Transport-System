@@ -1,46 +1,14 @@
 import {
-  Box,
-  FlatList,
-  Button,
   Text,
-  Fab,
-  FabIcon,
-  AddIcon,
-  FabLabel,
-  AlertDialog,
-  AlertDialogBackdrop,
-  AlertDialogBody,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  ButtonText,
-  CheckCircleIcon,
-  HStack,
   Heading,
-  View,
   Image,
-  Divider,
   Pressable,
-  Avatar,
-  AvatarFallbackText,
-  AvatarImage,
   VStack,
   Badge,
-  BadgeIcon,
   BadgeText,
-  GlobeIcon,
+  HStack,
 } from '@gluestack-ui/themed';
-import {CustomButton1, CustomButton3} from '../Buttons';
 import {GestureResponderEvent} from 'react-native';
-import {Vehicle} from '../../Models/VehicleModel';
-import {
-  Car,
-  CarTaxiFrontIcon,
-  CircleDot,
-  FilePen,
-  Icon,
-} from 'lucide-react-native';
-import {burger} from '@lucide/lab';
 
 export const VehicleListCard = (props: {
   LicenseNumber: string;

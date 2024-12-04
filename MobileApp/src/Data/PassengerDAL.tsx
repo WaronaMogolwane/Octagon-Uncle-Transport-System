@@ -79,6 +79,46 @@ export const GetActivePassengerForBusinessFromDB = async (
   return result;
 };
 
+export const GetActivePassengerForParentFromDB = async (parentId: string) => {
+  let result: any;
+  const tripData: {}[] = [];
+  let passsengers = {};
+
+  await axios
+    .get(
+      `${SERVER_HOST}:${SERVER_PORT}/passenger/get-active-parent-passengers`,
+      {
+        params: {
+          ParentId: parentId,
+        },
+      },
+    )
+    .then((response: any) => {
+      let res = [...response.data.result];
+
+      res.forEach(data => {
+        passsengers = {
+          passengerId: data.PassengerId,
+          passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
+          editedName: `${data.FirstName} ${data.LastName}`,
+          age: data.Age,
+          homeAddress: data.HomeAddress,
+          destinationAddress: data.DestinationAddress,
+          parentId: data.ParentId,
+        };
+
+        tripData.push(passsengers);
+      });
+
+      result = tripData;
+    })
+    .catch((error: any) => {
+      result = error;
+    });
+
+  return result;
+};
+
 export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
   let result: any;
   const tripData: {}[] = [];

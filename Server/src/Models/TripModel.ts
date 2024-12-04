@@ -288,3 +288,63 @@ export const UpdateTripSetDropOffTime = async (
     }
   );
 };
+
+export const UndoDropOffTime = async (
+  tripId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL UndoTripDropOffTime(?);",
+      timeout: 40000,
+      values: [tripId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const UndoPickUpTime = async (
+  tripId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL UndoTripPickUpTime(?);",
+      timeout: 40000,
+      values: [tripId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const UndoTripEnd = async (
+  tripId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL UndoTripEnd(?);",
+      timeout: 40000,
+      values: [tripId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};

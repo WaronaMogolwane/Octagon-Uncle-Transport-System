@@ -1,5 +1,5 @@
 import {SERVER_HOST, SERVER_PORT} from '@env';
-import axios from 'axios';
+import axios, {AxiosError, AxiosResponse} from 'axios';
 
 export const GetUserFromDB = async (userId: string) => {
   let res: any;
@@ -9,7 +9,7 @@ export const GetUserFromDB = async (userId: string) => {
         UserId: userId,
       },
     })
-    .then((response: any) => {
+    .then((response: AxiosResponse) => {
       let result = response.data.result[0];
 
       let user = {
@@ -21,8 +21,8 @@ export const GetUserFromDB = async (userId: string) => {
 
       res = user;
     })
-    .catch(error => {
-      console.log(error);
+    .catch((error: AxiosError) => {
+      console.error(error);
       res = error;
     });
   return res;
@@ -50,7 +50,7 @@ export const UpdateUserEmailInDB = async (
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      console.error(error);
       errorMessage = error;
     });
 

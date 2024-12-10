@@ -29,6 +29,8 @@ export const VehicleCard = (props: tripCardProps) => {
   const iconSize = 15;
   const iconStrokeWidth = 1.5;
   const iconColor = '#000000';
+  const storageUrl: string =
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
 
   const carIcon = (
     <Car size={30} strokeWidth={iconStrokeWidth} color={'#c26b71'} />
@@ -70,9 +72,7 @@ export const VehicleCard = (props: tripCardProps) => {
                 flexDirection: 'row', // Horizontal arrangement
               }}
               source={{
-                uri:
-                  props.urlFront ||
-                  'https://eu.amcdn.co.za/cars/toyota-quantum-2-5d-4d-ses-fikile-2012-id-64381431-type-main.jpg',
+                uri: props.urlFront,
               }}
               alt="Vehicle front picture."
             />

@@ -36,7 +36,7 @@ const TripTransporter = ({navigation}: any) => {
   const toast = useToast();
 
   const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const [vehicleList, setVehicleList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -109,9 +109,12 @@ const TripTransporter = ({navigation}: any) => {
       onPress={() => {
         navigation.navigate('Transport Trip', {
           vehicleId: itemData.vehicleId,
+          make: itemData.make,
+          model: itemData.model,
+          color: itemData.color,
         });
       }}
-      urlFront={storageUrl + itemData.FrontImageUrl}
+      urlFront={itemData.FrontImageUrl}
     />
   );
 

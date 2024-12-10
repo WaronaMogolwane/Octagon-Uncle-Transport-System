@@ -17,7 +17,7 @@ router.get(
   async (req, res, next) => {}
 );
 
-router.get("/get-user-profile", GetUserDetail, async (req, res, next) => {});
+router.get("/get-user-details", GetUserDetail, async (req, res, next) => {});
 
 router.patch(
   "/update-user-details",

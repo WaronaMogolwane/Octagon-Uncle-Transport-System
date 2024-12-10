@@ -13,6 +13,8 @@ const TripTransporter = ({navigation}: any) => {
 
   const [vehicleList, setVehicleList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
+  const storageUrl: string =
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -56,9 +58,13 @@ const TripTransporter = ({navigation}: any) => {
       model={itemData.model}
       color={itemData.color}
       fullName={itemData.fullName}
+      urlFront={itemData.FrontImageUrl}
       onPress={() => {
         navigation.navigate('Assign Passenger', {
           vehicleId: itemData.vehicleId,
+          make: itemData.make,
+          model: itemData.model,
+          color: itemData.color,
         });
       }}
     />

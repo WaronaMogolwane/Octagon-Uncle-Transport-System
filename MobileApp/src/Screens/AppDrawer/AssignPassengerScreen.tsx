@@ -1,4 +1,10 @@
-import {ActivityIndicator, FlatList, Text, View} from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  View,
+} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {
@@ -96,11 +102,20 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const [sunday, setSunday] = useState(false);
   const [IsLoading, setIsLoading] = useState(false);
 
+  const [refreshing, setRefreshing] = React.useState(false);
+
   const ref = React.useRef(null);
   const toast = useToast();
 
   const vehicleId = route.params.vehicleId;
+  const make = route.params.make;
+  const model = route.params.model;
+
   const businessId = auth.GetBusinessId();
+  const onRefresh = React.useCallback(() => {
+    setIsLoading(true);
+    GetPassengers();
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -139,7 +154,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       }
     });
     GetPassengerDriverVehicleLinking(businessId).then(passengers => {
-      console.log(passengers);
+      // console.log(passengers);
       setpassengerList(passengers);
       setStatusCode(!statusCode);
     });
@@ -605,6 +620,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         size="sm"
         variant="outline"
         style={{
+          marginBottom: 10,
           paddingTop: 0,
           height: '32%',
           marginHorizontal: 12,
@@ -613,18 +629,32 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
           elevation: 10,
           justifyContent: 'center',
         }}>
-        <View>
-          <Text
-            style={{
-              fontWeight: 'bold',
-              fontSize: 15,
-              color: '#e89d0e',
-              marginBottom: 20,
-            }}>
-            Assign Passengers
-          </Text>
+        <View style={{flexDirection: 'row'}}>
+          <View style={{width: '50%'}}>
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 15,
+                color: '#e89d0e',
+                marginBottom: 20,
+              }}>
+              Assign Passengers
+            </Text>
+          </View>
+
+          <View style={{width: '50%'}}>
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 15,
+                // color: '#e89d0e',
+                marginBottom: 20,
+                textAlign: 'right',
+              }}>
+              {make + ' ' + model}
+            </Text>
+          </View>
         </View>
-        {renderLabel()}
         <Dropdown
           style={[
             AssignPassengerScreenStyles.dropdown,
@@ -708,6 +738,9 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         data={passengerList}
         extraData={statusCode}
         renderItem={({item}) => renderItemComponentPassengers(item)}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
       <View>{CalenderModal()}</View>
       <View>{showPopUp()}</View>

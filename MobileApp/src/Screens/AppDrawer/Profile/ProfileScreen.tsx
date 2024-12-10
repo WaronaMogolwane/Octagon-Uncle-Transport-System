@@ -228,7 +228,7 @@ const ProfileScreen = ({navigation}: any) => {
               <Image
                 style={styles.coverPhoto}
                 alt="profile photo"
-                source={require('../../Images/background_image.jpg')}
+                source={require('../../../Images/background_image.jpg')}
               />
             </View>
             <View style={styles.avatarContainer}>
@@ -236,7 +236,7 @@ const ProfileScreen = ({navigation}: any) => {
                 alt="profile photo"
                 source={
                   profileImage == ''
-                    ? require('../../Images/default_avatar_image.jpg')
+                    ? require('../../../Images/default_avatar_image.jpg')
                     : {
                         uri:
                           storageUrl +

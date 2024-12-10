@@ -407,7 +407,7 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
                 alt="profile photo"
                 source={
                   profileImage == ''
-                    ? require('./../../Images/default_avatar_image.jpg')
+                    ? require('./../../../Images/default_avatar_image.jpg')
                     : {uri: storageUrl + profileImage}
                 }
                 style={styles.avatar}

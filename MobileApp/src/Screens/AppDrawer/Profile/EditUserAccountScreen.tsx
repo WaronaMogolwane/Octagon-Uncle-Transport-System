@@ -73,7 +73,6 @@ import {
 } from '../../../Controllers/UserDetailController';
 
 const EditUserAccountScreen = ({navigation}: any) => {
-  1111;
   const {session, emailOtp, verifyOtp}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
 
@@ -688,7 +687,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
           style={styles.avatar}
           source={
             profileImage == ''
-              ? require('../../Images/default_avatar_image.jpg')
+              ? require('../../../Images/default_avatar_image.jpg')
               : {
                   uri:
                     storageUrl +

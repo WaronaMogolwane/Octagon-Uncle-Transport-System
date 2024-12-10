@@ -10,17 +10,17 @@ import {Dropdown} from 'react-native-element-dropdown';
 import {
   AssignPassengerScreenStyles,
   ThemeStyles,
-} from '../../Stylesheets/GlobalStyles';
+} from '../../../Stylesheets/GlobalStyles';
 import {
   GetAllActivePassengerForBusiness,
   UpdateIsAssigned,
-} from '../../Controllers/PassengerController';
+} from '../../../Controllers/PassengerController';
 import {
   AddPassengerDriverVehicleLinking,
   GetPassengerDriverVehicleLinking,
   RemovePassengerDriverLinking,
-} from '../../Controllers/PassengerDriverVehicleLinkingController';
-import {PassengerDriverVehicleLinking} from '../../Models/PassengerDriverVehicleLinkingModel';
+} from '../../../Controllers/PassengerDriverVehicleLinkingController';
+import {PassengerDriverVehicleLinking} from '../../../Models/PassengerDriverVehicleLinkingModel';
 import {
   Modal,
   Button,
@@ -59,14 +59,14 @@ import {
   AddTempPassengerSchedule,
   GetPassengerSchedule,
   UpdatePassengerSchedule,
-} from '../../Controllers/PassengerScheduleController';
-import {PassengerSchedule} from '../../Models/PassengerSchedule';
-import {AuthContext} from '../../Services/AuthenticationService';
-import {PassengerCard} from '../../Components/Cards/PassengerListCard';
-import {AddTrip} from '../../Controllers/TripController';
-import {Auth} from '../../Classes/Auth';
+} from '../../../Controllers/PassengerScheduleController';
+import {PassengerSchedule} from '../../../Models/PassengerSchedule';
+import {AuthContext} from '../../../Services/AuthenticationService';
+import {PassengerCard} from '../../../Components/Cards/PassengerListCard';
+import {AddTrip} from '../../../Controllers/TripController';
+import {Auth} from '../../../Classes/Auth';
 import {AlarmClock, Car} from 'lucide-react-native';
-import {Trip} from '../../Models/Trip';
+import {Trip} from '../../../Models/Trip';
 
 const AssignPassengerScreen = ({route, navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);

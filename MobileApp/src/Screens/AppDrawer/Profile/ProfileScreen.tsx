@@ -1,18 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {CustomButton1} from '../../Components/Buttons';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
-  FlatList,
   ScrollView,
 } from 'react-native';
-import {ProfileCard} from '../../Components/Cards/ProfleCard';
-import {AuthContext} from '../../Services/AuthenticationService';
-import {Auth} from '../../Classes/Auth';
+
 import {
   Banknote,
   BookUser,
@@ -37,11 +32,14 @@ import {
   ModalFooter,
   ModalHeader,
   ModalBody,
-  TrashIcon,
 } from '@gluestack-ui/themed';
-import {GetUser} from '../../Controllers/UserController';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {RestoreImageViaAsyncStorage} from '../../Services/ImageStorageService';
+import {Auth} from '../../../Classes/Auth';
+import {GetUser} from '../../../Controllers/UserController';
+import {AuthContext} from '../../../Services/AuthenticationService';
+import {
+  RestoreImageViaAsyncStorage,
+  ClearImageViaAsyncStorage,
+} from '../../../Services/ImageStorageService';
 
 const ProfileScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
@@ -201,7 +199,9 @@ const ProfileScreen = ({navigation}: any) => {
                   isDisabled={false}
                   isFocusVisible={false}
                   onPress={async () => {
-                    await signOut();
+                    ClearImageViaAsyncStorage().then(async () => {
+                      await signOut();
+                    });
                   }}>
                   <LogOut
                     size={26}

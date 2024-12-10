@@ -20,21 +20,21 @@ import {
   useToast,
   Heading,
 } from '@gluestack-ui/themed';
-import {BusinessDetail} from '../../Models/BusinessDetail';
+import {BusinessDetail} from '../../../Models/BusinessDetail';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
-import {BusinessDetailForm} from '../../Components/Forms/BusinessDetailForm';
+import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
+import {BusinessDetailForm} from '../../../Components/Forms/BusinessDetailForm';
 import {
   GetBusinessDetail,
   GetBusinessDetailForParent,
   UpdateBusinessDetail,
-} from '../../Controllers/BusinessDetailController';
+} from '../../../Controllers/BusinessDetailController';
 import {FilePen} from 'lucide-react-native';
-import {AuthContext} from '../../Services/AuthenticationService';
-import {Auth} from '../../Classes/Auth';
-import {RestoreImageViaAsyncStorage} from '../../Services/ImageStorageService';
+import {AuthContext} from '../../../Services/AuthenticationService';
+import {Auth} from '../../../Classes/Auth';
+import {RestoreImageViaAsyncStorage} from '../../../Services/ImageStorageService';
 
 const EditBusinessDetailsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);

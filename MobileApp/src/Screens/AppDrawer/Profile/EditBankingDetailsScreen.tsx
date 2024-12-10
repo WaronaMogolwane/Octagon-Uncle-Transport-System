@@ -10,16 +10,16 @@ import * as yup from 'yup';
 import {
   CustomFormControlInput,
   CustomFormControlInputNumber,
-} from '../../Components/CustomFormInput';
+} from '../../../Components/CustomFormInput';
 import {useFormik} from 'formik';
-import {BankingDetail} from '../../Models/BankingDetail';
+import {BankingDetail} from '../../../Models/BankingDetail';
 import {
   GetBankingDetail,
   GetBanksList,
   UpdateBankingDetail,
-} from '../../Controllers/BankingDetailController';
-import {Auth} from '../../Classes/Auth';
-import {AuthContext} from '../../Services/AuthenticationService';
+} from '../../../Controllers/BankingDetailController';
+import {Auth} from '../../../Classes/Auth';
+import {AuthContext} from '../../../Services/AuthenticationService';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {
   ButtonIcon,
@@ -32,7 +32,7 @@ import {
   VStack,
 } from '@gluestack-ui/themed';
 import {ArrowLeftIcon, FilePen} from 'lucide-react-native';
-import {AssignPassengerScreenStyles} from '../../Stylesheets/GlobalStyles';
+import {AssignPassengerScreenStyles} from '../../../Stylesheets/GlobalStyles';
 import {Dropdown} from 'react-native-element-dropdown';
 
 export default function EditBankingDetailsScreen({navigation}: any) {

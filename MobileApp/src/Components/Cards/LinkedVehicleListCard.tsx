@@ -72,7 +72,7 @@ export const VehicleCard = (props: tripCardProps) => {
                 flexDirection: 'row', // Horizontal arrangement
               }}
               source={{
-                uri: props.urlFront,
+                uri: storageUrl + props.urlFront,
               }}
               alt="Vehicle front picture."
             />

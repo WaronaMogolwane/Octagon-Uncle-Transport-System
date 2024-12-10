@@ -1,19 +1,19 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {createDrawerNavigator, DrawerItemList} from '@react-navigation/drawer';
-import HomeScreen from '../Screens/AppDrawer/HomeScreen';
-import TripsScreen from '../Screens/AppDrawer/TripsScreen';
+import HomeScreen from '../Screens/AppDrawer/HomeScreen/HomeScreen';
+import TripsScreen from '../Screens/AppDrawer/Trips/TripsScreen';
 import PaymentsScreen from '../Screens/AppDrawer/PaymentsScreen';
 import ManageVehiclesScreen from '../Screens/AppDrawer/Vehicles/ManageVehiclesScreen';
 import ManageDriversScreen from '../Screens/AppDrawer/ManageDrivers/ManageDriversScreen';
 import ManageClientsScreen from '../Screens/AppDrawer/ManageClients/ManageClientsScreen';
-import ManageTripsScreen from '../Screens/AppDrawer/ManageTripsScreen';
-import AssignPassengerScreen from '../Screens/AppDrawer/AssignPassengerScreen';
-import ManagePassengerScreen from '../Screens/AppDrawer/ManagePassengerScreen';
-import EditUserAccountScreen from '../Screens/AppDrawer/EditUserAccountScreen';
+import ManageTripsScreen from '../Screens/AppDrawer/Trips/ManageTripsScreen';
+import AssignPassengerScreen from '../Screens/AppDrawer/Trips/AssignPassengerScreen';
+import ManagePassengerScreen from '../Screens/AppDrawer/Passengers/ManagePassengerScreen';
+import EditUserAccountScreen from '../Screens/AppDrawer/Profile/EditUserAccountScreen';
 import BusinessDetailsScreen from '../Screens/AuthenticationStack/BusinessDetailsScreen';
-import ProfileScreen from '../Screens/AppDrawer/ProfileScreen';
-import EditBusinessDetailsScreen from '../Screens/AppDrawer/EditBusinessDetailsScreen';
-import EditUserDetailsScreen from '../Screens/AppDrawer/EditUserDetailsScreen';
+import ProfileScreen from '../Screens/AppDrawer/Profile/ProfileScreen';
+import EditBusinessDetailsScreen from '../Screens/AppDrawer/Profile/EditBusinessDetailsScreen';
+import EditUserDetailsScreen from '../Screens/AppDrawer/Profile/EditUserDetailsScreen';
 import EditPaymentDetailsScreen from '../Screens/AppDrawer/EditPaymentDetailsScreen';
 
 import {Auth} from '../Classes/Auth';
@@ -41,10 +41,10 @@ import {GetUser} from '../Controllers/UserController';
 import {ScrollView} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
-import TripVehiclePickerScreen from '../Screens/AppDrawer/TripVehiclePickerScreen';
+import TripVehiclePickerScreen from '../Screens/AppDrawer/Trips/TripVehiclePickerScreen';
 import {getHeaderTitle} from '@react-navigation/elements';
-import TripTransporterScreen from '../Screens/AppDrawer/TripTransporterScreen';
-import EditBankingDetailsScreen from '../Screens/AppDrawer/EditBankingDetailsScreen';
+import TripTransporterScreen from '../Screens/AppDrawer/Trips/TripTransporterScreen';
+import EditBankingDetailsScreen from '../Screens/AppDrawer/Profile/EditBankingDetailsScreen';
 
 const AppDrawer = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);

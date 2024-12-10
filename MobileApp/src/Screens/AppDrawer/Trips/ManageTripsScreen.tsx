@@ -1,42 +1,37 @@
 import {
   FlatList,
   RefreshControl,
-  SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   View,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
-import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
-import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
-import {Auth} from '../../Classes/Auth';
-import {AuthContext} from '../../Services/AuthenticationService';
+import {VehicleCard} from '../../../Components/Cards/LinkedVehicleListCard';
+import {GetVehiclesAndDrivers} from '../../../Controllers/VehicleController';
 import {
   useToast,
   Toast,
   VStack,
-  ToastTitle,
   ToastDescription,
-  Fab,
+  ToastTitle,
   FabIcon,
+  Fab,
   FabLabel,
-  Input,
+  ArrowLeftIcon,
 } from '@gluestack-ui/themed';
-import {ArrowLeftIcon} from 'lucide-react-native';
-import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
-import {SearchBar} from 'react-native-screens';
+import {AuthContext} from '../../../Services/AuthenticationService';
+import {Auth} from '../../../Classes/Auth';
+import {FlatlistStyles} from '../../../Stylesheets/GlobalStyles';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import filter from 'lodash.filter';
 
-const TripTransporter = ({navigation}: any) => {
+const ManageTripsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
 
   const businessId = auth.GetBusinessId();
   const toast = useToast();
-
-  const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const [vehicleList, setVehicleList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -89,7 +84,6 @@ const TripTransporter = ({navigation}: any) => {
         } else {
           ShowToast();
           setVehicleList(result);
-          setFullData(result);
           setRefreshing(false);
           setNoLinkedVehicle(false);
         }
@@ -106,22 +100,22 @@ const TripTransporter = ({navigation}: any) => {
       model={itemData.model}
       color={itemData.color}
       fullName={itemData.fullName}
+      urlFront={itemData.FrontImageUrl}
       onPress={() => {
-        navigation.navigate('Transport Trip', {
+        navigation.navigate('Assign Passenger', {
           vehicleId: itemData.vehicleId,
           make: itemData.make,
           model: itemData.model,
           color: itemData.color,
         });
       }}
-      urlFront={itemData.FrontImageUrl}
     />
   );
 
   const EmtpyFlatListText = () => {
     return (
       <View style={{backgroundColor: '#e8f0f3'}}>
-        <Text style={{textAlign: 'center'}}>
+        <Text>
           You currently have no linked vehicles. Please add vehicles and try
           again.
         </Text>
@@ -133,7 +127,7 @@ const TripTransporter = ({navigation}: any) => {
     return (
       <Fab
         onPress={() => {
-          navigation.goBack();
+          navigation.navigate('Home');
         }}
         size="sm"
         placement="bottom right"
@@ -148,7 +142,7 @@ const TripTransporter = ({navigation}: any) => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    const formattedQuery = query.toLowerCase();
+    const formattedQuery = query;
     const filterData: any = filter(fullData, (user: any) => {
       return contains(user, formattedQuery);
     });
@@ -161,11 +155,11 @@ const TripTransporter = ({navigation}: any) => {
     query: any,
   ) => {
     if (
-      color.toLowerCase().includes(query) ||
-      fullName.toLowerCase().includes(query) ||
-      licenseNumber.toLowerCase().includes(query) ||
-      make.toLowerCase().includes(query) ||
-      model.toLowerCase().includes(query)
+      color.includes(query) ||
+      fullName.includes(query) ||
+      licenseNumber.includes(query) ||
+      make.includes(query) ||
+      model.includes(query)
     ) {
       return true;
     }
@@ -175,26 +169,27 @@ const TripTransporter = ({navigation}: any) => {
 
   return (
     <SafeAreaView style={{flex: 1}}>
-      <TextInput
-        placeholder="Search"
-        clearButtonMode="always"
-        autoCapitalize="none"
-        style={styles.searchBox}
-        autoCorrect={false}
-        value={searchQuery}
-        onChangeText={(query: string) => handleSearch(query)}
-      />
-
-      {noLinkedVehicle ? EmtpyFlatListText() : null}
-      <FlatList
-        style={{backgroundColor: '#e8f0f3'}}
-        data={vehicleList}
-        renderItem={({item}) => renderItemComponentVehicleInfo(item)}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      />
-      <View>{GoBackFab()}</View>
+      <View style={FlatlistStyles.container}>
+        <TextInput
+          placeholder="Search"
+          clearButtonMode="always"
+          autoCapitalize="none"
+          style={styles.searchBox}
+          autoCorrect={false}
+          value={searchQuery}
+          onChangeText={(query: string) => handleSearch(query)}
+        />
+        {noLinkedVehicle ? EmtpyFlatListText() : null}
+        <FlatList
+          style={{backgroundColor: '#e8f0f3'}}
+          data={vehicleList}
+          renderItem={({item}) => renderItemComponentVehicleInfo(item)}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
+        <View>{GoBackFab()}</View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -211,4 +206,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TripTransporter;
+export default ManageTripsScreen;

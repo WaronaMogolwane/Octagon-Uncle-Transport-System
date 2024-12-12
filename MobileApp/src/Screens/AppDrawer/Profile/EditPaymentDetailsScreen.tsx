@@ -132,7 +132,7 @@ const EditPaymentDetailsScreen = ({navigation}: any) => {
                     isDisabled={false}
                     isFocusVisible={false}
                     onPress={() => {
-                      navigation.goBack();
+                      navigation.navigate('Profile');
                     }}>
                     <ButtonIcon as={ArrowLeftIcon} style={{marginEnd: 5}} />
                     <ButtonText>Back</ButtonText>

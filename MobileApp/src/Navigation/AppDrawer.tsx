@@ -14,7 +14,7 @@ import BusinessDetailsScreen from '../Screens/AuthenticationStack/BusinessDetail
 import ProfileScreen from '../Screens/AppDrawer/Profile/ProfileScreen';
 import EditBusinessDetailsScreen from '../Screens/AppDrawer/Profile/EditBusinessDetailsScreen';
 import EditUserDetailsScreen from '../Screens/AppDrawer/Profile/EditUserDetailsScreen';
-import EditPaymentDetailsScreen from '../Screens/AppDrawer/EditPaymentDetailsScreen';
+import EditPaymentDetailsScreen from '../Screens/AppDrawer/Profile/EditPaymentDetailsScreen';
 
 import {Auth} from '../Classes/Auth';
 import {AuthContext} from '../Services/AuthenticationService';
@@ -44,7 +44,6 @@ import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
 import TripVehiclePickerScreen from '../Screens/AppDrawer/Trips/TripVehiclePickerScreen';
 import {getHeaderTitle} from '@react-navigation/elements';
 import TripTransporterScreen from '../Screens/AppDrawer/Trips/TripTransporterScreen';
-import EditBankingDetailsScreen from '../Screens/AppDrawer/Profile/EditBankingDetailsScreen';
 
 const AppDrawer = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -69,13 +68,6 @@ const AppDrawer = ({navigation}: any) => {
     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const date = new Date();
-
-  const user = {
-    avatar: 'https://www.bootdey.com/img/Content/avatar/avatar1.png',
-    coverPhoto:
-      'https://www.tarkett-asia.com/media/img/M/THH_25094221_25187221_001.jpg',
-    name: 'John Smith',
-  };
 
   const RoleLabel = (role: number) => {
     if (role == 1) {
@@ -161,9 +153,6 @@ const AppDrawer = ({navigation}: any) => {
       initialRouteName="Home"
       screenOptions={{
         drawerStyle: {backgroundColor: '#e8f0f3', width: 250},
-        headerStyle: {
-          // backgroundColor: '#e8f0f3',
-        },
         headerTintColor: '#e8f0f3',
         headerTitleStyle: {fontWeight: 'bold'},
         drawerActiveTintColor: 'blue',
@@ -379,14 +368,7 @@ const AppDrawer = ({navigation}: any) => {
           drawerItemStyle: {display: 'none'},
         }}
       />
-      <Drawer.Screen
-        name="Edit Banking Details"
-        component={EditBankingDetailsScreen}
-        options={{
-          title: 'Banking Information',
-          drawerItemStyle: {display: 'none'},
-        }}
-      />
+
       <Drawer.Screen
         name="Business Detail"
         component={BusinessDetailsScreen}

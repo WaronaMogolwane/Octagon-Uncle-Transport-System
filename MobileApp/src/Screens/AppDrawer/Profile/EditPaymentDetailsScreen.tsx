@@ -23,60 +23,43 @@ const EditPaymentDetailsScreen = ({navigation}: any) => {
     <View style={{backgroundColor: '#e8f0f3', flex: 1}}>
       <View
         style={{
+          marginBottom: '10%',
           marginTop: 20,
           flexDirection: 'row',
           justifyContent: 'center',
         }}>
-        <Card
-          size="sm"
-          variant="outline"
+        <View
           style={{
             marginEnd: 15,
             width: '41.7%',
-            backgroundColor: '#ffffff',
             borderRadius: 5,
-            elevation: 10,
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Text style={{fontWeight: 'bold', fontSize: 15, color: '#3ba2a9'}}>
+          <Text style={{fontWeight: 'bold', fontSize: 15}}>
             Next Payment Date
           </Text>
           <Text style={{fontSize: 18}}>08/05/2024</Text>
-        </Card>
+        </View>
 
-        <Card
-          size="sm"
-          variant="outline"
+        <View
           style={{
             marginStart: 15,
             width: '41.7%',
-            backgroundColor: '#ffffff',
             borderRadius: 5,
-            elevation: 10,
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-          <Text style={{fontWeight: 'bold', fontSize: 15, color: '#3ba2a9'}}>
-            Amount
-          </Text>
+          <Text style={{fontWeight: 'bold', fontSize: 15}}>Amount</Text>
           <Text style={{fontSize: 18}}>R 230.00</Text>
-        </Card>
+        </View>
       </View>
 
-      <Card
-        size="sm"
-        variant="outline"
+      <View
         style={{
-          marginTop: 10,
-          marginHorizontal: 16,
-          backgroundColor: '#ffffff',
-          borderRadius: 5,
-          elevation: 10,
+          marginHorizontal: 30,
         }}>
-        <Text style={{fontWeight: 'bold', fontSize: 15, color: '#3ba2a9'}}>
-          Card Number
-        </Text>
+        <Text style={{fontWeight: 'bold', fontSize: 15}}>Card Number</Text>
         <TextInput
           editable={false}
           style={styles.input}
@@ -93,7 +76,7 @@ const EditPaymentDetailsScreen = ({navigation}: any) => {
           style={styles.changeAvatarButtonText}>
           add new card
         </Text>
-      </Card>
+      </View>
 
       <View style={{flexDirection: 'column', marginVertical: 30}}>
         <View style={{alignItems: 'center'}}>
@@ -173,6 +156,7 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   input: {
+    backgroundColor: '#fff',
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 5,

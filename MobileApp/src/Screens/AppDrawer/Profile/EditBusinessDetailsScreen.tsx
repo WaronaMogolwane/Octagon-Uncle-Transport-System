@@ -57,6 +57,7 @@ import {
   UpdateBankingDetail,
 } from '../../../Controllers/BankingDetailController';
 import {BankingDetail} from '../../../Models/BankingDetail';
+import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
 
 const EditBusinessDetailsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -71,7 +72,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const [businessDetail, setBusinessDetail] = useState<BusinessDetail>();
-  const [bankingDetail, setBankingDetail] = useState<BankingDetail>();
 
   const [email, setEmail] = useState('');
   const [transporterName, setTransporterName] = useState('');
@@ -94,10 +94,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
       setIsLoading(true);
       GetBusiness();
     }
-
-    if (role == 1) {
-      BankList();
-    }
   }, [businessDetail]);
 
   useEffect(() => {
@@ -105,31 +101,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
       setProfileImage(result);
     });
   }, []);
-
-  const GetBanking = async () => {
-    GetBankingDetail(businessId).then((result: any) => {
-      if (result[1] == 200) {
-        setBankingDetail(
-          new BankingDetail(
-            result[0].result[0].BankName.toString(),
-            result[0].result[0].BranchNumber.toString(),
-            result[0].result[0].AccountName.toString(),
-            result[0].result[0].AccountNumber.toString(),
-            result[0].result[0].BusinessId.toString(),
-            result[0].result[0].PaystackBankId.toString(),
-            result[0].result[0].PaystackBankCode.toString(),
-            result[0].result[0].RecipientCode.toString(),
-            result[0].result[0].BankingDetailId,
-          ),
-        );
-        // setBankName(result[0].result[0].BankName.toString());
-        // setPaystackBankId(result[0].result[0].PaystackBankId.toString());
-        // setPaystackBankCode(result[0].result[0].PaystackBankCode.toString());
-
-        setShowModal(true);
-      }
-    });
-  };
 
   const GetBusiness = async () => {
     if (role == 1) {
@@ -248,252 +219,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
     });
   };
 
-  const BankingDetailModal = () => {
-    return (
-      <Modal
-        isOpen={showModal}
-        onClose={() => {
-          setShowModal(false);
-          formik.resetForm();
-        }}
-        finalFocusRef={ref}>
-        <ModalBackdrop />
-        <ModalContent>
-          <ModalHeader>
-            <Heading size="lg">Banking Details</Heading>
-            <ModalCloseButton>
-              <Icon as={CloseIcon} />
-            </ModalCloseButton>
-          </ModalHeader>
-          <ModalBody>
-            <View style={{marginBottom: 20}}>
-              <Text>Please enter you banking details below.</Text>
-            </View>
-            <View>
-              <View style={{width: '90%', paddingBottom: 20}}>
-                <Dropdown
-                  style={[
-                    AssignPassengerScreenStyles.dropdown,
-                    isFocus && {borderColor: 'red'},
-                  ]}
-                  placeholderStyle={
-                    AssignPassengerScreenStyles.placeholderStyle
-                  }
-                  selectedTextStyle={
-                    AssignPassengerScreenStyles.selectedTextStyle
-                  }
-                  inputSearchStyle={
-                    AssignPassengerScreenStyles.inputSearchStyle
-                  }
-                  iconStyle={AssignPassengerScreenStyles.iconStyle}
-                  data={bankList}
-                  search={true}
-                  maxHeight={300}
-                  labelField="name"
-                  valueField="name"
-                  placeholder={!isFocus ? 'Select bank name' : 'tap here...'}
-                  searchPlaceholder="Search..."
-                  value={bankList}
-                  onFocus={() => setIsFocus(true)}
-                  onBlur={() => setIsFocus(false)}
-                  onChange={(item: any) => {
-                    setBankName(item.name);
-                    setPaystackBankId(item.id);
-                    setPaystackBankCode(item.code);
-                    setIsFocus(false);
-                  }}
-                />
-              </View>
-            </View>
-            <View>
-              <CustomFormControlInputNumber
-                labelText="Branch Number"
-                isInvalid={!!bankingFormik.errors.branchNumber}
-                errorText={bankingFormik?.errors?.branchNumber}
-                isDisabled={false}
-                type="text"
-                value={bankingFormik.values?.branchNumber}
-                onChangeText={bankingFormik.handleChange('branchNumber')}
-                isRequired={false}
-                onBlur={bankingFormik.handleBlur('branchNumber')}
-              />
-              <CustomFormControlInput
-                labelText="Account Name"
-                errorText={bankingFormik?.errors?.accountName}
-                isInvalid={!!bankingFormik.errors.accountName}
-                isDisabled={false}
-                type="text"
-                value={bankingFormik.values?.accountName}
-                onChangeText={bankingFormik.handleChange('accountName')}
-                isRequired={false}
-                onBlur={bankingFormik.handleBlur('accountName')}
-              />
-              <CustomFormControlInputNumber
-                labelText="Account Number"
-                errorText={bankingFormik?.errors?.accountNumber}
-                isInvalid={!!bankingFormik.errors.accountNumber}
-                isDisabled={false}
-                type="text"
-                value={bankingFormik.values?.accountNumber}
-                onChangeText={bankingFormik.handleChange('accountNumber')}
-                isRequired={false}
-                onBlur={bankingFormik.handleBlur('accountNumber')}
-              />
-
-              <CustomFormControlInputNumber
-                labelText="Comfirm Account Number"
-                errorText={bankingFormik?.errors?.comfirmAccountNumber}
-                isInvalid={!!bankingFormik.errors.comfirmAccountNumber}
-                isDisabled={false}
-                type="text"
-                value={bankingFormik.values?.comfirmAccountNumber}
-                onChangeText={bankingFormik.handleChange(
-                  'comfirmAccountNumber',
-                )}
-                isRequired={false}
-                onBlur={bankingFormik.handleBlur('comfirmAccountNumber')}
-              />
-            </View>
-            <View>
-              <Button
-                size="sm"
-                action="positive"
-                borderWidth="$0"
-                onPress={() => {
-                  if (bankName != '') {
-                    bankingFormik.handleSubmit();
-                  } else {
-                    setIsFocus(true);
-
-                    toast.show({
-                      placement: 'top',
-                      render: ({id}) => {
-                        const toastId = 'toast-' + id;
-                        return (
-                          <Toast
-                            nativeID={toastId}
-                            action="attention"
-                            variant="outline">
-                            <VStack space="xs">
-                              <ToastTitle>
-                                Please select a bank to proceed
-                              </ToastTitle>
-                            </VStack>
-                          </Toast>
-                        );
-                      },
-                    });
-                  }
-                }}>
-                <ButtonText>Submit</ButtonText>
-              </Button>
-            </View>
-          </ModalBody>
-        </ModalContent>
-      </Modal>
-    );
-  };
-
-  const BankList = async () => {
-    await GetBanksList().then((result: any) => {
-      if (result.length != 0) {
-        setBankList(result);
-      } else {
-        //somthing went wrong
-        toast.show({
-          placement: 'top',
-          render: ({id}) => {
-            const toastId = 'toast-' + id;
-            return (
-              <Toast nativeID={toastId} action="error" variant="outline">
-                <VStack space="xs">
-                  <ToastTitle>
-                    Please check your internet connection and try again.
-                  </ToastTitle>
-                </VStack>
-              </Toast>
-            );
-          },
-        });
-      }
-    });
-  };
-
-  const UpdateBankingDetails = async (values: any) => {
-    setShowModal(false);
-    setIsLoading(true);
-    let bankingDetail = new BankingDetail(
-      bankName,
-      values.branchNumber.trim(),
-      values.accountName.trim(),
-      values.accountNumber.trim(),
-      businessId,
-      paystackBankId,
-      paystackBankCode,
-      '',
-    );
-    await UpdateBankingDetail(bankingDetail).then((response: any) => {
-      if (response[1] == 200) {
-        //On success this code runs
-        setIsLoading(false);
-        SuccessToast();
-      } else {
-        setIsLoading(false);
-        setShowModal(true);
-        FaliureToast();
-      }
-    });
-    // .catch((error: any) => {
-    //   console.error(error);
-    // });
-  };
-
-  const bankingDetailSchema = yup.object().shape({
-    branchNumber: yup
-      .string()
-      .matches(
-        /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
-        'not valid',
-      )
-      .min(5, 'Branch number should be more than 5 digits')
-      .max(10, 'Branch number should not be more than 10 digits')
-      .required('is required'),
-    accountName: yup
-      .string()
-      .min(2, 'Account name too short!')
-      .max(100, 'Account name too long')
-      .required('is required'),
-    accountNumber: yup
-      .string()
-      .min(5, 'Account number too short')
-      .max(20, 'Account number too long!')
-      .required('is required'),
-    comfirmAccountNumber: yup
-      .string()
-      .min(5, 'Account number too short')
-      .max(20, 'Account number too long!')
-      .required('is required')
-      .oneOf([yup.ref('accountNumber')], 'Account number must match'),
-  });
-
-  const bankingDetailInitialValues = {
-    bankName: bankingDetail?.bankName,
-    branchNumber: bankingDetail?.branchNumber,
-    accountName: bankingDetail?.accountName,
-    accountNumber: bankingDetail?.accountNumber,
-    comfirmAccountNumber: bankingDetail?.accountNumber,
-  };
-
-  const bankingFormik = useFormik({
-    initialValues: bankingDetailInitialValues,
-    validationSchema: bankingDetailSchema,
-    enableReinitialize: true,
-
-    onSubmit: (values, {resetForm}) => {
-      UpdateBankingDetails(values);
-    },
-  });
-
   const businessDetailSchema = yup.object().shape({
     businessName: yup
       .string()
@@ -593,7 +318,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
                 paddingBottom: 15,
                 paddingTop: 15,
               }}>
-              {BankingDetailModal()}
               <BusinessDetailForm
                 showButton={false}
                 buttonText={'Update Details'}
@@ -655,27 +379,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
                 }
               />
             </View>
-
-            <View
-              style={{
-                width: '100%',
-                padding: 5,
-                alignItems: 'center',
-                marginBottom: '5%',
-              }}>
-              <Button
-                size="md"
-                variant="solid"
-                action="primary"
-                isDisabled={false}
-                isFocusVisible={false}
-                onPress={() => {
-                  GetBanking();
-                }}>
-                <ButtonText>Banking Information</ButtonText>
-              </Button>
-            </View>
-
             <View
               style={{
                 alignItems: 'center',

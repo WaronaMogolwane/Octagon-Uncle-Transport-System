@@ -74,14 +74,10 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
   const [bankName, setBankName] = useState('');
   const [paystackBankCode, setPaystackBankCode] = useState('');
   const [paystackBankId, setPaystackBankId] = useState('');
-  const [recipientCode, setRecipientCode] = useState('');
 
   const [IsLoading, setIsLoading] = useState(false);
 
   const [bankList, setBankList] = useState(['']);
-  const [imageUri, setImageUri] = useState('');
-
-  const [selected, setSelected] = React.useState(new Set([]));
 
   useEffect(() => {
     BankList();

@@ -70,6 +70,7 @@ export const ModifyBankingDetail = async (req: any, res: any, next: any) => {
     req.body.bankingDetail.PaystackBankCode,
     req.body.bankingDetail.RecipientCode
   );
+
   await UpdateBankingDetail(bankingDetail, (error, result) => {
     if (error) {
       next(new ErrorResponse(501, error.message));

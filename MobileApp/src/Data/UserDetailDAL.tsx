@@ -22,7 +22,7 @@ export const AddUserDetailsToDB = async (userDetail: UserDetail) => {
     })
     .then((response: any) => {
       statusCode = response.status;
-      //data = response.data;
+      data = response.data;
     })
     .catch((error: any) => {
       console.log(error);
@@ -34,6 +34,7 @@ export const AddUserDetailsToDB = async (userDetail: UserDetail) => {
 export const GetUserDetailsFromDB = async (userId: string) => {
   let res: any;
   let statusCode: any;
+  console.log(userId);
 
   await axios
     .get(`${SERVER_HOST}:${SERVER_PORT}/user-profile/get-user-details`, {

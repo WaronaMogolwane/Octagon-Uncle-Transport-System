@@ -7,8 +7,8 @@ import {
   View,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
-import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
-import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
+import {VehicleCard} from '../../../Components/Cards/LinkedVehicleListCard';
+import {GetVehiclesAndDrivers} from '../../../Controllers/VehicleController';
 import {
   useToast,
   Toast,
@@ -20,9 +20,9 @@ import {
   FabLabel,
   ArrowLeftIcon,
 } from '@gluestack-ui/themed';
-import {AuthContext} from '../../Services/AuthenticationService';
-import {Auth} from '../../Classes/Auth';
-import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
+import {AuthContext} from '../../../Services/AuthenticationService';
+import {Auth} from '../../../Classes/Auth';
+import {FlatlistStyles} from '../../../Stylesheets/GlobalStyles';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import filter from 'lodash.filter';
 
@@ -38,8 +38,6 @@ const ManageTripsScreen = ({navigation}: any) => {
   const [noLinkedVehicle, setNoLinkedVehicle] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [fullData, setFullData] = useState([]);
-  const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -102,10 +100,13 @@ const ManageTripsScreen = ({navigation}: any) => {
       model={itemData.model}
       color={itemData.color}
       fullName={itemData.fullName}
-      urlFront={storageUrl + itemData.FrontImageUrl}
+      urlFront={itemData.FrontImageUrl}
       onPress={() => {
         navigation.navigate('Assign Passenger', {
           vehicleId: itemData.vehicleId,
+          make: itemData.make,
+          model: itemData.model,
+          color: itemData.color,
         });
       }}
     />

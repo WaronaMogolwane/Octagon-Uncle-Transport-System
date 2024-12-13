@@ -39,23 +39,23 @@ import {
   Card,
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
-import {CustomButton1} from '../../Components/Buttons';
+import {CustomButton1} from '../../../Components/Buttons';
 import {
   CheckDuplicateEmail,
   GetUser,
   UpdateUserEmail,
   UpdateUserPassword,
-} from '../../Controllers/UserController';
+} from '../../../Controllers/UserController';
 import {
   CustomFormControlInput,
   CustomFormControlInputEmail,
-} from '../../Components/CustomFormInput';
+} from '../../../Components/CustomFormInput';
 import {useFormik} from 'formik';
-import {AuthContext} from '../../Services/AuthenticationService';
-import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
+import {AuthContext} from '../../../Services/AuthenticationService';
+import VerifyEmailModal from '../../../Components/Modals/VerifyEmailModal';
 import {err} from 'react-native-svg/lib/typescript/xml';
-import {Auth} from '../../Classes/Auth';
-import {OpenCamera, OpenFilePicker} from '../../Services/CameraService';
+import {Auth} from '../../../Classes/Auth';
+import {OpenCamera, OpenFilePicker} from '../../../Services/CameraService';
 import {ImageOrVideo} from 'react-native-image-crop-picker';
 import {Camera} from 'lucide-react';
 import {Images} from 'lucide-react';
@@ -65,15 +65,14 @@ import {
   ClearImageViaAsyncStorage,
   RestoreImageViaAsyncStorage,
   SaveImageViaAsyncStorage,
-} from '../../Services/ImageStorageService';
+} from '../../../Services/ImageStorageService';
 import {
   DeleteProfileUrl,
   GetUserProfileImage,
   UpdateProfileUrl,
-} from '../../Controllers/UserDetailController';
+} from '../../../Controllers/UserDetailController';
 
 const EditUserAccountScreen = ({navigation}: any) => {
-  1111;
   const {session, emailOtp, verifyOtp}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
 
@@ -688,7 +687,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
           style={styles.avatar}
           source={
             profileImage == ''
-              ? require('../../Images/default_avatar_image.jpg')
+              ? require('../../../Images/default_avatar_image.jpg')
               : {
                   uri:
                     storageUrl +

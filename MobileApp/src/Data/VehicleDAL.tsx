@@ -83,6 +83,7 @@ export const GetVehicleAndDriverFromDB = async (businessId: string) => {
           make: data.Make,
           model: data.Model,
           color: data.Colour,
+          FrontImageUrl: data.FrontImageUrl,
           fullName: data.FirstName + ' ' + data.LastName,
         };
 

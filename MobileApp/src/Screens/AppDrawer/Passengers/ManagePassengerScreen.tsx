@@ -17,8 +17,8 @@ import {
   GetAllPendingPassengerForBusiness,
   GetParentPassengers,
   UpdatePassenger,
-} from '../../Controllers/PassengerController';
-import {PassengerParentCard} from '../../Components/Cards/PassengerListForParentCard';
+} from '../../../Controllers/PassengerController';
+import {PassengerParentCard} from '../../../Components/Cards/PassengerListForParentCard';
 import {
   Modal,
   ModalBackdrop,
@@ -51,21 +51,21 @@ import {
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
-import {AddPassengerForm} from '../../Components/Forms/AddPassengerForm';
-import {Passenger} from '../../Models/Passenger';
-import {CustomFormControlInput} from '../../Components/CustomFormInput';
+import {AddPassengerForm} from '../../../Components/Forms/AddPassengerForm';
+import {Passenger} from '../../../Models/Passenger';
+import {CustomFormControlInput} from '../../../Components/CustomFormInput';
 import {
   AssignPassengerScreenStyles,
   FlatlistStyles,
   ManagePassengerScreenStyles,
-} from '../../Stylesheets/GlobalStyles';
+} from '../../../Stylesheets/GlobalStyles';
 import {Dropdown} from 'react-native-element-dropdown';
 import {NavigationContainer} from '@react-navigation/native';
-import {AuthContext} from '../../Services/AuthenticationService';
+import {AuthContext} from '../../../Services/AuthenticationService';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import PassengerListAllCard from '../../Components/Cards/PassngerListForTransporterCard';
-import PassengerListPendingCard from '../../Components/Cards/PassengerListPendingCard';
-import {Auth} from '../../Classes/Auth';
+import PassengerListAllCard from '../../../Components/Cards/PassngerListForTransporterCard';
+import PassengerListPendingCard from '../../../Components/Cards/PassengerListPendingCard';
+import {Auth} from '../../../Classes/Auth';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {WalletMinimal} from 'lucide-react-native';
 

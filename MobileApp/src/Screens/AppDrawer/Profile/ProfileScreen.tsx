@@ -1,18 +1,13 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {CustomButton1} from '../../Components/Buttons';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
 import {
   StyleSheet,
   Text,
   View,
   TouchableOpacity,
-  FlatList,
   ScrollView,
 } from 'react-native';
-import {ProfileCard} from '../../Components/Cards/ProfleCard';
-import {AuthContext} from '../../Services/AuthenticationService';
-import {Auth} from '../../Classes/Auth';
+
 import {
   Banknote,
   BookUser,
@@ -37,11 +32,14 @@ import {
   ModalFooter,
   ModalHeader,
   ModalBody,
-  TrashIcon,
 } from '@gluestack-ui/themed';
-import {GetUser} from '../../Controllers/UserController';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {RestoreImageViaAsyncStorage} from '../../Services/ImageStorageService';
+import {Auth} from '../../../Classes/Auth';
+import {GetUser} from '../../../Controllers/UserController';
+import {AuthContext} from '../../../Services/AuthenticationService';
+import {
+  RestoreImageViaAsyncStorage,
+  ClearImageViaAsyncStorage,
+} from '../../../Services/ImageStorageService';
 
 const ProfileScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
@@ -59,13 +57,8 @@ const ProfileScreen = ({navigation}: any) => {
 
   const userId = auth.GetUserId();
   const role: number = Number(auth.GetUserRole());
+  // const role: number = 2;
 
-  const user = {
-    avatar: 'https://www.bootdey.com/img/Content/avatar/avatar1.png',
-    coverPhoto:
-      'https://www.tarkett-asia.com/media/img/M/THH_25094221_25187221_001.jpg',
-    name: 'John Smith',
-  };
   const storageUrl: string =
     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
@@ -119,17 +112,6 @@ const ProfileScreen = ({navigation}: any) => {
       return (
         <View>
           <BriefcaseBusiness
-            size={iconSize}
-            strokeWidth={iconStrokeWidth}
-            color={iconColor}
-            style={styles.image}
-          />
-        </View>
-      );
-    } else if (id == 5) {
-      return (
-        <View>
-          <CreditCard
             size={iconSize}
             strokeWidth={iconStrokeWidth}
             color={iconColor}
@@ -201,7 +183,9 @@ const ProfileScreen = ({navigation}: any) => {
                   isDisabled={false}
                   isFocusVisible={false}
                   onPress={async () => {
-                    await signOut();
+                    ClearImageViaAsyncStorage().then(async () => {
+                      await signOut();
+                    });
                   }}>
                   <LogOut
                     size={26}
@@ -228,7 +212,7 @@ const ProfileScreen = ({navigation}: any) => {
               <Image
                 style={styles.coverPhoto}
                 alt="profile photo"
-                source={require('../../Images/background_image.jpg')}
+                source={require('../../../Images/background_image.jpg')}
               />
             </View>
             <View style={styles.avatarContainer}>
@@ -236,7 +220,7 @@ const ProfileScreen = ({navigation}: any) => {
                 alt="profile photo"
                 source={
                   profileImage == ''
-                    ? require('../../Images/default_avatar_image.jpg')
+                    ? require('../../../Images/default_avatar_image.jpg')
                     : {
                         uri:
                           storageUrl +
@@ -277,7 +261,7 @@ const ProfileScreen = ({navigation}: any) => {
             {role == 2 ? (
               <TouchableOpacity
                 onPress={() => {
-                  //navigation.navigate('Edit Payment Details');
+                  navigation.navigate('Edit Payment Details');
                 }}>
                 <View style={styles.box}>
                   <View>{iconSelector(3)}</View>
@@ -297,19 +281,6 @@ const ProfileScreen = ({navigation}: any) => {
                 <Text style={styles.username}>Business</Text>
               </View>
             </TouchableOpacity>
-
-            {role == 1 ? (
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('Edit Banking Details');
-                }}>
-                <View style={styles.box}>
-                  <View>{iconSelector(5)}</View>
-
-                  <Text style={styles.username}>Banking information</Text>
-                </View>
-              </TouchableOpacity>
-            ) : null}
           </View>
           <View>{SignOutModal()}</View>
           <View

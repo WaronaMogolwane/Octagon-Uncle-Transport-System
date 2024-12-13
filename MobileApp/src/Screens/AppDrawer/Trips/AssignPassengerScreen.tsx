@@ -1,20 +1,27 @@
-import {ActivityIndicator, FlatList, Text, View} from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Text,
+  View,
+} from 'react-native';
+import * as yup from 'yup';
 import React, {useContext, useEffect, useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {
   AssignPassengerScreenStyles,
   ThemeStyles,
-} from '../../Stylesheets/GlobalStyles';
+} from '../../../Stylesheets/GlobalStyles';
 import {
   GetAllActivePassengerForBusiness,
   UpdateIsAssigned,
-} from '../../Controllers/PassengerController';
+} from '../../../Controllers/PassengerController';
 import {
   AddPassengerDriverVehicleLinking,
   GetPassengerDriverVehicleLinking,
   RemovePassengerDriverLinking,
-} from '../../Controllers/PassengerDriverVehicleLinkingController';
-import {PassengerDriverVehicleLinking} from '../../Models/PassengerDriverVehicleLinkingModel';
+} from '../../../Controllers/PassengerDriverVehicleLinkingController';
+import {PassengerDriverVehicleLinking} from '../../../Models/PassengerDriverVehicleLinkingModel';
 import {
   Modal,
   Button,
@@ -53,14 +60,15 @@ import {
   AddTempPassengerSchedule,
   GetPassengerSchedule,
   UpdatePassengerSchedule,
-} from '../../Controllers/PassengerScheduleController';
-import {PassengerSchedule} from '../../Models/PassengerSchedule';
-import {AuthContext} from '../../Services/AuthenticationService';
-import {PassengerCard} from '../../Components/Cards/PassengerListCard';
-import {AddTrip} from '../../Controllers/TripController';
-import {Auth} from '../../Classes/Auth';
+} from '../../../Controllers/PassengerScheduleController';
+import {PassengerSchedule} from '../../../Models/PassengerSchedule';
+import {AuthContext} from '../../../Services/AuthenticationService';
+import {PassengerCard} from '../../../Components/Cards/PassengerListCard';
+import {AddTrip} from '../../../Controllers/TripController';
+import {Auth} from '../../../Classes/Auth';
 import {AlarmClock, Car} from 'lucide-react-native';
-import {Trip} from '../../Models/Trip';
+import {Trip} from '../../../Models/Trip';
+import {useFormik} from 'formik';
 
 const AssignPassengerScreen = ({route, navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -96,11 +104,22 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const [sunday, setSunday] = useState(false);
   const [IsLoading, setIsLoading] = useState(false);
 
+  const [weekDays, setWeekDays] = useState<PassengerSchedule>();
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
   const ref = React.useRef(null);
   const toast = useToast();
 
   const vehicleId = route.params.vehicleId;
+  const make = route.params.make;
+  const model = route.params.model;
+
   const businessId = auth.GetBusinessId();
+  const onRefresh = React.useCallback(() => {
+    setIsLoading(true);
+    GetPassengers();
+  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -139,7 +158,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       }
     });
     GetPassengerDriverVehicleLinking(businessId).then(passengers => {
-      console.log(passengers);
+      // console.log(passengers);
       setpassengerList(passengers);
       setStatusCode(!statusCode);
     });
@@ -211,6 +230,8 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         setpassengerName(itemData.fullName);
         setdestinationAdress(itemData.dropOffLocation);
         setAge(itemData.age);
+
+        GetScheduleForPassengers(passengerId);
       }}
     />
   );
@@ -386,6 +407,45 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     );
   };
 
+  const GetScheduleForPassengers = (passengerId: string) => {
+    GetPassengerSchedule(passengerId).then((result: any) => {
+      console.log(result);
+
+      if (result.monday == 1) {
+        setMonday(true);
+      } else if (result.tuesday == 1) {
+        setTuesday(true);
+      } else if (result.wednesday == 1) {
+        setWednesday(true);
+      } else if (result.thursday == 1) {
+        setThursday(true);
+      } else if (result.friday == 1) {
+        setFriday(true);
+      } else if (result.saturday == 1) {
+        setSaturday(true);
+      } else if (result.sunday == 1) {
+        setSaturday(true);
+      }
+      // setMonday(result.monday == 1 ? true : false);
+      // setTuesday(result.tuesday == 1 ? true : false);
+      // setWednesday(result.wednesday == 1 ? true : false);
+      // setThursday(result.thursday == 1 ? true : false);
+      // setFriday(result.friday == 1 ? true : false);
+      // setSaturday(result.saturday == 1 ? true : false);
+      // setSunday(result.sunday == 1 ? true : false);
+
+      console.log(
+        monday,
+        tuesday,
+        wednesday,
+        thursday,
+        friday,
+        saturday,
+        sunday,
+      );
+    });
+  };
+
   const CalenderModal = () => {
     return (
       <Modal
@@ -417,6 +477,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                 }}>
                 <VStack space="xl">
                   <Checkbox
+                    isChecked={monday}
                     aria-label="Monday"
                     value="monday"
                     onPress={() => {
@@ -428,6 +489,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                     <CheckboxLabel>Monday</CheckboxLabel>
                   </Checkbox>
                   <Checkbox
+                    isChecked={tuesday}
                     aria-label="Tuesday"
                     value="tuesday"
                     onPress={() => {
@@ -439,6 +501,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                     <CheckboxLabel>Tuesday</CheckboxLabel>
                   </Checkbox>
                   <Checkbox
+                    isChecked={wednesday}
                     aria-label="Wednesday"
                     value="wednesday"
                     onPress={() => {
@@ -450,6 +513,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                     <CheckboxLabel>Wednseday</CheckboxLabel>
                   </Checkbox>
                   <Checkbox
+                    isChecked={thursday}
                     aria-label="Thursday"
                     value="thursday"
                     onPress={() => {
@@ -461,6 +525,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                     <CheckboxLabel>Thursday</CheckboxLabel>
                   </Checkbox>
                   <Checkbox
+                    isChecked={friday}
                     aria-label="Friday"
                     value="friday"
                     onPress={() => {
@@ -472,6 +537,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                     <CheckboxLabel>Friday</CheckboxLabel>
                   </Checkbox>
                   <Checkbox
+                    isChecked={saturday}
                     aria-label="Saturday"
                     value="saturday"
                     onPress={() => {
@@ -483,6 +549,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                     <CheckboxLabel>Saturday</CheckboxLabel>
                   </Checkbox>
                   <Checkbox
+                    isChecked={sunday}
                     aria-label="Sunday"
                     value="sunday"
                     onPress={() => {
@@ -582,6 +649,58 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     });
   };
 
+  const passengerScheduleInitialValues = {
+    monday: weekDays?.monday,
+    tuesday: weekDays?.tuesday,
+    wednesday: weekDays?.wednesday,
+    thursday: weekDays?.thursday,
+    friday: weekDays?.friday,
+    saturday: weekDays?.saturday,
+    sunday: weekDays?.sunday,
+  };
+
+  const passengerScheduleSchema = yup.object().shape({
+    businessName: yup
+      .string()
+      .min(2, 'Business name too Short!')
+      .max(50, 'Business name too Long!'),
+    businessPhoneNumber: yup
+      .string()
+      .matches(
+        /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
+        'not valid',
+      )
+      .min(10, 'Business phone number should be 10 digits')
+      .max(10, 'Business phone number should be 10 digits'),
+    addressline1: yup
+      .string()
+      .min(2, 'Address too Short!')
+      .max(100, 'Address too Long!'),
+    addressline2: yup.string().min(2, 'Too Short!').max(100, 'Too Long!'),
+    suburb: yup
+      .string()
+      .min(2, 'Suburb too Short!')
+      .max(50, 'Suburb too  Long!'),
+    city: yup.string().min(2, 'City too Short!').max(50, 'City too Long!'),
+    province: yup
+      .string()
+      .min(2, 'Province too Short!')
+      .max(50, 'Province too Long!'),
+    postalCode: yup
+      .string()
+      .min(4, 'Postal code too Short!')
+      .max(4, 'Postal code too Long!'),
+  });
+  const formik = useFormik({
+    initialValues: passengerScheduleInitialValues,
+    validationSchema: passengerScheduleSchema,
+    enableReinitialize: true,
+
+    onSubmit: async (values, {resetForm}) => {
+      // await businessDetailHelper(values);
+    },
+  });
+
   return (
     <View style={{flex: 1, backgroundColor: '#e8f0f3'}}>
       {IsLoading ? (
@@ -605,6 +724,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         size="sm"
         variant="outline"
         style={{
+          marginBottom: 10,
           paddingTop: 0,
           height: '32%',
           marginHorizontal: 12,
@@ -613,18 +733,32 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
           elevation: 10,
           justifyContent: 'center',
         }}>
-        <View>
-          <Text
-            style={{
-              fontWeight: 'bold',
-              fontSize: 15,
-              color: '#e89d0e',
-              marginBottom: 20,
-            }}>
-            Assign Passengers
-          </Text>
+        <View style={{flexDirection: 'row'}}>
+          <View style={{width: '50%'}}>
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 15,
+                color: '#e89d0e',
+                marginBottom: 20,
+              }}>
+              Assign Passengers
+            </Text>
+          </View>
+
+          <View style={{width: '50%'}}>
+            <Text
+              style={{
+                fontWeight: 'bold',
+                fontSize: 15,
+                // color: '#e89d0e',
+                marginBottom: 20,
+                textAlign: 'right',
+              }}>
+              {make + ' ' + model}
+            </Text>
+          </View>
         </View>
-        {renderLabel()}
         <Dropdown
           style={[
             AssignPassengerScreenStyles.dropdown,
@@ -679,7 +813,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                   }
                 }}>
                 <Car size={20} strokeWidth={1} color={'#FFFFFF'} />
-                <ButtonText>Add Trip</ButtonText>
+                <ButtonText> Add Trip</ButtonText>
               </Button>
             </View>
             <View style={{padding: 5}}>
@@ -697,7 +831,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                   }
                 }}>
                 <AlarmClock size={20} strokeWidth={1} color={'#FFFFFF'} />
-                <ButtonText>Schedule Trip</ButtonText>
+                <ButtonText> Schedule Trip</ButtonText>
               </Button>
             </View>
           </View>
@@ -708,6 +842,9 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         data={passengerList}
         extraData={statusCode}
         renderItem={({item}) => renderItemComponentPassengers(item)}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       />
       <View>{CalenderModal()}</View>
       <View>{showPopUp()}</View>

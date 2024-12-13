@@ -8,10 +8,10 @@ import {
   View,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
-import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
-import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
-import {Auth} from '../../Classes/Auth';
-import {AuthContext} from '../../Services/AuthenticationService';
+import {VehicleCard} from '../../../Components/Cards/LinkedVehicleListCard';
+import {GetVehiclesAndDrivers} from '../../../Controllers/VehicleController';
+import {Auth} from '../../../Classes/Auth';
+import {AuthContext} from '../../../Services/AuthenticationService';
 import {
   useToast,
   Toast,
@@ -24,7 +24,7 @@ import {
   Input,
 } from '@gluestack-ui/themed';
 import {ArrowLeftIcon} from 'lucide-react-native';
-import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
+import {FlatlistStyles} from '../../../Stylesheets/GlobalStyles';
 import {SearchBar} from 'react-native-screens';
 import filter from 'lodash.filter';
 
@@ -36,7 +36,7 @@ const TripTransporter = ({navigation}: any) => {
   const toast = useToast();
 
   const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const [vehicleList, setVehicleList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -109,9 +109,12 @@ const TripTransporter = ({navigation}: any) => {
       onPress={() => {
         navigation.navigate('Transport Trip', {
           vehicleId: itemData.vehicleId,
+          make: itemData.make,
+          model: itemData.model,
+          color: itemData.color,
         });
       }}
-      urlFront={storageUrl + itemData.FrontImageUrl}
+      urlFront={itemData.FrontImageUrl}
     />
   );
 

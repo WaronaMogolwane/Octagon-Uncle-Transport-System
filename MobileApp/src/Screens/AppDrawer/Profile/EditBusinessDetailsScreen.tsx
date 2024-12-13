@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {
+  Modal,
   Image,
   ArrowLeftIcon,
   ButtonIcon,
@@ -19,27 +20,50 @@ import {
   VStack,
   useToast,
   Heading,
+  CloseIcon,
+  ModalBackdrop,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  Icon,
 } from '@gluestack-ui/themed';
-import {BusinessDetail} from '../../Models/BusinessDetail';
+import {BusinessDetail} from '../../../Models/BusinessDetail';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
-import {BusinessDetailForm} from '../../Components/Forms/BusinessDetailForm';
+import {
+  AssignPassengerScreenStyles,
+  ThemeStyles,
+} from '../../../Stylesheets/GlobalStyles';
+import {BusinessDetailForm} from '../../../Components/Forms/BusinessDetailForm';
 import {
   GetBusinessDetail,
   GetBusinessDetailForParent,
   UpdateBusinessDetail,
-} from '../../Controllers/BusinessDetailController';
+} from '../../../Controllers/BusinessDetailController';
 import {FilePen} from 'lucide-react-native';
-import {AuthContext} from '../../Services/AuthenticationService';
-import {Auth} from '../../Classes/Auth';
-import {RestoreImageViaAsyncStorage} from '../../Services/ImageStorageService';
+import {AuthContext} from '../../../Services/AuthenticationService';
+import {Auth} from '../../../Classes/Auth';
+import {RestoreImageViaAsyncStorage} from '../../../Services/ImageStorageService';
+import {Dropdown} from 'react-native-element-dropdown';
+import {
+  CustomFormControlInputNumber,
+  CustomFormControlInput,
+} from '../../../Components/CustomFormInput';
+import {
+  GetBankingDetail,
+  GetBanksList,
+  UpdateBankingDetail,
+} from '../../../Controllers/BankingDetailController';
+import {BankingDetail} from '../../../Models/BankingDetail';
+import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
 
 const EditBusinessDetailsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const toast = useToast();
+  const ref = React.useRef(null);
 
   const businessId = auth.GetBusinessId();
   const role: number = Number(auth.GetUserRole());
@@ -48,12 +72,20 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const [businessDetail, setBusinessDetail] = useState<BusinessDetail>();
+
   const [email, setEmail] = useState('');
   const [transporterName, setTransporterName] = useState('');
   const [businessName, setBusinessName] = useState('');
   const [businessPhoneNumber, setBusinessPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [profileImage, setProfileImage] = useState('');
+  const [showModal, setShowModal] = useState(false);
+
+  const [bankName, setBankName] = useState('');
+  const [paystackBankCode, setPaystackBankCode] = useState('');
+  const [paystackBankId, setPaystackBankId] = useState('');
+  const [isFocus, setIsFocus] = useState(false);
+  const [bankList, setBankList] = useState(['']);
 
   const [IsLoading, setIsLoading] = useState(false);
 
@@ -130,8 +162,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
       businessId,
     );
 
-    console.log(businessDetail);
-
     await UpdateBusinessDetail(businessDetail)
       .then((response: any) => {
         if (response[1] == 200) {
@@ -141,14 +171,12 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
             navigation.navigate('Profile');
             setIsLoading(false);
           } else {
-            FaliureToast('Information is already saved');
+            FaliureToast();
             setIsLoading(false);
           }
         } else {
           //On faluire this code runs
-          FaliureToast(
-            'Please check your internt and try again. If the problem persists contact support.',
-          );
+          FaliureToast();
           setIsLoading(false);
         }
       })
@@ -171,7 +199,7 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
     });
   };
 
-  const FaliureToast = (desciption: string) => {
+  const FaliureToast = () => {
     toast.show({
       placement: 'top',
       render: ({id}) => {
@@ -252,7 +280,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
           ? {
               ...{
                 flex: 1,
-                // backgroundColor: '#e8f0f3',
                 alignItems: 'center',
               },
             }
@@ -278,7 +305,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
       {role == 1 ? (
         <View
           style={{
-            // alignItems: 'center',
             width: '100%',
             backgroundColor: '#e8f0f3',
           }}>
@@ -380,7 +406,7 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
                   <Button
                     size="md"
                     variant="solid"
-                    action="primary"
+                    action="positive"
                     isDisabled={false}
                     isFocusVisible={false}
                     onPress={
@@ -407,7 +433,7 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
                 alt="profile photo"
                 source={
                   profileImage == ''
-                    ? require('./../../Images/default_avatar_image.jpg')
+                    ? require('./../../../Images/default_avatar_image.jpg')
                     : {uri: storageUrl + profileImage}
                 }
                 style={styles.avatar}

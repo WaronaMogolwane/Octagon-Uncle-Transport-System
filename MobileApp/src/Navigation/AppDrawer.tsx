@@ -1,20 +1,20 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {createDrawerNavigator, DrawerItemList} from '@react-navigation/drawer';
-import HomeScreen from '../Screens/AppDrawer/HomeScreen';
-import TripsScreen from '../Screens/AppDrawer/TripsScreen';
+import HomeScreen from '../Screens/AppDrawer/HomeScreen/HomeScreen';
+import TripsScreen from '../Screens/AppDrawer/Trips/TripsScreen';
 import PaymentsScreen from '../Screens/AppDrawer/Payments/PaymentsScreen';
 import ManageVehiclesScreen from '../Screens/AppDrawer/Vehicles/ManageVehiclesScreen';
 import ManageDriversScreen from '../Screens/AppDrawer/ManageDrivers/ManageDriversScreen';
 import ManageClientsScreen from '../Screens/AppDrawer/ManageClients/ManageClientsScreen';
-import ManageTripsScreen from '../Screens/AppDrawer/ManageTripsScreen';
-import AssignPassengerScreen from '../Screens/AppDrawer/AssignPassengerScreen';
-import ManagePassengerScreen from '../Screens/AppDrawer/ManagePassengerScreen';
-import EditUserAccountScreen from '../Screens/AppDrawer/EditUserAccountScreen';
+import ManageTripsScreen from '../Screens/AppDrawer/Trips/ManageTripsScreen';
+import AssignPassengerScreen from '../Screens/AppDrawer/Trips/AssignPassengerScreen';
+import ManagePassengerScreen from '../Screens/AppDrawer/Passengers/ManagePassengerScreen';
+import EditUserAccountScreen from '../Screens/AppDrawer/Profile/EditUserAccountScreen';
 import BusinessDetailsScreen from '../Screens/AuthenticationStack/BusinessDetailsScreen';
-import ProfileScreen from '../Screens/AppDrawer/ProfileScreen';
-import EditBusinessDetailsScreen from '../Screens/AppDrawer/EditBusinessDetailsScreen';
-import EditUserDetailsScreen from '../Screens/AppDrawer/EditUserDetailsScreen';
-import EditPaymentDetailsScreen from '../Screens/AppDrawer/EditPaymentDetailsScreen';
+import ProfileScreen from '../Screens/AppDrawer/Profile/ProfileScreen';
+import EditBusinessDetailsScreen from '../Screens/AppDrawer/Profile/EditBusinessDetailsScreen';
+import EditUserDetailsScreen from '../Screens/AppDrawer/Profile/EditUserDetailsScreen';
+import EditPaymentDetailsScreen from '../Screens/AppDrawer/Profile/EditPaymentDetailsScreen';
 
 import {Auth} from '../Classes/Auth';
 import {AuthContext} from '../Services/AuthenticationService';
@@ -41,10 +41,9 @@ import {GetUser} from '../Controllers/UserController';
 import {ScrollView} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
-import TripVehiclePickerScreen from '../Screens/AppDrawer/TripVehiclePickerScreen';
+import TripVehiclePickerScreen from '../Screens/AppDrawer/Trips/TripVehiclePickerScreen';
 import {getHeaderTitle} from '@react-navigation/elements';
-import TripTransporterScreen from '../Screens/AppDrawer/TripTransporterScreen';
-import EditBankingDetailsScreen from '../Screens/AppDrawer/EditBankingDetailsScreen';
+import TripTransporterScreen from '../Screens/AppDrawer/Trips/TripTransporterScreen';
 
 const AppDrawer = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -69,13 +68,6 @@ const AppDrawer = ({navigation}: any) => {
     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const date = new Date();
-
-  const user = {
-    avatar: 'https://www.bootdey.com/img/Content/avatar/avatar1.png',
-    coverPhoto:
-      'https://www.tarkett-asia.com/media/img/M/THH_25094221_25187221_001.jpg',
-    name: 'John Smith',
-  };
 
   const RoleLabel = (role: number) => {
     if (role == 1) {
@@ -161,9 +153,6 @@ const AppDrawer = ({navigation}: any) => {
       initialRouteName="Home"
       screenOptions={{
         drawerStyle: {backgroundColor: '#e8f0f3', width: 250},
-        headerStyle: {
-          // backgroundColor: '#e8f0f3',
-        },
         headerTintColor: '#e8f0f3',
         headerTitleStyle: {fontWeight: 'bold'},
         drawerActiveTintColor: 'blue',
@@ -379,14 +368,7 @@ const AppDrawer = ({navigation}: any) => {
           drawerItemStyle: {display: 'none'},
         }}
       />
-      <Drawer.Screen
-        name="Edit Banking Details"
-        component={EditBankingDetailsScreen}
-        options={{
-          title: 'Banking Information',
-          drawerItemStyle: {display: 'none'},
-        }}
-      />
+
       <Drawer.Screen
         name="Business Detail"
         component={BusinessDetailsScreen}

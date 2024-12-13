@@ -16,8 +16,8 @@ import {
 } from '../../../Controllers/PaymentsController';
 import {Auth} from '../../../Classes/Auth';
 import {AuthContext} from '../../../Services/AuthenticationService';
-import {PaymentCard} from '../../../Components/Cards/PaymentCard';
 import {RefreshControl, ScrollView} from '@gluestack-ui/themed';
+import {PaymentCard} from '../../../Components/Cards/PaymentCards';
 String.prototype.format = function () {
   var args = arguments;
   return this.replace(/{([0-9]+)}/g, function (match, index) {
@@ -119,7 +119,7 @@ const PaymentsScreen = ({navigation}: any) => {
     GetPaymentValues();
   }, []);
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{height: '100%'}}>
       <ScrollView
         style={{}}
         contentContainerStyle={ThemeStyles.container}

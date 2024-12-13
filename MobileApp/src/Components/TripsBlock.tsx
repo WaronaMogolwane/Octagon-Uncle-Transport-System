@@ -8,10 +8,13 @@ export const TripsBlock = ({tripList}: {tripList: any[]}) => {
   const iconSize = 15;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';
+
+  let heightNumber: number = 0;
   let isEmpty: boolean;
 
   if (tripList.length == 0 || tripList[0] == '') {
     isEmpty = true;
+    heightNumber = 20;
   } else {
     isEmpty = false;
   }
@@ -54,8 +57,9 @@ export const TripsBlock = ({tripList}: {tripList: any[]}) => {
           size="sm"
           variant="outline"
           style={{
-            marginHorizontal: 17,
-            marginBottom: 'auto',
+            marginTop: heightNumber,
+            marginHorizontal: 13,
+            marginBottom: 10,
             backgroundColor: '#ffffff',
             borderRadius: 5,
             elevation: 10,
@@ -87,8 +91,10 @@ export const TripsBlock = ({tripList}: {tripList: any[]}) => {
           size="sm"
           variant="outline"
           style={{
-            marginHorizontal: 17,
-            marginBottom: '5%',
+            height: 150,
+            marginTop: -5,
+            marginHorizontal: 14,
+            marginBottom: '35%',
             backgroundColor: '#ffffff',
             borderRadius: 5,
             elevation: 10,

@@ -8,11 +8,17 @@ export const TripsBlockDiver = ({tripList}: {tripList: any[]}) => {
   const iconSize = 15;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';
+  let marginTopNumber: number = 0;
+  let heightNumber: number = 0;
   let isEmpty: boolean;
 
   if (tripList.length == 0 || tripList[0] == '') {
     isEmpty = true;
+    marginTopNumber = 5;
+    heightNumber = 100;
   } else {
+    heightNumber = 200;
+    marginTopNumber = -20;
     isEmpty = false;
   }
 
@@ -49,9 +55,10 @@ export const TripsBlockDiver = ({tripList}: {tripList: any[]}) => {
       size="sm"
       variant="outline"
       style={{
+        height: heightNumber,
         marginHorizontal: 12,
-        marginTop: 5,
-        marginBottom: 50,
+        marginTop: marginTopNumber,
+        marginBottom: 100,
         backgroundColor: '#ffffff',
         borderRadius: 5,
         elevation: 10,

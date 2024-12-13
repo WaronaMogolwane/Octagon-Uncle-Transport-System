@@ -9,21 +9,22 @@ import {
 import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
-import {TripCardDriver} from '../../Components/Cards/TripListCardForDriver';
+import {FlatlistStyles} from '../../../Stylesheets/GlobalStyles';
+import {TripCardDriver} from '../../../Components/Cards/TripListCardForDriver';
 import {
   GetPastTripsForTransporter,
   GetUpcomingTripsForTransporter,
   UndoTripDropOffTime,
-} from '../../Controllers/TripController';
-import {Auth} from '../../Classes/Auth';
-import {AuthContext} from '../../Services/AuthenticationService';
+} from '../../../Controllers/TripController';
+import {Auth} from '../../../Classes/Auth';
+import {AuthContext} from '../../../Services/AuthenticationService';
 import {
   TripCardTransporter,
   TripCardTransporterComplete,
-} from '../../Components/Cards/TripCardTransporter';
+} from '../../../Components/Cards/TripCardTransporter';
+import {ArrowLeftIcon, Fab, FabIcon, FabLabel} from '@gluestack-ui/themed';
 
-const TripTransporterScreen = () => {
+const TripTransporterScreen = ({navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
@@ -112,14 +113,30 @@ const TripTransporterScreen = () => {
   const EmtpyFlatListText = () => {
     return (
       <View style={{backgroundColor: '#e8f0f3'}}>
-        <Text>You currently have no trips.</Text>
+        <Text style={{textAlign: 'center'}}>You currently have no trips.</Text>
       </View>
+    );
+  };
+  const GoBackFab = () => {
+    return (
+      <Fab
+        onPress={() => {
+          navigation.navigate('Manage Trip');
+        }}
+        size="sm"
+        placement="bottom right"
+        isHovered={false}
+        isDisabled={false}
+        isPressed={false}>
+        <FabIcon as={ArrowLeftIcon} mr="$1" />
+        <FabLabel>Back</FabLabel>
+      </Fab>
     );
   };
 
   const GetUpcomingTrips = async () => {
     return await GetUpcomingTripsForTransporter(userId).then(trip => {
-      if (trip.length == 0) {
+      if (trip[0] == '') {
         setShowNoFutureTripText(true);
       } else {
         setUpcomingTripList(trip);
@@ -130,13 +147,14 @@ const TripTransporterScreen = () => {
   //Gets all past Trips for all roles
   const GetPastTrips = async () => {
     return await GetPastTripsForTransporter(userId).then(trip => {
-      if (trip.length == 0) {
+      if (trip[0] == '') {
         setShowNoPastTripText(true);
       } else {
         setPastTripList(trip);
       }
     });
   };
+
   function FirstRoute() {
     return (
       <View style={FlatlistStyles.container}>
@@ -153,6 +171,7 @@ const TripTransporterScreen = () => {
             />
           }
         />
+        <View>{GoBackFab()}</View>
       </View>
     );
   }
@@ -174,6 +193,7 @@ const TripTransporterScreen = () => {
             />
           }
         />
+        <View>{GoBackFab()}</View>
       </View>
     );
   }

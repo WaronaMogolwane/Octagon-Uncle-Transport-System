@@ -1,5 +1,5 @@
 import {SERVER_HOST, SERVER_PORT} from '@env';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import {BankingDetail} from '../Models/BankingDetail';
 
 export const AddBankingDetailToDB = async (bankingDetail: BankingDetail) => {
@@ -20,14 +20,10 @@ export const AddBankingDetailToDB = async (bankingDetail: BankingDetail) => {
     })
     .then((response: any) => {
       statusCode = response.status;
-      //data = response.data;
     })
     .catch((error: any) => {
       console.log(error);
     });
-
-  [];
-
   return statusCode;
 };
 
@@ -55,10 +51,10 @@ export const UpdateBankingDetailToDB = async (bankingDetail: BankingDetail) => {
   let statusCode: any;
   let data: any;
   await axios
-    .post(
+    .patch(
       `${SERVER_HOST}:${SERVER_PORT}/banking-detail/update-banking-detail`,
       {
-        businessDetail: {
+        bankingDetail: {
           BankingDetailId: bankingDetail.bankingDetailId,
           BankName: bankingDetail.bankName,
           BranchNumber: bankingDetail.branchNumber,
@@ -73,15 +69,13 @@ export const UpdateBankingDetailToDB = async (bankingDetail: BankingDetail) => {
     )
     .then((response: any) => {
       statusCode = response.status;
-      //data = response.data;
+      data = response.data;
     })
-    .catch((error: any) => {
+    .catch((error: AxiosError) => {
       console.log(error);
     });
 
-  [];
-
-  return statusCode;
+  return [data, statusCode];
 };
 
 //   export const GetBusinessDetailFromDB = async (businessId: string) => {

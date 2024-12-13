@@ -4,7 +4,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {UserDetailForm} from '../../Components/Forms/UserDetailForm';
+import {UserDetailForm} from '../../../Components/Forms/UserDetailForm';
 import {
   ToastDescription,
   ToastTitle,
@@ -17,18 +17,18 @@ import {
   ButtonText,
   Button,
 } from '@gluestack-ui/themed';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {UserDetail} from '../../Models/UserDetail';
+import {UserDetail} from '../../../Models/UserDetail';
 import {
   GetUserDetail,
   UpdateUserDetail,
-} from '../../Controllers/UserDetailController';
+} from '../../../Controllers/UserDetailController';
 import {useContext, useEffect, useState} from 'react';
-import {AuthContext} from '../../Services/AuthenticationService';
-import {Auth} from '../../Classes/Auth';
+import {AuthContext} from '../../../Services/AuthenticationService';
+import {Auth} from '../../../Classes/Auth';
 import {FilePen} from 'lucide-react-native';
 
 export default function EditUserDetailsScreen({navigation}: any) {

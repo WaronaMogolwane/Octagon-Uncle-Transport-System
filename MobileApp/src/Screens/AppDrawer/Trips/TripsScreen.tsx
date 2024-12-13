@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {TripCardParent} from '../../Components/Cards/TripListForParentCard';
+import {TripCardParent} from '../../../Components/Cards/TripListForParentCard';
 import {
   EndTrip,
   GetPastTripsForClient,
@@ -23,10 +23,10 @@ import {
   UndoTripEnd,
   UndoTripPickUpTime,
   UpdatePassengerStatus,
-} from '../../Controllers/TripController';
-import {TripCardDriverSwipable} from '../../Components/Cards/TripListCardForDriverSwipable';
-import {FlatlistStyles} from '../../Stylesheets/GlobalStyles';
-import {TripCardDriver} from '../../Components/Cards/TripListCardForDriver';
+} from '../../../Controllers/TripController';
+import {TripCardDriverSwipable} from '../../../Components/Cards/TripListCardForDriverSwipable';
+import {FlatlistStyles} from '../../../Stylesheets/GlobalStyles';
+import {TripCardDriver} from '../../../Components/Cards/TripListCardForDriver';
 import {
   useToast,
   Fab,
@@ -39,11 +39,11 @@ import {
   ToastDescription,
   VStack,
 } from '@gluestack-ui/themed';
-import {VehicleCard} from '../../Components/Cards/LinkedVehicleListCard';
-import {GetVehiclesAndDrivers} from '../../Controllers/VehicleController';
-import {GetDriverId} from '../../Controllers/DriverVehicleLinkingController.tsx';
-import {AuthContext} from '../../Services/AuthenticationService';
-import {Auth} from '../../Classes/Auth';
+import {VehicleCard} from '../../../Components/Cards/LinkedVehicleListCard';
+import {GetVehiclesAndDrivers} from '../../../Controllers/VehicleController';
+import {GetDriverId} from '../../../Controllers/DriverVehicleLinkingController.tsx';
+import {AuthContext} from '../../../Services/AuthenticationService';
+import {Auth} from '../../../Classes/Auth';
 
 const TripsScreen = ({navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();

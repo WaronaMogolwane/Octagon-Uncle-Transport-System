@@ -299,4 +299,25 @@ export const GetDeclinedPaymentSummaryByBusinessId = async (
         }
     );
 };
+export const GetPaymentsByBusinessId = async (
+    businessId: string,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetPaymentsByBusinessId(?);",
+            timeout: 40000,
+            values: [
+                businessId
+            ],
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
 

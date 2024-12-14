@@ -16,8 +16,25 @@ import {
 } from '../../../Controllers/PaymentsController';
 import {Auth} from '../../../Classes/Auth';
 import {AuthContext} from '../../../Services/AuthenticationService';
-import {RefreshControl, ScrollView} from '@gluestack-ui/themed';
+import {
+  RefreshControl,
+  ScrollView,
+  Toast,
+  ToastTitle,
+  useToast,
+  VStack,
+} from '@gluestack-ui/themed';
 import {PaymentCard} from '../../../Components/Cards/PaymentCards';
+import {useFormik} from 'formik';
+import {
+  GetBankingDetail,
+  GetBanksList,
+  UpdateBankingDetail,
+} from '../../../Controllers/BankingDetailController';
+import {BankingDetail} from '../../../Models/BankingDetail';
+import * as yup from 'yup';
+import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
+
 String.prototype.format = function () {
   var args = arguments;
   return this.replace(/{([0-9]+)}/g, function (match, index) {
@@ -49,6 +66,174 @@ const PaymentsScreen = ({navigation}: any) => {
     }, 2000);
     setRefreshingPayments(false);
   }, []);
+  const [bankingDetail, setBankingDetail] = useState<BankingDetail>();
+  const [IsLoading, setIsLoading] = useState(false);
+
+  const [bankList, setBankList] = useState(['']);
+  const [showModal, setShowModal] = useState(false);
+  const [isFocus, setIsFocus] = useState(false);
+  const [bankName, setBankName] = useState('');
+  const [paystackBankCode, setPaystackBankCode] = useState('');
+  const [paystackBankId, setPaystackBankId] = useState('');
+  const toast = useToast();
+  const businessId = auth.GetBusinessId();
+
+  const GetBanking = async () => {
+    GetBankingDetail(businessId).then((result: any) => {
+      if (result[1] == 200) {
+        setBankingDetail(
+          new BankingDetail(
+            result[0].result[0].BankName.toString(),
+            result[0].result[0].BranchNumber.toString(),
+            result[0].result[0].AccountName.toString(),
+            result[0].result[0].AccountNumber.toString(),
+            result[0].result[0].BusinessId.toString(),
+            result[0].result[0].PaystackBankId.toString(),
+            result[0].result[0].PaystackBankCode.toString(),
+            result[0].result[0].RecipientCode.toString(),
+            result[0].result[0].BankingDetailId,
+          ),
+        );
+        // setBankName(result[0].result[0].BankName.toString());
+        // setPaystackBankId(result[0].result[0].PaystackBankId.toString());
+        // setPaystackBankCode(result[0].result[0].PaystackBankCode.toString());
+
+        setShowModal(true);
+      }
+    });
+  };
+  const BankList = async () => {
+    await GetBanksList().then((result: any) => {
+      if (result.length != 0) {
+        setBankList(result);
+      } else {
+        //somthing went wrong
+        toast.show({
+          placement: 'top',
+          render: ({id}) => {
+            const toastId = 'toast-' + id;
+            return (
+              <Toast nativeID={toastId} action="error" variant="outline">
+                <VStack space="xs">
+                  <ToastTitle>
+                    Please check your internet connection and try again.
+                  </ToastTitle>
+                </VStack>
+              </Toast>
+            );
+          },
+        });
+      }
+    });
+  };
+  const SuccessToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="success" variant="outline">
+            <VStack space="xs">
+              <ToastTitle>Details saved successfully</ToastTitle>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const FaliureToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="error" variant="outline">
+            <VStack space="xs">
+              <ToastTitle>
+                Details were not save successfully. Please try again.
+              </ToastTitle>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const UpdateBankingDetails = async (values: any) => {
+    setShowModal(false);
+    setIsLoading(true);
+    let bankingDetail = new BankingDetail(
+      bankName,
+      values.branchNumber.trim(),
+      values.accountName.trim(),
+      values.accountNumber.trim(),
+      businessId,
+      paystackBankId,
+      paystackBankCode,
+      '',
+    );
+    await UpdateBankingDetail(bankingDetail).then((response: any) => {
+      if (response[1] == 200) {
+        //On success this code runs
+        setIsLoading(false);
+        SuccessToast();
+      } else {
+        setIsLoading(false);
+        setShowModal(true);
+        FaliureToast();
+      }
+    });
+    // .catch((error: any) => {
+    //   console.error(error);
+    // });
+  };
+
+  const bankingDetailSchema = yup.object().shape({
+    branchNumber: yup
+      .string()
+      .matches(
+        /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
+        'not valid',
+      )
+      .min(5, 'Branch number should be more than 5 digits')
+      .max(10, 'Branch number should not be more than 10 digits')
+      .required('is required'),
+    accountName: yup
+      .string()
+      .min(2, 'Account name too short!')
+      .max(100, 'Account name too long')
+      .required('is required'),
+    accountNumber: yup
+      .string()
+      .min(5, 'Account number too short')
+      .max(20, 'Account number too long!')
+      .required('is required'),
+    comfirmAccountNumber: yup
+      .string()
+      .min(5, 'Account number too short')
+      .max(20, 'Account number too long!')
+      .required('is required')
+      .oneOf([yup.ref('accountNumber')], 'Account number must match'),
+  });
+
+  const bankingDetailInitialValues = {
+    bankName: bankingDetail?.bankName,
+    branchNumber: bankingDetail?.branchNumber,
+    accountName: bankingDetail?.accountName,
+    accountNumber: bankingDetail?.accountNumber,
+    comfirmAccountNumber: bankingDetail?.accountNumber,
+  };
+
+  const bankingFormik = useFormik({
+    initialValues: bankingDetailInitialValues,
+    validationSchema: bankingDetailSchema,
+    enableReinitialize: true,
+
+    onSubmit: (values, {resetForm}) => {
+      UpdateBankingDetails(values);
+    },
+  });
   const GetPaymentValues = () => {
     GetAvailableBalance(auth.GetBusinessId());
     GetPaymentsForThisMonth(auth.GetBusinessId());
@@ -76,7 +261,6 @@ const PaymentsScreen = ({navigation}: any) => {
         if (error) {
           console.error(error.response.data);
         } else {
-          console.log(result.Balance);
           setAvailableBalance(FormatBalance(result.Balance || '0'));
         }
       },
@@ -90,7 +274,6 @@ const PaymentsScreen = ({navigation}: any) => {
           console.error(error.response.data);
         } else {
           const expectedPayments: any = result;
-          console.log(expectedPayments.Amount);
           expectedPayments.Amount = FormatBalance(
             expectedPayments.Amount || '0',
           );
@@ -115,6 +298,69 @@ const PaymentsScreen = ({navigation}: any) => {
       },
     );
   };
+  const businessDetailSchema = yup.object().shape({
+    businessName: yup
+      .string()
+      .min(2, 'Business name too Short!')
+      .max(50, 'Business name too Long!')
+      .required(),
+    businessPhoneNumber: yup
+      .string()
+      .matches(
+        /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
+        'not valid',
+      )
+      .min(10, 'Business phone number should be 10 digits')
+      .max(10, 'Business phone number should be 10 digits')
+      .required(),
+    addressline1: yup
+      .string()
+      .min(2, 'Address too Short!')
+      .max(100, 'Address too Long!')
+      .required(),
+    addressline2: yup.string().min(2, 'Too Short!').max(100, 'Too Long!'),
+    suburb: yup
+      .string()
+      .min(2, 'Suburb too Short!')
+      .max(50, 'Suburb too  Long!')
+      .required(),
+    city: yup
+      .string()
+      .min(2, 'City too Short!')
+      .max(50, 'City too Long!')
+      .required(),
+    province: yup
+      .string()
+      .min(2, 'Province too Short!')
+      .max(50, 'Province too Long!')
+      .required(),
+    postalcode: yup
+      .string()
+      .min(4, 'Postal code too Short!')
+      .max(4, 'Postal code too Long!')
+      .required(),
+  });
+
+  const businessDetailsInitialValues = {
+    businessName: '',
+    businessPhoneNumber: '',
+    addressline1: '',
+    addressline2: '',
+    suburb: '',
+    city: '',
+    province: '',
+    postalcode: '',
+  };
+
+  const formik = useFormik({
+    initialValues: businessDetailsInitialValues,
+    validationSchema: businessDetailSchema,
+
+    onSubmit: (values, {resetForm}) => {
+      BusinessDetailHelper(values);
+    },
+  });
+
   useEffect(() => {
     GetPaymentValues();
   }, []);
@@ -200,6 +446,11 @@ const PaymentsScreen = ({navigation}: any) => {
             size="md"
             action="primary"
             styles={{marginTop: 8, alignSelf: 'flex-start'}}
+            onPress={() => {
+              BankList();
+              GetBanking();
+              setShowModal(true);
+            }}
           />
         </View>
         <CustomButton1
@@ -214,7 +465,79 @@ const PaymentsScreen = ({navigation}: any) => {
           }}
         />
       </ScrollView>
+      <BankingDetailModal
+        ShowModal={showModal}
+        DropdownIsFocus={isFocus}
+        BankList={bankList}
+        BranchNumberIsInvalid={!!bankingFormik.errors.branchNumber}
+        BranchNumberErrorText={bankingFormik?.errors?.branchNumber}
+        BranchNumberValue={bankingFormik.values?.branchNumber}
+        BranchNumberOnChangeText={bankingFormik.handleChange('branchNumber')}
+        BranchNumberOnBlur={bankingFormik.handleBlur('branchNumber')}
+        AccountNameIsInvalid={!!bankingFormik.errors.accountName}
+        AccountNameErrorText={bankingFormik?.errors?.accountName}
+        AccountNameValue={bankingFormik.values?.accountName}
+        AccountNameOnChangeText={bankingFormik.handleChange('accountName')}
+        AccountNameOnBlur={bankingFormik.handleBlur('accountName')}
+        AccountNumberIsInvalid={!!bankingFormik.errors.accountNumber}
+        AccountNumberErrorText={bankingFormik?.errors?.accountNumber}
+        AccountNumberValue={bankingFormik.values?.accountNumber}
+        AccountNumberOnChangeText={bankingFormik.handleChange('accountNumber')}
+        AccountNumberOnBlur={bankingFormik.handleBlur('accountNumber')}
+        ComfirmAccountNumberIsInvalid={
+          !!bankingFormik.errors.comfirmAccountNumber
+        }
+        ComfirmAccountNumberErrorText={
+          bankingFormik?.errors?.comfirmAccountNumber
+        }
+        ComfirmAccountNumberValue={bankingFormik.values?.comfirmAccountNumber}
+        ComfirmAccountNumberOnChangeText={bankingFormik.handleChange(
+          'comfirmAccountNumber',
+        )}
+        ComfirmAccountNumberOnBlur={bankingFormik.handleBlur(
+          'comfirmAccountNumber',
+        )}
+        OnFocusBankingDetailDropdown={() => setIsFocus(true)}
+        OnBlurBankingDetailDropdown={() => setIsFocus(false)}
+        OnChangeBankingDetailDropdown={(item: any) => {
+          setBankName(item.name);
+          setPaystackBankId(item.id);
+          setPaystackBankCode(item.code);
+          setIsFocus(false);
+        }}
+        CloseBankingDetailModalButtonOnPress={() => {
+          setShowModal(false);
+          formik.resetForm();
+        }}
+        HandleSubmit={() => {
+          if (bankName != '') {
+            bankingFormik.handleSubmit();
+          } else {
+            setIsFocus(true);
+
+            toast.show({
+              placement: 'top',
+              render: ({id}) => {
+                const toastId = 'toast-' + id;
+                return (
+                  <Toast
+                    nativeID={toastId}
+                    action="attention"
+                    variant="outline">
+                    <VStack space="xs">
+                      <ToastTitle>Please select a bank to proceed</ToastTitle>
+                    </VStack>
+                  </Toast>
+                );
+              },
+            });
+          }
+        }}
+      />
     </SafeAreaView>
   );
 };
 export default PaymentsScreen;
+function BusinessDetailHelper(values: any) {
+  throw new Error('Function not implemented.');
+}

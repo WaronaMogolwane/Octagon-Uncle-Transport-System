@@ -53,3 +53,16 @@ export const GetDeclinedPaymentSummaryByBusinessId = async (businessId: string, 
         });
 
 };
+export const GetPaymentsByBusinessId = async (businessId: string, callback: (error: any, result: any) => void) => {
+    await axios
+        .get(
+            `${SERVER_HOST}:${SERVER_PORT}/payments/get-business-payments?businessId=${businessId}`
+        )
+        .then((response: any) => {
+            callback(null, response.data)
+        })
+        .catch((error: any) => {
+            console.error(error, null);
+        });
+
+};

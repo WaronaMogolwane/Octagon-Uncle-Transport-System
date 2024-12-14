@@ -1,5 +1,5 @@
 import Router from "express-promise-router";
-import { CreateNewCharge, CreateNewCustomer, CreateNewPlan, CreateNewSubscription, CreateNewTransferRecipient, CreateTransactionLink, CreateTransfer, GetAvailableBalance, GetDeclinedPaymentSummary, GetPaymentsSummaryForThisMonth, GetUpcomingPaymentSummary, RefundTransaction } from "../Controllers/PaymentsController";
+import { CreateNewCharge, CreateNewCustomer, CreateNewPlan, CreateNewSubscription, CreateNewTransferRecipient, CreateTransactionLink, CreateTransfer, GetAvailableBalance, GetBusinessPayments, GetDeclinedPaymentSummary, GetPaymentsSummaryForThisMonth, GetUpcomingPaymentSummary, RefundTransaction } from "../Controllers/PaymentsController";
 import { HandleWebhookEvent } from "../Services/PaystackService";
 const PAYSTACK_SECRET_KEY: string = process.env.OUTS_PAYSTACK_TEST_PUBLIC_KEY;
 const router = Router();
@@ -17,5 +17,6 @@ router.get("/get-available-balance", GetAvailableBalance, async (req, res, next)
 router.get("/get-payments-summary", GetPaymentsSummaryForThisMonth, async (req, res, next) => { });
 router.get("/get-upcoming-payments-summary", GetUpcomingPaymentSummary, async (req, res, next) => { });
 router.get("/get-declined-payments-summary", GetDeclinedPaymentSummary, async (req, res, next) => { });
+router.get("/get-business-payments", GetBusinessPayments, async (req, res, next) => { });
 
 export default router;

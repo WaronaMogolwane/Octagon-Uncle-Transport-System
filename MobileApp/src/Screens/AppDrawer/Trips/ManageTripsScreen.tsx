@@ -115,7 +115,7 @@ const ManageTripsScreen = ({navigation}: any) => {
 
   const EmtpyFlatListText = () => {
     return (
-      <View style={{backgroundColor: '#e8f0f3'}}>
+      <View style={{backgroundColor: '#e8f0f3', marginHorizontal: 5}}>
         <Text>
           You currently have no linked vehicles. Please add vehicles and try
           again.

@@ -139,29 +139,33 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         setPassengers(defaultData);
         setIsDisabled(true);
         setIsLoading(false);
+
         //Toast Notifiaction
-        toast.show({
-          placement: 'top',
-          render: ({id}) => {
-            const toastId = 'toast-' + id;
-            return (
-              <Toast nativeID={toastId} action="attention" variant="solid">
-                <VStack space="xs">
-                  <ToastTitle>Notice</ToastTitle>
-                  <ToastDescription>
-                    There are currently no unassigned passengers
-                  </ToastDescription>
-                </VStack>
-              </Toast>
-            );
-          },
-        });
+        NoPassengerToast();
       }
     });
     GetPassengerDriverVehicleLinking(businessId).then(passengers => {
-      // console.log(passengers);
       setpassengerList(passengers);
       setStatusCode(!statusCode);
+    });
+  };
+
+  const NoPassengerToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="attention" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Notice</ToastTitle>
+              <ToastDescription>
+                There are currently no unassigned passengers
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
     });
   };
 

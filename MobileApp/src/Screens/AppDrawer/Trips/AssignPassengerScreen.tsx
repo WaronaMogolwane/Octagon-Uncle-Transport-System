@@ -114,6 +114,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const vehicleId = route.params.vehicleId;
   const make = route.params.make;
   const model = route.params.model;
+  const license = route.params.license;
 
   const businessId = auth.GetBusinessId();
   const onRefresh = React.useCallback(() => {
@@ -726,7 +727,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         style={{
           marginBottom: 10,
           paddingTop: 0,
-          height: '32%',
+          height: '35%',
           marginHorizontal: 12,
           backgroundColor: '#ffffff',
           borderRadius: 5,
@@ -752,10 +753,20 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                 fontWeight: 'bold',
                 fontSize: 15,
                 // color: '#e89d0e',
-                marginBottom: 20,
                 textAlign: 'right',
               }}>
               {make + ' ' + model}
+            </Text>
+
+            <Text
+              style={{
+                fontWeight: '400',
+                fontSize: 12,
+                // color: '#e89d0e',
+                marginBottom: 20,
+                textAlign: 'right',
+              }}>
+              ({license})
             </Text>
           </View>
         </View>

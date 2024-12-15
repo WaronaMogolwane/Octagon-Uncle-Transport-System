@@ -107,6 +107,7 @@ const ManageTripsScreen = ({navigation}: any) => {
           make: itemData.make,
           model: itemData.model,
           color: itemData.color,
+          license: itemData.licenseNumber,
         });
       }}
     />

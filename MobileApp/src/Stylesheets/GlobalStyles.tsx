@@ -43,6 +43,7 @@ export const FormStyles = StyleSheet.create({
 export const FlatlistStyles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#e8f0f3',
   },
 });
 export const TripCardDriverStyles = StyleSheet.create({

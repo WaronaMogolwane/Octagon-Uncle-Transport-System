@@ -6,6 +6,7 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
@@ -67,7 +68,7 @@ import PassengerListAllCard from '../../../Components/Cards/PassngerListForTrans
 import PassengerListPendingCard from '../../../Components/Cards/PassengerListPendingCard';
 import {Auth} from '../../../Classes/Auth';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {WalletMinimal} from 'lucide-react-native';
+import filter from 'lodash.filter';
 
 const ManagePassengerScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -99,6 +100,8 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [isFocus, setIsFocus] = useState(false);
 
   const [allPassengers, setAllPassengers] = useState([]);
+  const [allPassengersFiltered, setAllPassengersFiltered] = useState([]);
+
   const [allPendingPassengers, setPendingPassengers] = useState([]);
 
   const [statusCode, setStatusCode] = useState(false);
@@ -116,10 +119,13 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [IsLoading, setIsLoading] = useState(false);
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [fullData, setFullData] = useState([]);
+
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
-  // const role: number = Number(auth.GetUserRole());
-  const role: number = 1;
+  const role: number = Number(auth.GetUserRole());
+  // const role: number = 1;
 
   const defaultReasons = [
     {
@@ -1074,6 +1080,31 @@ const ManagePassengerScreen = ({navigation}: any) => {
     });
   };
 
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    const formattedQuery = query;
+    const filterData: any = filter(allPassengers, (user: any) => {
+      return contains(user, formattedQuery);
+    });
+
+    setAllPassengersFiltered(filterData);
+  };
+
+  const contains = (
+    {parentName, passengerFirstName, passengerLastName}: any,
+    query: any,
+  ) => {
+    if (
+      parentName.includes(query) ||
+      passengerFirstName.includes(query) ||
+      passengerLastName.includes(query)
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
   //Handles FAB onPress
   const HandleBackFabPress = () => {
     navigation.goBack();
@@ -1100,11 +1131,20 @@ const ManagePassengerScreen = ({navigation}: any) => {
     return (
       <View style={{flex: 1}}>
         <View style={FlatlistStyles.container}>
+          <TextInput
+            placeholder="Search"
+            clearButtonMode="always"
+            autoCapitalize="none"
+            style={styles.searchBox}
+            autoCorrect={false}
+            value={searchQuery}
+            onChangeText={(query: string) => handleSearch(query)}
+          />
           <View>{showPassengerSummaryModal()}</View>
           {noPassenger ? EmtpyFlatListText() : null}
           <FlatList
             style={{backgroundColor: '#e8f0f3'}}
-            data={allPassengers}
+            data={allPassengersFiltered}
             extraData={statusCode}
             renderItem={({item}) => renderItemComponentAllPassengers(item)}
             refreshControl={
@@ -1227,6 +1267,15 @@ const ManagePassengerScreen = ({navigation}: any) => {
             <View>{showReasonModal()}</View>
             <View>{showUpdatePopUpModal()}</View>
             <View style={{marginTop: 5, padding: 1}}>
+              <TextInput
+                placeholder="Search"
+                clearButtonMode="always"
+                autoCapitalize="none"
+                style={styles.searchBox}
+                autoCorrect={false}
+                value={searchQuery}
+                onChangeText={(query: string) => handleSearch(query)}
+              />
               {noPassenger ? EmtpyPassengerFlatListText() : null}
               <FlatList
                 data={passengerList}
@@ -1242,3 +1291,15 @@ const ManagePassengerScreen = ({navigation}: any) => {
 };
 
 export default ManagePassengerScreen;
+
+const styles = StyleSheet.create({
+  searchBox: {
+    // marginHorizontal: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderColor: '#ccc',
+    // borderWidth: 1,
+    // borderRadius: 8,
+    backgroundColor: '#fff',
+  },
+});

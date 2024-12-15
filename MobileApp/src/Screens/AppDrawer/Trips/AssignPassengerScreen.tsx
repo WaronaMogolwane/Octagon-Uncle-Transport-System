@@ -112,9 +112,9 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const toast = useToast();
 
   const vehicleId = route.params.vehicleId;
-  const make = route.params.make;
-  const model = route.params.model;
-  const license = route.params.license;
+  const make = route.params.curentVehicle.make;
+  const model = route.params.curentVehicle.model;
+  const license = route.params.curentVehicle.license;
 
   const businessId = auth.GetBusinessId();
   const onRefresh = React.useCallback(() => {

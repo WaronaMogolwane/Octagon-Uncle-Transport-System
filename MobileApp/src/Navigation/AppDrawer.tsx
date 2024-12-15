@@ -40,7 +40,6 @@ import {GetUser} from '../Controllers/UserController';
 import {ScrollView} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
-import TripVehiclePickerScreen from '../Screens/AppDrawer/Trips/TripVehiclePickerScreen';
 import {getHeaderTitle} from '@react-navigation/elements';
 import TripTransporterScreen from '../Screens/AppDrawer/Trips/TripTransporterScreen';
 
@@ -231,22 +230,7 @@ const AppDrawer = ({navigation}: any) => {
             ),
           }}
         />
-      ) : (
-        <Drawer.Screen
-          name="Trip Vehicle Picker"
-          component={TripVehiclePickerScreen}
-          options={{
-            title: 'Trips',
-            drawerIcon: () => (
-              <Route
-                size={iconSize}
-                strokeWidth={iconStrokeWidth}
-                color={iconColor}
-              />
-            ),
-          }}
-        />
-      )}
+      ) : null}
 
       {role == 1 ? (
         <Drawer.Screen
@@ -287,7 +271,7 @@ const AppDrawer = ({navigation}: any) => {
           options={{
             title: 'Manage Trips',
             drawerIcon: () => (
-              <BookUser
+              <Route
                 size={iconSize}
                 strokeWidth={iconStrokeWidth}
                 color={iconColor}

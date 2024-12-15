@@ -6,8 +6,15 @@ import {
   CustomButton3,
 } from '../../../Components/Buttons';
 import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
-import {HandCoins, Baby, KeySquare, Bus} from 'lucide-react-native';
-import {Pressable, View, Text} from 'react-native';
+import {
+  HandCoins,
+  Baby,
+  KeySquare,
+  Bus,
+  ArrowLeftIcon,
+  ClockIcon,
+} from 'lucide-react-native';
+import {Pressable, View, Text, TextInput, StyleSheet} from 'react-native';
 import {
   GetBalanceByBusinessId,
   GetDeclinedPaymentsSummary,
@@ -17,6 +24,10 @@ import {
 import {Auth} from '../../../Classes/Auth';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {
+  Button,
+  ButtonIcon,
+  ButtonText,
+  Card,
   RefreshControl,
   ScrollView,
   Toast,
@@ -75,6 +86,9 @@ const PaymentsScreen = ({navigation}: any) => {
   const [bankName, setBankName] = useState('');
   const [paystackBankCode, setPaystackBankCode] = useState('');
   const [paystackBankId, setPaystackBankId] = useState('');
+  const [userRole, setUserRole] = useState('');
+  const [cardNumber, setCardNumber] = useState('Card Number');
+
   const toast = useToast();
   const businessId = auth.GetBusinessId();
 
@@ -362,182 +376,260 @@ const PaymentsScreen = ({navigation}: any) => {
   });
 
   useEffect(() => {
-    GetPaymentValues();
+    setUserRole(auth.GetUserRole());
+    setUserRole('2');
+    //GetPaymentValues();
   }, []);
-  return (
-    <SafeAreaView style={{height: '100%'}}>
-      <ScrollView
-        style={{}}
-        contentContainerStyle={ThemeStyles.container}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshingPayments}
-            onRefresh={onRefreshPayments}
-          />
-        }>
-        <View
-          style={{
-            height: '10%',
-            width: '90%',
-            marginTop: 8,
-            marginBottom: 32,
-          }}>
+
+  if (userRole == '1') {
+    return (
+      <SafeAreaView style={{height: '100%'}}>
+        <ScrollView
+          style={{}}
+          contentContainerStyle={ThemeStyles.container}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshingPayments}
+              onRefresh={onRefreshPayments}
+            />
+          }>
           <View
-            style={
-              {
-                // alignItems: 'center',
-              }
-            }>
-            <View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  marginTop: 5,
-                  marginVertical: 'auto',
-                }}>
+            style={{
+              height: '10%',
+              width: '90%',
+              marginTop: 8,
+              marginBottom: 32,
+            }}>
+            <View
+              style={
+                {
+                  // alignItems: 'center',
+                }
+              }>
+              <View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    marginTop: 5,
+                    marginVertical: 'auto',
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 28,
+                      fontWeight: 'bold',
+                      // color: 'white',
+                      marginBottom: 4,
+                    }}>
+                    Available Balance
+                  </Text>
+                </View>
+              </View>
+              <View>
                 <Text
                   style={{
-                    fontSize: 28,
-                    fontWeight: 'bold',
+                    fontSize: 22,
                     // color: 'white',
+                    fontWeight: '500',
+                    // alignSelf: 'center',
                     marginBottom: 4,
                   }}>
-                  Available Balance
+                  {availableBalance}
                 </Text>
               </View>
             </View>
-            <View>
-              <Text
-                style={{
-                  fontSize: 22,
-                  // color: 'white',
-                  fontWeight: '500',
-                  // alignSelf: 'center',
-                  marginBottom: 4,
-                }}>
-                {availableBalance}
-              </Text>
-            </View>
           </View>
-        </View>
-        <PaymentCard
-          PaymentsType="Expected"
-          NumberOfPayments={expectedPaymentsSummary.NumberOfPayments || '0'}
-          Amount={expectedPaymentsSummary.Amount}
-          CurrentPeriod={expectedPaymentsSummary.CurrentPeriod}
-        />
-        <PaymentCard
-          PaymentsType="Declined"
-          NumberOfPayments={declinedPaymentsSummary.NumberOfPayments || '0'}
-          Amount={declinedPaymentsSummary.Amount}
-          CurrentPeriod={declinedPaymentsSummary.CurrentPeriod}
-          HandlePress={() => NavigateToScreen('TransporterPaymentHistory')}
-        />
-        <View style={{width: '90%'}}>
-          <CustomButton3
-            title="Payment History"
-            size="md"
-            action="primary"
-            styles={{marginTop: 16, alignSelf: 'flex-start'}}
-            onPress={() => NavigateToScreen('TransporterPaymentHistory')}
+          <PaymentCard
+            PaymentsType="Expected"
+            NumberOfPayments={expectedPaymentsSummary.NumberOfPayments || '0'}
+            Amount={expectedPaymentsSummary.Amount}
+            CurrentPeriod={expectedPaymentsSummary.CurrentPeriod}
           />
-          <CustomButton3
-            title="Banking Details"
-            size="md"
-            action="primary"
-            styles={{marginTop: 8, alignSelf: 'flex-start'}}
-            onPress={() => {
-              BankList();
-              GetBanking();
-              setShowModal(true);
+          <PaymentCard
+            PaymentsType="Declined"
+            NumberOfPayments={declinedPaymentsSummary.NumberOfPayments || '0'}
+            Amount={declinedPaymentsSummary.Amount}
+            CurrentPeriod={declinedPaymentsSummary.CurrentPeriod}
+            HandlePress={() => NavigateToScreen('TransporterPaymentHistory')}
+          />
+          <View style={{width: '90%'}}>
+            <CustomButton3
+              title="Payment History"
+              size="md"
+              action="primary"
+              styles={{marginTop: 16, alignSelf: 'flex-start'}}
+              onPress={() => NavigateToScreen('TransporterPaymentHistory')}
+            />
+            <CustomButton3
+              title="Banking Details"
+              size="md"
+              action="primary"
+              styles={{marginTop: 8, alignSelf: 'flex-start'}}
+              onPress={() => {
+                BankList();
+                GetBanking();
+                setShowModal(true);
+              }}
+            />
+          </View>
+          <CustomButton1
+            title="WITHDRAW FUNDS"
+            action="positive"
+            size="lg"
+            styles={{
+              width: '50%',
+              alignSelf: 'center',
+              marginTop: 'auto',
+              height: 48,
             }}
           />
-        </View>
-        <CustomButton1
-          title="WITHDRAW FUNDS"
-          action="positive"
-          size="lg"
-          styles={{
-            width: '50%',
-            alignSelf: 'center',
-            marginTop: 'auto',
-            height: 48,
+        </ScrollView>
+        <BankingDetailModal
+          ShowModal={showModal}
+          DropdownIsFocus={isFocus}
+          BankList={bankList}
+          BranchNumberIsInvalid={!!bankingFormik.errors.branchNumber}
+          BranchNumberErrorText={bankingFormik?.errors?.branchNumber}
+          BranchNumberValue={bankingFormik.values?.branchNumber}
+          BranchNumberOnChangeText={bankingFormik.handleChange('branchNumber')}
+          BranchNumberOnBlur={bankingFormik.handleBlur('branchNumber')}
+          AccountNameIsInvalid={!!bankingFormik.errors.accountName}
+          AccountNameErrorText={bankingFormik?.errors?.accountName}
+          AccountNameValue={bankingFormik.values?.accountName}
+          AccountNameOnChangeText={bankingFormik.handleChange('accountName')}
+          AccountNameOnBlur={bankingFormik.handleBlur('accountName')}
+          AccountNumberIsInvalid={!!bankingFormik.errors.accountNumber}
+          AccountNumberErrorText={bankingFormik?.errors?.accountNumber}
+          AccountNumberValue={bankingFormik.values?.accountNumber}
+          AccountNumberOnChangeText={bankingFormik.handleChange(
+            'accountNumber',
+          )}
+          AccountNumberOnBlur={bankingFormik.handleBlur('accountNumber')}
+          ComfirmAccountNumberIsInvalid={
+            !!bankingFormik.errors.comfirmAccountNumber
+          }
+          ComfirmAccountNumberErrorText={
+            bankingFormik?.errors?.comfirmAccountNumber
+          }
+          ComfirmAccountNumberValue={bankingFormik.values?.comfirmAccountNumber}
+          ComfirmAccountNumberOnChangeText={bankingFormik.handleChange(
+            'comfirmAccountNumber',
+          )}
+          ComfirmAccountNumberOnBlur={bankingFormik.handleBlur(
+            'comfirmAccountNumber',
+          )}
+          OnFocusBankingDetailDropdown={() => setIsFocus(true)}
+          OnBlurBankingDetailDropdown={() => setIsFocus(false)}
+          OnChangeBankingDetailDropdown={(item: any) => {
+            setBankName(item.name);
+            setPaystackBankId(item.id);
+            setPaystackBankCode(item.code);
+            setIsFocus(false);
+          }}
+          CloseBankingDetailModalButtonOnPress={() => {
+            setShowModal(false);
+            formik.resetForm();
+          }}
+          HandleSubmit={() => {
+            if (bankName != '') {
+              bankingFormik.handleSubmit();
+            } else {
+              setIsFocus(true);
+
+              toast.show({
+                placement: 'top',
+                render: ({id}) => {
+                  const toastId = 'toast-' + id;
+                  return (
+                    <Toast
+                      nativeID={toastId}
+                      action="attention"
+                      variant="outline">
+                      <VStack space="xs">
+                        <ToastTitle>Please select a bank to proceed</ToastTitle>
+                      </VStack>
+                    </Toast>
+                  );
+                },
+              });
+            }
           }}
         />
-      </ScrollView>
-      <BankingDetailModal
-        ShowModal={showModal}
-        DropdownIsFocus={isFocus}
-        BankList={bankList}
-        BranchNumberIsInvalid={!!bankingFormik.errors.branchNumber}
-        BranchNumberErrorText={bankingFormik?.errors?.branchNumber}
-        BranchNumberValue={bankingFormik.values?.branchNumber}
-        BranchNumberOnChangeText={bankingFormik.handleChange('branchNumber')}
-        BranchNumberOnBlur={bankingFormik.handleBlur('branchNumber')}
-        AccountNameIsInvalid={!!bankingFormik.errors.accountName}
-        AccountNameErrorText={bankingFormik?.errors?.accountName}
-        AccountNameValue={bankingFormik.values?.accountName}
-        AccountNameOnChangeText={bankingFormik.handleChange('accountName')}
-        AccountNameOnBlur={bankingFormik.handleBlur('accountName')}
-        AccountNumberIsInvalid={!!bankingFormik.errors.accountNumber}
-        AccountNumberErrorText={bankingFormik?.errors?.accountNumber}
-        AccountNumberValue={bankingFormik.values?.accountNumber}
-        AccountNumberOnChangeText={bankingFormik.handleChange('accountNumber')}
-        AccountNumberOnBlur={bankingFormik.handleBlur('accountNumber')}
-        ComfirmAccountNumberIsInvalid={
-          !!bankingFormik.errors.comfirmAccountNumber
-        }
-        ComfirmAccountNumberErrorText={
-          bankingFormik?.errors?.comfirmAccountNumber
-        }
-        ComfirmAccountNumberValue={bankingFormik.values?.comfirmAccountNumber}
-        ComfirmAccountNumberOnChangeText={bankingFormik.handleChange(
-          'comfirmAccountNumber',
-        )}
-        ComfirmAccountNumberOnBlur={bankingFormik.handleBlur(
-          'comfirmAccountNumber',
-        )}
-        OnFocusBankingDetailDropdown={() => setIsFocus(true)}
-        OnBlurBankingDetailDropdown={() => setIsFocus(false)}
-        OnChangeBankingDetailDropdown={(item: any) => {
-          setBankName(item.name);
-          setPaystackBankId(item.id);
-          setPaystackBankCode(item.code);
-          setIsFocus(false);
-        }}
-        CloseBankingDetailModalButtonOnPress={() => {
-          setShowModal(false);
-          formik.resetForm();
-        }}
-        HandleSubmit={() => {
-          if (bankName != '') {
-            bankingFormik.handleSubmit();
-          } else {
-            setIsFocus(true);
-
-            toast.show({
-              placement: 'top',
-              render: ({id}) => {
-                const toastId = 'toast-' + id;
-                return (
-                  <Toast
-                    nativeID={toastId}
-                    action="attention"
-                    variant="outline">
-                    <VStack space="xs">
-                      <ToastTitle>Please select a bank to proceed</ToastTitle>
-                    </VStack>
-                  </Toast>
-                );
-              },
-            });
-          }
-        }}
-      />
-    </SafeAreaView>
-  );
+      </SafeAreaView>
+    );
+  }
+  if (userRole == '2') {
+    return (
+      <SafeAreaView style={{height: '100%'}}>
+        <View style={{backgroundColor: '#e8f0f3', flex: 1}}>
+          <View style={{}}>
+            <Card
+              style={{
+                borderRadius: 5,
+              }}>
+              <Text style={{fontWeight: 'bold', fontSize: 15}}>
+                Next Payment Date
+              </Text>
+              <Text style={{fontSize: 18}}>08/05/2024</Text>
+              <Text style={{fontWeight: 'bold', fontSize: 15}}>Amount</Text>
+              <Text style={{fontSize: 18}}>R 230.00</Text>
+            </Card>
+          </View>
+          <View></View>
+          <View style={{width: '50%'}}>
+            <CustomButton3 size="sm" title="View all transactioons" />
+            <CustomButton1 size="sm" title="Add payment method" />
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  }
 };
 export default PaymentsScreen;
 function BusinessDetailHelper(values: any) {
   throw new Error('Function not implemented.');
 }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  form: {
+    width: '80%',
+  },
+  input: {
+    backgroundColor: '#fff',
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 18,
+  },
+  button: {
+    marginTop: 20,
+    backgroundColor: '#1E90FF',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+  avatarContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+  },
+  changeAvatarButton: {
+    marginTop: 10,
+  },
+  changeAvatarButtonText: {
+    marginTop: 10,
+    color: '#1E90FF',
+    fontSize: 16,
+  },
+});

@@ -6,7 +6,7 @@ export const CustomButton1 = (props: ButtonProps) => {
   return (
     <Button
       mb="$2"
-      size="md"
+      size={props.size}
       variant="solid"
       style={props.styles}
       action={props.action}

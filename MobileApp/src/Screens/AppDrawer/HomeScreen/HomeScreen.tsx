@@ -52,6 +52,8 @@ import {
 } from '../../../Services/ImageStorageService';
 import SmallHomeScreenCard from '../../../Components/Cards/SmallHomeScreenCard';
 import LargeHomeScreenCard from '../../../Components/Cards/LargeHomeScreenCard';
+import {FormatBalance} from '../../../Utilities/CurrencyFormat';
+import {GetBalanceByBusinessId} from '../../../Controllers/PaymentsController';
 
 interface IVehicle {
   Make: string;
@@ -75,6 +77,7 @@ const HomeScreen = ({navigation}: any) => {
   const [tripCount, setTripCount] = useState('');
   const [marginTopNumber, setMarginTopNumber] = useState(0);
   const [marginBottomNumber, setMarginBottomNumber] = useState(10);
+  const [availableBalance, setAvailableBalance] = useState('0');
 
   const [isStarted, setIsStarted] = useState(true);
   const [noActivePassenger, setNoActivePassenger] = useState(true);
@@ -130,6 +133,7 @@ const HomeScreen = ({navigation}: any) => {
     if (role == 1) {
       GetPassengers();
       GetVehicleCount();
+      GetAvailableBalance(auth.GetBusinessId());
     } else if (role == 2) {
       GetPassengers();
       GetActivePasengers();
@@ -372,6 +376,18 @@ const HomeScreen = ({navigation}: any) => {
       color={iconColor}
     />
   );
+  const GetAvailableBalance = async (businessId: string) => {
+    return await GetBalanceByBusinessId(
+      businessId,
+      (error: any, result: any) => {
+        if (error) {
+          console.error(error.response.data);
+        } else {
+          setAvailableBalance(FormatBalance(result.Balance || '0'));
+        }
+      },
+    );
+  };
 
   if (role == 1) {
     return (
@@ -417,7 +433,7 @@ const HomeScreen = ({navigation}: any) => {
                 marginHorizontal: '5%',
               }}>
               <SmallHomeScreenCard
-                primaryText={'R 1000.00'}
+                primaryText={availableBalance}
                 secondaryText={'Available Balance'}
                 iconSelector={1}
               />

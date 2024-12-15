@@ -143,6 +143,7 @@ export const AssignPassengerScreenStyles = StyleSheet.create({
     padding: 16,
   },
   dropdown: {
+    backgroundColor: '#fff',
     height: 50,
     borderColor: 'gray',
     borderWidth: 0.5,

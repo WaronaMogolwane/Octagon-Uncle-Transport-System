@@ -14,7 +14,6 @@ import BusinessDetailsScreen from '../Screens/AuthenticationStack/BusinessDetail
 import ProfileScreen from '../Screens/AppDrawer/Profile/ProfileScreen';
 import EditBusinessDetailsScreen from '../Screens/AppDrawer/Profile/EditBusinessDetailsScreen';
 import EditUserDetailsScreen from '../Screens/AppDrawer/Profile/EditUserDetailsScreen';
-import EditPaymentDetailsScreen from '../Screens/AppDrawer/Profile/EditPaymentDetailsScreen';
 
 import {Auth} from '../Classes/Auth';
 import {AuthContext} from '../Services/AuthenticationService';
@@ -342,14 +341,6 @@ const AppDrawer = ({navigation}: any) => {
               color={iconColor}
             />
           ),
-        }}
-      />
-      <Drawer.Screen
-        name="Edit Payment Details"
-        component={EditPaymentDetailsScreen}
-        options={{
-          title: 'Payments',
-          drawerItemStyle: {display: 'none'},
         }}
       />
       <Drawer.Screen

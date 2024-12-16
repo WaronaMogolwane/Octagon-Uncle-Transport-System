@@ -111,7 +111,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const ref = React.useRef(null);
   const toast = useToast();
 
-  const vehicleId = route.params.vehicleId;
+  const vehicleId = route.params.curentVehicle.vehicleId;
   const make = route.params.curentVehicle.make;
   const model = route.params.curentVehicle.model;
   const license = route.params.curentVehicle.license;

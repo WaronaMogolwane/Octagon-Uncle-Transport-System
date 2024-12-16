@@ -42,12 +42,18 @@ export const GetPastTripsForDriver = async (driverId: string) => {
   return await GetPastTripsDriverFromDB(driverId);
 };
 
-export const GetUpcomingTripsForTransporter = async (businessId: string) => {
-  return await GetUpcomingTripsTransporterFromDB(businessId);
+export const GetUpcomingTripsForTransporter = async (
+  businessId: string,
+  vehicleId: string,
+) => {
+  return await GetUpcomingTripsTransporterFromDB(businessId, vehicleId);
 };
 
-export const GetPastTripsForTransporter = async (businessId: string) => {
-  return await GetPastTripsTransporterFromDB(businessId);
+export const GetPastTripsForTransporter = async (
+  businessId: string,
+  vehicleId: string,
+) => {
+  return await GetPastTripsTransporterFromDB(businessId, vehicleId);
 };
 
 export const UpdateTrip = async (trip: Trip) => {

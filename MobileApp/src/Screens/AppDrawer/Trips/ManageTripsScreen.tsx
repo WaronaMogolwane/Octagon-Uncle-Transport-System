@@ -23,6 +23,7 @@ import {
   MenuItem,
   MenuItemLabel,
   AddIcon,
+  Divider,
 } from '@gluestack-ui/themed';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
@@ -172,7 +173,9 @@ const ManageTripsScreen = ({navigation}: any) => {
         onSelectionChange={keys => {
           const selectedMenuItem: any = keys;
           if (selectedMenuItem.currentKey === 'TripHistory') {
-            navigation.navigate('Transport Trip');
+            navigation.navigate('Transport Trip', {
+              curentVehicle,
+            });
             setShowMenu(false);
           }
           if (selectedMenuItem.currentKey === 'ManageTrip') {
@@ -187,7 +190,7 @@ const ManageTripsScreen = ({navigation}: any) => {
           setShowMenu(false);
           setIsOpen(false);
         }}
-        style={{backgroundColor: '#7DD3F2'}}
+        // style={{backgroundColor: '#7DD3F2'}}
         placement="top"
         trigger={({...triggerProps}) => {
           return (

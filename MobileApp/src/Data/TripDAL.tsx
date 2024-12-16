@@ -207,17 +207,24 @@ export const GetPastTripsDriverFromDB = async (driverId: string) => {
   return result;
 };
 
-export const GetUpcomingTripsTransporterFromDB = async (businessId: string) => {
+export const GetUpcomingTripsTransporterFromDB = async (
+  businessId: string,
+  vehicleId: string,
+) => {
   let result: any;
   const tripData: {}[] = [];
   let trip = {};
 
   await axios
-    .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-upcoming-trip-for-business`, {
-      trip: {
-        BusinessId: businessId,
+    .post(
+      `${SERVER_HOST}:${SERVER_PORT}/trip/get-upcoming-trips-for-business`,
+      {
+        trip: {
+          BusinessId: businessId,
+          VehicleId: vehicleId,
+        },
       },
-    })
+    )
     .then((response: any) => {
       let res = [...response.data.result];
 
@@ -247,7 +254,10 @@ export const GetUpcomingTripsTransporterFromDB = async (businessId: string) => {
   return result;
 };
 
-export const GetPastTripsTransporterFromDB = async (businessId: string) => {
+export const GetPastTripsTransporterFromDB = async (
+  businessId: string,
+  vehicleId: string,
+) => {
   let result: any;
   const tripData: {}[] = [];
   let trip = {};
@@ -256,6 +266,7 @@ export const GetPastTripsTransporterFromDB = async (businessId: string) => {
     .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-past-trip-for-business`, {
       trip: {
         BusinessId: businessId,
+        VehicleId: vehicleId,
       },
     })
     .then((response: any) => {

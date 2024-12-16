@@ -11,6 +11,17 @@ export type PaymentMethodCardProps = {
             | undefined,
     ) => void;
 };
+export type MonthlyPaymentDetailsCardProps = {
+    Amount: string;
+    PaymentFailed: boolean;
+    NextPaymentDate: string;
+    HandlePayNowPress?: (
+        values:
+            | GestureResponderEvent
+            | React.FormEvent<HTMLFormElement>
+            | undefined,
+    ) => void;
+};
 export type PaymentCardProps = {
     NumberOfPayments: string;
     Amount: string;

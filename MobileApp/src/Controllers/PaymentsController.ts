@@ -1,6 +1,6 @@
 import { GetAvailableBalanceByBusinessId, GetCardAuthorizationsByUserId, GetDeclinedPaymentSummaryByBusinessId, GetPaymentsByBusinessId, GetPaymentsSummaryForThisMonthByBusinessId, GetUpcomingPaymentSummaryByBusinessId } from "../Data/PaymentDAL";
 import { AuthorizationCharge } from "../Models/PaymentsModel";
-import { ChargeAuthorization, InitializeTransaction } from "../Services/PaymentsService";
+import { ChargeAuthorization, GetMonthlyPaymentDetailsByUserId, InitializeTransaction } from "../Services/PaymentsService";
 
 export const GetBalanceByBusinessId = async (businessId: string, callback: (error: any, result: any) => void) => {
     return await GetAvailableBalanceByBusinessId(businessId, (error: any, result: any) => {
@@ -64,6 +64,16 @@ export const GetUserCardAuthorizations = async (userId: string, callback: (error
 };
 export const PayAmount = async (authorizationCharge: AuthorizationCharge, callback: (error: any, result: any) => void) => {
     await ChargeAuthorization(authorizationCharge, (error: any, result: any) => {
+        if (error) {
+            callback(error, null);
+        }
+        else {
+            callback(null, result);
+        }
+    });
+};
+export const GetMonthlyPaymentDetails = async (userId: string, callback: (error: any, result: any) => void) => {
+    await GetMonthlyPaymentDetailsByUserId(userId, (error: any, result: any) => {
         if (error) {
             callback(error, null);
         }

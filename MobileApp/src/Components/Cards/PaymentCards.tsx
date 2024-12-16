@@ -2,13 +2,16 @@ import {
   Badge,
   BadgeText,
   Button,
+  Card,
   Divider,
   Heading,
   HStack,
   Text,
   View,
+  VStack,
 } from '@gluestack-ui/themed';
 import {
+  MonthlyPaymentDetailsCardProps,
   PaymentCardProps,
   PaymentMethodCardProps,
 } from '../../Props/PaymentCardProps';
@@ -89,5 +92,34 @@ export const PaymentMethodCard = (props: PaymentMethodCardProps) => {
         </HStack>
       </View>
     </View>
+  );
+};
+export const MonthlyPaymentDetailsCard = (
+  props: MonthlyPaymentDetailsCardProps,
+) => {
+  return (
+    <Card
+      style={{
+        borderRadius: 5,
+        paddingHorizontal: '5%',
+      }}>
+      <HStack>
+        <VStack>
+          <Text style={{fontWeight: 'bold', fontSize: 15}}>
+            Next Payment Date
+          </Text>
+          <Text style={{fontSize: 18}}>{props.NextPaymentDate}</Text>
+          <Text style={{fontWeight: 'bold', fontSize: 15}}>Amount</Text>
+          <Text style={{fontSize: 18}}>{props.Amount}</Text>
+        </VStack>
+        {props.PaymentFailed ? (
+          <CustomButton1
+            title="Pay Now"
+            styles={{marginLeft: 'auto', alignSelf: 'center'}}
+            onPress={props.HandlePayNowPress}
+          />
+        ) : null}
+      </HStack>
+    </Card>
   );
 };

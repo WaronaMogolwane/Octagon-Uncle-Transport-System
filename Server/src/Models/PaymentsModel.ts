@@ -344,3 +344,25 @@ export const GetCardAuthorizationsByUserId = async (
     );
 };
 
+export const GetMonthlyPaymentDetailsByUserId = async (
+    userId: string,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetMonthlyPaymentDetails(?);",
+            timeout: 40000,
+            values: [
+                userId
+            ],
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
+

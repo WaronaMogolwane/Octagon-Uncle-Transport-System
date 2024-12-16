@@ -1,5 +1,5 @@
 import { BankTransfer, Recipient, Transfer, TransferRecipient, TransferWebHookEvent } from './../Classes/Transfer';
-import { GetBulkChargesForToday, InsertNewBulkCharge, GetNewBulkCharge, InsertNewTransfer, AreRecurringChargesPendingToday, InsertPendingCharges, GetAvailableBalanceByBusinessId, GetUpcomingPaymentSummaryByBusinessId, GetDeclinedPaymentSummaryByBusinessId, GetPaymentsSummaryForThisMonthByBusinessId, GetPaymentsByBusinessId, GetCardAuthorizationsByUserId } from './../Models/PaymentsModel';
+import { GetBulkChargesForToday, InsertNewBulkCharge, GetNewBulkCharge, InsertNewTransfer, AreRecurringChargesPendingToday, InsertPendingCharges, GetAvailableBalanceByBusinessId, GetUpcomingPaymentSummaryByBusinessId, GetDeclinedPaymentSummaryByBusinessId, GetPaymentsSummaryForThisMonthByBusinessId, GetPaymentsByBusinessId, GetCardAuthorizationsByUserId, GetMonthlyPaymentDetailsByUserId } from './../Models/PaymentsModel';
 import { InitiateBulkCharge, ChargeAuthorization, CreateNewPaystackRefund, CreateTransferRecipient, InitiateTransfer } from './../Services/PaystackService';
 import { Authorization, Data, RefundWebhookEvent, TransactionWebhookEvent } from './../Classes/WebhookEvent';
 import { NextFunction, Request, Response } from "express";
@@ -404,6 +404,18 @@ export const GetBusinessPayments = async (req: Request, res: Response, next: Nex
 export const GetUserCardAuthorizations = async (req: Request, res: Response, next: NextFunction) => {
     const userId: string = req.query.userId.toString();
     await GetCardAuthorizationsByUserId(userId, (error: any, result: OkPacket) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json(result)
+        }
+    })
+}
+export const GetMonthlyPaymentDetails = async (req: Request, res: Response, next: NextFunction) => {
+    const userId: string = req.query.userId.toString();
+    await GetMonthlyPaymentDetailsByUserId(userId, (error: any, result: OkPacket) => {
         if (error) {
             const err: Error = new Error(error.message)
             next(new ErrorResponse(400, err.message, err.stack));

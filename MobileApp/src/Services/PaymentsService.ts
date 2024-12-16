@@ -1,5 +1,5 @@
 import { SERVER_HOST, SERVER_PORT } from '@env';
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import { BankingDetail } from '../Models/BankingDetail';
 import { AuthorizationCharge } from '../Models/PaymentsModel';
 export const ChargeAuthorization = async (authorizationCharge: AuthorizationCharge, callback: (error: any, result: any) => void) => {
@@ -34,5 +34,22 @@ export const InitializeTransaction = async (email: string, reference: string, us
         })
         .catch((error: any) => {
             callback(error, null)
+        });
+};
+export const GetMonthlyPaymentDetailsByUserId = async (
+    userId: string,
+    callback: (error: any, result: any) => void,
+) => {
+    await axios
+        .get(`${SERVER_HOST}:${SERVER_PORT}/payments/get-monthly-payment-details`, {
+            params: {
+                userId: userId,
+            },
+        })
+        .then((response: AxiosResponse) => {
+            callback(null, response.data[0][0]);
+        })
+        .catch(error => {
+            callback(error, null);
         });
 };

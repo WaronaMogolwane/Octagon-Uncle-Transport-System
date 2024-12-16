@@ -23,6 +23,7 @@ import {
   GetPaymentsSummaryForThisMonth,
   GetUpcomingPaymentsSummary,
   GetUserCardAuthorizations,
+  PayAmount,
   TokenizePaymentMethod,
 } from '../../../Controllers/PaymentsController';
 import {Auth} from '../../../Classes/Auth';
@@ -62,6 +63,7 @@ import * as yup from 'yup';
 import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
 import uuid from 'react-native-uuid';
 import {useRoute} from '@react-navigation/native';
+import {AuthorizationCharge} from '../../../Models/PaymentsModel';
 
 String.prototype.format = function () {
   var args = arguments;
@@ -380,6 +382,28 @@ const PaymentsScreen = ({navigation, route}: any) => {
       },
     );
   };
+  const PayNow = async (amount: string) => {
+    console.log('hello');
+    const authorizationCharge: AuthorizationCharge = {
+      email: 'mogolwanew@gmail.com',
+      amount: amount,
+      authorization_code: 'AUTH_efz5240h2i',
+      reference: 'MCA-{0}'.format(uuid.v4()),
+      metadata: {
+        user_id: 'f0628b1a-23e5-4f34-b3ff-d036cd7feadb',
+        transporter_user_id: '856f9966-968c-478a-92ed-d95a52ac0225',
+        charge_type: 'Manual Card Authorization',
+      },
+    };
+    await PayAmount(authorizationCharge, (error: any, result: any) => {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log(result);
+      }
+    });
+  };
+
   const businessDetailSchema = yup.object().shape({
     businessName: yup
       .string()
@@ -657,6 +681,9 @@ const PaymentsScreen = ({navigation, route}: any) => {
                 <CustomButton1
                   title="Pay Now"
                   styles={{marginLeft: 'auto', alignSelf: 'center'}}
+                  onPress={() => {
+                    PayNow('1500');
+                  }}
                 />
               </HStack>
             </Card>

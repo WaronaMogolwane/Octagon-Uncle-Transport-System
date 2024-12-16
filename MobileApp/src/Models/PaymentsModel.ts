@@ -9,6 +9,7 @@ export interface AuthorizationCharge {
 export interface AuthorizationChargeMetadata {
     user_id: string;
     transporter_user_id: string;
+    charge_type: string;
 }
 export class CardAuthorisation {
     cardAuthorisationId: string | undefined;

@@ -1,7 +1,7 @@
 import { BankTransfer, Recipient, Transfer, TransferRecipient, TransferWebHookEvent } from './../Classes/Transfer';
 import { GetBulkChargesForToday, InsertNewBulkCharge, GetNewBulkCharge, InsertNewTransfer, AreRecurringChargesPendingToday, InsertPendingCharges, GetAvailableBalanceByBusinessId, GetUpcomingPaymentSummaryByBusinessId, GetDeclinedPaymentSummaryByBusinessId, GetPaymentsSummaryForThisMonthByBusinessId, GetPaymentsByBusinessId, GetCardAuthorizationsByUserId } from './../Models/PaymentsModel';
 import { InitiateBulkCharge, ChargeAuthorization, CreateNewPaystackRefund, CreateTransferRecipient, InitiateTransfer } from './../Services/PaystackService';
-import { Authorization, Data, TransactionWebhookEvent } from './../Classes/WebhookEvent';
+import { Authorization, Data, RefundWebhookEvent, TransactionWebhookEvent } from './../Classes/WebhookEvent';
 import { NextFunction, Request, Response } from "express";
 import { Customer } from "../Classes/Customer";
 import { CreateNewPaystackCustomer, CreatePaystackTransactionLink } from "../Services/PaystackService";
@@ -142,7 +142,7 @@ export const CreateNewTransaction = async (webhookEvent: TransactionWebhookEvent
         reference: data.reference,
         dateCreated: new Date(data.created_at),
         datePaid: new Date(data.paid_at),
-        transactionType: data.channel
+        transactionType: webhookEvent.data.metadata.charge_type
     })
     await InsertNewTransaction(newTransaction, (error: QueryError, result) => {
         if (error) {
@@ -159,6 +159,7 @@ export const RefundTransaction = async (req: Request, res: Response, next: NextF
         amount: req.body.amount,
         currency: req.body.currency,
         merchant_note: req.body.merchant_note,
+        transactionReference: req.body.transaction_reference
     })
     await CreateNewPaystackRefund(newRefund, (error: any, response: any) => {
         if (error) {
@@ -170,13 +171,14 @@ export const RefundTransaction = async (req: Request, res: Response, next: NextF
         }
     })
 }
-export const CreateNewRefund = async (webHookEvent: TransactionWebhookEvent, req: Request, res: Response, callback: (error: any, result: any) => void) => {
+export const CreateNewRefund = async (webHookEvent: RefundWebhookEvent, req: Request, res: Response, callback: (error: any, result: any) => void) => {
     let newRefund: Refund = ({
         transaction: webHookEvent.data.id,
         amount: webHookEvent.data.amount,
         currency: webHookEvent.data.currency,
         merchant_note: req.body.data.merchant_note,
-        customer_note: req.body.data.customer_note
+        customer_note: req.body.data.customer_note,
+        transactionReference: webHookEvent.data.transaction_reference
     })
     await InsertNewRefund(newRefund, (error: any, result: any) => {
         if (error) {

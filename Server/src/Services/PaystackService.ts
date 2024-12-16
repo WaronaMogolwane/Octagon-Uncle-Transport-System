@@ -1,7 +1,7 @@
 import { BulkBankTransfer, BankTransfer, TransferRecipient, TransferWebHookEvent } from './../Classes/Transfer';
 import { NextFunction, Response, Request } from "express";
 import { Customer } from "../Classes/Customer";
-import { TransactionWebhookEvent } from "../Classes/WebhookEvent";
+import { RefundWebhookEvent, TransactionWebhookEvent } from "../Classes/WebhookEvent";
 import { stringFormat } from '../Extensions/StringExtensions';
 import { CreateNewCardAuthorisation, CreateNewRefund, CreateNewTransaction, SaveNewTransfer, UpdateTransfer } from "../Controllers/PaymentsController";
 import axios, { AxiosResponse } from "axios";
@@ -159,7 +159,8 @@ export const HandleWebhookEvent = async (req: Request, res: Response, next: Next
             HandleSuccessfulCharge(chargeWebHookEvent, req, res, next);
             break;
         case (webHookEvent.event === "refund.processed"):
-            await HandleRefund(webHookEvent, req, res, next);
+            const refundWebHookEvent: RefundWebhookEvent = Object.assign(new TransactionWebhookEvent(), req.body);
+            await HandleRefund(refundWebHookEvent, req, res, next);
             break;
         case (webHookEvent.event === "transfer.success"):
             const transferWebHookEvent: TransferWebHookEvent = Object.assign(new TransferWebHookEvent(), req.body);
@@ -175,7 +176,8 @@ export const HandleWebhookEvent = async (req: Request, res: Response, next: Next
             break;
     }
 }
-async function HandleRefund(webHookEvent: TransactionWebhookEvent, req: Request, res: Response<any, Record<string, any>>, next: NextFunction) {
+async function HandleRefund(webHookEvent: RefundWebhookEvent, req: Request, res: Response<any, Record<string, any>>, next: NextFunction) {
+    console.log(webHookEvent.data.transaction_reference)
     await CreateNewRefund(webHookEvent, req, res, (error: QueryError, result: any) => {
         if (error) {
             if (error.code === 'ER_DUP_ENTRY') {
@@ -226,10 +228,11 @@ async function HandleSuccessfulCharge(webHookEvent: TransactionWebhookEvent, req
                     }
                 } else {
                     let newRefund: Refund = ({
-                        transaction: webHookEvent.data.id,
+                        transaction: webHookEvent.data.id.toString(),
                         amount: webHookEvent.data.amount,
                         currency: webHookEvent.data.currency,
                         merchant_note: "Card authorization refund",
+                        transactionReference: webHookEvent.data.reference
                     })
                     CreateNewPaystackRefund(newRefund, async (error: any, result: any) => {
                         if (error) {

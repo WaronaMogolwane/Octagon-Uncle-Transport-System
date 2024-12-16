@@ -97,16 +97,18 @@ export const InsertNewRefund = async (
     refund: Refund,
     callback: (error: any, result: any) => void
 ) => {
+    console.log(refund.transactionReference)
     DbPool.query(
         {
-            sql: "CALL InsertNewRefund(?,?,?,?,?);",
+            sql: "CALL InsertNewRefund(?,?,?,?,?,?);",
             timeout: 40000,
             values: [
                 refund.transaction,
                 refund.amount,
                 refund.currency,
                 refund.merchant_note,
-                refund.customer_note
+                refund.customer_note,
+                refund.transactionReference
             ],
         },
         function (error, results, fields) {

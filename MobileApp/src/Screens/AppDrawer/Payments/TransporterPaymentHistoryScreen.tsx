@@ -78,25 +78,6 @@ const TransporterPaymentHistoryScreen = () => {
     return false;
   };
 
-  const PayNow = async (amount: string) => {
-    const authorizationCharge: AuthorizationCharge = {
-      email: 'mogolwanew@gmail.com',
-      amount: amount,
-      authorization_code: 'AUTH_efz5240h2i',
-      reference: 'CA-{0}'.format(uuid.v4()),
-      metadata: {
-        user_id: 'f0628b1a-23e5-4f34-b3ff-d036cd7feadb',
-        transporter_user_id: '856f9966-968c-478a-92ed-d95a52ac0225',
-      },
-    };
-    await PayAmount(authorizationCharge, (error: any, result: any) => {
-      if (error) {
-        console.error(error);
-      } else {
-        console.log(result);
-      }
-    });
-  };
   useEffect(() => {
     RefreshData();
     //setUserRole(Number(auth.GetUserRole()));

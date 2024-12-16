@@ -15,6 +15,8 @@ import {
   UndoDropOffTime,
   UndoPickUpTime,
   UndoTripEnd,
+  GetUpcomingTripsByBusinessId,
+  GetPastTripsByBusinessId,
 } from "../Models/TripModel";
 import { TripStatus } from "../Classes/TripStatus";
 import { ErrorResponse } from "../Classes/ErrorResponse";
@@ -164,9 +166,12 @@ export const GetUpcomingTripsForBusiness = async (
   res: any,
   next: any
 ) => {
-  let businessId = req.body.trip.BusinessId;
+  const businessInfo = {
+    businessId: req.body.trip.BusinessId,
+    vehicleId: req.body.trip.VehicleId,
+  };
 
-  await GetUpcomingTripsByDriverId(businessId, async (error, result) => {
+  await GetUpcomingTripsByBusinessId(businessInfo, async (error, result) => {
     if (error) {
       next(new ErrorResponse(501, error.message));
     } /* else if (result.rowCount == 0) {
@@ -189,9 +194,12 @@ export const GetPastTripsForBusiness = async (
   res: any,
   next: any
 ) => {
-  let businessId = req.body.trip.BusinessId;
+  const businessInfo = {
+    businessId: req.body.trip.BusinessId,
+    vehicleId: req.body.trip.VehicleId,
+  };
 
-  await GetPastTripsByDriverId(businessId, async (error, result) => {
+  await GetPastTripsByBusinessId(businessInfo, async (error, result) => {
     if (error) {
       next(new ErrorResponse(501, error.message));
     } /* else if (result.rowCount == 0) {

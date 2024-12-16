@@ -1,10 +1,10 @@
-CREATE DEFINER=`sqladmin`@`%` PROCEDURE `InsertNewTrip`(IN _VehicleId varchar(100), IN _PassengerId varchar(100))
+CREATE DEFINER=`sqladmin`@`%` PROCEDURE `InsertNewTrip`(IN _VehicleId int, IN _PassengerId varchar(100), IN _BusinessId varchar(100))
 BEGIN
 
-SET @_DVLId = (SELECT DriverVehicleLinkingId FROM DriverVehicleLinking WHERE VehicleId = _VehicleId);
+SET @_DriverId = (SELECT DriverId FROM DriverVehicleLinking WHERE VehicleId = _VehicleId);
 
 INSERT INTO Trip
-(PassengerId, DriverVehicleLinkingId)
+(PassengerId, VehicleId, DriverId, BusinessId)
 VALUES
-(_PassengerId, @_DVLId);
+(_PassengerId, _VehicleId, @_DriverId, _BusinessId);
 END

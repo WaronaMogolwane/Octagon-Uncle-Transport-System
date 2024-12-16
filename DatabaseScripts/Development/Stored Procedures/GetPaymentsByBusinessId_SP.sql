@@ -4,5 +4,6 @@ SELECT t.TransactionId, ud.FirstName, ud.LastName, t.Amount, t.Status, t.DatePai
 INNER JOIN UserBusinessLinking ubl ON ubl.UserId = t.UserId
 INNER JOIN UserDetail ud ON ud.UserId = t.UserId
 WHERE ubl.BusinessId = _BusinessId
-AND t.Status = 'success' OR t.Status = 'failed';
+AND t.Status = 'success' OR t.Status = 'failed' OR t.Status = 'refunded'
+ORDER BY t.DatePaid DESC;
 END

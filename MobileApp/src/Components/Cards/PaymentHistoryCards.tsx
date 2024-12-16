@@ -1,7 +1,6 @@
 import {
   Text,
   Heading,
-  Image,
   Pressable,
   VStack,
   Badge,
@@ -9,8 +8,8 @@ import {
   HStack,
   Card,
 } from '@gluestack-ui/themed';
-import {GestureResponderEvent} from 'react-native';
 import {PaymentHistoryCardProps} from '../../Props/PaymentCardProps';
+import {CustomButton1} from '../Buttons';
 
 export const PaymentHistoryCard = (props: PaymentHistoryCardProps) => {
   return (
@@ -29,25 +28,45 @@ export const PaymentHistoryCard = (props: PaymentHistoryCardProps) => {
         shadowRadius: 6,
         elevation: 4,
       }}>
-      <Pressable onPress={props.HandlePress} style={{width: '100%'}}>
+      <Pressable onPress={props.HandleCardPress} style={{width: '100%'}}>
         <HStack space="xl">
-          <VStack>
-            <Text size="md">{props.FirstName + ' ' + props.LastName}</Text>
+          <VStack style={{alignSelf: 'center'}}>
+            <Heading size="md" style={{marginBottom: 4}}>
+              {props.FirstName + ' ' + props.LastName}
+            </Heading>
             <Badge
-              style={{right: 8, borderRadius: 16, alignSelf: 'flex-start'}}
+              style={{
+                right: 8,
+                borderRadius: 16,
+                alignSelf: 'flex-start',
+                marginBottom: 4,
+              }}
               size="lg"
               right={8}
               variant="solid"
               borderRadius="$lg"
-              action={props.Status == 'success' ? 'success' : 'error'}>
-              <BadgeText fontWeight="$bold">{props.Status}</BadgeText>
+              action={
+                props.Status == 'success'
+                  ? 'success'
+                  : props.Status == 'failed'
+                  ? 'error'
+                  : 'warning'
+              }>
+              <BadgeText fontWeight="$bold">
+                {props.Status == 'success'
+                  ? 'Paid'
+                  : props.Status == 'failed'
+                  ? 'Declined'
+                  : 'Refunded'}
+              </BadgeText>
             </Badge>
-            <Text size="xs">{props.Date}</Text>
+            <Text size="sm">{props.Date}</Text>
           </VStack>
-
-          <Heading size="md" style={{alignSelf: 'center', marginLeft: 'auto'}}>
-            {props.Amount}
-          </Heading>
+          <VStack style={{alignSelf: 'center', marginLeft: 'auto'}}>
+            <Heading size="md" style={{marginBottom: 8}}>
+              {props.Amount}
+            </Heading>
+          </VStack>
         </HStack>
       </Pressable>
     </Card>

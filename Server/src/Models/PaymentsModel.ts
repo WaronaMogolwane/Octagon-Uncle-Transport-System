@@ -320,4 +320,25 @@ export const GetPaymentsByBusinessId = async (
         }
     );
 };
+export const GetCardAuthorizationsByUserId = async (
+    userId: string,
+    callback: (error: any, result: any) => void
+) => {
+    const sql: string =
+        "SELECT * FROM CardAuthorisation WHERE UserId = '{0}' ORDER BY CardAuthorisationId DESC, IsActive DESC"
+            .format(userId);
+    DbPool.query(
+        {
+            sql: sql,
+            timeout: 40000,
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
 

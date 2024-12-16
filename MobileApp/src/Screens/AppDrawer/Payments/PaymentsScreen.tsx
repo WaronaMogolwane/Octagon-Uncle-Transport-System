@@ -5,6 +5,7 @@ import {
   CustomButton2,
   CustomButton3,
 } from '../../../Components/Buttons';
+import {cardCredit} from '@lucide/lab';
 import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 import {
   HandCoins,
@@ -13,29 +14,43 @@ import {
   Bus,
   ArrowLeftIcon,
   ClockIcon,
+  Icon,
 } from 'lucide-react-native';
-import {Pressable, View, Text, TextInput, StyleSheet} from 'react-native';
+import {Alert, Linking, StyleSheet} from 'react-native';
 import {
   GetBalanceByBusinessId,
   GetDeclinedPaymentsSummary,
   GetPaymentsSummaryForThisMonth,
   GetUpcomingPaymentsSummary,
+  GetUserCardAuthorizations,
+  TokenizePaymentMethod,
 } from '../../../Controllers/PaymentsController';
 import {Auth} from '../../../Classes/Auth';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {
+  Badge,
+  BadgeText,
   Button,
   ButtonIcon,
   ButtonText,
   Card,
+  Divider,
+  FlatList,
+  Heading,
+  HStack,
   RefreshControl,
   ScrollView,
+  Text,
   Toast,
   ToastTitle,
   useToast,
+  View,
   VStack,
 } from '@gluestack-ui/themed';
-import {PaymentCard} from '../../../Components/Cards/PaymentCards';
+import {
+  PaymentCard,
+  PaymentMethodCard,
+} from '../../../Components/Cards/PaymentCards';
 import {useFormik} from 'formik';
 import {
   GetBankingDetail,
@@ -45,6 +60,8 @@ import {
 import {BankingDetail} from '../../../Models/BankingDetail';
 import * as yup from 'yup';
 import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
+import uuid from 'react-native-uuid';
+import {useRoute} from '@react-navigation/native';
 
 String.prototype.format = function () {
   var args = arguments;
@@ -53,7 +70,8 @@ String.prototype.format = function () {
   });
 };
 
-const PaymentsScreen = ({navigation}: any) => {
+const PaymentsScreen = ({navigation, route}: any) => {
+  const {trxref, reference} = route.params || {};
   const {session}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const [availableBalance, setAvailableBalance] = useState('0');
@@ -87,11 +105,17 @@ const PaymentsScreen = ({navigation}: any) => {
   const [paystackBankCode, setPaystackBankCode] = useState('');
   const [paystackBankId, setPaystackBankId] = useState('');
   const [userRole, setUserRole] = useState('');
-  const [cardNumber, setCardNumber] = useState('Card Number');
+  const [cardAuthorizationList, setCardAuthorizationList] = useState([]);
 
   const toast = useToast();
   const businessId = auth.GetBusinessId();
-
+  const SwitchUserRole = () => {
+    if (userRole == '1') {
+      setUserRole('2');
+    } else {
+      setUserRole('1');
+    }
+  };
   const GetBanking = async () => {
     GetBankingDetail(businessId).then((result: any) => {
       if (result[1] == 200) {
@@ -252,6 +276,7 @@ const PaymentsScreen = ({navigation}: any) => {
     GetAvailableBalance(auth.GetBusinessId());
     GetPaymentsForThisMonth(auth.GetBusinessId());
     GetDeclinedPaymentSummary(auth.GetBusinessId());
+    GetPaymentMethods();
   };
   const NavigateToScreen = (screenName: string) => {
     navigation.navigate(screenName);
@@ -308,6 +333,49 @@ const PaymentsScreen = ({navigation}: any) => {
             declinedPayments.Amount || '0',
           );
           setDeclinedPaymentsSummary(declinedPayments);
+        }
+      },
+    );
+  };
+  const AddPaymentMethod = async () => {
+    const email: string = auth.GetEmail();
+    const userId: string = auth.GetUserId();
+    const businessId: string = auth.GetBusinessId();
+    const reference: string = 'CA-{0}'.format(uuid.v4());
+    await TokenizePaymentMethod(
+      email,
+      reference,
+      userId,
+      businessId,
+      async (error: any, result: any) => {
+        if (error) {
+          console.error(error);
+        } else {
+          const authorizationUrl: string = result.data.authorization_url;
+
+          // Checking if the link is supported for links with custom URL scheme.
+          const supported = await Linking.canOpenURL(authorizationUrl);
+
+          if (supported) {
+            // Opening the link with some app, if the URL scheme is "http" the web link should be opened
+            // by some browser in the mobile
+            await Linking.openURL(authorizationUrl);
+          } else {
+            await Linking.openURL(authorizationUrl);
+            //Alert.alert(`Don't know how to open this URL: ${authorizationUrl}`);
+          }
+        }
+      },
+    );
+  };
+  const GetPaymentMethods = async () => {
+    await GetUserCardAuthorizations(
+      auth.GetUserId(),
+      (error: any, result: any) => {
+        if (error) {
+          console.error(error);
+        } else {
+          setCardAuthorizationList(result);
         }
       },
     );
@@ -376,10 +444,15 @@ const PaymentsScreen = ({navigation}: any) => {
   });
 
   useEffect(() => {
-    setUserRole(auth.GetUserRole());
+    //setUserRole(auth.GetUserRole());
     setUserRole('2');
-    //GetPaymentValues();
-  }, []);
+    GetPaymentValues();
+    Linking.addEventListener('url', event => {
+      console.log(event);
+      console.log(reference);
+      onRefreshPayments();
+    });
+  }, [reference]);
 
   if (userRole == '1') {
     return (
@@ -449,7 +522,7 @@ const PaymentsScreen = ({navigation}: any) => {
             NumberOfPayments={declinedPaymentsSummary.NumberOfPayments || '0'}
             Amount={declinedPaymentsSummary.Amount}
             CurrentPeriod={declinedPaymentsSummary.CurrentPeriod}
-            HandlePress={() => NavigateToScreen('TransporterPaymentHistory')}
+            HandlePress={() => 'TransporterPaymentHistory'}
           />
           <View style={{width: '90%'}}>
             <CustomButton3
@@ -474,12 +547,16 @@ const PaymentsScreen = ({navigation}: any) => {
           <CustomButton1
             title="WITHDRAW FUNDS"
             action="positive"
-            size="lg"
+            size="sm"
             styles={{
-              width: '50%',
               alignSelf: 'center',
               marginTop: 'auto',
-              height: 48,
+            }}
+          />
+          <CustomButton2
+            title="Switch User Role"
+            onPress={() => {
+              SwitchUserRole();
             }}
           />
         </ScrollView>
@@ -559,25 +636,80 @@ const PaymentsScreen = ({navigation}: any) => {
   }
   if (userRole == '2') {
     return (
-      <SafeAreaView style={{height: '100%'}}>
+      <SafeAreaView
+        style={(ThemeStyles.container, {width: '100%', height: '100%'})}>
         <View style={{backgroundColor: '#e8f0f3', flex: 1}}>
           <View style={{}}>
             <Card
               style={{
                 borderRadius: 5,
+                paddingHorizontal: '5%',
               }}>
-              <Text style={{fontWeight: 'bold', fontSize: 15}}>
-                Next Payment Date
-              </Text>
-              <Text style={{fontSize: 18}}>08/05/2024</Text>
-              <Text style={{fontWeight: 'bold', fontSize: 15}}>Amount</Text>
-              <Text style={{fontSize: 18}}>R 230.00</Text>
+              <HStack>
+                <VStack>
+                  <Text style={{fontWeight: 'bold', fontSize: 15}}>
+                    Next Payment Date
+                  </Text>
+                  <Text style={{fontSize: 18}}>08/05/2024</Text>
+                  <Text style={{fontWeight: 'bold', fontSize: 15}}>Amount</Text>
+                  <Text style={{fontSize: 18}}>R 230.00</Text>
+                </VStack>
+                <CustomButton1
+                  title="Pay Now"
+                  styles={{marginLeft: 'auto', alignSelf: 'center'}}
+                />
+              </HStack>
             </Card>
           </View>
-          <View></View>
-          <View style={{width: '50%'}}>
-            <CustomButton3 size="sm" title="View all transactioons" />
-            <CustomButton1 size="sm" title="Add payment method" />
+          <View>
+            <Heading style={{marginBottom: 8}}>Payment Methods</Heading>
+            <FlatList
+              style={{flexGrow: 0}}
+              data={cardAuthorizationList}
+              extraData
+              renderItem={({item}: any) => (
+                <PaymentMethodCard
+                  MaskedCardNumber={item.MaskedCardNumber}
+                  CardType={item.CardType}
+                  IsActive={Boolean(Number(item.IsActive))}
+                />
+              )}
+              keyExtractor={(item: any) => item.CardAuthorisationId}
+              // refreshControl={
+              //   <RefreshControl
+              //     refreshing={refreshingVehicles}
+              //     onRefresh={onRefreshVehicles}
+              //   />
+              // }
+            />
+
+            <CustomButton1
+              size="sm"
+              title="Add payment method"
+              styles={{alignSelf: 'flex-start'}}
+              onPress={() => {
+                AddPaymentMethod();
+              }}
+            />
+
+            <View>
+              <CustomButton3
+                size="sm"
+                title="View all transactioons"
+                styles={{
+                  marginTop: 8,
+                  alignSelf: 'flex-start',
+                  marginHorizontal: 16,
+                }}
+                onPress={() => NavigateToScreen('TransporterPaymentHistory')}
+              />
+              <CustomButton2
+                title="Switch User Role"
+                onPress={() => {
+                  SwitchUserRole();
+                }}
+              />
+            </View>
           </View>
         </View>
       </SafeAreaView>

@@ -20,7 +20,7 @@ export type InputProps = {
 
 export type ButtonProps = {
   title?: string;
-  size?: 'sm' | 'md' | 'lg' | undefined;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | undefined;
   variant?: string;
   action?: "default" | "negative" | "primary" | "secondary" | "positive" | undefined;
   isDisabled?: boolean;

@@ -5,7 +5,7 @@ import {
   Text,
   useToast,
 } from '@gluestack-ui/themed';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   ActivityIndicator,
   RefreshControl,
@@ -16,46 +16,49 @@ import {
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
 import {Vehicle} from '../../../Models/VehicleModel';
-import {GetVehicles} from '../../../Controllers/VehicleController';
-import NotificationToast from '../../../Components/Toasts/NotificationToast';
 import {PaymentHistoryCard} from '../../../Components/Cards/PaymentHistoryCards';
 import filter from 'lodash.filter';
 import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
-import {GetBusinessPayments} from '../../../Controllers/PaymentsController';
+import {
+  GetBusinessPayments,
+  PayAmount,
+} from '../../../Controllers/PaymentsController';
 import {FormatBalance} from '../../../Utilities/CurrencyFormat';
-
-const TransporterPaymentHistoryScreen = ({route, navigation}: any) => {
+import {AuthorizationCharge} from '../../../Models/PaymentsModel';
+const {v4: uuidv4} = require('uuid');
+import uuid from 'react-native-uuid';
+const TransporterPaymentHistoryScreen = () => {
   const {session}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
-  const [VehicleList, setVehicleList] = useState([]);
-  const [refreshingVehicles, setRefreshingVehicles] = useState(false);
-  const onRefreshVehicles = React.useCallback(() => {
-    setRefreshingVehicles(true);
+  const [paymentsList, setPaymentsList] = useState([]);
+  const [refreshingPayments, setRefreshingPayments] = useState(false);
+  const [userRole, setUserRole] = useState(0);
+
+  const onRefreshPayments = React.useCallback(() => {
+    setRefreshingPayments(true);
     setTimeout(() => {
       try {
-        GetBusinessVehicles(auth.GetBusinessId());
+        GetAllBusinessPayments(auth.GetBusinessId());
       } catch (error) {}
     }, 2000);
-    setRefreshingVehicles(false);
+    setRefreshingPayments(false);
   }, []);
   const [IsLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const toast = useToast();
-
-  const GetBusinessVehicles = async (businessId: string) => {
+  const GetAllBusinessPayments = async (businessId: string) => {
     return await GetBusinessPayments(businessId, (error: any, result: any) => {
       if (error) {
         console.error(error.response.data);
       } else {
-        setVehicleList(result);
+        setPaymentsList(result);
       }
     });
   };
 
   const RefreshData = () => {
     try {
-      onRefreshVehicles();
+      onRefreshPayments();
     } catch (error) {
       console.error(error);
     }
@@ -63,20 +66,41 @@ const TransporterPaymentHistoryScreen = ({route, navigation}: any) => {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     const formattedQuery = query;
-    const filterData: any = filter(VehicleList, (user: any) => {
+    const filterData: any = filter(paymentsList, (user: any) => {
       return contains(user, formattedQuery);
     });
-    setVehicleList(filterData);
+    setPaymentsList(filterData);
   };
-  const contains = (vehicle: Vehicle, query: any) => {
+  const contains = (vehicle: Vehicle, formattedQuery?: string) => {
     if (vehicle.Model || vehicle.Make || vehicle.LicenseNumber) {
       return true;
     }
     return false;
   };
 
+  const PayNow = async (amount: string) => {
+    const authorizationCharge: AuthorizationCharge = {
+      email: 'mogolwanew@gmail.com',
+      amount: amount,
+      authorization_code: 'AUTH_efz5240h2i',
+      reference: 'CA-{0}'.format(uuid.v4()),
+      metadata: {
+        user_id: 'f0628b1a-23e5-4f34-b3ff-d036cd7feadb',
+        transporter_user_id: '856f9966-968c-478a-92ed-d95a52ac0225',
+      },
+    };
+    await PayAmount(authorizationCharge, (error: any, result: any) => {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log(result);
+      }
+    });
+  };
   useEffect(() => {
     RefreshData();
+    //setUserRole(Number(auth.GetUserRole()));
+    setUserRole(2);
   }, []);
   return (
     <SafeAreaView style={ThemeStyles.container}>
@@ -117,10 +141,10 @@ const TransporterPaymentHistoryScreen = ({route, navigation}: any) => {
             onChangeText={(query: string) => handleSearch(query)}
           />
 
-          {VehicleList ? (
+          {paymentsList ? (
             <FlatList
               height={'$full'}
-              data={VehicleList}
+              data={paymentsList}
               extraData
               renderItem={({item}: any) => (
                 <PaymentHistoryCard
@@ -129,14 +153,15 @@ const TransporterPaymentHistoryScreen = ({route, navigation}: any) => {
                   LastName={item.LastName}
                   Status={item.Status}
                   Date={item.DatePaid}
-                  HandlePress={() => {}}
+                  UserRole={userRole}
+                  HandleCardPress={() => {}}
                 />
               )}
               keyExtractor={(item: any) => item.TransactionId}
               refreshControl={
                 <RefreshControl
-                  refreshing={refreshingVehicles}
-                  onRefresh={onRefreshVehicles}
+                  refreshing={refreshingPayments}
+                  onRefresh={onRefreshPayments}
                 />
               }
             />
@@ -144,8 +169,8 @@ const TransporterPaymentHistoryScreen = ({route, navigation}: any) => {
             <ScrollView
               refreshControl={
                 <RefreshControl
-                  refreshing={refreshingVehicles}
-                  onRefresh={onRefreshVehicles}
+                  refreshing={refreshingPayments}
+                  onRefresh={onRefreshPayments}
                 />
               }>
               <Text>You currently have no payments.</Text>

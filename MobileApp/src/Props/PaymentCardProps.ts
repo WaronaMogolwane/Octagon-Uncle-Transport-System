@@ -1,5 +1,16 @@
 import { GestureResponderEvent } from "react-native";
 
+export type PaymentMethodCardProps = {
+    MaskedCardNumber: string;
+    IsActive: boolean;
+    CardType: string;
+    HandlePress?: (
+        values:
+            | GestureResponderEvent
+            | React.FormEvent<HTMLFormElement>
+            | undefined,
+    ) => void;
+};
 export type PaymentCardProps = {
     NumberOfPayments: string;
     Amount: string;
@@ -17,8 +28,15 @@ export type PaymentHistoryCardProps = {
     LastName: string;
     Date: string;
     Amount: string;
-    Status: "success" | "failed"
-    HandlePress?: (
+    Status: "success" | "failed" | 'refunded'
+    UserRole: number
+    HandleCardPress?: (
+        values:
+            | GestureResponderEvent
+            | React.FormEvent<HTMLFormElement>
+            | undefined,
+    ) => void;
+    HandlePayNowPress?: (
         values:
             | GestureResponderEvent
             | React.FormEvent<HTMLFormElement>

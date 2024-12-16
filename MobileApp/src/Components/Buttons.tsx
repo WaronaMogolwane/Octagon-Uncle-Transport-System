@@ -6,12 +6,14 @@ export const CustomButton1 = (props: ButtonProps) => {
   return (
     <Button
       mb="$2"
-      size="md"
+      size={props.size}
       variant="solid"
-      action="primary"
+      style={props.styles}
+      action={props.action}
       isDisabled={props.isDisabled}
       isFocusVisible={props.isFocusVisible}
-      onPress={props.onPress}>
+      onPress={props.onPress}
+      borderRadius={32}>
       <ButtonText>{props.title}</ButtonText>
     </Button>
   );
@@ -20,9 +22,10 @@ export const CustomButton2 = (props: ButtonProps) => {
   return (
     <Button
       mb="$2"
-      size="md"
+      size={props.size}
       variant="outline"
-      action="primary"
+      action={props.action}
+      style={props.styles}
       isDisabled={props.isDisabled}
       isFocusVisible={props.isFocusVisible}
       onPress={props.onPress}>
@@ -34,8 +37,9 @@ export const CustomButton2 = (props: ButtonProps) => {
 export const CustomButton3 = (props: ButtonProps) => {
   return (
     <Button
-      size="sm"
+      size={props.size}
       variant="link"
+      style={props.styles}
       action={props.action}
       isDisabled={props.isDisabled}
       isFocusVisible={props.isFocusVisible}

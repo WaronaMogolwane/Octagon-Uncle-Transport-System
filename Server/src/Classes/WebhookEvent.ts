@@ -16,7 +16,7 @@ export class Data {
     channel: string;
     currency: string;
     ip_address: string;
-    metadata: Metadata;
+    metadata: TransactionMetadata;
     fees_breakdown: null;
     log: null;
     fees: number;
@@ -63,7 +63,7 @@ export class Customer {
     international_format_phone: null;
 }
 
-export class Metadata {
+export class TransactionMetadata {
     user_id: string;
     transporter_user_id: string;
     charge_type: string;
@@ -77,4 +77,29 @@ export class Source {
     source: string;
     entry_point: string;
     identifier: null;
+}
+
+export class RefundWebhookEvent {
+    event: string;
+    data: RefundData;
+}
+
+export class RefundData {
+    status: string;
+    transaction_reference: string;
+    refund_reference: string;
+    amount: number;
+    currency: string;
+    customer: RefundCustomer;
+    integration: number;
+    domain: string;
+    id: string;
+    customer_note: string;
+    merchant_note: string;
+}
+
+export class RefundCustomer {
+    first_name: string;
+    last_name: string;
+    email: string;
 }

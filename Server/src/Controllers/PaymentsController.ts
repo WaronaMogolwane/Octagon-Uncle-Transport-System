@@ -1,7 +1,7 @@
 import { BankTransfer, Recipient, Transfer, TransferRecipient, TransferWebHookEvent } from './../Classes/Transfer';
-import { GetBulkChargesForToday, InsertNewBulkCharge, GetNewBulkCharge, InsertNewTransfer, AreRecurringChargesPendingToday, InsertPendingCharges } from './../Models/PaymentsModel';
+import { GetBulkChargesForToday, InsertNewBulkCharge, GetNewBulkCharge, InsertNewTransfer, AreRecurringChargesPendingToday, InsertPendingCharges, GetAvailableBalanceByBusinessId, GetUpcomingPaymentSummaryByBusinessId, GetDeclinedPaymentSummaryByBusinessId, GetPaymentsSummaryForThisMonthByBusinessId, GetPaymentsByBusinessId, GetCardAuthorizationsByUserId, GetMonthlyPaymentDetailsByUserId } from './../Models/PaymentsModel';
 import { InitiateBulkCharge, ChargeAuthorization, CreateNewPaystackRefund, CreateTransferRecipient, InitiateTransfer } from './../Services/PaystackService';
-import { Authorization, Data, TransactionWebhookEvent } from './../Classes/WebhookEvent';
+import { Authorization, Data, RefundWebhookEvent, TransactionWebhookEvent } from './../Classes/WebhookEvent';
 import { NextFunction, Request, Response } from "express";
 import { Customer } from "../Classes/Customer";
 import { CreateNewPaystackCustomer, CreatePaystackTransactionLink } from "../Services/PaystackService";
@@ -17,7 +17,7 @@ import { ifError } from 'assert';
 import { randomUUID } from 'crypto';
 import { AxiosResponse } from 'axios';
 import { CustomLogger } from '../Classes/CustomLogger';
-import { QueryError } from 'mysql2';
+import { OkPacket, QueryError } from 'mysql2';
 import { TransferResponse } from '../Classes/BankTransferResponse';
 const bulkChargeSize: number = 1000;
 
@@ -142,7 +142,7 @@ export const CreateNewTransaction = async (webhookEvent: TransactionWebhookEvent
         reference: data.reference,
         dateCreated: new Date(data.created_at),
         datePaid: new Date(data.paid_at),
-        transactionType: data.channel
+        transactionType: webhookEvent.data.metadata.charge_type
     })
     await InsertNewTransaction(newTransaction, (error: QueryError, result) => {
         if (error) {
@@ -159,6 +159,7 @@ export const RefundTransaction = async (req: Request, res: Response, next: NextF
         amount: req.body.amount,
         currency: req.body.currency,
         merchant_note: req.body.merchant_note,
+        transactionReference: req.body.transaction_reference
     })
     await CreateNewPaystackRefund(newRefund, (error: any, response: any) => {
         if (error) {
@@ -170,13 +171,14 @@ export const RefundTransaction = async (req: Request, res: Response, next: NextF
         }
     })
 }
-export const CreateNewRefund = async (webHookEvent: TransactionWebhookEvent, req: Request, res: Response, callback: (error: any, result: any) => void) => {
+export const CreateNewRefund = async (webHookEvent: RefundWebhookEvent, req: Request, res: Response, callback: (error: any, result: any) => void) => {
     let newRefund: Refund = ({
         transaction: webHookEvent.data.id,
         amount: webHookEvent.data.amount,
         currency: webHookEvent.data.currency,
         merchant_note: req.body.data.merchant_note,
-        customer_note: req.body.data.customer_note
+        customer_note: req.body.data.customer_note,
+        transactionReference: webHookEvent.data.transaction_reference
     })
     await InsertNewRefund(newRefund, (error: any, result: any) => {
         if (error) {
@@ -320,7 +322,7 @@ export const GetAllBulkChargesForCurrentDay = async (callback: (error: any, resu
     })
 }
 export const CreatePendingCharges = async (callback: (error: any, result: any) => void) => {
-    await InsertPendingCharges((error: any, result: any) => {
+    await InsertPendingCharges((error: any, result: OkPacket) => {
         if (error) {
             callback(error, null)
         }
@@ -336,6 +338,90 @@ export const CheckIfRecurringChargesPendingToday = async (callback: (error: any,
         }
         else {
             callback(null, result);
+        }
+    })
+}
+export const GetAvailableBalance = async (req: Request, res: Response, next: NextFunction) => {
+    const businessId: string = req.query.businessId.toString();
+    await GetAvailableBalanceByBusinessId(businessId, (error: any, result: OkPacket) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json(result[0][0])
+        }
+    })
+}
+export const GetUpcomingPaymentSummary = async (req: Request, res: Response, next: NextFunction) => {
+    const businessId: string = req.query.businessId.toString();
+    await GetUpcomingPaymentSummaryByBusinessId(businessId, (error: any, result: OkPacket) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json(result[0][0])
+        }
+    })
+}
+export const GetPaymentsSummaryForThisMonth = async (req: Request, res: Response, next: NextFunction) => {
+    const businessId: string = req.query.businessId.toString();
+    await GetPaymentsSummaryForThisMonthByBusinessId(businessId, (error: any, result: OkPacket) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json(result[0][0])
+        }
+    })
+}
+export const GetDeclinedPaymentSummary = async (req: Request, res: Response, next: NextFunction) => {
+    const businessId: string = req.query.businessId.toString();
+    await GetDeclinedPaymentSummaryByBusinessId(businessId, (error: any, result: OkPacket) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json(result[0][0])
+        }
+    })
+}
+export const GetBusinessPayments = async (req: Request, res: Response, next: NextFunction) => {
+    const businessId: string = req.query.businessId.toString();
+    await GetPaymentsByBusinessId(businessId, (error: any, result: OkPacket) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json(result[0])
+        }
+    })
+}
+export const GetUserCardAuthorizations = async (req: Request, res: Response, next: NextFunction) => {
+    const userId: string = req.query.userId.toString();
+    await GetCardAuthorizationsByUserId(userId, (error: any, result: OkPacket) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json(result)
+        }
+    })
+}
+export const GetMonthlyPaymentDetails = async (req: Request, res: Response, next: NextFunction) => {
+    const userId: string = req.query.userId.toString();
+    await GetMonthlyPaymentDetailsByUserId(userId, (error: any, result: OkPacket) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json(result)
         }
     })
 }

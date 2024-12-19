@@ -4,7 +4,12 @@ BEGIN
 SET @_DriverId = (SELECT DriverId FROM DriverVehicleLinking WHERE VehicleId = _VehicleId);
 
 INSERT INTO Trip
-(PassengerId, VehicleId, DriverId, BusinessId)
+(PassengerId, VehicleId, DriverId, BusinessId, Leg)
 VALUES
-(_PassengerId, _VehicleId, @_DriverId, _BusinessId);
+(_PassengerId, _VehicleId, @_DriverId, _BusinessId, '0');
+
+INSERT INTO Trip
+(PassengerId, VehicleId, DriverId, BusinessId, Leg)
+VALUES
+(_PassengerId, _VehicleId, @_DriverId, _BusinessId, '1');
 END

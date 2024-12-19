@@ -34,9 +34,8 @@ const SmallHomeScreenCard = (props: smallCardProps) => {
       size="sm"
       variant="outline"
       style={{
-        marginEnd: 15,
         width: '41.7%',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#fff',
         borderRadius: 5,
         elevation: 10,
         justifyContent: 'center',

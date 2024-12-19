@@ -1,7 +1,12 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
-import {Dimensions, Pressable, StyleSheet} from 'react-native';
+import {
+  Dimensions,
+  GestureResponderEvent,
+  Pressable,
+  StyleSheet,
+} from 'react-native';
 import {
   Text,
   Card,
@@ -52,6 +57,7 @@ import {
 } from '../../../Services/ImageStorageService';
 import SmallHomeScreenCard from '../../../Components/Cards/SmallHomeScreenCard';
 import LargeHomeScreenCard from '../../../Components/Cards/LargeHomeScreenCard';
+import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
 
 interface IVehicle {
   Make: string;
@@ -88,6 +94,7 @@ const HomeScreen = ({navigation}: any) => {
   });
 
   const role: number = Number(auth.GetUserRole());
+  // const role: number = 3;
 
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
@@ -409,12 +416,14 @@ const HomeScreen = ({navigation}: any) => {
               height: '25%',
               marginBottom: marginBottomNumber,
               marginTop: marginTopNumber,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}>
             <View
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
-                marginHorizontal: '5%',
+                width: '90%',
               }}>
               <SmallHomeScreenCard
                 primaryText={'R 1000.00'}
@@ -436,7 +445,7 @@ const HomeScreen = ({navigation}: any) => {
               iconSelector={3}
             />
           </View>
-          <View style={{height: '25%'}}>
+          <View style={{height: '25%', marginHorizontal: 10}}>
             <TripsBlock tripList={tripData} />
           </View>
         </ScrollView>
@@ -480,119 +489,17 @@ const HomeScreen = ({navigation}: any) => {
                 flexDirection: 'row',
                 justifyContent: 'center',
               }}>
-              <Card
-                size="sm"
-                variant="outline"
-                style={{
-                  height: '120%',
-                  marginEnd: 15,
-                  width: '41.7%',
-                  backgroundColor: '#ffffff',
-                  borderRadius: 5,
-                  elevation: 10,
-                  justifyContent: 'center',
-                }}>
-                <Pressable
-                  onPress={() => {
-                    navigation.navigate('Edit Payment Details');
-                  }}>
-                  <View
-                    style={{
-                      alignItems: 'center', // Align items vertically
-                      justifyContent: 'center',
-                      display: 'flex', // Flexbox layout
-                    }}>
-                    <View
-                      style={{
-                        marginHorizontal: 12,
-                        width: 100,
-                        height: 100,
-                        borderRadius: 50, // Half of the width or height
-                        backgroundColor: '#d6f3f1',
-                        flexDirection: 'row', // Horizontal arrangement
-                        alignItems: 'center', // Align items vertically
-                        justifyContent: 'center',
-                      }}>
-                      <WalletMinimal
-                        size={25}
-                        strokeWidth={2}
-                        color={'#3ba2a9'}
-                      />
-                    </View>
-                    <View>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginBottom: 0,
-                          fontWeight: 'bold',
-                          color: '#4b4842',
-                        }}>
-                        R{amount}
-                      </Text>
-                      <Text style={{fontSize: 10, textAlign: 'center'}}>
-                        Amount Due
-                      </Text>
-                    </View>
-                  </View>
-                </Pressable>
-              </Card>
+              <SmallHomeScreenCard
+                primaryText={'R 1000.00'}
+                secondaryText={'Amount Duee'}
+                iconSelector={1}
+              />
 
-              <Card
-                size="sm"
-                variant="outline"
-                style={{
-                  height: '120%',
-                  marginStart: 15,
-                  width: '41.7%',
-                  backgroundColor: '#ffffff',
-                  borderRadius: 5,
-                  elevation: 10,
-                  justifyContent: 'center',
-                }}>
-                <Pressable
-                  onPress={() => {
-                    navigation.navigate('Manage Passengers');
-                  }}>
-                  <View
-                    style={{
-                      alignItems: 'center', // Align items vertically
-                      justifyContent: 'center',
-                      display: 'flex', // Flexbox layout
-                    }}>
-                    <View
-                      style={{
-                        marginHorizontal: 12,
-                        width: 100,
-                        height: 100,
-                        borderRadius: 50, // Half of the width or height
-                        backgroundColor: '#f5eede',
-                        flexDirection: 'row', // Horizontal arrangement
-                        alignItems: 'center', // Align items vertically
-                        justifyContent: 'center',
-                      }}>
-                      <GraduationCap
-                        size={25}
-                        strokeWidth={2}
-                        color={'#e89d0e'}
-                      />
-                    </View>
-                    <View>
-                      <Text
-                        style={{
-                          textAlign: 'center',
-                          marginBottom: 0,
-                          fontWeight: 'bold',
-                          color: '#4b4842',
-                        }}>
-                        {passengerCount}
-                      </Text>
-                      <Text style={{fontSize: 10, textAlign: 'center'}}>
-                        All Passengers
-                      </Text>
-                    </View>
-                  </View>
-                </Pressable>
-              </Card>
+              <SmallHomeScreenCard
+                primaryText={passengerCount}
+                secondaryText={'All Passengers'}
+                iconSelector={3}
+              />
             </View>
           </View>
           <View style={{height: '33.5%'}}>

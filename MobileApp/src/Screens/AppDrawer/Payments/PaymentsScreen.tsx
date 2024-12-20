@@ -16,7 +16,13 @@ import {
   ClockIcon,
   Icon,
 } from 'lucide-react-native';
-import {Alert, Linking, StyleSheet} from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Linking,
+  Modal,
+  StyleSheet,
+} from 'react-native';
 import {
   GetBalanceByBusinessId,
   GetDeclinedPaymentsSummary,
@@ -351,7 +357,7 @@ const PaymentsScreen = ({navigation, route}: any) => {
     );
   };
   const AddPaymentMethod = async () => {
-    if (cardAuthorizationList.length <= 5) {
+    if (cardAuthorizationList.length <= 4) {
       const email: string = auth.GetEmail();
       const userId: string = auth.GetUserId();
       const businessId: string = auth.GetBusinessId();
@@ -409,20 +415,25 @@ const PaymentsScreen = ({navigation, route}: any) => {
           console.error(error);
         } else {
           let res: MonthlyPaymentDetailsCardProps = result;
-          res.Amount = FormatBalance(res.Amount.toString() || '0');
+          // if (result.Amount == '0') {
+          //   res.Amount = '0';
+          // }
+          //res.Amount = FormatBalance(res.Amount.toString() || '0');
           setMonthlyPaymentsSummary(res);
+          console.log(monthlyPaymentsSummary);
         }
       },
     );
   };
   const PayNow = async (amount: string) => {
+    console.log(amount);
     const authorizationCharge: AuthorizationCharge = {
       email: 'mogolwanew@gmail.com',
       amount: amount,
       authorization_code: 'AUTH_efz5240h2i',
       reference: 'MCA-{0}'.format(uuid.v4()),
       metadata: {
-        user_id: 'f0628b1a-23e5-4f34-b3ff-d036cd7feadb',
+        user_id: auth.GetUserId(),
         transporter_user_id: '856f9966-968c-478a-92ed-d95a52ac0225',
         charge_type: 'Manual Card Authorization',
       },
@@ -710,16 +721,20 @@ const PaymentsScreen = ({navigation, route}: any) => {
         <View style={{backgroundColor: '#e8f0f3', flex: 1}}>
           <View style={{}}>
             <MonthlyPaymentDetailsCard
-              Amount={monthlyPaymentsSummary.Amount}
+              Amount={FormatBalance(
+                monthlyPaymentsSummary.Amount.toString() || '0',
+              )}
               NextPaymentDate={monthlyPaymentsSummary.NextPaymentDate}
               PaymentFailed={monthlyPaymentsSummary.PaymentFailed}
-              HandlePayNowPress={() => {}}
+              HandlePayNowPress={() => {
+                PayNow(monthlyPaymentsSummary.Amount);
+              }}
             />
           </View>
           <View>
             <Heading style={{marginBottom: 8}}>Payment Methods</Heading>
             <FlatList
-              style={{flexGrow: 0, maxHeight: '50%'}}
+              style={{flexGrow: 0, maxHeight: '55%', marginBottom: 16}}
               data={cardAuthorizationList}
               extraData
               renderItem={({item}: any) => (
@@ -767,6 +782,29 @@ const PaymentsScreen = ({navigation, route}: any) => {
             </View>
           </View>
         </View>
+        <Modal
+          transparent={true}
+          animationType="fade"
+          visible={false}
+          onRequestClose={() => {}}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'background-color: rgba(0, 0, 0, 0.5)',
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              top: 0,
+              left: 0,
+            }}>
+            <ActivityIndicator size="large" color="#00ff00" />
+            <Text style={{marginTop: 10, color: '#fff', fontSize: 18}}>
+              Loading...
+            </Text>
+          </View>
+        </Modal>
       </SafeAreaView>
     );
   }

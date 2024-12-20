@@ -156,21 +156,22 @@ const HomeScreen = ({navigation}: any) => {
   }, []);
 
   useEffect(() => {
-    if (fullData[0] != '' && fullData.length != 0) {
+    if (fullData[0] != '' && fullData.length > 0) {
       handleSearch();
     }
   }, [fullData]);
 
   useEffect(() => {
-    RestoreImageViaAsyncStorage().then((result: any) => {
-      if (result == '' || result == null) {
-        GetUserProfileImage(userId).then(response => {
-          if (response[1] == 200) {
-            SaveImageViaAsyncStorage(response[0]);
-          }
-        });
+    const fetchProfileImage = async () => {
+      const result = await RestoreImageViaAsyncStorage();
+      if (!result) {
+        const response = await GetUserProfileImage(userId);
+        if (response[1] === 200) {
+          await SaveImageViaAsyncStorage(response[0]);
+        }
       }
-    });
+    };
+    fetchProfileImage();
   }, []);
 
   const CustomView = () => {

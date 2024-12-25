@@ -99,10 +99,14 @@ export const MonthlyPaymentDetailsCard = (
 ) => {
   return (
     <Card
-      style={{
-        borderRadius: 5,
-        paddingHorizontal: '5%',
-      }}>
+      style={
+        (props.styles,
+        {
+          borderRadius: 5,
+          paddingHorizontal: '5%',
+          marginBottom: 8,
+        })
+      }>
       <HStack>
         <VStack>
           <Text style={{fontWeight: 'bold', fontSize: 15}}>
@@ -112,13 +116,18 @@ export const MonthlyPaymentDetailsCard = (
           <Text style={{fontWeight: 'bold', fontSize: 15}}>Amount</Text>
           <Text style={{fontSize: 18}}>{props.Amount}</Text>
         </VStack>
-        {props.PaymentFailed ? (
-          <CustomButton1
-            title="Pay Now"
-            styles={{marginLeft: 'auto', alignSelf: 'center'}}
-            onPress={props.HandlePayNowPress}
-          />
-        ) : null}
+        <VStack style={{marginLeft: 'auto', alignSelf: 'center'}}>
+          <Badge
+            variant="solid"
+            size="lg"
+            action={props.PaymentFailed ? 'error' : 'success'}
+            style={{marginBottom: 16, padding: 4}}>
+            <BadgeText>{props.PaymentFailed ? 'Unpaid' : 'Paid'}</BadgeText>
+          </Badge>
+          {props.PaymentFailed ? (
+            <CustomButton1 title="Pay Now" onPress={props.HandlePayNowPress} />
+          ) : null}
+        </VStack>
       </HStack>
     </Card>
   );

@@ -1,4 +1,4 @@
-import { GestureResponderEvent } from "react-native";
+import { GestureResponderEvent, StyleProp, ViewStyle } from "react-native";
 
 export type PaymentMethodCardProps = {
     MaskedCardNumber: string;
@@ -21,6 +21,7 @@ export type MonthlyPaymentDetailsCardProps = {
             | React.FormEvent<HTMLFormElement>
             | undefined,
     ) => void;
+    styles?: StyleProp<ViewStyle>;
 };
 export type PaymentCardProps = {
     NumberOfPayments: string;

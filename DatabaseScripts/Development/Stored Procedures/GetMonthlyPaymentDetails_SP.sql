@@ -3,16 +3,44 @@ CREATE DEFINER=`sqladmin`@`156.155.26.176` PROCEDURE `GetMonthlyPaymentDetails`(
 )
 BEGIN 
 SET 
+  @Amount = (
+    SELECT 
+      Amount 
+    FROM 
+      PaymentsSchedule 
+    WHERE 
+      UserId = _UserId 
+      AND IsActive = '1' 
+    LIMIT 
+      1
+  );
+SET 
+  @PaymentDay = (
+    SELECT 
+      PaymentDay 
+    FROM 
+      PaymentsSchedule 
+    WHERE 
+      UserId = _UserId
+  );
+SET 
   @LastPaymentDate = (
     SELECT 
       DatePaid 
     FROM 
       Transaction 
+      WHERE UserId = _UserId
+      AND Status = 'success'
     ORDER BY 
       DatePaid DESC 
     LIMIT 
       1
   );
+  SET 
+  @NextPaymentDate =  DATE_FORMAT(DATE_ADD(@LastPaymentDate, INTERVAL 1 MONTH
+  ), CONCAT('%Y-%m-', @PaymentDay));
+SET 
+  @PaymentFailed = false;
 IF (
   MONTH(@LastPaymentDate) = MONTH(
     CURDATE()
@@ -20,60 +48,34 @@ IF (
 ) THEN 
 SET 
   @PaymentFailed = false;
-SET 
-  @NextPaymentDate = DATE_ADD(
-    @LastPaymentDate, INTERVAL 1 MONTH
-  );
 SELECT 
-  ps.Amount, 
-  @NextPaymentDate AS NextPaymentDate, 
-  @PaymentFailed AS PaymentFailed 
-FROM 
-  Transaction t 
-  INNER JOIN PaymentsSchedule ps ON ps.UserId = t.UserId 
-WHERE 
-  MONTH(t.DatePaid) = MONTH(
-    CURDATE()
-  ) 
-  AND ps.IsActive = '1' 
-ORDER BY 
-  t.DatePaid DESC 
-LIMIT 
-  1;
+    @Amount AS Amount,
+    @NextPaymentDate AS NextPaymentDate,
+    @PaymentFailed AS PaymentFailed
+FROM
+    Transaction t
+        INNER JOIN
+    PaymentsSchedule ps ON ps.UserId = t.UserId
+WHERE
+    MONTH(DatePaid) = MONTH(CURDATE())
+        AND ps.IsActive = '1'
+        AND ps.UserId = _UserId
+LIMIT 1;
 ELSE 
-SET 
-  @PaymentDay = (
-    SELECT 
-      PaymentDay 
-    FROM 
-      PaymentSchedule 
-    WHERE 
-      UserId = _UserId
-  );
-SET 
-  @PaymentFailed = true;
 SET 
   @NextPaymentDate = (
     SELECT 
-      DATE_FORMAT(CURRENT_DATE, '%Y-%m-15')
+      DATE_FORMAT(CURRENT_DATE, CONCAT('%Y-%m-', @PaymentDay))
   );
+    IF(@NextPaymentDate < CURDATE())
+  THEN
 SET 
-  @Amount = (
-    SELECT 
-      Amount 
-    FROM 
-      PaymentSchedule 
-    WHERE 
-      UserId = @UserId 
-      AND IsActive = '1' 
-    ORDER BY 
-      t.DatePaid DESC 
-    LIMIT 
-      1
-  );
+  @PaymentFailed = true;
+  END IF;
+
 SELECT 
-  @Amount, 
-  @NextPaymentDate AS NextPaymentDate, 
-  @PaymentFailed AS PaymentFailed;
+    @Amount AS Amount,
+    @NextPaymentDate AS NextPaymentDate,
+    @PaymentFailed AS PaymentFailed;
 END IF;
 END

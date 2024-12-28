@@ -21,7 +21,8 @@ export const AddBankingDetail = async (req: any, res: any, next: any) => {
   );
   await InsertBankingDetail(bankingDetail, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -42,7 +43,8 @@ export const GetBankingDetail = async (req: any, res: any, next: any) => {
 
   await GetBankingDetailByBankingId(businessId, async (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } /* else if (result.rowCount == 0) {
         let err: any = {
           status: 405,
@@ -73,7 +75,8 @@ export const ModifyBankingDetail = async (req: any, res: any, next: any) => {
 
   await UpdateBankingDetail(bankingDetail, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -88,3 +91,11 @@ export const ModifyBankingDetail = async (req: any, res: any, next: any) => {
     }
   });
 };
+
+// if (error) {
+//   const err: Error = new Error(error.message)
+//   next(new ErrorResponse(400, err.message, err.stack));
+// }
+// else {
+//   res.status(200).json({ message: "Transfer recipient successfully created." })
+// }

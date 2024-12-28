@@ -32,7 +32,8 @@ export const AddTrip = async (req: any, res: any, next: any) => {
 
   await InsertTrip(newTrip, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -53,7 +54,8 @@ export const GetTrip = async (req: any, res: any, next: any) => {
 
   await GetTripById(tripId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result[0] == "") {
       let err: any = {
         status: 405,
@@ -74,7 +76,8 @@ export const GetPastTripsForParent = async (req: any, res: any, next: any) => {
 
   await GetPastTripsByParentId(parentId, async (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } /* else if (result.rowCount == 0) {
         let err: any = {
           status: 405,
@@ -95,7 +98,8 @@ export const GetPastTripsForDriver = async (req: any, res: any, next: any) => {
 
   await GetPastTripsByDriverId(driverId, async (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } /* else if (result.rowCount == 0) {
         let err: any = {
           status: 405,
@@ -120,7 +124,8 @@ export const GetUpcomingTripsForDriver = async (
 
   await GetUpcomingTripsByDriverId(driverId, async (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } /* else if (result.rowCount == 0) {
         let err: any = {
           status: 405,
@@ -145,7 +150,8 @@ export const GetUpcomingTripsForParent = async (
 
   await GetUpcomingTripsByParentId(parentId, async (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } /* else if (result.rowCount == 0) {
         let err: any = {
           status: 405,
@@ -173,7 +179,8 @@ export const GetUpcomingTripsForBusiness = async (
 
   await GetUpcomingTripsByBusinessId(businessInfo, async (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } /* else if (result.rowCount == 0) {
         let err: any = {
           status: 405,
@@ -201,7 +208,8 @@ export const GetPastTripsForBusiness = async (
 
   await GetPastTripsByBusinessId(businessInfo, async (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } /* else if (result.rowCount == 0) {
         let err: any = {
           status: 405,
@@ -233,7 +241,8 @@ export const UpdateTripDetail = async (req: any, res: any, next: any) => {
   );
   await UpdateTrip(updatedTrip, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -261,7 +270,8 @@ export const UpdateTripPassengerStatus = async (
 
   await UpdateTripStatus(tripStatus, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -282,7 +292,8 @@ export const UpdateTripEndTrip = async (req: any, res: any, next: any) => {
 
   await EndTrip(tripId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -303,7 +314,8 @@ export const UpdateTripPickUpTime = async (req: any, res: any, next: any) => {
 
   await UpdateTripSetPickUpTime(tripId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -324,7 +336,8 @@ export const UpdateTripDropOffTime = async (req: any, res: any, next: any) => {
 
   await UpdateTripSetDropOffTime(tripId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -345,7 +358,8 @@ export const UndoTripDropOffTime = async (req: any, res: any, next: any) => {
 
   await UndoDropOffTime(tripId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -366,7 +380,8 @@ export const UndoTripPickUpTime = async (req: any, res: any, next: any) => {
 
   await UndoPickUpTime(tripId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -387,7 +402,8 @@ export const UndoTripAbsentEnd = async (req: any, res: any, next: any) => {
 
   await UndoTripEnd(tripId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,

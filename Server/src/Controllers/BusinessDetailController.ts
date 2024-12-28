@@ -24,7 +24,8 @@ export const AddBusinessDetail = async (req: any, res: any, next: any) => {
 
   await InsertBusinessDetail(newBusinessDetail, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -56,7 +57,8 @@ export const ModifyBusinessDetail = async (req: any, res: any, next: any) => {
 
   await UpdateBusinessDetail(newBusinessDetail, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -77,7 +79,8 @@ export const GetBusinessDetail = async (req: any, res: any, next: any) => {
 
   await GetBusinessDetailByBusinessId(businessId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result[0] == "") {
       let err: any = {
         status: 405,
@@ -102,7 +105,8 @@ export const GetBusinessDetailForParent = async (
 
   await GetBusinessDetailForParentByBusinessId(businessId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result[0] == "") {
       let err: any = {
         status: 405,

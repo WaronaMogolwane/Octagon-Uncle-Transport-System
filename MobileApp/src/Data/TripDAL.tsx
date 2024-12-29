@@ -72,6 +72,7 @@ export const GetUpcomingTripsParentFromDB = async (parentId: string) => {
           pickUpLocation: data.HomeAddress,
           dropoffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
         };
 
         tripData.push(trip);
@@ -112,6 +113,7 @@ export const GetPastTripsParentFromDB = async (parentId: string) => {
           pickUpLocation: data.HomeAddress,
           dropoffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
         };
 
         tripData.push(trip);
@@ -152,6 +154,7 @@ export const GetUpcomingTripsDriverFromDB = async (driverId: string) => {
           pickUpLocation: data.HomeAddress,
           dropOffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
         };
 
         tripData.push(trip);
@@ -192,6 +195,7 @@ export const GetPastTripsDriverFromDB = async (driverId: string) => {
           pickUpLocation: data.HomeAddress,
           dropOffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
         };
 
         tripData.push(trip);
@@ -239,6 +243,7 @@ export const GetUpcomingTripsTransporterFromDB = async (
           pickUpLocation: data.HomeAddress,
           dropOffLocation: data.DestinationAddress,
           tripStatus: data.TripStatus,
+          leg: data.Leg,
         };
 
         tripData.push(trip);
@@ -283,6 +288,7 @@ export const GetPastTripsTransporterFromDB = async (
           pickUpLocation: data.HomeAddress,
           dropOffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
         };
 
         tripData.push(trip);
@@ -323,6 +329,7 @@ export const GetDailytTripsTransporterFromDB = async (businessId: string) => {
           pickUpLocation: data.HomeAddress,
           dropOffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
         };
 
         tripData.push(trip);

@@ -210,6 +210,26 @@ export const GetUpcomingTripsByBusinessId = async (
   );
 };
 
+export const GetDailBusinessTripByBusinessId = async (
+  businessId: any,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetDailBusinessTrip(?);",
+      timeout: 40000,
+      values: [businessId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
 export const GetPastTripsByBusinessId = async (
   businessInfo: any,
   callback: (error, result) => void

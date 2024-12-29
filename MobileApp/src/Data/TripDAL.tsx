@@ -298,6 +298,46 @@ export const GetPastTripsTransporterFromDB = async (
   return result;
 };
 
+export const GetDailytTripsTransporterFromDB = async (businessId: string) => {
+  let result: any;
+  const tripData: {}[] = [];
+  let trip = {};
+
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/trip/get-daily-business-trip`, {
+      params: {
+        BusinessId: businessId,
+      },
+    })
+    .then((response: any) => {
+      let res = [...response.data.result];
+
+      res.forEach(data => {
+        trip = {
+          tripId: data.TripId,
+          passengerId: data.PassengerId,
+          passengerName: data.PassengerFirstName + ' ' + data.PassengerLastName,
+          pickUpTime: SplitTimeString(data.PickUpTime),
+          dropOffUpTime: SplitTimeString(data.DropoffTime),
+          pickUpDate: ConvertDate(data.Date),
+          pickUpLocation: data.HomeAddress,
+          dropOffLocation: data.DestinationAddress,
+          tripStatus: Number(data.TripStatus),
+        };
+
+        tripData.push(trip);
+      });
+
+      result = tripData;
+    })
+    .catch((error: any) => {
+      console.log(error);
+      result = error;
+    });
+
+  return result;
+};
+
 export const UpdateTripInDB = async (trip: Trip) => {
   let statusCode: any;
   let data: any;

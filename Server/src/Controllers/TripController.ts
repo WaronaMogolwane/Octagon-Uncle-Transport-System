@@ -17,6 +17,7 @@ import {
   UndoTripEnd,
   GetUpcomingTripsByBusinessId,
   GetPastTripsByBusinessId,
+  GetDailBusinessTripByBusinessId,
 } from "../Models/TripModel";
 import { TripStatus } from "../Classes/TripStatus";
 import { ErrorResponse } from "../Classes/ErrorResponse";
@@ -63,6 +64,28 @@ export const GetTrip = async (req: any, res: any, next: any) => {
       };
       next(err);
     } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result[0],
+      });
+    }
+  });
+};
+
+export const GetDailBusinessTrip = async (req: any, res: any, next: any) => {
+  const businessId = req.params.BusinessId;
+
+  await GetDailBusinessTripByBusinessId(businessId, async (error, result) => {
+    if (error) {
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
+    } /* else if (result.rowCount == 0) {
+        let err: any = {
+          status: 405,
+          message: "Record not found",
+        };
+        next(err);
+      } */ else {
       res.status(200).json({
         RecordRetrieved: true,
         result: result[0],

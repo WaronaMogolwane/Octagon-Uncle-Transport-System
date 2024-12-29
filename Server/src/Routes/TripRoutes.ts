@@ -16,9 +16,16 @@ import {
   UndoTripAbsentEnd,
   UndoTripDropOffTime,
   UndoTripPickUpTime,
+  GetDailBusinessTrip,
 } from "../Controllers/TripController";
 
 const router = Router();
+
+router.get(
+  "/get-daily-business-trip",
+  GetDailBusinessTrip,
+  async (req, res, next) => {}
+);
 
 router.post("/add-trip", AddTrip, async (req, res, next) => {});
 

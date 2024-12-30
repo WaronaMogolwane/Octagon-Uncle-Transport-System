@@ -30,6 +30,7 @@ import {
   WalletMinimal,
 } from 'lucide-react-native';
 import {
+  GetAllActivePassengerForBusiness,
   GetAllActivePassengerForParent,
   GetAllPassengerForBusiness,
   GetParentPassengers,
@@ -43,6 +44,7 @@ import {CheckTrip, StartTrip} from '../../../Services/TripServices';
 import Carousel from 'react-native-reanimated-carousel';
 import {TripsBlock} from '../../../Components/TripsBlock';
 import {
+  GetDailytTripsTransporter,
   GetUpcomingTripsForClient,
   GetUpcomingTripsForDriver,
 } from '../../../Controllers/TripController';
@@ -58,29 +60,25 @@ import {
 import SmallHomeScreenCard from '../../../Components/Cards/SmallHomeScreenCard';
 import LargeHomeScreenCard from '../../../Components/Cards/LargeHomeScreenCard';
 import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
-
-interface IVehicle {
-  Make: string;
-  Model: string;
-  FrontImageUrl: string;
-  Colour: string;
-  LicenseNumber: string;
-}
+import {TripSummaryBlock} from '../../../Components/TripSummaryBlock';
+import {IVehicle} from '../../../Props/VehicleProps';
 
 const HomeScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
-  const [passengerCount, setPassengerCount] = useState('');
-  const [vehicleCount, setVehicleCount] = useState('10');
-  const [userName, setUserName] = useState('Nicholai');
+  const [passengerCount, setPassengerCount] = useState('0');
+  const [vehicleCount, setVehicleCount] = useState('');
+  const [userName, setUserName] = useState('');
   const [tripData, setTripData] = useState(['']);
   const [fullData, setFullData] = useState([]);
-  const [activePassengers, setActivePasengers] = useState([]);
+  const [activePassengers, setActivePassengers] = useState([]);
   const [amount, setAmount] = useState('1300.00');
   const [passengerList, setPassengerList] = useState([]);
-  const [tripCount, setTripCount] = useState('');
-  const [marginTopNumber, setMarginTopNumber] = useState(0);
-  const [marginBottomNumber, setMarginBottomNumber] = useState(10);
+
+  const [tripCount, setTripCount] = useState(0);
+  const [missedTripsCount, setMissedTripsCount] = useState(0);
+  const [activeTripsCount, setActiveTripsCount] = useState(0);
+  const [completedTripsCount, setCompleteTripsCount] = useState(0);
 
   const [isStarted, setIsStarted] = useState(true);
   const [noActivePassenger, setNoActivePassenger] = useState(true);
@@ -98,6 +96,7 @@ const HomeScreen = ({navigation}: any) => {
 
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
+
   const toast = useToast();
 
   const iconSize = 15;
@@ -137,6 +136,7 @@ const HomeScreen = ({navigation}: any) => {
     if (role == 1) {
       GetPassengers();
       GetVehicleCount();
+      GetDailyBusinessTrips();
     } else if (role == 2) {
       GetPassengers();
       GetActivePasengers();
@@ -155,11 +155,11 @@ const HomeScreen = ({navigation}: any) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (fullData[0] != '' && fullData.length > 0) {
-      handleSearch();
-    }
-  }, [fullData]);
+  // useEffect(() => {
+  //   if (fullData[0] != '' && fullData.length > 0) {
+  //     handleSearch();
+  //   }
+  // }, [fullData]);
 
   useEffect(() => {
     const fetchProfileImage = async () => {
@@ -174,69 +174,6 @@ const HomeScreen = ({navigation}: any) => {
     fetchProfileImage();
   }, []);
 
-  const CustomView = () => {
-    const width = Dimensions.get('window').width;
-    return (
-      <View style={{flex: 1, alignItems: 'center'}}>
-        <Carousel
-          loop
-          width={width / 1.5}
-          height={width / 2}
-          autoPlay={false}
-          data={[...new Array(6).keys()]}
-          scrollAnimationDuration={2000}
-          onSnapToItem={index => console.log('current index:', index)}
-          renderItem={({index}) => (
-            <View
-              style={{
-                alignItems: 'center',
-                alignContent: 'center',
-                justifyContent: 'center',
-              }}>
-              <Card
-                size="sm"
-                variant="outline"
-                style={{margin: 12, backgroundColor: '#ffffff'}}>
-                <View>
-                  <View
-                    style={{
-                      width: 100,
-                      height: 100,
-                      borderRadius: 50, // Half of the width or height
-                      backgroundColor: '#d6f3f1',
-                      display: 'flex', // Flexbox layout
-                      flexDirection: 'row', // Horizontal arrangement
-                      alignItems: 'center', // Align items vertically
-                    }}>
-                    <WalletMinimal
-                      size={25}
-                      strokeWidth={2}
-                      color={'#3ba2a9'}
-                      style={{
-                        marginStart: 35,
-                      }}
-                    />
-                  </View>
-                  <View style={{marginStart: 16}}>
-                    <Text
-                      style={{
-                        marginBottom: 0,
-                        fontWeight: 'bold',
-                        color: '#4b4842',
-                      }}>
-                      R{amount}
-                    </Text>
-                    <Text style={{fontSize: 10}}>Monthly Earnings</Text>
-                  </View>
-                </View>
-              </Card>
-            </View>
-          )}
-        />
-      </View>
-    );
-  };
-
   const onStartButtonPress = () => {
     StartTrip().then((result: any) => {
       if (result == true) {
@@ -247,20 +184,33 @@ const HomeScreen = ({navigation}: any) => {
     });
   };
 
-  const ShowSuccessToast = () => {
-    toast.show({
-      placement: 'top',
-      render: ({id}) => {
-        const toastId = 'toast-' + id;
-        return (
-          <Toast nativeID={toastId} action="attention" variant="solid">
-            <VStack space="xs">
-              <ToastTitle>Attention</ToastTitle>
-              <ToastDescription>The trip has already started.</ToastDescription>
-            </VStack>
-          </Toast>
-        );
-      },
+  const GetDailyBusinessTrips = async () => {
+    setTripCount(0);
+    setMissedTripsCount(0);
+    setActiveTripsCount(0);
+    setCompleteTripsCount(0);
+
+    await GetDailytTripsTransporter(businessId).then((result: any) => {
+      if (result.length != 0) {
+        console.log(result);
+        setTripCount(result.length);
+
+        result.forEach((item: any) => {
+          if (item.tripStatus == 1) {
+            setMissedTripsCount(missedTripsCount + 1);
+          }
+
+          if (item.tripStatus == 2) {
+            setActiveTripsCount(activeTripsCount + 1);
+          }
+
+          if (item.tripStatus == 3) {
+            setCompleteTripsCount(completedTripsCount + 1);
+          }
+        });
+      } else {
+        setTripCount(0);
+      }
     });
   };
 
@@ -291,19 +241,23 @@ const HomeScreen = ({navigation}: any) => {
   };
 
   const GetPassengers = async () => {
-    await GetAllPassengerForBusiness(businessId).then((result: any) => {
+    try {
+      const result = await GetAllActivePassengerForBusiness(businessId);
       if (result.length != 0) {
-        setPassengerCount(result.length);
-        // setIsLoading(false);
+        setPassengerCount(result.length.toString());
       } else {
         setPassengerCount('0');
-        // setIsLoading(false);
       }
-    });
+    } catch (error) {
+      console.error('Error fetching passengers:', error);
+      setPassengerCount('0');
+    }
   };
 
   const GetVehicleInfomation = async () => {
     GetDriverVehicle(userId).then(result => {
+      console.info(result);
+
       if (result != undefined) {
         setVehicle(result[0]);
       } else {
@@ -313,10 +267,10 @@ const HomeScreen = ({navigation}: any) => {
   };
 
   const GetActivePasengers = async () => {
-    GetAllActivePassengerForParent(userId).then(result => {
-      if (result[0] != '') {
+    await GetAllActivePassengerForParent(userId).then(result => {
+      if (result.length > 0 && result[0] !== '') {
         setNoActivePassenger(false);
-        setActivePasengers(result);
+        setActivePassengers(result);
       } else {
         setNoActivePassenger(true);
       }
@@ -336,8 +290,9 @@ const HomeScreen = ({navigation}: any) => {
   const GetPassegersByParent = async () => {
     await GetParentPassengers(userId).then((result: any) => {
       if (result.length != 0) {
+        setPassengerCount(result.length.toString());
         // setNoPassenger(false);
-        setPassengerList(result);
+        // setPassengerList(result);
         // setStatusCode(!statusCode);
         // setIsLoading(false);
       } else {
@@ -347,31 +302,24 @@ const HomeScreen = ({navigation}: any) => {
     });
   };
 
-  const handleSearch = () => {
-    const date = new Date().toLocaleDateString('en-CA');
-    const formattedQuery = date;
+  // const handleSearch = () => {
+  //   const date = new Date().toLocaleDateString('en-CA');
+  //   const formattedQuery = date;
 
-    const filterData: any = filter(fullData, (user: any) => {
-      return contains(user, formattedQuery);
-    });
+  //   const filterData: any = filter(fullData, (user: any) => {
+  //     return contains(user, formattedQuery);
+  //   });
 
-    if (fullData.length > 0) {
-      setMarginBottomNumber(-10);
-    } else {
-      setMarginBottomNumber(10);
-      setMarginTopNumber(-30);
-    }
+  //   setTripData(filterData);
+  // };
 
-    setTripData(filterData);
-  };
+  // const contains = ({pickUpDate}: any, query: any) => {
+  //   if (pickUpDate.toLowerCase().includes(query)) {
+  //     return true;
+  //   }
 
-  const contains = ({pickUpDate}: any, query: any) => {
-    if (pickUpDate.toLowerCase().includes(query)) {
-      return true;
-    }
-
-    return false;
-  };
+  //   return false;
+  // };
 
   const universityIcon = (
     <GraduationCap
@@ -415,8 +363,7 @@ const HomeScreen = ({navigation}: any) => {
           <View
             style={{
               height: '25%',
-              marginBottom: marginBottomNumber,
-              marginTop: marginTopNumber,
+              marginBottom: 10,
               justifyContent: 'center',
               alignItems: 'center',
             }}>
@@ -439,15 +386,20 @@ const HomeScreen = ({navigation}: any) => {
               />
             </View>
           </View>
-          <View style={{height: '25%'}}>
+          <View style={{height: '25%', marginBottom: 12}}>
             <LargeHomeScreenCard
               primaryText={passengerCount}
               secondaryText={'Active Passengers'}
               iconSelector={3}
             />
           </View>
-          <View style={{height: '25%', marginHorizontal: 10}}>
-            <TripsBlock tripList={tripData} />
+          <View style={{height: '25%', marginHorizontal: 14}}>
+            <TripSummaryBlock
+              allTripsCount={tripCount}
+              missedTripsCount={missedTripsCount}
+              activeTripsCount={activeTripsCount}
+              completedTripsCount={completedTripsCount}
+            />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -456,8 +408,8 @@ const HomeScreen = ({navigation}: any) => {
     return (
       <SafeAreaView
         style={{flex: 1, backgroundColor: '#e8f0f3', height: '100%'}}>
-        <ScrollView style={{minHeight: '100%'}}>
-          <View style={{height: '33.5%'}}>
+        <ScrollView>
+          <View style={{height: '30%'}}>
             <View>
               <View style={{marginStart: 15}}>
                 <Text
@@ -483,16 +435,22 @@ const HomeScreen = ({navigation}: any) => {
               </View>
             </View>
           </View>
-          <View style={{height: '33.5%'}}>
+          <View
+            style={{
+              height: '35%',
+              marginBottom: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             <View
               style={{
-                marginTop: '5%',
                 flexDirection: 'row',
-                justifyContent: 'center',
+                justifyContent: 'space-between',
+                width: '90%',
               }}>
               <SmallHomeScreenCard
                 primaryText={'R 1000.00'}
-                secondaryText={'Amount Duee'}
+                secondaryText={'Available Balance'}
                 iconSelector={1}
               />
 
@@ -503,25 +461,28 @@ const HomeScreen = ({navigation}: any) => {
               />
             </View>
           </View>
-          <View style={{height: '33.5%'}}>
+          <View style={{height: '30%', marginBottom: 12}}>
             {noActivePassenger ? (
               <Card
                 size="sm"
                 variant="outline"
                 style={{
                   marginHorizontal: 17,
-                  marginTop: '17%',
                   marginBottom: 10,
                   backgroundColor: '#ffffff',
                   borderRadius: 5,
                   elevation: 10,
                 }}>
-                <Text style={{fontWeight: 'bold', textAlign: 'center'}}>
+                <Text
+                  style={{
+                    fontWeight: 'bold',
+                    textAlign: 'center',
+                    marginBottom: 10,
+                  }}>
                   Active Passengers
                 </Text>
                 <View
                   style={{
-                    marginTop: 10,
                     marginBottom: 10,
                     alignItems: 'flex-start',
                     marginHorizontal: 15,
@@ -541,7 +502,6 @@ const HomeScreen = ({navigation}: any) => {
                 variant="outline"
                 style={{
                   marginHorizontal: 17,
-                  marginTop: '17%',
                   marginBottom: 10,
                   backgroundColor: '#ffffff',
                   borderRadius: 5,
@@ -573,7 +533,6 @@ const HomeScreen = ({navigation}: any) => {
                           key={item.passengerId}>
                           <View
                             style={{
-                              // flex: 1,
                               flexDirection: 'row',
                               justifyContent: 'space-between',
                               alignItems: 'center',
@@ -591,7 +550,6 @@ const HomeScreen = ({navigation}: any) => {
                                   style={{
                                     flex: 1,
                                     display: 'flex',
-                                    // padding: -100,
                                     borderRadius: 20, // Half of the width or
                                     backgroundColor: '#d6f3f1',
                                   }}>
@@ -650,7 +608,7 @@ const HomeScreen = ({navigation}: any) => {
             </View>
           </View>
           <View style={{height: '33.3%'}}>
-            <Card
+            {/* <Card
               size="sm"
               variant="outline"
               style={{
@@ -718,7 +676,7 @@ const HomeScreen = ({navigation}: any) => {
                   </View>
                 </View>
               </View>
-            </Card>
+            </Card> */}
           </View>
           <View style={{height: '33.3%'}}>
             <TripsBlockDiver tripList={data} />

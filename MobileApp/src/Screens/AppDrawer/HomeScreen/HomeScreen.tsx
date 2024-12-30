@@ -608,7 +608,7 @@ const HomeScreen = ({navigation}: any) => {
             </View>
           </View>
           <View style={{height: '33.3%'}}>
-            {/* <Card
+            <Card
               size="sm"
               variant="outline"
               style={{
@@ -676,7 +676,7 @@ const HomeScreen = ({navigation}: any) => {
                   </View>
                 </View>
               </View>
-            </Card> */}
+            </Card>
           </View>
           <View style={{height: '33.3%'}}>
             <TripsBlockDiver tripList={data} />

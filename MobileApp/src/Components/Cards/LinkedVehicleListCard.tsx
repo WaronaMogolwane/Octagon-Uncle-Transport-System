@@ -26,15 +26,8 @@ type tripCardProps = {
 };
 
 export const VehicleCard = (props: tripCardProps) => {
-  const iconSize = 15;
-  const iconStrokeWidth = 1.5;
-  const iconColor = '#000000';
   const storageUrl: string =
     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
-
-  const carIcon = (
-    <Car size={30} strokeWidth={iconStrokeWidth} color={'#c26b71'} />
-  );
 
   return (
     <TouchableOpacity onPress={props.onPress}>
@@ -63,11 +56,11 @@ export const VehicleCard = (props: tripCardProps) => {
           <View style={{alignItems: 'center', width: '50%'}}>
             <Image
               style={{
-                width: 100,
+                width: 120,
                 aspectRatio: 1 / 1,
                 display: 'flex',
                 marginHorizontal: 12,
-                height: 100,
+                height: 120,
                 borderRadius: 50, // Half of the width or height
                 flexDirection: 'row', // Horizontal arrangement
               }}

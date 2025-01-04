@@ -1,4 +1,4 @@
-import { QueryError, RowDataPacket } from "mysql2";
+import { OkPacket, QueryError, RowDataPacket } from "mysql2";
 import { BulkChargeReponse } from "../Classes/BulkCharge";
 import { CardAuthorisation } from "../Classes/CardAuthorisation";
 import { Refund } from "../Classes/Refund";
@@ -97,16 +97,18 @@ export const InsertNewRefund = async (
     refund: Refund,
     callback: (error: any, result: any) => void
 ) => {
+    console.log(refund.transactionReference)
     DbPool.query(
         {
-            sql: "CALL InsertNewRefund(?,?,?,?,?);",
+            sql: "CALL InsertNewRefund(?,?,?,?,?,?);",
             timeout: 40000,
             values: [
                 refund.transaction,
                 refund.amount,
                 refund.currency,
                 refund.merchant_note,
-                refund.customer_note
+                refund.customer_note,
+                refund.transactionReference
             ],
         },
         function (error, results, fields) {
@@ -177,11 +179,11 @@ export const InsertPendingCharges = async (
             sql: "CALL CreatePendingCharges();",
             timeout: 40000,
         },
-        function (error, results: RowDataPacket[], fields) {
+        function (error, results: OkPacket, fields) {
             if (error) {
                 callback(error, null);
             } else {
-                callback(null, results[0]);
+                callback(null, results);
             }
         }
     );
@@ -215,4 +217,152 @@ export const InsertNewBulkCharge = async (
     );
 };
 
+export const GetAvailableBalanceByBusinessId = async (
+    businessId: string,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetBalanceByBusinessId(?);",
+            timeout: 40000,
+            values: [
+                businessId
+            ],
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
+export const GetPaymentsSummaryForThisMonthByBusinessId = async (
+    businessId: string,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetPaymentsForThisMonthByBusinessId(?);",
+            timeout: 40000,
+            values: [
+                businessId
+            ],
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
+export const GetUpcomingPaymentSummaryByBusinessId = async (
+    businessId: string,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetUpcomingPaymentsSummaryByBusinessId(?);",
+            timeout: 40000,
+            values: [
+                businessId
+            ],
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
+export const GetDeclinedPaymentSummaryByBusinessId = async (
+    businessId: string,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetDeclinedPaymentsSummaryByBusinessId(?);",
+            timeout: 40000,
+            values: [
+                businessId
+            ],
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
+export const GetPaymentsByBusinessId = async (
+    businessId: string,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetPaymentsByBusinessId(?);",
+            timeout: 40000,
+            values: [
+                businessId
+            ],
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
+export const GetCardAuthorizationsByUserId = async (
+    userId: string,
+    callback: (error: any, result: any) => void
+) => {
+    const sql: string =
+        "SELECT * FROM CardAuthorisation WHERE UserId = '{0}' ORDER BY CardAuthorisationId DESC, IsActive DESC"
+            .format(userId);
+    DbPool.query(
+        {
+            sql: sql,
+            timeout: 40000,
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
+
+export const GetMonthlyPaymentDetailsByUserId = async (
+    userId: string,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL GetMonthlyPaymentDetails(?);",
+            timeout: 40000,
+            values: [
+                userId
+            ],
+        },
+        function (error, results: OkPacket, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
 

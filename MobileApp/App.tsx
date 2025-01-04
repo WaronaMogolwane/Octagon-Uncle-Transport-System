@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {PermissionsAndroid, useColorScheme} from 'react-native';
 import 'react-native-gesture-handler';
 import {Colors} from 'react-native/Libraries/NewAppScreen';

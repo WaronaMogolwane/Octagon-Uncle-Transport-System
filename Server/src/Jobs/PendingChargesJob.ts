@@ -3,6 +3,7 @@ import { CustomLogger } from "../Classes/CustomLogger";
 import { BulkChargeAuthorizations, CheckIfRecurringChargesPendingToday, CreatePendingCharges, GetAllBulkChargesForCurrentDay } from "../Controllers/PaymentsController";
 import { BulkChargeReponse } from "../Classes/BulkCharge";
 import { ErrorResponse } from "../Classes/ErrorResponse";
+import { OkPacket } from "mysql2";
 const HALF_TWELVE_NIGHT: string = "30 0 * * *"
 const Logger: CustomLogger = new CustomLogger();
 export const PendingChargesJob = () => {
@@ -17,14 +18,19 @@ export const PendingChargesJob = () => {
                 }
                 else {
                     if (result == false) {
-                        CreatePendingCharges((error: any, result: any) => {
+                        CreatePendingCharges((error: any, result: OkPacket) => {
                             if (error) {
                                 const err: Error = new Error(error.message)
                                 Logger.Error(new ErrorResponse(400, err.message, err.stack).toString());
                             }
-                            else (
-                                Logger.Log('Pending charges successfully created.')
-                            )
+                            else {
+                                if (result.affectedRows == 0) {
+                                    Logger.Log('No pending charges to create.')
+                                }
+                                else {
+                                    Logger.Log('Pending charges successfully created.')
+                                }
+                            }
                         })
                     }
                     else {

@@ -595,7 +595,6 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
 
   useEffect(() => {
     RefreshData();
-    console.log('Use effect');
   }, [currentDriverId, newLinkedDriverId]);
   useEffect(() => {
     setDriverList(ConvertDriversListToDropDownList(driversList!));

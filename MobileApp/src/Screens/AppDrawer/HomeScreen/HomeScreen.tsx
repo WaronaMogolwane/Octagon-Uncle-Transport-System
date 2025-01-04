@@ -59,6 +59,8 @@ import {
 } from '../../../Services/ImageStorageService';
 import SmallHomeScreenCard from '../../../Components/Cards/SmallHomeScreenCard';
 import LargeHomeScreenCard from '../../../Components/Cards/LargeHomeScreenCard';
+import {FormatBalance} from '../../../Utilities/CurrencyFormat';
+import {GetBalanceByBusinessId} from '../../../Controllers/PaymentsController';
 import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
 import {TripSummaryBlock} from '../../../Components/TripSummaryBlock';
 import {IVehicle} from '../../../Props/VehicleProps';
@@ -79,6 +81,7 @@ const HomeScreen = ({navigation}: any) => {
   const [missedTripsCount, setMissedTripsCount] = useState(0);
   const [activeTripsCount, setActiveTripsCount] = useState(0);
   const [completedTripsCount, setCompleteTripsCount] = useState(0);
+  const [availableBalance, setAvailableBalance] = useState('0');
 
   const [isStarted, setIsStarted] = useState(true);
   const [noActivePassenger, setNoActivePassenger] = useState(true);
@@ -136,6 +139,7 @@ const HomeScreen = ({navigation}: any) => {
     if (role == 1) {
       GetPassengers();
       GetVehicleCount();
+      GetAvailableBalance(auth.GetBusinessId());
       GetDailyBusinessTrips();
     } else if (role == 2) {
       GetPassengers();
@@ -329,6 +333,18 @@ const HomeScreen = ({navigation}: any) => {
       color={iconColor}
     />
   );
+  const GetAvailableBalance = async (businessId: string) => {
+    return await GetBalanceByBusinessId(
+      businessId,
+      (error: any, result: any) => {
+        if (error) {
+          console.error(error.response.data);
+        } else {
+          setAvailableBalance(FormatBalance(result.Balance || '0'));
+        }
+      },
+    );
+  };
 
   if (role == 1) {
     return (
@@ -375,7 +391,7 @@ const HomeScreen = ({navigation}: any) => {
                 width: '90%',
               }}>
               <SmallHomeScreenCard
-                primaryText={'R 1000.00'}
+                primaryText={availableBalance}
                 secondaryText={'Available Balance'}
                 iconSelector={1}
               />

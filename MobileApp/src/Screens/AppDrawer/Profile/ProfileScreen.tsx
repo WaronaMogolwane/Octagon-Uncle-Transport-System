@@ -56,8 +56,8 @@ const ProfileScreen = ({navigation}: any) => {
   const ref = React.useRef(null);
 
   const userId = auth.GetUserId();
-  const role: number = Number(auth.GetUserRole());
-  // const role: number = 2;
+  //const role: number = Number(auth.GetUserRole());
+  const role: number = 2;
 
   const storageUrl: string =
     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';

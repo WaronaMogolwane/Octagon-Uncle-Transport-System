@@ -7,6 +7,7 @@ import {SignInForm} from '../../Components/Forms/SignInForm';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {CustomButton3} from '../../Components/Buttons';
+import {AxiosError} from 'axios';
 
 const SignInScreen = ({navigation}: any) => {
   const {signIn, session}: any = useContext(AuthContext);
@@ -34,15 +35,20 @@ const SignInScreen = ({navigation}: any) => {
     validationSchema: registerSchema,
 
     onSubmit: async (values, {resetForm}) => {
-      await signIn(values.email, values.password, (error: any, result: any) => {
-        if (formik.isValid) {
-          if (error) {
-            console.error(error);
-          } else if (result) {
-            resetForm();
+      console.log(values);
+      await signIn(
+        values.email,
+        values.password,
+        (error: AxiosError, result: any) => {
+          if (formik.isValid) {
+            if (error) {
+              console.error(error.response!.data);
+            } else if (result) {
+              resetForm();
+            }
           }
-        }
-      });
+        },
+      );
     },
   });
 

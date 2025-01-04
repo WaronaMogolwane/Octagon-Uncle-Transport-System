@@ -24,13 +24,14 @@ import {
 } from '../../../Components/Cards/TripCardTransporter';
 import {ArrowLeftIcon, Fab, FabIcon, FabLabel} from '@gluestack-ui/themed';
 
-const TripTransporterScreen = ({navigation}: any) => {
+const TripTransporterScreen = ({route, navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
 
+  const vehicleId = route.params.curentVehicle.vehicleId;
+
   const userId = auth.GetUserId();
-  const role: number = Number(auth.GetUserRole());
 
   const [UpcomingTripList, setUpcomingTripList] = useState([]);
   const [PastTripList, setPastTripList] = useState([]);
@@ -117,6 +118,7 @@ const TripTransporterScreen = ({navigation}: any) => {
       </View>
     );
   };
+
   const GoBackFab = () => {
     return (
       <Fab
@@ -135,18 +137,20 @@ const TripTransporterScreen = ({navigation}: any) => {
   };
 
   const GetUpcomingTrips = async () => {
-    return await GetUpcomingTripsForTransporter(userId).then(trip => {
-      if (trip[0] == '') {
-        setShowNoFutureTripText(true);
-      } else {
-        setUpcomingTripList(trip);
-      }
-    });
+    return await GetUpcomingTripsForTransporter(userId, vehicleId).then(
+      trip => {
+        if (trip[0] == '') {
+          setShowNoFutureTripText(true);
+        } else {
+          setUpcomingTripList(trip);
+        }
+      },
+    );
   };
 
   //Gets all past Trips for all roles
   const GetPastTrips = async () => {
-    return await GetPastTripsForTransporter(userId).then(trip => {
+    return await GetPastTripsForTransporter(userId, vehicleId).then(trip => {
       if (trip[0] == '') {
         setShowNoPastTripText(true);
       } else {
@@ -171,7 +175,7 @@ const TripTransporterScreen = ({navigation}: any) => {
             />
           }
         />
-        <View>{GoBackFab()}</View>
+        {GoBackFab()}
       </View>
     );
   }

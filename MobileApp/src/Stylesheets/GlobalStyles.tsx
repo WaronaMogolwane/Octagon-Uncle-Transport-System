@@ -43,6 +43,7 @@ export const FormStyles = StyleSheet.create({
 export const FlatlistStyles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#e8f0f3',
   },
 });
 export const TripCardDriverStyles = StyleSheet.create({
@@ -143,6 +144,7 @@ export const AssignPassengerScreenStyles = StyleSheet.create({
     padding: 16,
   },
   dropdown: {
+    backgroundColor: '#fff',
     height: 50,
     borderColor: 'gray',
     borderWidth: 0.5,

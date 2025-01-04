@@ -19,12 +19,20 @@ import {
   Fab,
   FabLabel,
   ArrowLeftIcon,
+  Menu,
+  MenuItem,
+  MenuItemLabel,
+  AddIcon,
+  Divider,
 } from '@gluestack-ui/themed';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
 import {FlatlistStyles} from '../../../Stylesheets/GlobalStyles';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import filter from 'lodash.filter';
+import {CurrentVehicle} from '../../../Models/CurrentVehicle';
+import {BookUser, Route} from 'lucide-react-native';
+import {set} from 'date-fns';
 
 const ManageTripsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -36,8 +44,18 @@ const ManageTripsScreen = ({navigation}: any) => {
   const [vehicleList, setVehicleList] = useState([]);
   const [refreshing, setRefreshing] = React.useState(false);
   const [noLinkedVehicle, setNoLinkedVehicle] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [showMenu, setShowMenu] = useState(false);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [fullData, setFullData] = useState([]);
+  const [selected, setSelected] = React.useState(new Set([]));
+  const [curentVehicle, setCurrentVehicle] = useState<CurrentVehicle>();
+
+  const iconSize = 20;
+  const iconStrokeWidth = 1;
+  const iconColor = '#000000';
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -102,20 +120,25 @@ const ManageTripsScreen = ({navigation}: any) => {
       fullName={itemData.fullName}
       urlFront={itemData.FrontImageUrl}
       onPress={() => {
-        navigation.navigate('Assign Passenger', {
-          vehicleId: itemData.vehicleId,
-          make: itemData.make,
-          model: itemData.model,
-          color: itemData.color,
-        });
+        setCurrentVehicle(
+          new CurrentVehicle(
+            itemData.make,
+            itemData.model,
+            itemData.color,
+            itemData.licenseNumber,
+            itemData.vehicleId,
+          ),
+        );
+        setShowMenu(true);
+        setIsOpen(true);
       }}
     />
   );
 
   const EmtpyFlatListText = () => {
     return (
-      <View style={{backgroundColor: '#e8f0f3'}}>
-        <Text>
+      <View style={{backgroundColor: '#e8f0f3', marginHorizontal: 5}}>
+        <Text style={{textAlign: 'center'}}>
           You currently have no linked vehicles. Please add vehicles and try
           again.
         </Text>
@@ -137,6 +160,71 @@ const ManageTripsScreen = ({navigation}: any) => {
         <FabIcon as={ArrowLeftIcon} mr="$1" />
         <FabLabel>Back</FabLabel>
       </Fab>
+    );
+  };
+
+  const FabMenu = () => {
+    return (
+      <Menu
+        focusable
+        isOpen={isOpen}
+        selectionMode="single"
+        selectedKeys={selected}
+        onSelectionChange={keys => {
+          const selectedMenuItem: any = keys;
+          if (selectedMenuItem.currentKey === 'TripHistory') {
+            navigation.navigate('Transport Trip', {
+              curentVehicle,
+            });
+            setShowMenu(false);
+          }
+          if (selectedMenuItem.currentKey === 'ManageTrip') {
+            navigation.navigate('Assign Passenger', {
+              curentVehicle,
+            });
+            setShowMenu(false);
+          }
+        }}
+        closeOnSelect={true}
+        onClose={() => {
+          setShowMenu(false);
+          setIsOpen(false);
+        }}
+        // style={{backgroundColor: '#7DD3F2'}}
+        placement="top"
+        trigger={({...triggerProps}) => {
+          return (
+            <Fab
+              {...triggerProps}
+              style={{zIndex: 1}}
+              size="md"
+              placement="bottom right"
+              isHovered={false}
+              isDisabled={false}
+              isPressed={false}>
+              <FabIcon as={AddIcon} />
+            </Fab>
+          );
+        }}>
+        <MenuItem key="TripHistory" textValue="Trip History">
+          <Route
+            style={{marginEnd: 5}}
+            size={iconSize}
+            strokeWidth={iconStrokeWidth}
+            color={iconColor}
+          />
+          <MenuItemLabel size="sm">Trip History</MenuItemLabel>
+        </MenuItem>
+        <MenuItem key="ManageTrip" textValue="Manage Trip">
+          <BookUser
+            style={{marginEnd: 5}}
+            size={iconSize}
+            strokeWidth={iconStrokeWidth}
+            color={iconColor}
+          />
+          <MenuItemLabel size="sm">Manage Trip</MenuItemLabel>
+        </MenuItem>
+      </Menu>
     );
   };
 
@@ -188,7 +276,7 @@ const ManageTripsScreen = ({navigation}: any) => {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         />
-        <View>{GoBackFab()}</View>
+        {showMenu ? FabMenu() : GoBackFab()}
       </View>
     </SafeAreaView>
   );

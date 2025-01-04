@@ -14,7 +14,6 @@ import BusinessDetailsScreen from '../Screens/AuthenticationStack/BusinessDetail
 import ProfileScreen from '../Screens/AppDrawer/Profile/ProfileScreen';
 import EditBusinessDetailsScreen from '../Screens/AppDrawer/Profile/EditBusinessDetailsScreen';
 import EditUserDetailsScreen from '../Screens/AppDrawer/Profile/EditUserDetailsScreen';
-import EditPaymentDetailsScreen from '../Screens/AppDrawer/Profile/EditPaymentDetailsScreen';
 
 import {Auth} from '../Classes/Auth';
 import {AuthContext} from '../Services/AuthenticationService';
@@ -41,7 +40,6 @@ import {GetUser} from '../Controllers/UserController';
 import {ScrollView} from 'react-native-gesture-handler';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
-import TripVehiclePickerScreen from '../Screens/AppDrawer/Trips/TripVehiclePickerScreen';
 import {getHeaderTitle} from '@react-navigation/elements';
 import TripTransporterScreen from '../Screens/AppDrawer/Trips/TripTransporterScreen';
 
@@ -232,22 +230,7 @@ const AppDrawer = ({navigation}: any) => {
             ),
           }}
         />
-      ) : (
-        <Drawer.Screen
-          name="Trip Vehicle Picker"
-          component={TripVehiclePickerScreen}
-          options={{
-            title: 'Trips',
-            drawerIcon: () => (
-              <Route
-                size={iconSize}
-                strokeWidth={iconStrokeWidth}
-                color={iconColor}
-              />
-            ),
-          }}
-        />
-      )}
+      ) : null}
 
       {role == 1 ? (
         <Drawer.Screen
@@ -288,7 +271,7 @@ const AppDrawer = ({navigation}: any) => {
           options={{
             title: 'Manage Trips',
             drawerIcon: () => (
-              <BookUser
+              <Route
                 size={iconSize}
                 strokeWidth={iconStrokeWidth}
                 color={iconColor}
@@ -342,14 +325,6 @@ const AppDrawer = ({navigation}: any) => {
               color={iconColor}
             />
           ),
-        }}
-      />
-      <Drawer.Screen
-        name="Edit Payment Details"
-        component={EditPaymentDetailsScreen}
-        options={{
-          title: 'Payments',
-          drawerItemStyle: {display: 'none'},
         }}
       />
       <Drawer.Screen

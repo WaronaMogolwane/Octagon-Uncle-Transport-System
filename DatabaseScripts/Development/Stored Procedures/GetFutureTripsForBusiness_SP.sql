@@ -10,12 +10,17 @@ SELECT
     Trip.PickUpTime,
     Trip.DropoffTime,
     Trip.IsCompleted,
+    Trip.TripStatus,
     Trip.Date,
     Trip.PassengerId AS PassengerUserId,
-	User.UserRole
+	User.UserRole,
+    Passenger.HomeAddress,
+    Passenger.DestinationAddress,
+	Passenger.FirstName AS PassengerFirstName,
+    Passenger.LastName AS PassengerLastName
 FROM
     Trip
-        INNER JOIN
+        INNER JOIN    
     DriverVehicleLinking ON DriverVehicleLinking.DriverVehicleLinkingId = Trip.DriverVehicleLinkingId
         INNER JOIN
     User ON User.UserId = DriverVehicleLinking.DriverId
@@ -23,6 +28,8 @@ FROM
     UserBusinessLinking ON UserBusinessLinking.UserId = DriverVehicleLinking.DriverId
         INNER JOIN
     UserDetail ON UserDetail.UserId = User.UserId
+		INNER JOIN
+    Passenger ON Passenger.PassengerId = Trip.PassengerId
 WHERE
     UserBusinessLinking.BusinessId = _BusinessId
 		AND Trip.Date > current_timestamp()

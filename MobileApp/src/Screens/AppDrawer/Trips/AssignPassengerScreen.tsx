@@ -111,9 +111,10 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const ref = React.useRef(null);
   const toast = useToast();
 
-  const vehicleId = route.params.vehicleId;
-  const make = route.params.make;
-  const model = route.params.model;
+  const vehicleId = route.params.curentVehicle.vehicleId;
+  const make = route.params.curentVehicle.make;
+  const model = route.params.curentVehicle.model;
+  const license = route.params.curentVehicle.license;
 
   const businessId = auth.GetBusinessId();
   const onRefresh = React.useCallback(() => {
@@ -138,29 +139,33 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         setPassengers(defaultData);
         setIsDisabled(true);
         setIsLoading(false);
+
         //Toast Notifiaction
-        toast.show({
-          placement: 'top',
-          render: ({id}) => {
-            const toastId = 'toast-' + id;
-            return (
-              <Toast nativeID={toastId} action="attention" variant="solid">
-                <VStack space="xs">
-                  <ToastTitle>Notice</ToastTitle>
-                  <ToastDescription>
-                    There are currently no unassigned passengers
-                  </ToastDescription>
-                </VStack>
-              </Toast>
-            );
-          },
-        });
+        NoPassengerToast();
       }
     });
     GetPassengerDriverVehicleLinking(businessId).then(passengers => {
-      // console.log(passengers);
       setpassengerList(passengers);
       setStatusCode(!statusCode);
+    });
+  };
+
+  const NoPassengerToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="attention" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Notice</ToastTitle>
+              <ToastDescription>
+                There are currently no unassigned passengers
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
     });
   };
 
@@ -726,7 +731,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         style={{
           marginBottom: 10,
           paddingTop: 0,
-          height: '32%',
+          height: '35%',
           marginHorizontal: 12,
           backgroundColor: '#ffffff',
           borderRadius: 5,
@@ -752,10 +757,20 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                 fontWeight: 'bold',
                 fontSize: 15,
                 // color: '#e89d0e',
-                marginBottom: 20,
                 textAlign: 'right',
               }}>
               {make + ' ' + model}
+            </Text>
+
+            <Text
+              style={{
+                fontWeight: '400',
+                fontSize: 12,
+                // color: '#e89d0e',
+                marginBottom: 20,
+                textAlign: 'right',
+              }}>
+              ({license})
             </Text>
           </View>
         </View>

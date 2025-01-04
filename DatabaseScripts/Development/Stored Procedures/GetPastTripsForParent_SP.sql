@@ -1,7 +1,7 @@
 CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetPastTripsForParent`(in _ParentId varchar(100))
 BEGIN
-SELECT 
-    Trip.TripId,
+SELECT
+	Trip.TripId,
     Trip.PickUpTime,
     Trip.DropoffTime,
     Trip.IsCompleted,
@@ -10,27 +10,21 @@ SELECT
     Trip.PassengerId AS PassengerUserId,
     UserDetail.FirstName AS DriverFirstName,
     UserDetail.LastName AS DriverLastName,
-	DriverVehicleLinking.DriverId AS DriverUserId,
-    DriverVehicleLinking.VehicleId,
     Passenger.FirstName AS PassengerFirstName,
     Passenger.LastName AS PassengerLastName,
-	Passenger.HomeAddress,
+    Passenger.HomeAddress,
     Passenger.DestinationAddress,
-	Vehicle.RegistrationNumber
+    Vehicle.RegistrationNumber
 FROM
     Trip
         INNER JOIN
-    DriverVehicleLinking ON DriverVehicleLinking.DriverVehicleLinkingId = Trip.DriverVehicleLinkingId
-        INNER JOIN
-    User ON User.UserId = DriverVehicleLinking.DriverId
-        INNER JOIN
-	UserDetail ON UserDetail.UserId = DriverVehicleLinking.DriverId
-      INNER JOIN
-	Passenger ON Passenger.PassengerId = Trip.PassengerId
-      INNER JOIN
-	Vehicle ON Vehicle.VehicleId = DriverVehicleLinking.VehicleId
+	UserDetail ON UserDetail.UserId = Trip.DriverId
+		INNER JOIN
+	Passenger ON Passenger.PassengerId = Trip.PassengerId 
+		INNER JOIN
+	Vehicle ON Vehicle.VehicleId = Trip.VehicleId
 WHERE
     Passenger.ParentId = _ParentId
-    AND Trip.Date < current_timestamp()
+    AND Trip.Date < current_date()
     OR Trip.IsCompleted = '1';
 END

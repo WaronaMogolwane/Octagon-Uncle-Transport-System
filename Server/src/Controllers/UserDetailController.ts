@@ -28,7 +28,8 @@ export const AddUserDetail = async (req: any, res: any, next: any) => {
   );
   await InsertUserDetail(newUserDetail, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -49,7 +50,8 @@ export const GetUserDetail = async (req: any, res: any, next: any) => {
 
   await GetUserDetailByUserId(userId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -70,7 +72,8 @@ export const GetUserProfileImage = async (req: any, res: any, next: any) => {
 
   await GetUserDetailProfileImageByUserId(userId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -107,7 +110,8 @@ export const UpdateUserPersonalDetail = async (
 
   await UpdateUserDetail(userDetail, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -168,7 +172,8 @@ export const DeleteProfileImageUrl = async (req: any, res: any, next: any) => {
 
   await DeleteProfileImageUrlByUserId(userId, async (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else {
       res.status(200).json({
         profileImageDeleted: true,

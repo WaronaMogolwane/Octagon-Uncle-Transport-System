@@ -72,6 +72,7 @@ export const GetUpcomingTripsParentFromDB = async (parentId: string) => {
           pickUpLocation: data.HomeAddress,
           dropoffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
         };
 
         tripData.push(trip);
@@ -112,6 +113,7 @@ export const GetPastTripsParentFromDB = async (parentId: string) => {
           pickUpLocation: data.HomeAddress,
           dropoffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
         };
 
         tripData.push(trip);
@@ -152,6 +154,7 @@ export const GetUpcomingTripsDriverFromDB = async (driverId: string) => {
           pickUpLocation: data.HomeAddress,
           dropOffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
         };
 
         tripData.push(trip);
@@ -192,6 +195,7 @@ export const GetPastTripsDriverFromDB = async (driverId: string) => {
           pickUpLocation: data.HomeAddress,
           dropOffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
         };
 
         tripData.push(trip);
@@ -207,15 +211,67 @@ export const GetPastTripsDriverFromDB = async (driverId: string) => {
   return result;
 };
 
-export const GetUpcomingTripsTransporterFromDB = async (businessId: string) => {
+export const GetUpcomingTripsTransporterFromDB = async (
+  businessId: string,
+  vehicleId: string,
+) => {
   let result: any;
   const tripData: {}[] = [];
   let trip = {};
 
   await axios
-    .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-upcoming-trip-for-business`, {
+    .post(
+      `${SERVER_HOST}:${SERVER_PORT}/trip/get-upcoming-trips-for-business`,
+      {
+        trip: {
+          BusinessId: businessId,
+          VehicleId: vehicleId,
+        },
+      },
+    )
+    .then((response: any) => {
+      let res = [...response.data.result];
+
+      res.forEach(data => {
+        trip = {
+          tripId: data.TripId,
+          passengerId: data.PassengerId,
+          passengerName: data.PassengerFirstName + ' ' + data.PassengerLastName,
+          pickUpTime: SplitTimeString(data.PickUpTime),
+          dropOffUpTime: SplitTimeString(data.DropoffTime),
+          pickUpDate: ConvertDate(data.Date),
+          pickUpLocation: data.HomeAddress,
+          dropOffLocation: data.DestinationAddress,
+          tripStatus: data.TripStatus,
+          leg: data.Leg,
+        };
+
+        tripData.push(trip);
+      });
+
+      result = tripData;
+    })
+    .catch((error: any) => {
+      console.log(error);
+      result = error;
+    });
+
+  return result;
+};
+
+export const GetPastTripsTransporterFromDB = async (
+  businessId: string,
+  vehicleId: string,
+) => {
+  let result: any;
+  const tripData: {}[] = [];
+  let trip = {};
+
+  await axios
+    .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-past-trip-for-business`, {
       trip: {
         BusinessId: businessId,
+        VehicleId: vehicleId,
       },
     })
     .then((response: any) => {
@@ -231,7 +287,8 @@ export const GetUpcomingTripsTransporterFromDB = async (businessId: string) => {
           pickUpDate: ConvertDate(data.Date),
           pickUpLocation: data.HomeAddress,
           dropOffLocation: data.DestinationAddress,
-          tripStatus: data.TripStatus,
+          tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
         };
 
         tripData.push(trip);
@@ -247,14 +304,14 @@ export const GetUpcomingTripsTransporterFromDB = async (businessId: string) => {
   return result;
 };
 
-export const GetPastTripsTransporterFromDB = async (businessId: string) => {
+export const GetDailytTripsTransporterFromDB = async (businessId: string) => {
   let result: any;
   const tripData: {}[] = [];
   let trip = {};
 
   await axios
-    .post(`${SERVER_HOST}:${SERVER_PORT}/trip/get-past-trip-for-business`, {
-      trip: {
+    .get(`${SERVER_HOST}:${SERVER_PORT}/trip/get-daily-business-trip`, {
+      params: {
         BusinessId: businessId,
       },
     })
@@ -272,6 +329,7 @@ export const GetPastTripsTransporterFromDB = async (businessId: string) => {
           pickUpLocation: data.HomeAddress,
           dropOffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
         };
 
         tripData.push(trip);

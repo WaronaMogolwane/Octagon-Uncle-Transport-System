@@ -20,7 +20,7 @@ SELECT
     Passenger.LastName AS PassengerLastName
 FROM
     Trip
-        INNER JOIN
+        INNER JOIN    
     DriverVehicleLinking ON DriverVehicleLinking.DriverVehicleLinkingId = Trip.DriverVehicleLinkingId
         INNER JOIN
     User ON User.UserId = DriverVehicleLinking.DriverId

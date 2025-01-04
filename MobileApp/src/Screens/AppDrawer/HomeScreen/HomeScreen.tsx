@@ -192,7 +192,8 @@ const HomeScreen = ({navigation}: any) => {
 
     await GetDailytTripsTransporter(businessId).then((result: any) => {
       if (result.length != 0) {
-        console.log(result);
+        console.info(result);
+
         setTripCount(result.length);
 
         result.forEach((item: any) => {

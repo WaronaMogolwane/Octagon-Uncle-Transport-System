@@ -216,7 +216,7 @@ export const GetDailBusinessTripByBusinessId = async (
 ) => {
   DbPool.query(
     {
-      sql: "CALL GetDailBusinessTrip(?);",
+      sql: "CALL GetDailyBusinessTrip(?);",
       timeout: 40000,
       values: [businessId],
     },

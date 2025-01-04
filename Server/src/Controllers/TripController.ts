@@ -74,7 +74,6 @@ export const GetTrip = async (req: any, res: any, next: any) => {
 
 export const GetDailBusinessTrip = async (req: any, res: any, next: any) => {
   const businessId = req.query.BusinessId;
-  console.log(businessId);
 
   await GetDailBusinessTripByBusinessId(businessId, async (error, result) => {
     if (error) {

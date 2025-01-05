@@ -12,6 +12,7 @@ export const AddTripToDB = async (trip: Trip) => {
       trip: {
         PassengerId: trip.passengerId,
         VehicleId: trip.vehicleId,
+        BusinessId: trip.businessId,
       },
     })
     .then((response: any) => {

@@ -306,6 +306,7 @@ const TripsScreen = ({navigation}: any) => {
       pickUpLocation={itemData.pickUpLocation}
       tripStatus={itemData.tripStatus}
       dropOffTime={itemData.dropoffTime}
+      leg={itemData.leg}
     />
   );
 
@@ -318,6 +319,7 @@ const TripsScreen = ({navigation}: any) => {
       pickUpLocation={itemData.pickUpLocation}
       tripStatus={itemData.tripStatus}
       dropOffTime={itemData.dropOffTime}
+      leg={itemData.leg}
       handlePickup={() => {
         ChangeTripStatus(itemData.tripId, 2);
       }}
@@ -347,6 +349,7 @@ const TripsScreen = ({navigation}: any) => {
       pickUpLocation={itemData.pickUpLocation}
       tripStatus={itemData.tripStatus}
       dropOffTime={itemData.dropOffTime}
+      leg={itemData.leg}
       handleUndo={() => {
         if (itemData.tripStatus == 1) {
           UndoTripEnd(itemData.tripId).then(() => {

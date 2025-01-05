@@ -95,6 +95,7 @@ const TripTransporterScreen = ({route, navigation}: any) => {
       pickUpLocation={itemData.pickUpLocation}
       tripStatus={itemData.tripStatus}
       dropOffTime={itemData.dropOffTime}
+      leg={Number(itemData.leg)}
     />
   );
 
@@ -107,6 +108,7 @@ const TripTransporterScreen = ({route, navigation}: any) => {
       pickUpLocation={itemData.pickUpLocation}
       tripStatus={itemData.tripStatus}
       dropOffTime={itemData.dropOffTime}
+      leg={Number(itemData.leg)}
     />
   );
 

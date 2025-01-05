@@ -8,8 +8,10 @@ import {
 import React from 'react';
 import {TripCardDriverStyles} from '../../Stylesheets/GlobalStyles';
 import {Card} from '@gluestack-ui/themed';
-import {GraduationCap} from 'lucide-react-native';
 import {Swipeable} from 'react-native-gesture-handler';
+import {MoveRight, MoveLeft} from 'lucide-react-native';
+import COLORS from '../../Const/colors';
+import TripDestinationCard from './TripDestinationCard';
 
 type tripCardProps = {
   passengerName: string;
@@ -18,6 +20,7 @@ type tripCardProps = {
   pickUpDate: string;
   pickUpLocation: string;
   tripStatus: number;
+  leg: number;
   handleUndo: (
     values:
       | GestureResponderEvent
@@ -27,18 +30,6 @@ type tripCardProps = {
 };
 
 export const TripCardDriver = (props: tripCardProps) => {
-  const iconSize = 15;
-  const iconStrokeWidth = 1;
-  const iconColor = '#000000';
-
-  const universityIcon = (
-    <GraduationCap
-      size={iconSize}
-      strokeWidth={iconStrokeWidth}
-      color={iconColor}
-    />
-  );
-
   const tripStatus = () => {
     if (props.tripStatus == 0) {
       return (
@@ -217,6 +208,8 @@ export const TripCardDriver = (props: tripCardProps) => {
             <Text style={TripCardDriverStyles.cardText}>Location </Text>
             <Text>{props.pickUpLocation}</Text>
           </View>
+
+          {TripDestinationCard(props.leg)}
         </View>
       </Card>
     </Swipeable>

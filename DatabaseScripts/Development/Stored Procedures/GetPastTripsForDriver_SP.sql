@@ -8,6 +8,7 @@ SELECT
     Trip.TripStatus,
     Trip.Date,
     Trip.PassengerId AS PassengerUserId,
+    Trip.Leg,
     Passenger.FirstName AS PassengerFirstName,
     Passenger.LastName AS PassengerLastName,
     Passenger.HomeAddress,

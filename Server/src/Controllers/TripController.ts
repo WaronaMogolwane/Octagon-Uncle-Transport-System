@@ -23,12 +23,10 @@ import { TripStatus } from "../Classes/TripStatus";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 
 export const AddTrip = async (req: any, res: any, next: any) => {
-  const convertedDate = req.body.trip.Date;
-  const date = new Date(convertedDate);
-
   let newTrip = {
     passengerId: req.body.trip.PassengerId,
     vehicleId: req.body.trip.VehicleId,
+    businessId: req.body.trip.BusinessId,
   };
 
   await InsertTrip(newTrip, (error, result) => {
@@ -74,7 +72,6 @@ export const GetTrip = async (req: any, res: any, next: any) => {
 
 export const GetDailBusinessTrip = async (req: any, res: any, next: any) => {
   const businessId = req.query.BusinessId;
-  console.log(businessId);
 
   await GetDailBusinessTripByBusinessId(businessId, async (error, result) => {
     if (error) {

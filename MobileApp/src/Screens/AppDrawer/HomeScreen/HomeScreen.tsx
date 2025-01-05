@@ -159,11 +159,11 @@ const HomeScreen = ({navigation}: any) => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (fullData[0] != '' && fullData.length > 0) {
-  //     handleSearch();
-  //   }
-  // }, [fullData]);
+  useEffect(() => {
+    if (fullData[0] != '' && fullData.length > 0) {
+      handleSearch();
+    }
+  }, [fullData]);
 
   useEffect(() => {
     const fetchProfileImage = async () => {
@@ -196,8 +196,6 @@ const HomeScreen = ({navigation}: any) => {
 
     await GetDailytTripsTransporter(businessId).then((result: any) => {
       if (result.length != 0) {
-        console.info(result);
-
         setTripCount(result.length);
 
         result.forEach((item: any) => {
@@ -307,24 +305,24 @@ const HomeScreen = ({navigation}: any) => {
     });
   };
 
-  // const handleSearch = () => {
-  //   const date = new Date().toLocaleDateString('en-CA');
-  //   const formattedQuery = date;
+  const handleSearch = () => {
+    const date = new Date().toLocaleDateString('en-CA');
+    const formattedQuery = date;
 
-  //   const filterData: any = filter(fullData, (user: any) => {
-  //     return contains(user, formattedQuery);
-  //   });
+    const filterData: any = filter(fullData, (user: any) => {
+      return contains(user, formattedQuery);
+    });
 
-  //   setTripData(filterData);
-  // };
+    setTripData(filterData);
+  };
 
-  // const contains = ({pickUpDate}: any, query: any) => {
-  //   if (pickUpDate.toLowerCase().includes(query)) {
-  //     return true;
-  //   }
+  const contains = ({pickUpDate}: any, query: any) => {
+    if (pickUpDate.toLowerCase().includes(query)) {
+      return true;
+    }
 
-  //   return false;
-  // };
+    return false;
+  };
 
   const universityIcon = (
     <GraduationCap
@@ -696,7 +694,7 @@ const HomeScreen = ({navigation}: any) => {
             </Card>
           </View>
           <View style={{height: '33.3%'}}>
-            <TripsBlockDiver tripList={data} />
+            <TripsBlockDiver tripList={tripData} />
           </View>
         </ScrollView>
       </SafeAreaView>

@@ -283,7 +283,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       newPassengerId,
     );
 
-    let newTrip = new Trip('', newPassengerId, vehicleId);
+    let newTrip = new Trip('', newPassengerId, vehicleId,businessId);
 
     await AddPassengerDriverVehicleLinking(newPVL).then((result: any) => {
       UpdateIsAssigned(newPassengerId).then((result1: any) => {

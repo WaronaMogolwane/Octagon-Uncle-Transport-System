@@ -11,9 +11,9 @@ export const InsertTrip = async (
 ) => {
   DbPool.query(
     {
-      sql: "CALL InsertNewTrip(?,?);",
+      sql: "CALL InsertNewTrip(?,?,?);",
       timeout: 40000,
-      values: [trip.vehicleId, trip.passengerId],
+      values: [trip.vehicleId, trip.passengerId, trip.businessId],
     },
     function (error, results, fields) {
       if (error) {

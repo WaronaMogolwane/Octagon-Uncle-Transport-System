@@ -2,6 +2,9 @@ import {Text, View} from 'react-native';
 import React from 'react';
 import {TripCardDriverStyles} from '../../Stylesheets/GlobalStyles';
 import {Card} from '@gluestack-ui/themed';
+import {MoveLeft, MoveRight} from 'lucide-react-native';
+import COLORS from '../../Const/colors';
+import TripDestinationCard from './TripDestinationCard';
 
 type tripCardProps = {
   passengerName: string;
@@ -10,6 +13,7 @@ type tripCardProps = {
   pickUpDate: string;
   pickUpLocation: string;
   tripStatus: number;
+  leg: number;
 };
 
 export const TripCardTransporter = (props: tripCardProps) => {
@@ -120,22 +124,34 @@ export const TripCardTransporter = (props: tripCardProps) => {
               <Text>{props.pickUpDate}</Text>
             </View>
             <View style={{width: '50%'}}>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={TripCardDriverStyles.cardText}>Pickup Time</Text>
-                <Text style={{marginEnd: 20}}> {props.pickUpTime}</Text>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={TripCardDriverStyles.cardText}>Dropoff Time</Text>
-                <Text style={{marginEnd: 20}}> {props.dropOffTime}</Text>
-              </View>
+              {props.pickUpTime == '' ||
+              props.pickUpTime == null ||
+              props.pickUpTime == undefined ? null : (
+                <View style={{flexDirection: 'row'}}>
+                  <Text style={TripCardDriverStyles.cardText}>Pickup Time</Text>
+                  <Text style={{marginEnd: 20}}> {props.pickUpTime}</Text>
+                </View>
+              )}
+              {props.pickUpTime == '' ||
+              props.pickUpTime == null ||
+              props.pickUpTime == undefined ? null : (
+                <View style={{flexDirection: 'row'}}>
+                  <Text style={TripCardDriverStyles.cardText}>
+                    Dropoff Time
+                  </Text>
+                  <Text style={{marginEnd: 20}}> {props.dropOffTime}</Text>
+                </View>
+              )}
             </View>
           </View>
         </View>
 
         <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Location </Text>
+          <Text style={TripCardDriverStyles.cardText}>Home Address </Text>
           <Text>{props.pickUpLocation}</Text>
         </View>
+
+        {TripDestinationCard(props.leg)}
       </View>
     </Card>
   );
@@ -267,22 +283,34 @@ export const TripCardTransporterComplete = (props: tripCardProps) => {
               <Text>{props.pickUpDate}</Text>
             </View>
             <View style={{width: '50%'}}>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={TripCardDriverStyles.cardText}>Pickup Time</Text>
-                <Text style={{marginEnd: 20}}> {props.pickUpTime}</Text>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={TripCardDriverStyles.cardText}>Dropoff Time</Text>
-                <Text style={{marginEnd: 20}}> {props.dropOffTime}</Text>
-              </View>
+              {props.pickUpTime == '' ||
+              props.pickUpTime == null ||
+              props.pickUpTime == undefined ? null : (
+                <View style={{flexDirection: 'row'}}>
+                  <Text style={TripCardDriverStyles.cardText}>Pickup Time</Text>
+                  <Text style={{marginEnd: 20}}> {props.pickUpTime}</Text>
+                </View>
+              )}
+              {props.pickUpTime == '' ||
+              props.pickUpTime == null ||
+              props.pickUpTime == undefined ? null : (
+                <View style={{flexDirection: 'row'}}>
+                  <Text style={TripCardDriverStyles.cardText}>
+                    Dropoff Time
+                  </Text>
+                  <Text style={{marginEnd: 20}}> {props.dropOffTime}</Text>
+                </View>
+              )}
             </View>
           </View>
         </View>
 
         <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Location </Text>
+          <Text style={TripCardDriverStyles.cardText}>Home Address </Text>
           <Text>{props.pickUpLocation}</Text>
         </View>
+
+        {TripDestinationCard(props.leg)}
       </View>
     </Card>
   );

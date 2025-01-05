@@ -10,7 +10,9 @@ import React, {useState} from 'react';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import {TripCardDriverStyles} from '../../Stylesheets/GlobalStyles';
 import {Card, Center} from '@gluestack-ui/themed';
-import {WalletMinimal} from 'lucide-react-native';
+import {MoveLeft, MoveRight, WalletMinimal} from 'lucide-react-native';
+import COLORS from '../../Const/colors';
+import TripDestinationCard from './TripDestinationCard';
 
 type tripCardSwipableProps = {
   passengerName: string;
@@ -19,6 +21,7 @@ type tripCardSwipableProps = {
   pickUpDate: string;
   pickUpLocation: string;
   tripStatus: number;
+  leg: number;
   handlePickup: (
     values:
       | GestureResponderEvent
@@ -41,16 +44,6 @@ type tripCardSwipableProps = {
 
 export const TripCardDriverSwipable = (props: tripCardSwipableProps) => {
   const [IsLoading, setIsLoading] = useState(false);
-
-  const iconSize = 100;
-  const iconStrokeWidth = 1;
-  const iconColor = '#FFFFFF';
-
-  const undoIcon = (
-    <WalletMinimal size={25} strokeWidth={2} color={'#3ba2a9'} />
-  );
-
-  // const IsLoading = false;
   const leftSwipe = (progress: any, dragX: any) => {
     const scale = dragX.interpolate({
       inputRange: [0, 100],
@@ -261,7 +254,6 @@ export const TripCardDriverSwipable = (props: tripCardSwipableProps) => {
                       fontWeight: '600',
                       textAlign: 'justify',
                     }}>
-                    {/* {universityIcon} */}
                     {props.passengerName}
                   </Text>
                 </View>
@@ -301,12 +293,15 @@ export const TripCardDriverSwipable = (props: tripCardSwipableProps) => {
               )}
               <View style={TripCardDriverStyles.cardContainer}>
                 <View style={TripCardDriverStyles.cardContainer}>
-                  <Text style={TripCardDriverStyles.cardText}>Location </Text>
+                  <Text style={TripCardDriverStyles.cardText}>
+                    Home Address
+                  </Text>
                 </View>
                 <View>
                   <Text>{props.pickUpLocation}</Text>
                 </View>
               </View>
+              {TripDestinationCard(props.leg)}
             </View>
           </Card>
         </Swipeable>

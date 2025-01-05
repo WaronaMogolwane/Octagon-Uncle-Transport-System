@@ -10,6 +10,7 @@ SELECT
     Trip.TripStatus,
     Trip.Date,
     Trip.PassengerId,
+    Trip.Leg,
     Passenger.HomeAddress,
     Passenger.DestinationAddress,
 	Passenger.FirstName AS PassengerFirstName,

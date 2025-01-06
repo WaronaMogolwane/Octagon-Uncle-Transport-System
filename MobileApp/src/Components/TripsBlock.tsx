@@ -58,7 +58,7 @@ export const TripsBlock = ({tripList}: {tripList: any[]}) => {
           variant="outline"
           style={{
             marginTop: heightNumber,
-            marginHorizontal: 13,
+            // marginHorizontal: 13,
             marginBottom: 10,
             backgroundColor: '#ffffff',
             borderRadius: 5,
@@ -93,7 +93,7 @@ export const TripsBlock = ({tripList}: {tripList: any[]}) => {
           style={{
             height: 150,
             marginTop: -5,
-            marginHorizontal: 14,
+            // marginHorizontal: 14,
             marginBottom: '35%',
             backgroundColor: '#ffffff',
             borderRadius: 5,

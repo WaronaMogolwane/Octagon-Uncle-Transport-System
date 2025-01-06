@@ -1,31 +1,30 @@
-CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetPastTripsForBusiness`(in _BusinessId varchar(100))
+CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetPastTripsForBusiness`(IN _BusinessId VARCHAR(100), IN _VehicleId VARCHAR(100))
 BEGIN
 SELECT 
     Trip.TripId,
-    DriverVehicleLinking.DriverId AS DriverUserId,
-    UserBusinessLinking.BusinessId,
     UserDetail.FirstName,
     UserDetail.LastName,
-    DriverVehicleLinking.VehicleId,
     Trip.PickUpTime,
     Trip.DropoffTime,
     Trip.IsCompleted,
-	Trip.Date,
-    Trip.PassengerId AS PassengerUserId,
-	User.UserRole
+    Trip.TripStatus,
+    Trip.Date,
+    Trip.PassengerId,
+    Trip.Leg,
+    Passenger.HomeAddress,
+    Passenger.DestinationAddress,
+	Passenger.FirstName AS PassengerFirstName,
+    Passenger.LastName AS PassengerLastName
 FROM
     Trip
         INNER JOIN
-    DriverVehicleLinking ON DriverVehicleLinking.DriverVehicleLinkingId = Trip.DriverVehicleLinkingId
-        INNER JOIN
-    User ON User.UserId = DriverVehicleLinking.DriverId
-        INNER JOIN
-    UserBusinessLinking ON UserBusinessLinking.UserId = DriverVehicleLinking.DriverId
-        INNER JOIN
-    UserDetail ON UserDetail.UserId = User.UserId
+    UserDetail ON UserDetail.UserId = Trip.DriverId
+		INNER JOIN
+    Passenger ON Passenger.PassengerId = Trip.PassengerId
 WHERE
-    UserBusinessLinking.BusinessId = _BusinessId
-        AND Trip.Date < current_timestamp()
-        OR Trip.IsCompleted = '1'
-GROUP BY Trip.Date;
+    (Trip.BusinessId = _BusinessId
+    AND Trip.VehicleId = _VehicleId)
+	AND 
+    (Trip.Date < current_date()
+	OR  Trip.IsCompleted = '1');
 END

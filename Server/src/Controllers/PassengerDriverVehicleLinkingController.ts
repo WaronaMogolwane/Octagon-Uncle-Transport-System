@@ -23,7 +23,8 @@ export const AddPassengerDriverVehicleLinking = async (
     newPassengerDriverVehicleLinking,
     (error, result) => {
       if (error) {
-        next(new ErrorResponse(501, error.message));
+        const err: Error = new Error(error.message);
+        next(new ErrorResponse(400, err.message, err.stack));
       } else if (result.affectedRows == 0) {
         let err: any = {
           status: 499,
@@ -51,7 +52,8 @@ export const GetPassengerDriverVehicleLinking = async (
     businessId,
     (error, result) => {
       if (error) {
-        next(new ErrorResponse(501, error.message));
+        const err: Error = new Error(error.message);
+        next(new ErrorResponse(400, err.message, err.stack));
       } else if (result.affectedRows == 0) {
         let err: any = {
           status: 499,
@@ -79,7 +81,8 @@ export const RemovePassengerDriverVehicleLinking = async (
     passengerVehicleLinkingId,
     (error, result) => {
       if (error) {
-        next(new ErrorResponse(501, error.message));
+        const err: Error = new Error(error.message);
+        next(new ErrorResponse(400, err.message, err.stack));
       } else if (result.affectedRows == 0) {
         let err: any = {
           status: 499,

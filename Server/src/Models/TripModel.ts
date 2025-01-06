@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import { DbPool } from "../Services/DatabaseService";
 import { Trip } from "../Classes/Trip";
 import { TripStatus } from "../Classes/TripStatus";
+import { Vehicle } from "../Classes/Vehicle";
 dotenv.config();
 
 export const InsertTrip = async (
@@ -10,9 +11,9 @@ export const InsertTrip = async (
 ) => {
   DbPool.query(
     {
-      sql: "CALL InsertNewTrip(?,?);",
+      sql: "CALL InsertNewTrip(?,?,?);",
       timeout: 40000,
-      values: [trip.vehicleId, trip.passengerId],
+      values: [trip.vehicleId, trip.passengerId, trip.businessId],
     },
     function (error, results, fields) {
       if (error) {
@@ -190,12 +191,32 @@ export const GetPastTripsByDriverId = async (
 };
 
 export const GetUpcomingTripsByBusinessId = async (
-  businessId: string,
+  businessInfo: any,
   callback: (error, result) => void
 ) => {
   DbPool.query(
     {
-      sql: "CALL GetFutureTripsForBusiness(?);",
+      sql: "CALL GetFutureTripsForBusiness(?,?);",
+      timeout: 40000,
+      values: [businessInfo.businessId, businessInfo.vehicleId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const GetDailBusinessTripByBusinessId = async (
+  businessId: any,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetDailyBusinessTrip(?);",
       timeout: 40000,
       values: [businessId],
     },
@@ -210,14 +231,14 @@ export const GetUpcomingTripsByBusinessId = async (
 };
 
 export const GetPastTripsByBusinessId = async (
-  businessId: string,
+  businessInfo: any,
   callback: (error, result) => void
 ) => {
   DbPool.query(
     {
-      sql: "CALL GetPastTripsForBusiness(?);",
+      sql: "CALL GetPastTripsForBusiness(?,?);",
       timeout: 40000,
-      values: [businessId],
+      values: [businessInfo.businessId, businessInfo.vehicleId],
     },
     function (error, results, fields) {
       if (error) {

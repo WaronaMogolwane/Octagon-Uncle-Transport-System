@@ -16,12 +16,16 @@ const SmallHomeScreenCard = (props: smallCardProps) => {
     colorString = '#d6f3f1';
   } else if (props.iconSelector == 2) {
     colorString = '#fadcdc';
+  } else if (props.iconSelector == 3) {
+    colorString = '#f5eede';
   }
   const smallIcon = () => {
     if (props.iconSelector == 1) {
       return <WalletMinimal size={25} strokeWidth={2} color={'#3ba2a9'} />;
     } else if (props.iconSelector == 2) {
       return <CarFront size={25} strokeWidth={2} color={'#c26b71'} />;
+    } else if (props.iconSelector == 3) {
+      return <GraduationCap size={25} strokeWidth={2} color={'#e89d0e'} />;
     }
   };
 
@@ -30,9 +34,8 @@ const SmallHomeScreenCard = (props: smallCardProps) => {
       size="sm"
       variant="outline"
       style={{
-        marginEnd: 15,
         width: '41.7%',
-        backgroundColor: '#ffffff',
+        backgroundColor: '#fff',
         borderRadius: 5,
         elevation: 10,
         justifyContent: 'center',

@@ -2,6 +2,8 @@ import {Text, View} from 'react-native';
 import React from 'react';
 import COLORS from '../../Const/colors';
 import {TripCardParentStyles} from '../../Stylesheets/GlobalStyles';
+import {MoveRight, MoveLeft} from 'lucide-react-native';
+import TripDestinationCard from './TripDestinationCard';
 
 type tripCardProps = {
   driverName: string;
@@ -11,6 +13,7 @@ type tripCardProps = {
   passengerName: string;
   pickUpLocation: string;
   tripStatus: number;
+  leg: number;
 };
 
 export const TripCardParent = (props: tripCardProps) => {
@@ -90,7 +93,6 @@ export const TripCardParent = (props: tripCardProps) => {
     }
   };
 
-
   return (
     <View style={TripCardParentStyles.cardBorder}>
       <View style={TripCardParentStyles.cardContainer}>{tripStatus()}</View>
@@ -133,9 +135,10 @@ export const TripCardParent = (props: tripCardProps) => {
       <View style={TripCardParentStyles.cardContainer}>
         <Text style={TripCardParentStyles.cardText}>Location:</Text>
       </View>
-      <View>
+      {/* <View>
         <Text>{props.pickUpLocation}</Text>
-      </View>
+      </View> */}
+      {TripDestinationCard(props.leg)}
     </View>
   );
 };

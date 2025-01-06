@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, {AxiosError, AxiosResponse} from 'axios';
 import {PassengerSchedule} from '../Models/PassengerSchedule';
 import {SERVER_HOST, SERVER_PORT} from '@env';
 
@@ -68,28 +68,26 @@ export const GetPassengerScheduleFromDB = async (passengerId: string) => {
         },
       },
     )
-    .then((response: any) => {
-      let result = response.data.result;
-
-      let passengerSchedule = new PassengerSchedule(
-        result[0].Monday,
-        result[0].Tuesday,
-        result[0].Wednesday,
-        result[0].Thursday,
-        result[0].Friday,
-        result[0].Saturday,
-        result[0].Sunday,
-        result[0].PassengerId,
-        result[0].DriverVehicleLinkingId,
-        result[0].PassengerScheduleId,
+    .then((response: AxiosResponse) => {
+      const [scheduleData] = response.data.result;
+      res = new PassengerSchedule(
+        scheduleData.Monday,
+        scheduleData.Tuesday,
+        scheduleData.Wednesday,
+        scheduleData.Thursday,
+        scheduleData.Friday,
+        scheduleData.Saturday,
+        scheduleData.Sunday,
+        scheduleData.PassengerId,
+        scheduleData.DriverVehicleLinkingId,
+        scheduleData.PassengerScheduleId,
       );
-
-      res = passengerSchedule;
     })
-    .catch(error => {
-      console.log(error);
+    .catch((error: AxiosError) => {
+      console.log(error.message);
       res = error;
     });
+
   return res;
 };
 

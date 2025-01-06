@@ -7,10 +7,11 @@ import ErrorHandler from "./Middleware/ErrorHandler";
 import WinstonLogger from "./Utilities/WinstonLogger";
 import { MainWorker } from "./Worker/MainWorker";
 import { CustomLogger } from "./Classes/CustomLogger";
+import { RegisterRoutes } from "./Routes/Routes";
 
 const Logger: CustomLogger = new CustomLogger();
 const NODE_ENV = process.env.NODE_ENV;
-const PORT = (NODE_ENV === "development") ? process.env.OUTS_SERVER_PORT : undefined;
+let PORT = (NODE_ENV === "development") ? process.env.OUTS_SERVER_PORT : process.env.PORT;
 const app = express();
 const fbp = firebase;
 let bodyParser = require("body-parser");
@@ -28,6 +29,8 @@ app.use(ErrorHandler);
 app.listen(PORT, function () {
   Logger.Log(`Octagon Uncle server is live on Port ${PORT}`);
 });
+
+RegisterRoutes(app);
 
 if (NODE_ENV === 'development') {
   const mainWorker: MainWorker = new MainWorker();

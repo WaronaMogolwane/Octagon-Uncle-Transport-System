@@ -120,8 +120,8 @@ export const GetActivePassengerForParentFromDB = async (parentId: string) => {
 };
 
 export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
-  let result: any;
-  const tripData: {}[] = [];
+  let result: {}[] = [];
+  const passengerData: {}[] = [];
   let passsengers = {};
 
   await axios
@@ -135,7 +135,6 @@ export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
     )
     .then((response: any) => {
       let res = [...response.data.result];
-
       res.forEach(data => {
         passsengers = {
           passengerId: data.PassengerId,
@@ -155,10 +154,10 @@ export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
           userId: data.UserId,
         };
 
-        tripData.push(passsengers);
+        passengerData.push(passsengers);
       });
 
-      result = tripData;
+      result = passengerData;
     })
     .catch((error: any) => {
       result = error;

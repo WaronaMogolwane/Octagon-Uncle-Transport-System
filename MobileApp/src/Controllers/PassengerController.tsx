@@ -26,19 +26,19 @@ export const GetParentPassengers = async (parentId: string) => {
 };
 
 export const GetAllActivePassengerForBusiness = async (businessId: string) => {
-  return GetActivePassengerForBusinessFromDB(businessId);
+  return await GetActivePassengerForBusinessFromDB(businessId);
 };
 
 export const GetAllActivePassengerForParent = async (parentId: string) => {
-  return GetActivePassengerForParentFromDB(parentId);
+  return await GetActivePassengerForParentFromDB(parentId);
 };
 
 export const GetAllPendingPassengerForBusiness = async (businessId: string) => {
-  return GetPendingPassengerForBusinessFromDB(businessId);
+  return await GetPendingPassengerForBusinessFromDB(businessId);
 };
 
 export const GetAllPassengerForBusiness = async (businessId: string) => {
-  return GetAllPassengerForBusinessFromDB(businessId);
+  return await GetAllPassengerForBusinessFromDB(businessId);
 };
 
 export const DeletePassenger = async (passengerId: string) => {

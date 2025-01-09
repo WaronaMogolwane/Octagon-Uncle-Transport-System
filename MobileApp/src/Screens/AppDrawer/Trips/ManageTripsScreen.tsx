@@ -32,7 +32,6 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import filter from 'lodash.filter';
 import {CurrentVehicle} from '../../../Models/CurrentVehicle';
 import {BookUser, Route} from 'lucide-react-native';
-import {set} from 'date-fns';
 
 const ManageTripsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -74,6 +73,12 @@ const ManageTripsScreen = ({navigation}: any) => {
     GetLinkedVehicle();
   }, []);
 
+  useEffect(() => {
+    if (fullData.length > 0) {
+      handleSearch('');
+    }
+  }, [fullData]);
+
   const ShowToast = () => {
     toast.show({
       placement: 'top',
@@ -101,7 +106,8 @@ const ManageTripsScreen = ({navigation}: any) => {
           setRefreshing(false);
         } else {
           ShowToast();
-          setVehicleList(result);
+          // setVehicleList(result);
+          setFullData(result);
           setRefreshing(false);
           setNoLinkedVehicle(false);
         }
@@ -230,7 +236,7 @@ const ManageTripsScreen = ({navigation}: any) => {
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    const formattedQuery = query;
+    const formattedQuery = query.toLowerCase();
     const filterData: any = filter(fullData, (user: any) => {
       return contains(user, formattedQuery);
     });
@@ -240,14 +246,14 @@ const ManageTripsScreen = ({navigation}: any) => {
 
   const contains = (
     {color, fullName, licenseNumber, make, model}: any,
-    query: any,
+    query: string,
   ) => {
     if (
-      color.includes(query) ||
-      fullName.includes(query) ||
-      licenseNumber.includes(query) ||
-      make.includes(query) ||
-      model.includes(query)
+      color.toLowerCase().includes(query) ||
+      fullName.toLowerCase().includes(query) ||
+      licenseNumber.toLowerCase().includes(query) ||
+      make.toLowerCase().includes(query) ||
+      model.toLowerCase().includes(query)
     ) {
       return true;
     }
@@ -256,28 +262,26 @@ const ManageTripsScreen = ({navigation}: any) => {
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={FlatlistStyles.container}>
-        <TextInput
-          placeholder="Search"
-          clearButtonMode="always"
-          autoCapitalize="none"
-          style={styles.searchBox}
-          autoCorrect={false}
-          value={searchQuery}
-          onChangeText={(query: string) => handleSearch(query)}
-        />
-        {noLinkedVehicle ? EmtpyFlatListText() : null}
-        <FlatList
-          style={{backgroundColor: '#e8f0f3'}}
-          data={vehicleList}
-          renderItem={({item}) => renderItemComponentVehicleInfo(item)}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        />
-        {showMenu ? FabMenu() : GoBackFab()}
-      </View>
+    <SafeAreaView style={FlatlistStyles.container}>
+      <TextInput
+        placeholder="Search"
+        clearButtonMode="always"
+        autoCapitalize="none"
+        style={styles.searchBox}
+        autoCorrect={false}
+        value={searchQuery}
+        onChangeText={(query: string) => handleSearch(query)}
+      />
+      {noLinkedVehicle ? EmtpyFlatListText() : null}
+      <FlatList
+        style={{backgroundColor: '#e8f0f3'}}
+        data={vehicleList}
+        renderItem={({item}) => renderItemComponentVehicleInfo(item)}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      />
+      {showMenu ? FabMenu() : GoBackFab()}
     </SafeAreaView>
   );
 };

@@ -6,8 +6,8 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
-  TextInput,
   View,
+  TextInput,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {
@@ -92,7 +92,6 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [postalCode, setPostalCode] = useState('');
   const [homeAddress, setHomeAddress] = useState('');
   const [destinationAddress, setDestinationAddress] = useState('');
-  const [isActive, setIsActive] = useState('');
   const [isActiveText, setIsActiveText] = useState('');
 
   const ref = React.useRef(null);
@@ -100,7 +99,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [isFocus, setIsFocus] = useState(false);
 
   const [allPassengers, setAllPassengers] = useState([]);
-  const [allPassengersFiltered, setAllPassengersFiltered] = useState([]);
+  const [fullData, setFullData] = useState([]);
 
   const [allPendingPassengers, setPendingPassengers] = useState([]);
 
@@ -120,7 +119,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [IsLoading, setIsLoading] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [fullData, setFullData] = useState([]);
+  const [index, setIndex] = useState(0);
 
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
@@ -151,13 +150,21 @@ const ManagePassengerScreen = ({navigation}: any) => {
     GetPassengers();
   }, []);
 
+  useEffect(() => {
+    if (fullData.length > 0) {
+      handleSearch('');
+    }
+  }, [fullData]);
+
   const GetPassengers = async () => {
     if (role == 1) {
       //Transporter
       await GetAllPassengerForBusiness(businessId).then((result: any) => {
         if (result.length != 0) {
           setNoPassenger(false);
-          setAllPassengers(result);
+          setFullData(result);
+
+          // setAllPassengers(result);
           setStatusCode(!statusCode);
           setIsLoading(false);
         } else {
@@ -240,6 +247,20 @@ const ManagePassengerScreen = ({navigation}: any) => {
       }}
     />
   );
+
+  function renderHeader() {
+    return (
+      <TextInput
+        placeholder="Search"
+        clearButtonMode="always"
+        autoCapitalize="none"
+        style={styles.searchBox}
+        autoCorrect={false}
+        value={searchQuery}
+        onChangeText={(query: string) => handleSearch(query)}
+      />
+    );
+  }
 
   const UpdatePassengerDetails = async (values: any) => {
     setIsLoading(true);
@@ -1080,14 +1101,62 @@ const ManagePassengerScreen = ({navigation}: any) => {
     });
   };
 
-  const handleSearch = (query: string) => {
+  // const FilterPassenger = (itemData: any) => {
+  //   const showPassengerCard = () => (
+  //     <PassengerListAllCard
+  //       passengerName={itemData.passengerName}
+  //       pickUpLocation={itemData.homeAddress}
+  //       isActive={itemData.isActive}
+  //       onPress={() => {
+  //         setPassengerId(itemData.passengerId);
+  //         setFirstName(itemData.passengerFirstName);
+  //         setLastName(itemData.passengerLastName);
+  //         setAge(itemData.age.toString());
+  //         setHomeAddress(itemData.homeAddress);
+  //         setPostalCode(itemData.postalCode);
+  //         setProvince(itemData.province);
+  //         setCity(itemData.city);
+  //         setSuburb(itemData.suburb);
+  //         setDestinationAddress(itemData.destinationAddress);
+  //         setParentName(itemData.parentName);
+  //         setIsActiveText(itemData.isActivetext);
+  //         setShowReasonField(false);
+  //         setShowButton(false);
+  //         setShowPassengerSummary(true);
+  //       }}
+  //     />
+  //   );
+
+  //   //if the input is empty, show card
+  //   if (searchQuery === '') {
+  //     return showPassengerCard();
+  //   }
+
+  //   //if the input matches any search criteria, show card
+  //   if (
+  //     itemData.passengerFirstName
+  //       .toLowerCase()
+  //       .includes(searchQuery.toLowerCase()) ||
+  //     itemData.passengerLastName
+  //       .toLowerCase()
+  //       .includes(searchQuery.toLowerCase()) ||
+  //     itemData.parentName.toLowerCase().includes(searchQuery.toLowerCase())
+  //   ) {
+  //     return showPassengerCard();
+  //   }
+
+  //   //if no match, return null
+  //   return null;
+  // };
+
+  const handleSearch = (query: any) => {
     setSearchQuery(query);
-    const formattedQuery = query;
-    const filterData: any = filter(allPassengers, (user: any) => {
+    const formattedQuery = query.toLowerCase();
+    const filterData: any = filter(fullData, (user: any) => {
       return contains(user, formattedQuery);
     });
 
-    setAllPassengersFiltered(filterData);
+    setAllPassengers(filterData);
   };
 
   const contains = (
@@ -1095,9 +1164,9 @@ const ManagePassengerScreen = ({navigation}: any) => {
     query: any,
   ) => {
     if (
-      parentName.includes(query) ||
-      passengerFirstName.includes(query) ||
-      passengerLastName.includes(query)
+      parentName.toLowerCase().includes(query) ||
+      passengerFirstName.toLowerCase().includes(query) ||
+      passengerLastName.toLowerCase().includes(query)
     ) {
       return true;
     }
@@ -1129,29 +1198,29 @@ const ManagePassengerScreen = ({navigation}: any) => {
   //Contains Upcoming Flatlist for all roles
   function FirstRoute() {
     return (
-      <View style={{flex: 1}}>
-        <View style={FlatlistStyles.container}>
-          <TextInput
+      <View style={FlatlistStyles.container}>
+        {/* <TextInput
             placeholder="Search"
             clearButtonMode="always"
             autoCapitalize="none"
             style={styles.searchBox}
             autoCorrect={false}
             value={searchQuery}
-            onChangeText={(query: string) => handleSearch(query)}
-          />
-          <View>{showPassengerSummaryModal()}</View>
-          {noPassenger ? EmtpyFlatListText() : null}
-          <FlatList
-            style={{backgroundColor: '#e8f0f3'}}
-            data={allPassengersFiltered}
-            extraData={statusCode}
-            renderItem={({item}) => renderItemComponentAllPassengers(item)}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
-        </View>
+            onChangeText={(query: string) => {
+              setSearchQuery(query);
+            }}
+          /> */}
+        <View>{showPassengerSummaryModal()}</View>
+        {noPassenger ? EmtpyFlatListText() : null}
+        <FlatList
+          style={{backgroundColor: '#e8f0f3'}}
+          data={allPassengers}
+          extraData={statusCode}
+          renderItem={({item}) => renderItemComponentAllPassengers(item)}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
       </View>
     );
   }
@@ -1159,20 +1228,18 @@ const ManagePassengerScreen = ({navigation}: any) => {
   //Contains Past Flatlist for all roles
   function SecondRoute() {
     return (
-      <View style={{flex: 1}}>
-        <View style={FlatlistStyles.container}>
-          <View>{showPassengerSummaryModal()}</View>
-          {noPendingPassenger ? EmtpyPassengerFlatListText() : null}
-          <FlatList
-            style={{backgroundColor: '#e8f0f3'}}
-            data={allPendingPassengers}
-            extraData={statusCode}
-            renderItem={({item}) => renderItemComponentPendingPassengers(item)}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
-        </View>
+      <View style={FlatlistStyles.container}>
+        <View>{showPassengerSummaryModal()}</View>
+        {noPendingPassenger ? EmtpyPassengerFlatListText() : null}
+        <FlatList
+          style={{backgroundColor: '#e8f0f3'}}
+          data={allPendingPassengers}
+          extraData={statusCode}
+          renderItem={({item}) => renderItemComponentPendingPassengers(item)}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
       </View>
     );
   }
@@ -1196,93 +1263,113 @@ const ManagePassengerScreen = ({navigation}: any) => {
           <Text>Working</Text>
         </View>
       ) : null}
+      {
+        <View style={{backgroundColor: '#e8f0f3'}}>
+          <TextInput
+            placeholder="Search"
+            clearButtonMode="always"
+            autoCapitalize="none"
+            style={styles.searchBox}
+            autoCorrect={false}
+            value={searchQuery}
+            onChangeText={(query: string) => {
+              handleSearch(query);
+            }}
+          />
+        </View>
+      }
       {GoBackFab()}
       {role == 1 ? (
         <Tab.Navigator
           screenOptions={{
             tabBarStyle: {backgroundColor: '#e8f0f3', elevation: 10},
+          }}
+          screenListeners={{
+            state: e => {
+              setIndex(e.data.state?.index);
+              console.log(e.data.state?.index);
+            },
           }}>
           <Tab.Screen name="All Passengers" component={FirstRoute} />
           <Tab.Screen name="Pending Removals" component={SecondRoute} />
         </Tab.Navigator>
       ) : (
         <SafeAreaView style={{flex: 1, backgroundColor: '#e8f0f3'}}>
-          <View style={{flex: 1}}>
-            <Card
-              size="sm"
-              variant="outline"
+          <Card
+            size="sm"
+            variant="outline"
+            style={{
+              marginHorizontal: 12,
+              backgroundColor: '#ffffff',
+              borderRadius: 5,
+              elevation: 10,
+              justifyContent: 'center',
+            }}>
+            <View>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: 15,
+                  color: '#e89d0e',
+                }}>
+                Create Passenger
+              </Text>
+              <Text
+                style={{
+                  marginTop: 20,
+                  fontSize: 18,
+                  marginBottom: 30,
+                  color: '#4b4842',
+                }}>
+                Press "Create Passenger" button to add new passenger.
+              </Text>
+            </View>
+
+            <View
               style={{
-                marginHorizontal: 12,
-                backgroundColor: '#ffffff',
-                borderRadius: 5,
-                elevation: 10,
+                alignItems: 'center', // Align items vertically
                 justifyContent: 'center',
+                display: 'flex', // Flexbox layout
               }}>
               <View>
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    fontSize: 15,
-                    color: '#e89d0e',
+                {showPassengerCardModal()}
+                <Button
+                  style={{width: '50%'}}
+                  size="md"
+                  variant="solid"
+                  action="primary"
+                  isDisabled={false}
+                  isFocusVisible={false}
+                  onPress={() => {
+                    setShowPModal(true);
                   }}>
-                  Create Passenger
-                </Text>
-                <Text
-                  style={{
-                    marginTop: 20,
-                    fontSize: 18,
-                    marginBottom: 30,
-                    color: '#4b4842',
-                  }}>
-                  Press "Create Passenger" button to add new passenger.
-                </Text>
+                  <ButtonIcon as={AddIcon} />
+                  <ButtonText>Create Passenger</ButtonText>
+                </Button>
               </View>
-
-              <View
-                style={{
-                  alignItems: 'center', // Align items vertically
-                  justifyContent: 'center',
-                  display: 'flex', // Flexbox layout
-                }}>
-                <View>
-                  {showPassengerCardModal()}
-                  <Button
-                    style={{width: '50%'}}
-                    size="md"
-                    variant="solid"
-                    action="primary"
-                    isDisabled={false}
-                    isFocusVisible={false}
-                    onPress={() => {
-                      setShowPModal(true);
-                    }}>
-                    <ButtonIcon as={AddIcon} />
-                    <ButtonText>Create Passenger</ButtonText>
-                  </Button>
-                </View>
-              </View>
-            </Card>
-
-            <View>{showPopUpModal()}</View>
-            <View>{showReasonModal()}</View>
-            <View>{showUpdatePopUpModal()}</View>
-            <View style={{marginTop: 5, padding: 1}}>
-              <TextInput
-                placeholder="Search"
-                clearButtonMode="always"
-                autoCapitalize="none"
-                style={styles.searchBox}
-                autoCorrect={false}
-                value={searchQuery}
-                onChangeText={(query: string) => handleSearch(query)}
-              />
-              {noPassenger ? EmtpyPassengerFlatListText() : null}
-              <FlatList
-                data={passengerList}
-                extraData={statusCode}
-                renderItem={({item}) => renderItemComponentPassengers(item)}
-              />
             </View>
+          </Card>
+
+          <View>{showPopUpModal()}</View>
+          <View>{showReasonModal()}</View>
+          <View>{showUpdatePopUpModal()}</View>
+          <View style={{marginTop: 5, padding: 1}}>
+            <TextInput
+              editable={index == 0 ? true : false}
+              placeholder="Search"
+              clearButtonMode="always"
+              autoCapitalize="none"
+              style={styles.searchBox}
+              autoCorrect={false}
+              value={searchQuery}
+              onChangeText={(query: string) => setSearchQuery(query)}
+            />
+            {noPassenger ? EmtpyPassengerFlatListText() : null}
+            <FlatList
+              data={passengerList}
+              extraData={statusCode}
+              renderItem={({item}) => renderItemComponentPassengers(item)}
+            />
           </View>
         </SafeAreaView>
       )}
@@ -1294,12 +1381,12 @@ export default ManagePassengerScreen;
 
 const styles = StyleSheet.create({
   searchBox: {
-    // marginHorizontal: 12,
+    marginHorizontal: 12,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderColor: '#ccc',
-    // borderWidth: 1,
-    // borderRadius: 8,
+    borderWidth: 1,
+    borderRadius: 8,
     backgroundColor: '#fff',
   },
 });

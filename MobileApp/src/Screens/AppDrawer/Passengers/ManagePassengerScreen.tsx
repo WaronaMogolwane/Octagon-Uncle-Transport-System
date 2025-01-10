@@ -119,7 +119,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [IsLoading, setIsLoading] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [index, setIndex] = useState(0);
+  const [editable, setEditable] = useState(true);
 
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
@@ -1266,6 +1266,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
       {
         <View style={{backgroundColor: '#e8f0f3'}}>
           <TextInput
+            editable={editable}
             placeholder="Search"
             clearButtonMode="always"
             autoCapitalize="none"
@@ -1286,8 +1287,11 @@ const ManagePassengerScreen = ({navigation}: any) => {
           }}
           screenListeners={{
             state: e => {
-              setIndex(e.data.state?.index);
-              console.log(e.data.state?.index);
+              if (e.data.state?.index == 0) {
+                setEditable(true);
+              } else if (e.data.state?.index == 1) {
+                setEditable(false);
+              }
             },
           }}>
           <Tab.Screen name="All Passengers" component={FirstRoute} />
@@ -1355,7 +1359,6 @@ const ManagePassengerScreen = ({navigation}: any) => {
           <View>{showUpdatePopUpModal()}</View>
           <View style={{marginTop: 5, padding: 1}}>
             <TextInput
-              editable={index == 0 ? true : false}
               placeholder="Search"
               clearButtonMode="always"
               autoCapitalize="none"

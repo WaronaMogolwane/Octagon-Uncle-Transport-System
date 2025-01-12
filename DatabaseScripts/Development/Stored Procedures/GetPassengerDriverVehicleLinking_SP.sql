@@ -1,4 +1,4 @@
-CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetPassengerDriverVehicleLinking`(in _BusinessId varchar(100))
+CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetPassengerDriverVehicleLinking`(in _BusinessId varchar(100), in _DVLId varchar(100))
 BEGIN
 	SELECT PassengerDriverVehicleLinking.PassengerDriverVehicleLinkingId,
 		   PassengerDriverVehicleLinking.DriverVehicleLinkingId,
@@ -11,7 +11,8 @@ BEGIN
 	FROM   PassengerDriverVehicleLinking
 		INNER JOIN
 		   Passenger ON Passenger.PassengerId = PassengerDriverVehicleLinking.PassengerId
-	WHERE  PassengerDriverVehicleLinking.BusinessId = _BusinessId
+	WHERE  (PassengerDriverVehicleLinking.BusinessId = _BusinessId
+    AND PassengerDriverVehicleLinking.DriverVehicleLinkingId = _DVLId)
     AND    Passenger.IsAssigned = '1'
     AND    Passenger.IsActive = '1';		
 END

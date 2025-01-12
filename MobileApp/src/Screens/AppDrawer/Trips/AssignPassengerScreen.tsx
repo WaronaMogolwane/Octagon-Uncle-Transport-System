@@ -5,7 +5,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import * as yup from 'yup';
 import React, {useContext, useEffect, useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {
@@ -104,8 +103,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const [sunday, setSunday] = useState(false);
   const [IsLoading, setIsLoading] = useState(false);
 
-  const [weekDays, setWeekDays] = useState<PassengerSchedule>();
-
   const [refreshing, setRefreshing] = React.useState(false);
 
   const ref = React.useRef(null);
@@ -115,6 +112,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const make = route.params.curentVehicle.make;
   const model = route.params.curentVehicle.model;
   const license = route.params.curentVehicle.license;
+  const dvlId = route.params.curentVehicle.dVLId;
 
   const businessId = auth.GetBusinessId();
   const onRefresh = React.useCallback(() => {
@@ -144,7 +142,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         NoPassengerToast();
       }
     });
-    GetPassengerDriverVehicleLinking(businessId).then(passengers => {
+    GetPassengerDriverVehicleLinking(businessId, dvlId).then(passengers => {
       setpassengerList(passengers);
       setStatusCode(!statusCode);
     });
@@ -235,8 +233,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         setpassengerName(itemData.fullName);
         setdestinationAdress(itemData.dropOffLocation);
         setAge(itemData.age);
-
-        GetScheduleForPassengers(passengerId);
       }}
     />
   );
@@ -267,6 +263,16 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             AddPassengerSchedule(newSchedule).then((result2: any) => {
               if (result2 == 200) {
                 setNewPassengerId('');
+
+                setMonday(false);
+                setTuesday(false);
+                setWednesday(false);
+                setThursday(false);
+                setFriday(false);
+                setSaturday(false);
+                setSunday(false);
+                setIsLoading(false);
+
                 GetPassengers();
               }
             });
@@ -283,7 +289,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       newPassengerId,
     );
 
-    let newTrip = new Trip('', newPassengerId, vehicleId,businessId);
+    let newTrip = new Trip('', newPassengerId, vehicleId, businessId);
 
     await AddPassengerDriverVehicleLinking(newPVL).then((result: any) => {
       UpdateIsAssigned(newPassengerId).then((result1: any) => {
@@ -360,7 +366,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         isOpen={showModal}
         onClose={() => {
           setShowModal(false);
-          ClearModalUseState();
+          // ClearModalUseState();
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />
@@ -385,8 +391,8 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
               onPress={() => {
                 setShowModal(false);
                 ClearCalender();
+                GetScheduleForPassengers(passengerId);
                 setModifyCalender(true);
-                setCalender(true);
               }}>
               <ButtonText>Edit Schedule</ButtonText>
             </Button>
@@ -399,7 +405,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                   if (response == 200) {
                     GetPassengers();
                     ClearModalUseState();
-                    ClearCalender;
+                    ClearCalender();
                     setShowModal(false);
                   }
                 });
@@ -414,41 +420,16 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
 
   const GetScheduleForPassengers = (passengerId: string) => {
     GetPassengerSchedule(passengerId).then((result: any) => {
-      console.log(result);
-
-      if (result.monday == 1) {
-        setMonday(true);
-      } else if (result.tuesday == 1) {
-        setTuesday(true);
-      } else if (result.wednesday == 1) {
-        setWednesday(true);
-      } else if (result.thursday == 1) {
-        setThursday(true);
-      } else if (result.friday == 1) {
-        setFriday(true);
-      } else if (result.saturday == 1) {
-        setSaturday(true);
-      } else if (result.sunday == 1) {
-        setSaturday(true);
-      }
-      // setMonday(result.monday == 1 ? true : false);
-      // setTuesday(result.tuesday == 1 ? true : false);
-      // setWednesday(result.wednesday == 1 ? true : false);
-      // setThursday(result.thursday == 1 ? true : false);
-      // setFriday(result.friday == 1 ? true : false);
-      // setSaturday(result.saturday == 1 ? true : false);
-      // setSunday(result.sunday == 1 ? true : false);
-
-      console.log(
-        monday,
-        tuesday,
-        wednesday,
-        thursday,
-        friday,
-        saturday,
-        sunday,
-      );
+      setMonday(result.monday === 1);
+      setTuesday(result.tuesday === 1);
+      setWednesday(result.wednesday === 1);
+      setThursday(result.thursday === 1);
+      setFriday(result.friday === 1);
+      setSaturday(result.saturday === 1);
+      setSunday(result.sunday === 1);
     });
+
+    setCalender(true);
   };
 
   const CalenderModal = () => {
@@ -484,10 +465,8 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                   <Checkbox
                     isChecked={monday}
                     aria-label="Monday"
-                    value="monday"
-                    onPress={() => {
-                      setMonday(!monday);
-                    }}>
+                    value={'monday'}
+                    onChange={() => setMonday(!monday)}>
                     <CheckboxIndicator mr="$2">
                       <CheckboxIcon as={CheckIcon} />
                     </CheckboxIndicator>
@@ -654,58 +633,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     });
   };
 
-  const passengerScheduleInitialValues = {
-    monday: weekDays?.monday,
-    tuesday: weekDays?.tuesday,
-    wednesday: weekDays?.wednesday,
-    thursday: weekDays?.thursday,
-    friday: weekDays?.friday,
-    saturday: weekDays?.saturday,
-    sunday: weekDays?.sunday,
-  };
-
-  const passengerScheduleSchema = yup.object().shape({
-    businessName: yup
-      .string()
-      .min(2, 'Business name too Short!')
-      .max(50, 'Business name too Long!'),
-    businessPhoneNumber: yup
-      .string()
-      .matches(
-        /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
-        'not valid',
-      )
-      .min(10, 'Business phone number should be 10 digits')
-      .max(10, 'Business phone number should be 10 digits'),
-    addressline1: yup
-      .string()
-      .min(2, 'Address too Short!')
-      .max(100, 'Address too Long!'),
-    addressline2: yup.string().min(2, 'Too Short!').max(100, 'Too Long!'),
-    suburb: yup
-      .string()
-      .min(2, 'Suburb too Short!')
-      .max(50, 'Suburb too  Long!'),
-    city: yup.string().min(2, 'City too Short!').max(50, 'City too Long!'),
-    province: yup
-      .string()
-      .min(2, 'Province too Short!')
-      .max(50, 'Province too Long!'),
-    postalCode: yup
-      .string()
-      .min(4, 'Postal code too Short!')
-      .max(4, 'Postal code too Long!'),
-  });
-  const formik = useFormik({
-    initialValues: passengerScheduleInitialValues,
-    validationSchema: passengerScheduleSchema,
-    enableReinitialize: true,
-
-    onSubmit: async (values, {resetForm}) => {
-      // await businessDetailHelper(values);
-    },
-  });
-
   return (
     <View style={{flex: 1, backgroundColor: '#e8f0f3'}}>
       {IsLoading ? (
@@ -731,7 +658,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         style={{
           marginBottom: 10,
           paddingTop: 0,
-          height: '35%',
+          height: '38%',
           marginHorizontal: 12,
           backgroundColor: '#ffffff',
           borderRadius: 5,
@@ -747,7 +674,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                 color: '#e89d0e',
                 marginBottom: 20,
               }}>
-              Assign Passengers
+              {make}
             </Text>
           </View>
 
@@ -759,7 +686,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                 // color: '#e89d0e',
                 textAlign: 'right',
               }}>
-              {make + ' ' + model}
+              {model}
             </Text>
 
             <Text

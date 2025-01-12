@@ -30,6 +30,7 @@ export const InsertPassengerDriverVehicleLinkingToDB = async (
 
 export const GetPassengerDriverVehicleLinkingFromDB = async (
   businessId: string,
+  dVLId: string,
 ) => {
   let result: any;
   const pDVLData: {}[] = [];
@@ -41,6 +42,7 @@ export const GetPassengerDriverVehicleLinkingFromDB = async (
       {
         params: {
           BusinessId: businessId,
+          DVLId: dVLId,
         },
       },
     )

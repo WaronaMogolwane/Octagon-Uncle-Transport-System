@@ -11,6 +11,7 @@ SELECT
     v.LicenseNumber,
     v.FrontImageUrl,
     dvl.DriverId,
+	dvl.DriverVehicleLinkingId,
     ud.FirstName, 
     ud.LastName
 FROM

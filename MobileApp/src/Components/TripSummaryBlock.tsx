@@ -76,7 +76,7 @@ export const TripSummaryBlock = ({
                 fontSize: 17,
                 fontWeight: '500',
                 textAlign: 'center',
-                color: 'red',
+                color: '#c26b71',
               }}>
               {missedTripsCount}
             </Text>
@@ -91,7 +91,7 @@ export const TripSummaryBlock = ({
                 fontSize: 17,
                 fontWeight: '500',
                 textAlign: 'center',
-                color: 'blue',
+                color: '#c26b71',
               }}>
               {activeTripsCount}
             </Text>
@@ -106,7 +106,7 @@ export const TripSummaryBlock = ({
                 fontSize: 17,
                 fontWeight: '500',
                 textAlign: 'center',
-                color: 'green',
+                color: '#3ba2a9',
               }}>
               {completedTripsCount}
             </Text>

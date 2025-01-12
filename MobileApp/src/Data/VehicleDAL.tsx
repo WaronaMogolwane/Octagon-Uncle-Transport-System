@@ -85,6 +85,7 @@ export const GetVehicleAndDriverFromDB = async (businessId: string) => {
           color: data.Colour,
           FrontImageUrl: data.FrontImageUrl,
           fullName: data.FirstName + ' ' + data.LastName,
+          dVLId: data.DriverVehicleLinkingId,
         };
 
         vehicleData.push(vehicle);

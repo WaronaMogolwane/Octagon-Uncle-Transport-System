@@ -50,11 +50,13 @@ const ManageTripsScreen = ({navigation}: any) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [fullData, setFullData] = useState([]);
   const [selected, setSelected] = React.useState(new Set([]));
-  const [curentVehicle, setCurrentVehicle] = useState<CurrentVehicle>();
+  const [currentVehicle, setCurrentVehicle] = useState<CurrentVehicle>();
 
   const iconSize = 20;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';
+
+  let vehicleInfo = {};
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -106,7 +108,6 @@ const ManageTripsScreen = ({navigation}: any) => {
           setRefreshing(false);
         } else {
           ShowToast();
-          // setVehicleList(result);
           setFullData(result);
           setRefreshing(false);
           setNoLinkedVehicle(false);
@@ -117,28 +118,31 @@ const ManageTripsScreen = ({navigation}: any) => {
       });
   };
 
-  const renderItemComponentVehicleInfo = (itemData: any) => (
-    <VehicleCard
-      registrationNumber={itemData.licenseNumber}
-      make={itemData.make}
-      model={itemData.model}
-      color={itemData.color}
-      fullName={itemData.fullName}
-      urlFront={itemData.FrontImageUrl}
-      onPress={() => {
-        setCurrentVehicle(
-          new CurrentVehicle(
+  const renderItemComponentVehicleInfo = React.useCallback(
+    (itemData: any) => (
+      <VehicleCard
+        registrationNumber={itemData.licenseNumber}
+        make={itemData.make}
+        model={itemData.model}
+        color={itemData.color}
+        fullName={itemData.fullName}
+        urlFront={itemData.FrontImageUrl}
+        onPress={() => {
+          const vehicle = new CurrentVehicle(
+            itemData.dVLId,
             itemData.make,
             itemData.model,
             itemData.color,
             itemData.licenseNumber,
             itemData.vehicleId,
-          ),
-        );
-        setShowMenu(true);
-        setIsOpen(true);
-      }}
-    />
+          );
+          setCurrentVehicle(vehicle);
+          setShowMenu(true);
+          setIsOpen(true);
+        }}
+      />
+    ),
+    [],
   );
 
   const EmtpyFlatListText = () => {
@@ -180,13 +184,13 @@ const ManageTripsScreen = ({navigation}: any) => {
           const selectedMenuItem: any = keys;
           if (selectedMenuItem.currentKey === 'TripHistory') {
             navigation.navigate('Transport Trip', {
-              curentVehicle,
+              curentVehicle: currentVehicle,
             });
             setShowMenu(false);
           }
           if (selectedMenuItem.currentKey === 'ManageTrip') {
             navigation.navigate('Assign Passenger', {
-              curentVehicle,
+              curentVehicle: currentVehicle,
             });
             setShowMenu(false);
           }

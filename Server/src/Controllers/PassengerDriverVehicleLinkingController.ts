@@ -46,10 +46,13 @@ export const GetPassengerDriverVehicleLinking = async (
   res: any,
   next: any
 ) => {
-  let businessId = req.query.BusinessId;
+  let businessInfo = {
+    businessId: req.query.BusinessId,
+    dVLId: req.query.DVLId,
+  };
 
   await GetPassengerDriverVehicleLinkingByBusinessId(
-    businessId,
+    businessInfo,
     (error, result) => {
       if (error) {
         const err: Error = new Error(error.message);

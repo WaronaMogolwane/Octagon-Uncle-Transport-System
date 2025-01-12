@@ -123,7 +123,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   useEffect(() => {
     setIsLoading(true);
     GetPassengers();
-  }, []);
+  }, [dvlId]);
 
   const defaultData: never[] = [];
 

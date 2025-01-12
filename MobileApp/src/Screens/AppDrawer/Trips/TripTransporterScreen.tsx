@@ -84,7 +84,7 @@ const TripTransporterScreen = ({route, navigation}: any) => {
       GetPastTrips();
       setRefreshingUpcomingTrips(false);
     }, 2000);
-  }, []);
+  }, [vehicleId]);
 
   //Card defined for Transporter
   const renderItemComponentTransporter = (itemData: any) => (

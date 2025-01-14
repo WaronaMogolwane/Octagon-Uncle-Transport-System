@@ -12,10 +12,6 @@ import {
   useToast,
   Toast,
   ScrollView,
-  ArrowLeftIcon,
-  ButtonIcon,
-  ButtonText,
-  Button,
 } from '@gluestack-ui/themed';
 import {
   EditUserDetailsScreenStyles,
@@ -32,8 +28,7 @@ import {
 import {useContext, useEffect, useState} from 'react';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
-import {FilePen} from 'lucide-react-native';
-import {CustomButton1, CustomButton2} from '../../../Components/Buttons';
+import {CustomButton1} from '../../../Components/Buttons';
 
 export default function EditUserDetailsScreen({navigation}: any) {
   const {session, isLoading}: any = useContext(AuthContext);

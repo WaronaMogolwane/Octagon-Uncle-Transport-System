@@ -8,56 +8,31 @@ import {
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {
-  Modal,
   Image,
-  ArrowLeftIcon,
-  ButtonIcon,
-  Button,
-  ButtonText,
   Toast,
   ToastDescription,
   ToastTitle,
   VStack,
   useToast,
-  Heading,
-  CloseIcon,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  Icon,
 } from '@gluestack-ui/themed';
 import {BusinessDetail} from '../../../Models/BusinessDetail';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
-import {
-  AssignPassengerScreenStyles,
-  ThemeStyles,
-} from '../../../Stylesheets/GlobalStyles';
 import {BusinessDetailForm} from '../../../Components/Forms/BusinessDetailForm';
 import {
   GetBusinessDetail,
   GetBusinessDetailForParent,
   UpdateBusinessDetail,
 } from '../../../Controllers/BusinessDetailController';
-import {FilePen} from 'lucide-react-native';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
 import {RestoreImageViaAsyncStorage} from '../../../Services/ImageStorageService';
-import {Dropdown} from 'react-native-element-dropdown';
 import {
-  CustomFormControlInputNumber,
-  CustomFormControlInput,
-} from '../../../Components/CustomFormInput';
-import {
-  GetBankingDetail,
-  GetBanksList,
-  UpdateBankingDetail,
-} from '../../../Controllers/BankingDetailController';
-import {BankingDetail} from '../../../Models/BankingDetail';
-import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
+  EditBusinessDetailScreenStyles,
+  ThemeStyles,
+} from '../../../Stylesheets/GlobalStyles';
+import {CustomButton1} from '../../../Components/Buttons';
 
 const EditBusinessDetailsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -79,14 +54,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   const [businessPhoneNumber, setBusinessPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
   const [profileImage, setProfileImage] = useState('');
-  const [showModal, setShowModal] = useState(false);
-
-  const [bankName, setBankName] = useState('');
-  const [paystackBankCode, setPaystackBankCode] = useState('');
-  const [paystackBankId, setPaystackBankId] = useState('');
-  const [isFocus, setIsFocus] = useState(false);
-  const [bankList, setBankList] = useState(['']);
-
   const [IsLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -274,17 +241,7 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   });
 
   return (
-    <SafeAreaView
-      style={
-        role == 1
-          ? {
-              ...{
-                flex: 1,
-                alignItems: 'center',
-              },
-            }
-          : styles.container
-      }>
+    <SafeAreaView style={ThemeStyles.container}>
       {IsLoading ? (
         <View
           style={{
@@ -302,190 +259,131 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
           <Text>Working</Text>
         </View>
       ) : null}
+
       {role == 1 ? (
-        <View
-          style={{
-            width: '100%',
-            backgroundColor: '#e8f0f3',
-          }}>
-          <ScrollView style={{width: '100%'}}>
-            <Heading style={{textAlign: 'center'}} mb="$3">
-              Update business details below.
-            </Heading>
-            <View
-              style={{
-                alignItems: 'center',
-                paddingBottom: 15,
-                paddingTop: 15,
-              }}>
-              <BusinessDetailForm
-                showButton={false}
-                buttonText={'Update Details'}
-                businessNameIsInvalid={!!formik.errors.businessName}
-                businessNameOnChangeText={formik.handleChange('businessName')}
-                businessNameErrorText={formik?.errors?.businessName}
-                businessNameOnBlur={formik.handleBlur('businessName')}
-                businessNameValue={formik.values?.businessName!}
-                businessPhoneNumberIsInvalid={
-                  !!formik.errors.businessPhoneNumber
-                }
-                businessPhoneNumberOnChangeText={formik.handleChange(
-                  'businessPhoneNumber',
-                )}
-                businessPhoneNumberErrorText={
-                  formik?.errors?.businessPhoneNumber
-                }
-                businessPhoneNumberOnBlur={formik.handleBlur(
-                  'businessPhoneNumber',
-                )}
-                businessPhoneNumberValue={formik.values?.businessPhoneNumber!}
-                addressline1IsInvalid={!!formik.errors.addressline1}
-                addressline1OnChangeText={formik.handleChange('addressline1')}
-                addressline1ErrorText={formik?.errors?.addressline1}
-                addressline1OnBlur={formik.handleBlur('addressline1')}
-                addressline1Value={formik.values?.addressline1!}
-                addressline2IsInvalid={!!formik.errors.addressline2}
-                addressline2OnChangeText={formik.handleChange('addressline2')}
-                addressline2ErrorText={formik?.errors?.addressline2}
-                addressline2OnBlur={formik.handleBlur('addressline2')}
-                addressline2Value={formik.values?.addressline2!}
-                suburbIsInvalid={!!formik.errors.suburb}
-                suburbOnChangeText={formik.handleChange('suburb')}
-                suburbErrorText={formik?.errors?.suburb}
-                suburbOnBlur={formik.handleBlur('suburb')}
-                suburbValue={formik.values?.suburb!}
-                cityIsInvalid={!!formik.errors.city}
-                cityOnChangeText={formik.handleChange('city')}
-                cityErrorText={formik?.errors?.city}
-                cityOnBlur={formik.handleBlur('city')}
-                cityValue={formik.values?.city!}
-                provinceIsInvalid={!!formik.errors.province}
-                provinceOnChangeText={formik.handleChange('province')}
-                provinceErrorText={formik?.errors?.province}
-                provinceOnBlur={formik.handleBlur('province')}
-                provinceValue={formik.values?.province!}
-                postalCodeIsInvalid={!!formik.errors.postalCode}
-                postalCodeOnChangeText={formik.handleChange('postalCode')}
-                postalCodeErrorText={formik?.errors?.postalCode}
-                postalCodeOnBlur={formik.handleBlur('postalCode')}
-                postalCodeValue={formik.values?.postalCode!}
-                submitBusinessDetail={
-                  formik.handleSubmit as (
-                    values:
-                      | GestureResponderEvent
-                      | React.FormEvent<HTMLFormElement>
-                      | undefined,
-                  ) => void
-                }
-              />
-            </View>
-            <View
-              style={{
-                alignItems: 'center',
-              }}>
-              <View
-                style={{
-                  flex: 1,
-                  flexDirection: 'row',
-                }}>
-                <View style={{padding: 5}}>
-                  <Button
-                    size="md"
-                    variant="solid"
-                    action="secondary"
-                    isDisabled={false}
-                    isFocusVisible={false}
-                    onPress={() => {
-                      navigation.navigate('Profile');
-                    }}>
-                    <ButtonIcon as={ArrowLeftIcon} />
-                    <ButtonText>Back</ButtonText>
-                  </Button>
-                </View>
-                <View style={{padding: 5}}>
-                  <Button
-                    size="md"
-                    variant="solid"
-                    action="positive"
-                    isDisabled={false}
-                    isFocusVisible={false}
-                    onPress={
-                      formik.handleSubmit as (
-                        values:
-                          | GestureResponderEvent
-                          | React.FormEvent<HTMLFormElement>
-                          | undefined,
-                      ) => void
-                    }>
-                    <FilePen size={20} strokeWidth={1} color={'#FFFFFF'} />
-                    <ButtonText>Update</ButtonText>
-                  </Button>
-                </View>
-              </View>
-            </View>
-          </ScrollView>
-        </View>
+        <ScrollView style={EditBusinessDetailScreenStyles.container}>
+          <BusinessDetailForm
+            showButton={false}
+            buttonText={'Update Details'}
+            businessNameIsInvalid={!!formik.errors.businessName}
+            businessNameOnChangeText={formik.handleChange('businessName')}
+            businessNameErrorText={formik?.errors?.businessName}
+            businessNameOnBlur={formik.handleBlur('businessName')}
+            businessNameValue={formik.values?.businessName!}
+            businessPhoneNumberIsInvalid={!!formik.errors.businessPhoneNumber}
+            businessPhoneNumberOnChangeText={formik.handleChange(
+              'businessPhoneNumber',
+            )}
+            businessPhoneNumberErrorText={formik?.errors?.businessPhoneNumber}
+            businessPhoneNumberOnBlur={formik.handleBlur('businessPhoneNumber')}
+            businessPhoneNumberValue={formik.values?.businessPhoneNumber!}
+            addressline1IsInvalid={!!formik.errors.addressline1}
+            addressline1OnChangeText={formik.handleChange('addressline1')}
+            addressline1ErrorText={formik?.errors?.addressline1}
+            addressline1OnBlur={formik.handleBlur('addressline1')}
+            addressline1Value={formik.values?.addressline1!}
+            addressline2IsInvalid={!!formik.errors.addressline2}
+            addressline2OnChangeText={formik.handleChange('addressline2')}
+            addressline2ErrorText={formik?.errors?.addressline2}
+            addressline2OnBlur={formik.handleBlur('addressline2')}
+            addressline2Value={formik.values?.addressline2!}
+            suburbIsInvalid={!!formik.errors.suburb}
+            suburbOnChangeText={formik.handleChange('suburb')}
+            suburbErrorText={formik?.errors?.suburb}
+            suburbOnBlur={formik.handleBlur('suburb')}
+            suburbValue={formik.values?.suburb!}
+            cityIsInvalid={!!formik.errors.city}
+            cityOnChangeText={formik.handleChange('city')}
+            cityErrorText={formik?.errors?.city}
+            cityOnBlur={formik.handleBlur('city')}
+            cityValue={formik.values?.city!}
+            provinceIsInvalid={!!formik.errors.province}
+            provinceOnChangeText={formik.handleChange('province')}
+            provinceErrorText={formik?.errors?.province}
+            provinceOnBlur={formik.handleBlur('province')}
+            provinceValue={formik.values?.province!}
+            postalCodeIsInvalid={!!formik.errors.postalCode}
+            postalCodeOnChangeText={formik.handleChange('postalCode')}
+            postalCodeErrorText={formik?.errors?.postalCode}
+            postalCodeOnBlur={formik.handleBlur('postalCode')}
+            postalCodeValue={formik.values?.postalCode!}
+            submitBusinessDetail={
+              formik.handleSubmit as (
+                values:
+                  | GestureResponderEvent
+                  | React.FormEvent<HTMLFormElement>
+                  | undefined,
+              ) => void
+            }
+          />
+
+          <CustomButton1
+            styles={{marginTop: 10}}
+            title="Update and Continue"
+            size="md"
+            action="primary"
+            isDisabled={false}
+            isFocusVisible={false}
+            onPress={
+              formik.handleSubmit as (
+                values:
+                  | GestureResponderEvent
+                  | React.FormEvent<HTMLFormElement>
+                  | undefined,
+              ) => void
+            }
+          />
+        </ScrollView>
       ) : (
-        <View>
-          <View style={styles.body}>
-            <View style={styles.avatarContainer}>
-              <Image
-                alt="profile photo"
-                source={
-                  profileImage == ''
-                    ? require('./../../../Images/default_avatar_image.jpg')
-                    : {uri: storageUrl + profileImage}
-                }
-                style={styles.avatar}
-              />
-            </View>
-            <View style={{marginHorizontal: 10, alignItems: 'center'}}>
-              <View style={styles.nameContainer}>
-                <Text style={styles.name}>{businessName}</Text>
-              </View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Transporter Name:</Text>
-                <Text style={styles.infoText}>{transporterName}</Text>
-              </View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Phone number:</Text>
-                <Text style={styles.infoText}>{businessPhoneNumber}</Text>
-              </View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Business Email:</Text>
-                <Text style={styles.infoText}>{email}</Text>
-              </View>
-              <View style={styles.infoContainer}>
-                <Text style={styles.infoLabel}>Location:</Text>
-                <Text style={styles.infoText}>{address}</Text>
-              </View>
-            </View>
+        <View style={EditBusinessDetailScreenStyles.body}>
+          <View style={EditBusinessDetailScreenStyles.avatarContainer}>
+            <Image
+              alt="profile photo"
+              source={
+                profileImage == ''
+                  ? require('./../../../Images/default_avatar_image.jpg')
+                  : {uri: storageUrl + profileImage}
+              }
+              style={EditBusinessDetailScreenStyles.avatar}
+            />
           </View>
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              marginTop: 35,
-            }}>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-              }}>
-              <View style={{padding: 5, marginBottom: '100%'}}>
-                <Button
-                  size="md"
-                  variant="solid"
-                  action="secondary"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={() => {
-                    navigation.navigate('Profile');
-                  }}>
-                  <ButtonIcon as={ArrowLeftIcon} />
-                  <ButtonText>Back</ButtonText>
-                </Button>
-              </View>
+          <View style={EditBusinessDetailScreenStyles.smallContainer}>
+            <View style={EditBusinessDetailScreenStyles.nameContainer}>
+              <Text style={EditBusinessDetailScreenStyles.name}>
+                {businessName}
+              </Text>
+            </View>
+            <View style={EditBusinessDetailScreenStyles.infoContainer}>
+              <Text style={EditBusinessDetailScreenStyles.infoLabel}>
+                Transporter Name:
+              </Text>
+              <Text style={EditBusinessDetailScreenStyles.infoText}>
+                {transporterName}
+              </Text>
+            </View>
+            <View style={EditBusinessDetailScreenStyles.infoContainer}>
+              <Text style={EditBusinessDetailScreenStyles.infoLabel}>
+                Phone number:
+              </Text>
+              <Text style={EditBusinessDetailScreenStyles.infoText}>
+                {businessPhoneNumber}
+              </Text>
+            </View>
+            <View style={EditBusinessDetailScreenStyles.infoContainer}>
+              <Text style={EditBusinessDetailScreenStyles.infoLabel}>
+                Business Email:
+              </Text>
+              <Text style={EditBusinessDetailScreenStyles.infoText}>
+                {email}
+              </Text>
+            </View>
+            <View style={EditBusinessDetailScreenStyles.infoContainer}>
+              <Text style={EditBusinessDetailScreenStyles.infoLabel}>
+                Location:
+              </Text>
+              <Text style={EditBusinessDetailScreenStyles.infoText}>
+                {address}
+              </Text>
             </View>
           </View>
         </View>
@@ -493,61 +391,5 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#e8f0f3',
-    height: 'auto',
-  },
-  body: {
-    // backgroundColor: '#e8f0f3',
-    marginTop: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarContainer: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000000',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowRadius: 6,
-    shadowOpacity: 0.16,
-  },
-  avatar: {
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-  },
-  nameContainer: {
-    marginTop: 24,
-    alignItems: 'center',
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  infoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  infoLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#666666',
-    marginRight: 8,
-  },
-  infoText: {
-    fontSize: 16,
-  },
-});
 
 export default EditBusinessDetailsScreen;

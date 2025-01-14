@@ -4,9 +4,10 @@ import COLORS from '../Const/colors';
 export const ThemeStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e8f0f3',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    // backgroundColor: '#e8f0f3',
+    // justifyContent: 'center',
+    // alignItems: 'center',
   },
   logo: {
     marginBottom: 32,
@@ -21,7 +22,7 @@ export const FormStyles = StyleSheet.create({
   },
   input: {
     marginBottom: 16,
-    width: 250,
+    // width: 250,
   },
   logo: {
     marginBottom: 32,
@@ -197,4 +198,234 @@ export const ManagePassengerScreenStyles = StyleSheet.create({
     margin: 4,
     //fontWeight: 'bold',
   },
+});
+export const EditUserDetailsScreenStyles = StyleSheet.create({
+  container: {
+    marginHorizontal: 17,
+  },
+  smallRowContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+export const AppDrawerScreenStyles = StyleSheet.create({
+  header: {
+    backgroundColor: '#20B2AA',
+  },
+  headerContent: {
+    padding: 30,
+    alignItems: 'center',
+  },
+
+  image: {
+    width: 40,
+    height: 40,
+  },
+
+  body: {
+    padding: 30,
+  },
+  box: {
+    padding: 5,
+    marginTop: 5,
+    marginBottom: 5,
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    shadowColor: 'black',
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      height: 1,
+      width: -2,
+    },
+    elevation: 2,
+  },
+  username: {
+    color: '#20B2AA',
+    fontSize: 22,
+    alignSelf: 'center',
+    marginLeft: 10,
+  },
+  container: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  coverPhoto: {
+    width: '100%',
+    height: 120,
+    resizeMode: 'cover',
+  },
+  avatarContainer: {
+    alignItems: 'center',
+    marginTop: -75,
+  },
+  avatar: {
+    width: 130,
+    height: 130,
+    borderRadius: 75,
+  },
+  name: {
+    marginTop: 15,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  toolbarContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+  },
+  toolbarLeftContainer: {marginVertical: 15, marginStart: 15},
+  toolbarRightContainer: {marginVertical: 15, marginEnd: 15},
+  toolbarText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'black',
+  },
+});
+export const EditUserAccountScreenStyles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+  },
+  form: {
+    marginHorizontal: 17,
+  },
+  smallRowContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50,
+  },
+  label: {
+    marginTop: 20,
+  },
+  input: {
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    fontSize: 18,
+    backgroundColor: '#fff',
+  },
+  button: {
+    marginTop: 20,
+    backgroundColor: '#1E90FF',
+    borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+  avatarContainer: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  avatar: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+  },
+  changeAvatarButton: {
+    marginTop: 10,
+  },
+  changeAvatarButtonText: {
+    color: '#1E90FF',
+    fontSize: 15,
+    marginBottom: 25,
+  },
+  modalText: {
+    marginBottom: 10,
+  },
+  fabPosition: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 150,
+    marginTop: 20,
+  },
+});
+export const EditBusinessDetailScreenStyles = StyleSheet.create({
+  container: {
+    marginTop: 10,
+    marginHorizontal: 17,
+  },
+  body: {
+    marginTop: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarContainer: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowRadius: 6,
+    shadowOpacity: 0.16,
+  },
+  avatar: {
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+  },
+  nameContainer: {
+    marginTop: 24,
+    alignItems: 'center',
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: '600',
+  },
+  infoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  infoLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#666666',
+    marginRight: 8,
+  },
+  infoText: {
+    fontSize: 16,
+  },
+  smallContainer: {alignItems: 'flex-start'},
+});
+export const ProfileScreenStyles = StyleSheet.create({
+  image: {width: 40, height: 40},
+  headingText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: 'black',
+    marginStart: 14,
+    marginBottom: 15,
+  },
+  button: {marginTop: 10, marginHorizontal: 16, backgroundColor: '#98a7b5'},
+});
+export const SettingCardStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    marginVertical: 5,
+    marginHorizontal: 14,
+    height: 50,
+  },
+  descriptionText: {
+    color: '#4c7488',
+  },
+  titleText: {
+    color: 'black',
+    fontWeight: '600',
+    fontSize: 17,
+  },
+  smallCardDivision: {
+    width: '10%',
+    marginTop: 5,
+  },
+  largeCardDivision: {width: '90%'},
 });

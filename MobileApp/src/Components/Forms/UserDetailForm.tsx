@@ -11,10 +11,10 @@ import {
 export function UserDetailForm(props: UserDetailsFormProps) {
   return (
     <View>
-      <Heading mb="$3">{props.heading}</Heading>
+      {/* <Heading mb="$3">{props.heading}</Heading> */}
       <VStack>
         <CustomFormControlInput
-          labelText="Firstname"
+          labelText="First name"
           placeHolder="firstname"
           isInvalid={props.firstNameIsInvalid}
           isRequired={true}
@@ -26,7 +26,7 @@ export function UserDetailForm(props: UserDetailsFormProps) {
         />
 
         <CustomFormControlInput
-          labelText="Lastname"
+          labelText="Last name"
           placeHolder="lastname"
           isInvalid={props.lastNameIsInvalid}
           isRequired={true}
@@ -48,7 +48,7 @@ export function UserDetailForm(props: UserDetailsFormProps) {
           value={props.phoneNumberValue}
         />
         <CustomFormControlInput
-          labelText="Addressline 1"
+          labelText="Address line 1"
           placeHolder="address"
           isInvalid={props.addressline1IsInvalid}
           isRequired={true}
@@ -59,7 +59,7 @@ export function UserDetailForm(props: UserDetailsFormProps) {
           value={props.addressline1Value}
         />
         <CustomFormControlInput
-          labelText="Addressline 2"
+          labelText="Address line 2"
           placeHolder="address"
           isInvalid={props.addressline2IsInvalid}
           isRequired={false}
@@ -107,7 +107,7 @@ export function UserDetailForm(props: UserDetailsFormProps) {
         />
 
         <CustomFormControlInputNumber
-          labelText="Postal Code"
+          labelText="Postal code"
           placeHolder="postal code"
           isInvalid={props.postalCodeIsInvalid}
           isRequired={true}

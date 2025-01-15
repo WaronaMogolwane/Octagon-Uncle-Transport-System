@@ -38,7 +38,6 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const toast = useToast();
-  const ref = React.useRef(null);
 
   const businessId = auth.GetBusinessId();
   const role: number = Number(auth.GetUserRole());

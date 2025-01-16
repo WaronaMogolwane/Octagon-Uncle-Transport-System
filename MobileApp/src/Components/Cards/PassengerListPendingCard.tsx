@@ -8,8 +8,10 @@ import React from 'react';
 import COLORS from '../../Const/colors';
 import {
   PassengerListActiveCardStyles,
+  PendingPassengerListCardStyles,
   TripCardParentStyles,
 } from '../../Stylesheets/GlobalStyles';
+import {Image} from '@gluestack-ui/themed';
 
 type pendingPassengerListCardProps = {
   passengerName: string;
@@ -25,32 +27,59 @@ type pendingPassengerListCardProps = {
 };
 const PassengerListPendingCard = (props: pendingPassengerListCardProps) => {
   return (
+    // <TouchableOpacity onPress={props.onPress}>
+    //   <View style={TripCardParentStyles.cardBorder}>
+    //     <View style={TripCardParentStyles.cardContainer}>
+    //       <View>
+    //         <Text style={TripCardParentStyles.cardText}>Passenger Name: </Text>
+    //       </View>
+    //       <View>
+    //         <Text style={{padding: 1}}>{props.passengerName}</Text>
+    //       </View>
+    //     </View>
+    //     <View style={TripCardParentStyles.cardContainer}>
+    //       <View>
+    //         <Text style={TripCardParentStyles.cardText}>Parent Name: </Text>
+    //       </View>
+    //       <View>
+    //         <Text style={{padding: 1}}>{props.parentName}</Text>
+    //       </View>
+    //     </View>
+    //     <View style={TripCardParentStyles.cardContainer}>
+    //       <View>
+    //         <Text style={TripCardParentStyles.cardText}>Reason: </Text>
+    //       </View>
+    //       <View>
+    //         <Text style={{padding: 1}}>{props.reason}</Text>
+    //       </View>
+    //     </View>
+    //   </View>
+    // </TouchableOpacity>
     <TouchableOpacity onPress={props.onPress}>
-      <View style={TripCardParentStyles.cardBorder}>
-        <View style={TripCardParentStyles.cardContainer}>
-          <View>
-            <Text style={TripCardParentStyles.cardText}>Passenger Name: </Text>
-          </View>
-          <View>
-            <Text style={{padding: 1}}>{props.passengerName}</Text>
-          </View>
+      <View style={PendingPassengerListCardStyles.passengerItem}>
+        <Image
+          source={require('../../Images/default_avatar_image.jpg')}
+          style={PendingPassengerListCardStyles.passengerImage}
+          alt="passenger image avatar"
+        />
+        <View style={PendingPassengerListCardStyles.parentInfo}>
+          <Text style={PendingPassengerListCardStyles.passengerName}>
+            {props.passengerName}
+          </Text>
+          <Text style={PendingPassengerListCardStyles.parentName}>
+            {props.parentName}
+          </Text>
+          <Text style={PendingPassengerListCardStyles.deleteReason}>
+            {props.reason}
+          </Text>
         </View>
-        <View style={TripCardParentStyles.cardContainer}>
-          <View>
-            <Text style={TripCardParentStyles.cardText}>Parent Name: </Text>
-          </View>
-          <View>
-            <Text style={{padding: 1}}>{props.parentName}</Text>
-          </View>
-        </View>
-        <View style={TripCardParentStyles.cardContainer}>
-          <View>
-            <Text style={TripCardParentStyles.cardText}>Reason: </Text>
-          </View>
-          <View>
-            <Text style={{padding: 1}}>{props.reason}</Text>
-          </View>
-        </View>
+        {props.isActive ? (
+          <View style={PendingPassengerListCardStyles.statusIndicatorActive} />
+        ) : (
+          <View
+            style={PendingPassengerListCardStyles.statusIndicatorNotActive}
+          />
+        )}
       </View>
     </TouchableOpacity>
   );

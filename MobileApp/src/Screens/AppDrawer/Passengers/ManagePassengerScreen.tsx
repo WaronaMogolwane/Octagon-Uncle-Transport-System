@@ -8,6 +8,7 @@ import {
   Text,
   View,
   TextInput,
+  ScrollView,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {
@@ -59,6 +60,7 @@ import {
   AssignPassengerScreenStyles,
   FlatlistStyles,
   ManagePassengerScreenStyles,
+  ThemeStyles,
 } from '../../../Stylesheets/GlobalStyles';
 import {Dropdown} from 'react-native-element-dropdown';
 import {NavigationContainer} from '@react-navigation/native';
@@ -69,6 +71,7 @@ import PassengerListPendingCard from '../../../Components/Cards/PassengerListPen
 import {Auth} from '../../../Classes/Auth';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import filter from 'lodash.filter';
+import {CustomButton1} from '../../../Components/Buttons';
 
 const ManagePassengerScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -247,20 +250,6 @@ const ManagePassengerScreen = ({navigation}: any) => {
       }}
     />
   );
-
-  function renderHeader() {
-    return (
-      <TextInput
-        placeholder="Search"
-        clearButtonMode="always"
-        autoCapitalize="none"
-        style={styles.searchBox}
-        autoCorrect={false}
-        value={searchQuery}
-        onChangeText={(query: string) => handleSearch(query)}
-      />
-    );
-  }
 
   const UpdatePassengerDetails = async (values: any) => {
     setIsLoading(true);
@@ -581,19 +570,19 @@ const ManagePassengerScreen = ({navigation}: any) => {
           setShowReasonField(false);
         }}
         finalFocusRef={ref}>
-        <ModalBackdrop />
-        <ModalContent>
-          <ModalHeader>
-            <Heading size="lg">Passenger Summary</Heading>
-            <ModalCloseButton>
-              <Icon as={CloseIcon} />
-            </ModalCloseButton>
-          </ModalHeader>
-          <ModalBody>
-            <View>
+        <ModalBackdrop style={{backgroundColor: '#ffffff'}} />
+        <ModalContent style={{height: '80%'}}>
+          <ScrollView>
+            <ModalHeader>
+              <Heading size="lg">Passenger Summary</Heading>
+              <ModalCloseButton>
+                <Icon as={CloseIcon} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
               <VStack>
                 <CustomFormControlInput
-                  labelText="Parent Name"
+                  labelText="Parent name"
                   isInvalid={false}
                   isDisabled={true}
                   type="text"
@@ -601,7 +590,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                   isRequired={false}
                 />
                 <CustomFormControlInput
-                  labelText="Child Firstname"
+                  labelText="Child firstname"
                   isInvalid={false}
                   isDisabled={true}
                   type="text"
@@ -610,7 +599,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                 />
 
                 <CustomFormControlInput
-                  labelText="Child Lastname"
+                  labelText="Child lastname"
                   isInvalid={false}
                   isDisabled={true}
                   type="text"
@@ -626,7 +615,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                   isRequired={false}
                 />
                 <CustomFormControlInput
-                  labelText="Home Address"
+                  labelText="Home address"
                   isInvalid={false}
                   isDisabled={true}
                   type="text"
@@ -635,7 +624,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                 />
 
                 <CustomFormControlInput
-                  labelText="Destination Address"
+                  labelText="Destination address"
                   isInvalid={false}
                   isDisabled={true}
                   type="text"
@@ -644,7 +633,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                 />
 
                 <CustomFormControlInput
-                  labelText="Active Status"
+                  labelText="Active status"
                   isInvalid={false}
                   isDisabled={true}
                   type="text"
@@ -654,7 +643,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
 
                 {showReasonField ? (
                   <CustomFormControlInput
-                    labelText="Reason For Passenger Deletion"
+                    labelText="Reason for passenger deletion"
                     isInvalid={false}
                     isDisabled={true}
                     type="text"
@@ -664,9 +653,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
                 ) : null}
 
                 {showButton ? (
-                  <Button
+                  <CustomButton1
+                    styles={{marginTop: 10}}
+                    title="Delete"
                     size="md"
-                    variant="solid"
                     action="negative"
                     isDisabled={false}
                     isFocusVisible={false}
@@ -684,14 +674,12 @@ const ManagePassengerScreen = ({navigation}: any) => {
                           ShowToast();
                         }
                       });
-                    }}>
-                    <ButtonIcon as={TrashIcon} />
-                    <ButtonText>Delete</ButtonText>
-                  </Button>
+                    }}
+                  />
                 ) : null}
               </VStack>
-            </View>
-          </ModalBody>
+            </ModalBody>
+          </ScrollView>
         </ModalContent>
       </Modal>
     );
@@ -1101,54 +1089,6 @@ const ManagePassengerScreen = ({navigation}: any) => {
     });
   };
 
-  // const FilterPassenger = (itemData: any) => {
-  //   const showPassengerCard = () => (
-  //     <PassengerListAllCard
-  //       passengerName={itemData.passengerName}
-  //       pickUpLocation={itemData.homeAddress}
-  //       isActive={itemData.isActive}
-  //       onPress={() => {
-  //         setPassengerId(itemData.passengerId);
-  //         setFirstName(itemData.passengerFirstName);
-  //         setLastName(itemData.passengerLastName);
-  //         setAge(itemData.age.toString());
-  //         setHomeAddress(itemData.homeAddress);
-  //         setPostalCode(itemData.postalCode);
-  //         setProvince(itemData.province);
-  //         setCity(itemData.city);
-  //         setSuburb(itemData.suburb);
-  //         setDestinationAddress(itemData.destinationAddress);
-  //         setParentName(itemData.parentName);
-  //         setIsActiveText(itemData.isActivetext);
-  //         setShowReasonField(false);
-  //         setShowButton(false);
-  //         setShowPassengerSummary(true);
-  //       }}
-  //     />
-  //   );
-
-  //   //if the input is empty, show card
-  //   if (searchQuery === '') {
-  //     return showPassengerCard();
-  //   }
-
-  //   //if the input matches any search criteria, show card
-  //   if (
-  //     itemData.passengerFirstName
-  //       .toLowerCase()
-  //       .includes(searchQuery.toLowerCase()) ||
-  //     itemData.passengerLastName
-  //       .toLowerCase()
-  //       .includes(searchQuery.toLowerCase()) ||
-  //     itemData.parentName.toLowerCase().includes(searchQuery.toLowerCase())
-  //   ) {
-  //     return showPassengerCard();
-  //   }
-
-  //   //if no match, return null
-  //   return null;
-  // };
-
   const handleSearch = (query: any) => {
     setSearchQuery(query);
     const formattedQuery = query.toLowerCase();
@@ -1174,48 +1114,16 @@ const ManagePassengerScreen = ({navigation}: any) => {
     return false;
   };
 
-  //Handles FAB onPress
-  const HandleBackFabPress = () => {
-    navigation.goBack();
-  };
-
-  //Defines the FAB
-  const GoBackFab = () => {
-    return (
-      <Fab
-        onPress={HandleBackFabPress}
-        size="sm"
-        placement="bottom right"
-        isHovered={false}
-        isDisabled={false}
-        isPressed={false}>
-        <FabIcon as={ArrowLeftIcon} mr="$1" />
-        <FabLabel>Back</FabLabel>
-      </Fab>
-    );
-  };
-
   //Contains Upcoming Flatlist for all roles
   function FirstRoute() {
     return (
-      <View style={FlatlistStyles.container}>
-        {/* <TextInput
-            placeholder="Search"
-            clearButtonMode="always"
-            autoCapitalize="none"
-            style={styles.searchBox}
-            autoCorrect={false}
-            value={searchQuery}
-            onChangeText={(query: string) => {
-              setSearchQuery(query);
-            }}
-          /> */}
-        <View>{showPassengerSummaryModal()}</View>
+      <View style={ThemeStyles.container}>
+        {showPassengerSummaryModal()}
         {noPassenger ? EmtpyFlatListText() : null}
         <FlatList
-          style={{backgroundColor: '#e8f0f3'}}
+          style={ManagePassengerScreenStyles.flatList}
           data={allPassengers}
-          extraData={statusCode}
+          extraData
           renderItem={({item}) => renderItemComponentAllPassengers(item)}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -1228,13 +1136,13 @@ const ManagePassengerScreen = ({navigation}: any) => {
   //Contains Past Flatlist for all roles
   function SecondRoute() {
     return (
-      <View style={FlatlistStyles.container}>
-        <View>{showPassengerSummaryModal()}</View>
+      <View style={ThemeStyles.container}>
+        {showPassengerSummaryModal()}
         {noPendingPassenger ? EmtpyPassengerFlatListText() : null}
         <FlatList
-          style={{backgroundColor: '#e8f0f3'}}
+          style={ManagePassengerScreenStyles.flatList}
           data={allPendingPassengers}
-          extraData={statusCode}
+          extraData
           renderItem={({item}) => renderItemComponentPendingPassengers(item)}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
@@ -1263,27 +1171,30 @@ const ManagePassengerScreen = ({navigation}: any) => {
           <Text>Working</Text>
         </View>
       ) : null}
-      {
-        <View style={{backgroundColor: '#e8f0f3'}}>
-          <TextInput
-            editable={editable}
-            placeholder="Search"
-            clearButtonMode="always"
-            autoCapitalize="none"
-            style={styles.searchBox}
-            autoCorrect={false}
-            value={searchQuery}
-            onChangeText={(query: string) => {
-              handleSearch(query);
-            }}
-          />
-        </View>
-      }
-      {GoBackFab()}
+      <View style={ManagePassengerScreenStyles.flatList}>
+        <TextInput
+          editable={editable}
+          placeholder="Search"
+          clearButtonMode="always"
+          autoCapitalize="none"
+          style={ManagePassengerScreenStyles.searchBox}
+          autoCorrect={false}
+          value={searchQuery}
+          onChangeText={(query: string) => {
+            handleSearch(query);
+          }}
+        />
+      </View>
+
       {role == 1 ? (
         <Tab.Navigator
           screenOptions={{
-            tabBarStyle: {backgroundColor: '#e8f0f3', elevation: 10},
+            tabBarContentContainerStyle:
+              ManagePassengerScreenStyles.tabBarContentContainerStyle,
+            tabBarStyle: ManagePassengerScreenStyles.tabBarStyle,
+            tabBarIndicatorStyle:
+              ManagePassengerScreenStyles.tabBarIndicatorStyle,
+            tabBarBounces: true,
           }}
           screenListeners={{
             state: e => {
@@ -1298,7 +1209,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
           <Tab.Screen name="Pending Removals" component={SecondRoute} />
         </Tab.Navigator>
       ) : (
-        <SafeAreaView style={{flex: 1, backgroundColor: '#e8f0f3'}}>
+        <SafeAreaView style={ThemeStyles.container}>
           <Card
             size="sm"
             variant="outline"
@@ -1362,7 +1273,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
               placeholder="Search"
               clearButtonMode="always"
               autoCapitalize="none"
-              style={styles.searchBox}
+              style={ManagePassengerScreenStyles.searchBox}
               autoCorrect={false}
               value={searchQuery}
               onChangeText={(query: string) => setSearchQuery(query)}
@@ -1381,15 +1292,3 @@ const ManagePassengerScreen = ({navigation}: any) => {
 };
 
 export default ManagePassengerScreen;
-
-const styles = StyleSheet.create({
-  searchBox: {
-    marginHorizontal: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-  },
-});

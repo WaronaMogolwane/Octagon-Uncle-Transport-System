@@ -5,9 +5,6 @@ export const ThemeStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
-    // backgroundColor: '#e8f0f3',
-    // justifyContent: 'center',
-    // alignItems: 'center',
   },
   logo: {
     marginBottom: 32,
@@ -192,11 +189,24 @@ export const PassengerListActiveCardStyles = StyleSheet.create({
   },
 });
 export const ManagePassengerScreenStyles = StyleSheet.create({
-  headingText: {
-    padding: 10,
-    fontSize: 25,
-    margin: 4,
-    //fontWeight: 'bold',
+  flatList: {
+    backgroundColor: '#ffffff',
+  },
+  tabBarStyle: {
+    backgroundColor: '#ffffff',
+    // elevation: 10,
+  },
+  tabBarIndicatorStyle: {
+    backgroundColor: 'black',
+  },
+  tabBarContentContainerStyle: {},
+  searchBox: {
+    marginHorizontal: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    backgroundColor: '#f2f3f5',
   },
 });
 export const EditUserDetailsScreenStyles = StyleSheet.create({
@@ -406,7 +416,7 @@ export const ProfileScreenStyles = StyleSheet.create({
     marginStart: 14,
     marginBottom: 15,
   },
-  button: {marginTop: 10, marginHorizontal: 16, backgroundColor: '#98a7b5'},
+  button: {marginTop: 50, marginHorizontal: 16, backgroundColor: '#98a7b5'},
 });
 export const SettingCardStyles = StyleSheet.create({
   container: {
@@ -428,4 +438,188 @@ export const SettingCardStyles = StyleSheet.create({
     marginTop: 5,
   },
   largeCardDivision: {width: '90%'},
+});
+export const PassengerListAllCardStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  backButton: {
+    marginRight: 10,
+  },
+  backButtonText: {
+    fontSize: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  tabBar: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  tabText: {
+    marginRight: 20,
+    fontSize: 16,
+    color: 'gray',
+  },
+  activeTabText: {
+    color: 'black',
+    fontWeight: 'bold',
+  },
+  activeTabIndicator: {
+    height: 2,
+    backgroundColor: 'black',
+    width: '100%',
+    marginTop: 5,
+  },
+  passengerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10.5,
+    marginHorizontal: 14,
+  },
+  passengerImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  parentInfo: {
+    flex: 1,
+  },
+  passengerName: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  passengerAddress: {
+    fontSize: 14,
+    color: 'black',
+    fontWeight: '400',
+  },
+  inviteButton: {
+    backgroundColor: '#eee', // Customize button color
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 'auto',
+  },
+  inviteButtonText: {
+    color: 'black', // Customize text color
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  statusIndicatorActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'green',
+  },
+  statusIndicatorNotActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'red',
+  },
+});
+export const PendingPassengerListCardStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  backButton: {
+    marginRight: 10,
+  },
+  backButtonText: {
+    fontSize: 20,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  tabBar: {
+    flexDirection: 'row',
+    marginBottom: 20,
+  },
+  tabText: {
+    marginRight: 20,
+    fontSize: 16,
+    color: 'gray',
+  },
+  activeTabText: {
+    color: 'black',
+    fontWeight: 'bold',
+  },
+  activeTabIndicator: {
+    height: 2,
+    backgroundColor: 'black',
+    width: '100%',
+    marginTop: 5,
+  },
+  passengerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10.5,
+    marginHorizontal: 14,
+  },
+  passengerImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  parentInfo: {
+    flex: 1,
+  },
+  passengerName: {
+    color: 'black',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  parentName: {
+    fontSize: 14,
+    color: 'black',
+    fontWeight: '400',
+  },
+  deleteReason: {
+    fontSize: 14,
+    color: 'gray',
+  },
+  inviteButton: {
+    backgroundColor: '#eee', // Customize button color
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 'auto',
+  },
+  inviteButtonText: {
+    color: 'black', // Customize text color
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  statusIndicatorActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'green',
+  },
+  statusIndicatorNotActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'red',
+  },
 });

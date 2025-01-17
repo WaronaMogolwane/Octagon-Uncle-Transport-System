@@ -124,10 +124,12 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [editable, setEditable] = useState(true);
 
-  const userId = auth.GetUserId();
+  // const userId = auth.GetUserId();
+  // const role: number = Number(auth.GetUserRole());
   const businessId = auth.GetBusinessId();
-  const role: number = Number(auth.GetUserRole());
-  // const role: number = 1;
+
+  const userId = 'b14d9894-1a61-4f41-89e9-29ba6a7449c4';
+  const role: number = 2;
 
   const defaultReasons = [
     {
@@ -439,7 +441,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
           setShowReason(false);
         }}
         finalFocusRef={ref}>
-        <ModalBackdrop />
+        <ModalBackdrop style={{backgroundColor: '#ffffff'}} />
         <ModalContent>
           <ModalHeader>
             <Heading size="lg">Delete Request</Heading>
@@ -504,57 +506,35 @@ const ManagePassengerScreen = ({navigation}: any) => {
                 </View>
               </View>
             ) : null}
-          </ModalBody>
-          <ModalFooter>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-              }}>
-              <View style={{padding: 5}}>
-                <Button
-                  size="md"
-                  variant="solid"
-                  action="secondary"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={() => {
-                    setShowReason(false);
-                  }}>
-                  <ButtonIcon as={ArrowLeftIcon} />
-                  <ButtonText>Back</ButtonText>
-                </Button>
-              </View>
-              <View style={{padding: 5}}>
-                <Button
-                  size="md"
-                  variant="solid"
-                  action="negative"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={() => {
-                    DeletePassengerRequest(passengerId, reason.trim()).then(
-                      (result: any) => {
-                        if (result[1] == 200) {
-                          GetPassengers();
-                          setShowButton(false);
-                          setShowCard(false);
-                          setShowReason(false);
 
-                          ShowSuccessToast();
-                        } else {
-                          //Something went wrong
-                          ShowToast();
-                        }
-                      },
-                    );
-                  }}>
-                  <ButtonIcon as={TrashIcon} />
-                  <ButtonText>Delete</ButtonText>
-                </Button>
-              </View>
-            </View>
-          </ModalFooter>
+            <CustomButton1
+              styles={
+                ManagePassengerScreenStyles.deletePassengerReasonModalButton
+              }
+              title="Delete"
+              size="md"
+              action="negative"
+              isDisabled={false}
+              isFocusVisible={false}
+              onPress={() => {
+                DeletePassengerRequest(passengerId, reason.trim()).then(
+                  (result: any) => {
+                    if (result[1] == 200) {
+                      GetPassengers();
+                      setShowButton(false);
+                      setShowCard(false);
+                      setShowReason(false);
+
+                      ShowSuccessToast();
+                    } else {
+                      //Something went wrong
+                      ShowToast();
+                    }
+                  },
+                );
+              }}
+            />
+          </ModalBody>
         </ModalContent>
       </Modal>
     );
@@ -785,16 +765,16 @@ const ManagePassengerScreen = ({navigation}: any) => {
           setShowCard(false);
         }}
         finalFocusRef={ref}>
-        <ModalBackdrop />
+        <ModalBackdrop style={{backgroundColor: '#ffffff'}} />
         <ModalContent>
-          <ModalHeader>
-            <Heading size="lg">Passenger Details</Heading>
-            <ModalCloseButton>
-              <Icon as={CloseIcon} />
-            </ModalCloseButton>
-          </ModalHeader>
-          <ModalBody>
-            <View>
+          <ScrollView style={{height: '80%'}}>
+            <ModalHeader>
+              <Heading size="lg">Passenger Details</Heading>
+              <ModalCloseButton>
+                <Icon as={CloseIcon} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
               <VStack>
                 <CustomFormControlInput
                   labelText="Firstname"
@@ -847,45 +827,43 @@ const ManagePassengerScreen = ({navigation}: any) => {
                   value={isActiveText}
                   isRequired={false}
                 />
+                <View style={ManagePassengerScreenStyles.modalButtonContainer}>
+                  <CustomButton1
+                    styles={
+                      ManagePassengerScreenStyles.editPassengerModalButton
+                    }
+                    title="Edit Passenger"
+                    size="sm"
+                    action="secondary"
+                    isDisabled={false}
+                    isFocusVisible={false}
+                    onPress={() => {
+                      setUpdate(true);
+                      setShowCard(false);
+                    }}
+                  />
 
-                <View>
-                  <View style={{padding: 5}}>
-                    <Button
-                      size="md"
-                      variant="solid"
-                      action="secondary"
-                      isDisabled={false}
-                      isFocusVisible={false}
-                      onPress={() => {
-                        setUpdate(true);
-                        setShowCard(false);
-                      }}>
-                      <ButtonIcon as={EditIcon} />
-                      <ButtonText>Edit Passenger</ButtonText>
-                    </Button>
-                  </View>
-                  <View style={{padding: 5}}>
-                    <Button
-                      size="md"
-                      variant="solid"
-                      action="negative"
-                      isDisabled={false}
-                      isFocusVisible={false}
-                      onPress={() => {
-                        if (isDeleted) {
-                          showDeletePendingToast();
-                        } else {
-                          setShowReason(true);
-                        }
-                      }}>
-                      <ButtonIcon as={TrashIcon} />
-                      <ButtonText>Delete Passenger</ButtonText>
-                    </Button>
-                  </View>
+                  <CustomButton1
+                    styles={
+                      ManagePassengerScreenStyles.deletePassengerModalButton
+                    }
+                    title="Delete Passenger"
+                    size="sm"
+                    action="negative"
+                    isDisabled={false}
+                    isFocusVisible={false}
+                    onPress={() => {
+                      if (isDeleted) {
+                        showDeletePendingToast();
+                      } else {
+                        setShowReason(true);
+                      }
+                    }}
+                  />
                 </View>
               </VStack>
-            </View>
-          </ModalBody>
+            </ModalBody>
+          </ScrollView>
         </ModalContent>
       </Modal>
     );
@@ -1009,7 +987,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const EmtpyPassengerFlatListText = () => {
     return (
       <View>
-        <Text>You currently have no trips.</Text>
+        <Text style={{textAlign: 'center'}}>You currently have no trips.</Text>
       </View>
     );
   };
@@ -1171,20 +1149,22 @@ const ManagePassengerScreen = ({navigation}: any) => {
           <Text>Working</Text>
         </View>
       ) : null}
-      <View style={ManagePassengerScreenStyles.flatList}>
-        <TextInput
-          editable={editable}
-          placeholder="Search"
-          clearButtonMode="always"
-          autoCapitalize="none"
-          style={ManagePassengerScreenStyles.searchBox}
-          autoCorrect={false}
-          value={searchQuery}
-          onChangeText={(query: string) => {
-            handleSearch(query);
-          }}
-        />
-      </View>
+      {role == 1 ? (
+        <View style={ManagePassengerScreenStyles.flatList}>
+          <TextInput
+            editable={editable}
+            placeholder="Search"
+            clearButtonMode="always"
+            autoCapitalize="none"
+            style={ManagePassengerScreenStyles.searchBox}
+            autoCorrect={false}
+            value={searchQuery}
+            onChangeText={(query: string) => {
+              handleSearch(query);
+            }}
+          />
+        </View>
+      ) : null}
 
       {role == 1 ? (
         <Tab.Navigator
@@ -1210,79 +1190,31 @@ const ManagePassengerScreen = ({navigation}: any) => {
         </Tab.Navigator>
       ) : (
         <SafeAreaView style={ThemeStyles.container}>
-          <Card
-            size="sm"
-            variant="outline"
-            style={{
-              marginHorizontal: 12,
-              backgroundColor: '#ffffff',
-              borderRadius: 5,
-              elevation: 10,
-              justifyContent: 'center',
-            }}>
-            <View>
-              <Text
-                style={{
-                  fontWeight: 'bold',
-                  fontSize: 15,
-                  color: '#e89d0e',
-                }}>
-                Create Passenger
-              </Text>
-              <Text
-                style={{
-                  marginTop: 20,
-                  fontSize: 18,
-                  marginBottom: 30,
-                  color: '#4b4842',
-                }}>
-                Press "Create Passenger" button to add new passenger.
-              </Text>
-            </View>
+          {showPopUpModal()}
+          {showReasonModal()}
+          {showUpdatePopUpModal()}
+          {showPassengerCardModal()}
 
-            <View
-              style={{
-                alignItems: 'center', // Align items vertically
-                justifyContent: 'center',
-                display: 'flex', // Flexbox layout
-              }}>
-              <View>
-                {showPassengerCardModal()}
-                <Button
-                  style={{width: '50%'}}
-                  size="md"
-                  variant="solid"
-                  action="primary"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={() => {
-                    setShowPModal(true);
-                  }}>
-                  <ButtonIcon as={AddIcon} />
-                  <ButtonText>Create Passenger</ButtonText>
-                </Button>
-              </View>
-            </View>
-          </Card>
-
-          <View>{showPopUpModal()}</View>
-          <View>{showReasonModal()}</View>
-          <View>{showUpdatePopUpModal()}</View>
-          <View style={{marginTop: 5, padding: 1}}>
-            <TextInput
-              placeholder="Search"
-              clearButtonMode="always"
-              autoCapitalize="none"
-              style={ManagePassengerScreenStyles.searchBox}
-              autoCorrect={false}
-              value={searchQuery}
-              onChangeText={(query: string) => setSearchQuery(query)}
-            />
+          <View style={{height: '90%'}}>
             {noPassenger ? EmtpyPassengerFlatListText() : null}
             <FlatList
               data={passengerList}
               extraData={statusCode}
               renderItem={({item}) => renderItemComponentPassengers(item)}
+            />
+          </View>
+
+          <View style={{height: '10%'}}>
+            <CustomButton1
+              styles={ManagePassengerScreenStyles.parentButton}
+              title="Add new passenger"
+              size="md"
+              action="primary"
+              isDisabled={false}
+              isFocusVisible={false}
+              onPress={() => {
+                setShowPModal(true);
+              }}
             />
           </View>
         </SafeAreaView>

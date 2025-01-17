@@ -138,12 +138,6 @@ export const GetPassengersByParent = async (req: any, res: any, next: any) => {
     if (error) {
       const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
     } else {
       res.status(200).json({
         RecordRetrieved: true,
@@ -164,12 +158,6 @@ export const GetPassengersByBusiness = async (
     if (error) {
       const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
     } else {
       res.status(200).json({
         RecordRetrieved: true,
@@ -190,12 +178,6 @@ export const GetActivePassengersByParent = async (
     if (error) {
       const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
     } else {
       res.status(200).json({
         RecordRetrieved: true,
@@ -216,12 +198,6 @@ export const GetAllPassengersByBusiness = async (
     if (error) {
       const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
     } else {
       res.status(200).json({
         RecordRetrieved: true,
@@ -242,15 +218,7 @@ export const GetPendingPassengersByBusiness = async (
     if (error) {
       const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
-    }
-    // else if (result[0] == "") {
-    //   let err: any = {
-    //     status: 405,
-    //     message: "Record not found",
-    //   };
-    // next(err);
-    // }
-    else {
+    } else {
       res.status(200).json({
         RecordRetrieved: true,
         result: result[0],
@@ -266,12 +234,6 @@ export const DeletePassenger = async (req: any, res: any, next: any) => {
     if (error) {
       const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
     } else {
       res.status(200).json({
         RecordRetrieved: true,
@@ -291,12 +253,6 @@ export const DeletePassengerRequest = async (req: any, res: any, next: any) => {
     if (error) {
       const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
     } else {
       res.status(200).json({
         RecordRetrieved: true,

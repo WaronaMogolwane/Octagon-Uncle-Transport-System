@@ -27,34 +27,6 @@ type pendingPassengerListCardProps = {
 };
 const PassengerListPendingCard = (props: pendingPassengerListCardProps) => {
   return (
-    // <TouchableOpacity onPress={props.onPress}>
-    //   <View style={TripCardParentStyles.cardBorder}>
-    //     <View style={TripCardParentStyles.cardContainer}>
-    //       <View>
-    //         <Text style={TripCardParentStyles.cardText}>Passenger Name: </Text>
-    //       </View>
-    //       <View>
-    //         <Text style={{padding: 1}}>{props.passengerName}</Text>
-    //       </View>
-    //     </View>
-    //     <View style={TripCardParentStyles.cardContainer}>
-    //       <View>
-    //         <Text style={TripCardParentStyles.cardText}>Parent Name: </Text>
-    //       </View>
-    //       <View>
-    //         <Text style={{padding: 1}}>{props.parentName}</Text>
-    //       </View>
-    //     </View>
-    //     <View style={TripCardParentStyles.cardContainer}>
-    //       <View>
-    //         <Text style={TripCardParentStyles.cardText}>Reason: </Text>
-    //       </View>
-    //       <View>
-    //         <Text style={{padding: 1}}>{props.reason}</Text>
-    //       </View>
-    //     </View>
-    //   </View>
-    // </TouchableOpacity>
     <TouchableOpacity onPress={props.onPress}>
       <View style={PendingPassengerListCardStyles.passengerItem}>
         <Image

@@ -208,6 +208,31 @@ export const ManagePassengerScreenStyles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#f2f3f5',
   },
+  parentButton: {
+    marginTop: 10,
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+    width: '90%',
+    backgroundColor: 'grey',
+  },
+  editPassengerModalButton: {
+    marginTop: 10,
+    marginEnd: 5,
+  },
+  deletePassengerModalButton: {
+    marginTop: 10,
+    marginStart: 5,
+  },
+  modalButtonContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 5,
+    width: '100%',
+  },
+  deletePassengerReasonModalButton: {
+    width: '100%',
+    marginTop: 25,
+  },
 });
 export const EditUserDetailsScreenStyles = StyleSheet.create({
   container: {
@@ -440,45 +465,6 @@ export const SettingCardStyles = StyleSheet.create({
   largeCardDivision: {width: '90%'},
 });
 export const PassengerListAllCardStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  backButton: {
-    marginRight: 10,
-  },
-  backButtonText: {
-    fontSize: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  tabBar: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  tabText: {
-    marginRight: 20,
-    fontSize: 16,
-    color: 'gray',
-  },
-  activeTabText: {
-    color: 'black',
-    fontWeight: 'bold',
-  },
-  activeTabIndicator: {
-    height: 2,
-    backgroundColor: 'black',
-    width: '100%',
-    marginTop: 5,
-  },
   passengerItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -504,18 +490,6 @@ export const PassengerListAllCardStyles = StyleSheet.create({
     color: 'black',
     fontWeight: '400',
   },
-  inviteButton: {
-    backgroundColor: '#eee', // Customize button color
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 'auto',
-  },
-  inviteButtonText: {
-    color: 'black', // Customize text color
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
   statusIndicatorActive: {
     width: 10,
     height: 10,
@@ -530,45 +504,6 @@ export const PassengerListAllCardStyles = StyleSheet.create({
   },
 });
 export const PendingPassengerListCardStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 20,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  backButton: {
-    marginRight: 10,
-  },
-  backButtonText: {
-    fontSize: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  tabBar: {
-    flexDirection: 'row',
-    marginBottom: 20,
-  },
-  tabText: {
-    marginRight: 20,
-    fontSize: 16,
-    color: 'gray',
-  },
-  activeTabText: {
-    color: 'black',
-    fontWeight: 'bold',
-  },
-  activeTabIndicator: {
-    height: 2,
-    backgroundColor: 'black',
-    width: '100%',
-    marginTop: 5,
-  },
   passengerItem: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -598,17 +533,48 @@ export const PendingPassengerListCardStyles = StyleSheet.create({
     fontSize: 14,
     color: 'gray',
   },
-  inviteButton: {
-    backgroundColor: '#eee', // Customize button color
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 'auto',
+  statusIndicatorActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'green',
   },
-  inviteButtonText: {
-    color: 'black', // Customize text color
-    fontWeight: 'bold',
+  statusIndicatorNotActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'red',
+  },
+});
+export const PassengerParentCardListCardStyles = StyleSheet.create({
+  passengerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10.5,
+    marginHorizontal: 14,
+  },
+  passengerImage: {
+    width: 45,
+    height: 45,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  parentInfo: {
+    flex: 1,
+  },
+  passengerName: {
+    color: 'black',
     fontSize: 16,
+    fontWeight: '500',
+  },
+  parentName: {
+    fontSize: 14,
+    color: 'black',
+    fontWeight: '400',
+  },
+  deleteReason: {
+    fontSize: 14,
+    color: 'red',
   },
   statusIndicatorActive: {
     width: 10,

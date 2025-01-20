@@ -314,7 +314,7 @@ export const AppDrawerScreenStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: 'black',
+    color: COLORS.customBlack,
   },
 });
 export const EditUserAccountScreenStyles = StyleSheet.create({
@@ -437,7 +437,8 @@ export const ProfileScreenStyles = StyleSheet.create({
   headingText: {
     fontSize: 30,
     fontWeight: 'bold',
-    color: 'black',
+    color: COLORS.customBlack,
+
     marginStart: 14,
     marginBottom: 15,
   },
@@ -454,7 +455,8 @@ export const SettingCardStyles = StyleSheet.create({
     color: '#4c7488',
   },
   titleText: {
-    color: 'black',
+    color: COLORS.customBlack,
+
     fontWeight: '600',
     fontSize: 17,
   },
@@ -481,13 +483,15 @@ export const PassengerListAllCardStyles = StyleSheet.create({
     flex: 1,
   },
   passengerName: {
-    color: 'black',
+    color: COLORS.customBlack,
+
     fontSize: 16,
     fontWeight: '500',
   },
   passengerAddress: {
     fontSize: 14,
-    color: 'black',
+    color: COLORS.customBlack,
+
     fontWeight: '400',
   },
   statusIndicatorActive: {
@@ -520,13 +524,15 @@ export const PendingPassengerListCardStyles = StyleSheet.create({
     flex: 1,
   },
   passengerName: {
-    color: 'black',
+    color: COLORS.customBlack,
+
     fontSize: 16,
     fontWeight: '500',
   },
   parentName: {
     fontSize: 14,
-    color: 'black',
+    color: COLORS.customBlack,
+
     fontWeight: '400',
   },
   deleteReason: {
@@ -563,13 +569,15 @@ export const PassengerParentCardListCardStyles = StyleSheet.create({
     flex: 1,
   },
   passengerName: {
-    color: 'black',
+    color: COLORS.customBlack,
+
     fontSize: 16,
     fontWeight: '500',
   },
   parentName: {
     fontSize: 14,
-    color: 'black',
+    color: COLORS.customBlack,
+
     fontWeight: '400',
   },
   deleteReason: {
@@ -588,4 +596,55 @@ export const PassengerParentCardListCardStyles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: 'red',
   },
+});
+export const LinkedVehicleListCardListCardStyles = StyleSheet.create({
+  vehicleItem: {
+    // flexDirection: 'row',
+    // backgroundColor: 'white',
+    // borderRadius: 10,
+    // padding: 15,
+    // marginBottom: 15,
+    // shadowColor: '#000', // Add shadow
+    // shadowOffset: {width: 0, height: 2},
+    // shadowOpacity: 0.1,
+    // shadowRadius: 4,
+    // elevation: 3, // For Android shadow
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10.5,
+    marginHorizontal: 14,
+    padding: 5,
+  },
+  vehicleImage: {
+    width: 60,
+    height: 75,
+    borderRadius: 8,
+    marginRight: 15,
+  },
+  vehicleInfo: {
+    flex: 1,
+    justifyContent: 'center', // Vertically center text
+  },
+  vehicleTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: COLORS.customBlack,
+  },
+  driverText: {
+    color: COLORS.customBlue,
+    fontSize: 14,
+  },
+});
+export const ManageTripsScreenStyles = StyleSheet.create({
+  searchBox: {
+    marginHorizontal: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    backgroundColor: '#f2f3f5',
+  },
+  flatlistStyle: {backgroundColor: '#ffffff'},
+  emptyFlatlistText: {backgroundColor: '#ffffff', marginHorizontal: 5},
 });

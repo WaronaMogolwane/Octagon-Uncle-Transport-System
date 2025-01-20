@@ -17,8 +17,9 @@ import {
   AlertCircleIcon,
   View,
 } from '@gluestack-ui/themed';
-import {FormStyles} from '../Stylesheets/GlobalStyles';
+import {FormStyles, ManageTripsScreenStyles} from '../Stylesheets/GlobalStyles';
 import {InputProps} from '../Models/FormControlProps';
+import {Search} from 'lucide-react-native';
 
 export const CustomFormControlInput = (props: InputProps) => {
   const [showInputText, SetShowInputText] = useState(IsTextInput);
@@ -74,6 +75,39 @@ export const CustomFormControlInput = (props: InputProps) => {
           <FormControlErrorIcon as={AlertCircleIcon} />
           <FormControlErrorText>{props.errorText}</FormControlErrorText>
         </FormControlError>
+      </FormControl>
+    </View>
+  );
+};
+
+export const CustomFormControlInputSearch = (props: InputProps) => {
+  const iconSize = 20;
+  const iconStrokeWidth = 1;
+  const iconColor = '#000000';
+
+  return (
+    <View>
+      <FormControl
+        style={FormStyles.input}
+        isInvalid={props.isInvalid}
+        size={props.size}
+        isDisabled={props.isDisabled}
+        isRequired={props.isRequired}>
+        <Input style={ManageTripsScreenStyles.searchBox}>
+          <Search
+            size={iconSize}
+            strokeWidth={iconStrokeWidth}
+            color={iconColor}
+          />
+          <InputField
+            type={'text'}
+            defaultValue={props.defaultValue}
+            placeholder={props.placeHolder}
+            onChangeText={props.onChangeText}
+            onBlur={props.onBlur}
+            value={props.value}
+          />
+        </Input>
       </FormControl>
     </View>
   );

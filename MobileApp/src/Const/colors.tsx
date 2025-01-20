@@ -7,7 +7,7 @@ const COLORS = {
   darkBlue: '#7978B5',
   red: 'red',
   green: '#008000',
+  customBlack: '#090e11',
+  customBlue: '#547088',
 };
-// export const SERVER_HOST = 'http://192.168.1.73';
-// export const SERVER_PORT = '9999';
 export default COLORS;

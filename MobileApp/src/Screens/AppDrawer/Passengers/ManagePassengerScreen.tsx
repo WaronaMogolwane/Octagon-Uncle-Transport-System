@@ -124,12 +124,12 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [editable, setEditable] = useState(true);
 
-  // const userId = auth.GetUserId();
-  // const role: number = Number(auth.GetUserRole());
+  const userId = auth.GetUserId();
+  const role: number = Number(auth.GetUserRole());
   const businessId = auth.GetBusinessId();
 
-  const userId = 'b14d9894-1a61-4f41-89e9-29ba6a7449c4';
-  const role: number = 2;
+  // const userId = 'b14d9894-1a61-4f41-89e9-29ba6a7449c4';
+  // const role: number = 2;
 
   const defaultReasons = [
     {

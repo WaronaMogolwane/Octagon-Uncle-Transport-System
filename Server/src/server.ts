@@ -4,27 +4,19 @@ dotenv.config();
 import express from "express";
 import { firebase } from "./firebase";
 import ErrorHandler from "./Middleware/ErrorHandler";
-import authRoute from "./Routes/AuthenticationRoutes";
-import bankingDetailRoute from "./Routes/BankingDetailRoutes";
-import businessDetailRoute from "./Routes/BusinessDetailRoutes";
-import driverVehicleLinkingRoute from "./Routes/DriverVehicleLinkingRoutes";
-import passengerDriverVehicleLinkingRoute from "./Routes/PassengerDriverVehicleLinkingRoutes";
-import passengerRoute from "./Routes/PassengerRoutes";
-import passengerScheduleRoute from "./Routes/PassengerScheduleRoutes";
-import paymentsRoute from "./Routes/PaymentsRoute";
-import pushNotificationsRoute from "./Routes/PushNotificationsRoute";
-import tripRoute from "./Routes/TripRoutes";
-import userProfileRoute from "./Routes/UserDetailRoutes";
-import userRoute from "./Routes/UserRoutes";
-import vehicleRoute from "./Routes/VehicleRoutes";
 import WinstonLogger from "./Utilities/WinstonLogger";
 import { MainWorker } from "./Worker/MainWorker";
+import { CustomLogger } from "./Classes/CustomLogger";
+import { RegisterRoutes } from "./Routes/Routes";
 
+const Logger: CustomLogger = new CustomLogger();
+const NODE_ENV = process.env.NODE_ENV;
+let PORT = (NODE_ENV === "development") ? process.env.OUTS_SERVER_PORT : process.env.PORT;
 const app = express();
-app.use(cors());
+const fbp = firebase;
+let bodyParser = require("body-parser");
 
-const PORT = process.env.OUTS_SERVER_PORT || 8081;
-var bodyParser = require("body-parser");
+app.use(cors());
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
   bodyParser.urlencoded({
@@ -33,31 +25,14 @@ app.use(
     parameterLimit: 50000,
   })
 );
-RegisterRoutes();
-
-const fbp = firebase;
-
 app.use(ErrorHandler);
-
-const mainWorker: MainWorker = new MainWorker();
-mainWorker.StartJobs();
-
 app.listen(PORT, function () {
-  WinstonLogger.info(`Server is live on Port ${PORT}`);
+  Logger.Log(`Octagon Uncle server is live on Port ${PORT}`);
 });
-function RegisterRoutes() {
-  app.use("/auth", authRoute);
-  app.use("/user", userRoute);
-  app.use("/user-profile", userProfileRoute);
-  app.use("/passenger", passengerRoute);
-  app.use("/trip", tripRoute);
-  app.use("/vehicle", vehicleRoute);
-  app.use("/business-detail", businessDetailRoute);
-  app.use("/banking-detail", bankingDetailRoute);
-  app.use("/payments", paymentsRoute);
-  app.use("/push-notifications", pushNotificationsRoute);
-  app.use("/passenger-driver-vehicle-linking", passengerDriverVehicleLinkingRoute);
-  app.use("/passenger-schedule", passengerScheduleRoute);
-  app.use("/driver-vehicle-linking", driverVehicleLinkingRoute);
-}
 
+RegisterRoutes(app);
+
+if (NODE_ENV === 'development') {
+  const mainWorker: MainWorker = new MainWorker();
+  mainWorker.StartJobs();
+}

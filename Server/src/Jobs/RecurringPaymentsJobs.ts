@@ -17,7 +17,7 @@ export const BulkChargeJob = () => {
                     if (result == false) {
                         await BulkChargeAuthorizations((error: any, result: BulkChargeReponse) => {
                             if (error) {
-                                Logger.Error(error)
+                                Logger.Error(JSON.stringify(error))
                             }
                             else {
                                 Logger.Log(JSON.stringify(result))

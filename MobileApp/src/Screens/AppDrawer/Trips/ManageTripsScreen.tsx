@@ -35,8 +35,8 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import filter from 'lodash.filter';
 import {CurrentVehicle} from '../../../Models/CurrentVehicle';
-import {BookUser, Route, Search} from 'lucide-react-native';
-import {CustomFormControlInputSearch} from '../../../Components/CustomFormInput';
+import {BookUser, Route} from 'lucide-react-native';
+import {CustomInputSearch} from '../../../Components/CustomFormInput';
 
 const ManageTripsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -186,7 +186,6 @@ const ManageTripsScreen = ({navigation}: any) => {
           setShowMenu(false);
           setIsOpen(false);
         }}
-        // style={{backgroundColor: '#7DD3F2'}}
         placement="top"
         trigger={({...triggerProps}) => {
           return (
@@ -253,15 +252,10 @@ const ManageTripsScreen = ({navigation}: any) => {
 
   return (
     <SafeAreaView style={ThemeStyles.container}>
-      <CustomFormControlInputSearch
-        isInvalid={false}
-        isRequired={false}
-        type={'text'}
+      <CustomInputSearch
         value={searchQuery}
-        onChangeText={(e: string | ChangeEvent<any>) => {
-          handleSearch(e as string);
-          setSearchQuery(e as string);
-          console.log(e as string);
+        onChangeText={(query: any) => {
+          handleSearch(query);
         }}
       />
       {noLinkedVehicle ? EmtpyFlatListText() : null}

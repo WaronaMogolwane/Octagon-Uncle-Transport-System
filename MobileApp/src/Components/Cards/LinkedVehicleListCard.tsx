@@ -5,7 +5,7 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {Card, Image} from '@gluestack-ui/themed';
+import {Image} from '@gluestack-ui/themed';
 import {LinkedVehicleListCardListCardStyles} from '../../Stylesheets/GlobalStyles';
 
 type tripCardProps = {

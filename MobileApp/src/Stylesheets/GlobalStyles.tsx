@@ -636,14 +636,14 @@ export const LinkedVehicleListCardListCardStyles = StyleSheet.create({
   },
 });
 export const ManageTripsScreenStyles = StyleSheet.create({
-  searchBox: {
-    marginHorizontal: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+  searchInputContainer: {
+    flexDirection: 'row',
+    height: 45,
+    backgroundColor: '#f2f3f5',
+    marginHorizontal: 14,
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 8,
-    backgroundColor: '#f2f3f5',
   },
   flatlistStyle: {backgroundColor: '#ffffff'},
   emptyFlatlistText: {backgroundColor: '#ffffff', marginHorizontal: 5},

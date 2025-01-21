@@ -18,8 +18,9 @@ import {
   View,
 } from '@gluestack-ui/themed';
 import {FormStyles, ManageTripsScreenStyles} from '../Stylesheets/GlobalStyles';
-import {InputProps} from '../Models/FormControlProps';
+import {InputProps, SearchProps} from '../Models/FormControlProps';
 import {Search} from 'lucide-react-native';
+import {TextInput} from 'react-native';
 
 export const CustomFormControlInput = (props: InputProps) => {
   const [showInputText, SetShowInputText] = useState(IsTextInput);
@@ -80,35 +81,27 @@ export const CustomFormControlInput = (props: InputProps) => {
   );
 };
 
-export const CustomFormControlInputSearch = (props: InputProps) => {
+export const CustomInputSearch = (props: SearchProps) => {
   const iconSize = 20;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';
 
   return (
-    <View>
-      <FormControl
-        style={FormStyles.input}
-        isInvalid={props.isInvalid}
-        size={props.size}
-        isDisabled={props.isDisabled}
-        isRequired={props.isRequired}>
-        <Input style={ManageTripsScreenStyles.searchBox}>
-          <Search
-            size={iconSize}
-            strokeWidth={iconStrokeWidth}
-            color={iconColor}
-          />
-          <InputField
-            type={'text'}
-            defaultValue={props.defaultValue}
-            placeholder={props.placeHolder}
-            onChangeText={props.onChangeText}
-            onBlur={props.onBlur}
-            value={props.value}
-          />
-        </Input>
-      </FormControl>
+    <View style={ManageTripsScreenStyles.searchInputContainer}>
+      <Search
+        size={iconSize}
+        strokeWidth={iconStrokeWidth}
+        color={iconColor}
+        style={{marginHorizontal: 15, marginTop: 11}}
+      />
+      <TextInput
+        placeholder="Search"
+        clearButtonMode="always"
+        autoCapitalize="none"
+        autoCorrect={false}
+        value={props.value}
+        onChangeText={props.onChangeText}
+      />
     </View>
   );
 };

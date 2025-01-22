@@ -17,6 +17,7 @@ import {
   UndoTripPickUpTimeInDB,
   GetDailytTripsTransporterFromDB,
   GetDailytTripsParentFromDB,
+  GetDailytTripsDriverFromDB,
 } from '../Data/TripDAL';
 import {Trip} from '../Models/Trip';
 
@@ -34,6 +35,10 @@ export const GetDailytTripsTransporter = async (businessId: string) => {
 
 export const GetDailytTripsParent = async (businessId: string) => {
   return await GetDailytTripsParentFromDB(businessId);
+};
+
+export const GetDailytTripsDriver = async (driverId: string) => {
+  return await GetDailytTripsDriverFromDB(driverId);
 };
 
 export const GetUpcomingTripsForClient = async (ParentId: string) => {

@@ -22,6 +22,7 @@ import {
 import {GetUser} from '../../../Controllers/UserController';
 import {CheckTrip, StartTrip} from '../../../Services/TripServices';
 import {
+  GetDailytTripsDriver,
   GetDailytTripsParent,
   GetDailytTripsTransporter,
   GetUpcomingTripsForClient,
@@ -71,8 +72,8 @@ const HomeScreen = ({navigation}: any) => {
     LicenseNumber: 'undefined',
   });
 
-  // const role: number = Number(auth.GetUserRole());
-  const role: number = 2;
+  const role: number = Number(auth.GetUserRole());
+  // const role: number = 2;
 
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
@@ -150,7 +151,7 @@ const HomeScreen = ({navigation}: any) => {
       GetUpcomingTrips();
     } else if (role == 3) {
       GetVehicleInfomation();
-      GetUpcomingTrips();
+      GetDailyDriverTrips();
     }
   }, []);
 
@@ -249,6 +250,35 @@ const HomeScreen = ({navigation}: any) => {
     });
   };
 
+  const GetDailyDriverTrips = async () => {
+    setTripCount(0);
+    setMissedTripsCount(0);
+    setActiveTripsCount(0);
+    setCompleteTripsCount(0);
+
+    await GetDailytTripsDriver(userId).then((result: any) => {
+      if (result.length != 0) {
+        setTripCount(result.length);
+
+        result.forEach((item: any) => {
+          if (item.tripStatus == 1) {
+            setMissedTripsCount(missedTripsCount + 1);
+          }
+
+          if (item.tripStatus == 2) {
+            setActiveTripsCount(activeTripsCount + 1);
+          }
+
+          if (item.tripStatus == 3) {
+            setCompleteTripsCount(completedTripsCount + 1);
+          }
+        });
+      } else {
+        setTripCount(0);
+      }
+    });
+  };
+
   const GetUpcomingTrips = async () => {
     if (role == 2) {
       await GetUpcomingTripsForClient(userId).then((response: any) => {
@@ -291,8 +321,6 @@ const HomeScreen = ({navigation}: any) => {
 
   const GetVehicleInfomation = async () => {
     GetDriverVehicle(userId).then(result => {
-      console.info(result);
-
       if (result != undefined) {
         setVehicle(result[0]);
       } else {
@@ -320,21 +348,6 @@ const HomeScreen = ({navigation}: any) => {
       .catch((error: any) => {
         console.log(error);
       });
-  };
-
-  const GetPassegersByParent = async () => {
-    await GetParentPassengers(userId).then((result: any) => {
-      if (result.length != 0) {
-        setPassengerCount(result.length.toString());
-        // setNoPassenger(false);
-        // setPassengerList(result);
-        // setStatusCode(!statusCode);
-        // setIsLoading(false);
-      } else {
-        //   setNoPassenger(true);
-        //   setIsLoading(false);
-      }
-    });
   };
 
   const handleSearch = () => {
@@ -539,193 +552,88 @@ const HomeScreen = ({navigation}: any) => {
     );
   } else if (role == 3) {
     return (
-      <SafeAreaView
-        style={{flex: 1, backgroundColor: '#e8f0f3', height: '100%'}}>
-        <ScrollView>
-          <View style={{height: '33.3%'}}>
-            <View>
-              <View style={{marginStart: 15}}>
-                <Text
-                  style={{
-                    fontSize: 40,
-                    fontWeight: 'bold',
-                    color: 'black',
-                  }}>
-                  Hello
+      <SafeAreaView style={ThemeStyles.container}>
+        <View style={{height: '25%'}}>
+          <ImageBackground
+            source={require('../../../Images/driver_image_homescreen.jpg')}
+            resizeMode="cover"
+            style={HomeScreenStyles.backgroundImage}
+          />
+        </View>
+        <View style={{height: '25%'}}>
+          <Text style={HomeScreenStyles.titleText}>
+            Good morning, {userName}!
+          </Text>
+          <View style={HomeScreenStyles.vehicleContainer}>
+            <Image
+              source={{
+                uri: storageUrl + vehicle.FrontImageUrl,
+              }}
+              alt="Vehicle front picture."
+              style={HomeScreenStyles.vehicleImage}
+            />
+            <View style={HomeScreenStyles.vehicleInfo}>
+              <View style={HomeScreenStyles.itemContainer}>
+                <Text style={HomeScreenStyles.itemPrimaryText}>Make: </Text>
+                <Text style={HomeScreenStyles.itemSecondaryText}>
+                  {vehicle.Make}
                 </Text>
               </View>
-
-              <View style={{marginStart: 50}}>
-                <Text
-                  style={{
-                    fontSize: 40,
-                    fontWeight: 'bold',
-                    color: 'black',
-                    marginBottom: 50,
-                  }}>
-                  {userName}
+              <View style={HomeScreenStyles.itemContainer}>
+                <Text style={HomeScreenStyles.itemPrimaryText}>Model: </Text>
+                <Text style={HomeScreenStyles.itemSecondaryText}>
+                  {vehicle.Model}
+                </Text>
+              </View>
+              <View style={HomeScreenStyles.itemContainer}>
+                <Text style={HomeScreenStyles.itemPrimaryText}>Color: </Text>
+                <Text style={HomeScreenStyles.itemSecondaryText}>
+                  {vehicle.Colour}
+                </Text>
+              </View>
+              <View style={HomeScreenStyles.itemContainer}>
+                <Text style={HomeScreenStyles.itemPrimaryText}>License: </Text>
+                <Text style={HomeScreenStyles.itemSecondaryText}>
+                  {vehicle.LicenseNumber}
                 </Text>
               </View>
             </View>
           </View>
-          <View style={{height: '33.3%'}}>
-            <Card
-              size="sm"
-              variant="outline"
-              style={{
-                marginHorizontal: 12,
-                marginBottom: 10,
-                backgroundColor: '#ffffff',
-                borderRadius: 5,
-                elevation: 10,
-              }}>
-              <Text
-                style={{
-                  // fontSize: 15,
-                  marginStart: 15,
-                  fontWeight: '500',
-                  textAlign: 'left',
-                  marginTop: 5,
-                  marginBottom: 15,
-                }}>
-                Your Vehicle
-              </Text>
-              <View style={{flexDirection: 'row', flex: 1, marginBottom: 10}}>
-                <View style={{width: '33%'}}>
-                  <Image
-                    style={{
-                      width: 100,
-                      aspectRatio: 1 / 1,
-                      marginHorizontal: 12,
-                      height: 100,
-                      borderRadius: 50, // Half of the width or height
-                      display: 'flex', // Flexbox layout
-                      flexDirection: 'row', // Horizontal arrangement
-                      alignItems: 'center', // Align items vertically
-                      justifyContent: 'center',
-                    }}
-                    source={{
-                      uri:
-                        storageUrl + vehicle.FrontImageUrl ||
-                        'https://eu.amcdn.co.za/cars/toyota-quantum-2-5d-4d-ses-fikile-2012-id-64381431-type-main.jpg',
-                    }}
-                    alt="Vehicle front picture."
-                  />
-                </View>
-
-                <View style={{width: '67%'}}>
-                  <View
-                    style={{
-                      marginTop: 15,
-                      marginBottom: 30,
-                      flexDirection: 'row',
-                      justifyContent: 'space-evenly',
-                      alignItems: 'flex-start',
-                    }}>
-                    <Text style={styles.cardText}>{vehicle.Make}</Text>
-                    <Text style={styles.cardText}>{vehicle.Model}</Text>
-                  </View>
-                  <View
-                    style={{
-                      marginStart: 12,
-                      flexDirection: 'row',
-                      justifyContent: 'space-evenly',
-                      alignItems: 'flex-start',
-                    }}>
-                    <Text style={styles.cardText}>{vehicle.Colour}</Text>
-                    <Text style={styles.cardText}>{vehicle.LicenseNumber}</Text>
-                  </View>
-                </View>
-              </View>
-            </Card>
-          </View>
-          <View style={{height: '33.3%'}}>
-            <TripsBlockDiver tripList={tripData} />
-          </View>
-        </ScrollView>
+        </View>
+        <View style={{height: '50%'}}>
+          <Text
+            style={[
+              HomeScreenStyles.titleText,
+              HomeScreenStyles.secondTitleText,
+            ]}>
+            Today's stats
+          </Text>
+          <StatRowCard
+            primaryText={'Missed'}
+            secondaryText={'Trips'}
+            tetiaryText={missedTripsCount ? missedTripsCount.toString() : '0'}
+          />
+          <StatRowCard
+            primaryText={'Active'}
+            secondaryText={'Trips'}
+            tetiaryText={activeTripsCount ? activeTripsCount.toString() : '0'}
+          />
+          <StatRowCard
+            primaryText={'Completed'}
+            secondaryText={'Trips'}
+            tetiaryText={
+              completedTripsCount ? completedTripsCount.toString() : '0'
+            }
+          />
+          {/* <StatRowCard
+            primaryText={'Total'}
+            secondaryText={'Trips'}
+            tetiaryText={tripCount ? tripCount.toString() : '0'}
+          /> */}
+        </View>
       </SafeAreaView>
     );
   }
 };
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: '#20B2AA',
-  },
-  cardText: {fontWeight: '500', fontSize: 16},
-  headerContent: {
-    padding: 30,
-    alignItems: 'center',
-  },
-
-  image: {
-    width: 40,
-    height: 40,
-  },
-
-  body: {
-    padding: 30,
-  },
-  box: {
-    padding: 5,
-    marginTop: 5,
-    marginBottom: 5,
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    shadowColor: 'black',
-    shadowOpacity: 0.2,
-    shadowOffset: {
-      height: 1,
-      width: -2,
-    },
-    elevation: 2,
-  },
-  username: {
-    color: '#20B2AA',
-    fontSize: 22,
-    alignSelf: 'center',
-    marginLeft: 10,
-  },
-  container: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  coverPhoto: {
-    width: '100%',
-    height: 130,
-    resizeMode: 'cover',
-  },
-  avatarContainer: {
-    alignItems: 'center',
-    marginTop: -75,
-  },
-  avatar: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-  },
-  name: {
-    marginTop: 15,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  quicksandLight: {
-    fontFamily: 'Quicksand-Light',
-    fontSize: 20,
-  },
-  quicksandRegular: {
-    fontFamily: 'Quicksand-Regular',
-    fontSize: 20,
-  },
-  ralewayItalic: {
-    fontFamily: 'Raleway-Italic',
-    fontSize: 20,
-  },
-  ralewayThin: {
-    fontFamily: 'Raleway-ThinItalic',
-    fontSize: 20,
-  },
-});
 
 export default HomeScreen;

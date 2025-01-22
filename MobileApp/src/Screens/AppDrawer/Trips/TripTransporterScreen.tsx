@@ -217,5 +217,3 @@ const TripTransporterScreen = ({route, navigation}: any) => {
 };
 
 export default TripTransporterScreen;
-
-const styles = StyleSheet.create({});

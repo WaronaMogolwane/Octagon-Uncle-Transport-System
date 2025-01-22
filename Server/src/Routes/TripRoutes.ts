@@ -18,6 +18,7 @@ import {
   UndoTripPickUpTime,
   GetDailyBusinessTrip,
   GetDailyParentTrip,
+  GetDailyDriverTrip,
 } from "../Controllers/TripController";
 
 const router = Router();
@@ -31,6 +32,12 @@ router.get(
 router.get(
   "/get-daily-parent-trip",
   GetDailyParentTrip,
+  async (req, res, next) => {}
+);
+
+router.get(
+  "/get-daily-driver-trip",
+  GetDailyDriverTrip,
   async (req, res, next) => {}
 );
 

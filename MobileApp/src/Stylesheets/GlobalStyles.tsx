@@ -678,6 +678,28 @@ export const HomeScreenStyles = StyleSheet.create({
     color: COLORS.customBlue,
     fontweight: 'bold',
   },
+  vehicleContainer: {
+    // alignItems: 'center', // Center horizontally
+    // justifyContent: 'center', // Center vertically
+    flexDirection: 'row',
+    borderRadius: 20,
+    borderWidth: 1,
+    height: '100%',
+    marginHorizontal: 10,
+  },
+  vehicleImage: {
+    margin: 12,
+    width: 120,
+    height: 150,
+    borderRadius: 8,
+    marginRight: 15,
+  },
+  itemContainer: {
+    flexDirection: 'row',
+  },
+  itemPrimaryText: {color: COLORS.customBlack, fontWeight: '500'},
+  itemSecondaryText: {color: COLORS.customBlue, fontWeight: '500'},
+  vehicleInfo: {justifyContent: 'space-evenly'},
 });
 export const SmallHomeScreenCardStyles = StyleSheet.create({
   cardContainer: {
@@ -713,7 +735,7 @@ export const StatRowCardStyles = StyleSheet.create({
   statLabel: {
     fontSize: 16,
     color: COLORS.customBlack,
-    fontWeight: 'bold',
+    fontWeight: '500',
   },
   statValues: {
     flexDirection: 'row',

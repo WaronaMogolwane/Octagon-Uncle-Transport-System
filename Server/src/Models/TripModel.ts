@@ -229,6 +229,7 @@ export const GetDailyBusinessTripByBusinessId = async (
     }
   );
 };
+
 export const GetDailyParentTripByParentId = async (
   parentId: any,
   callback: (error, result) => void
@@ -238,6 +239,26 @@ export const GetDailyParentTripByParentId = async (
       sql: "CALL GetDailyParentTrip(?);",
       timeout: 40000,
       values: [parentId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const GetDailyDriverTripByDriverId = async (
+  driverId: any,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetDailyDriverTrip(?);",
+      timeout: 40000,
+      values: [driverId],
     },
     function (error, results, fields) {
       if (error) {

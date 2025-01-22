@@ -260,7 +260,7 @@ const ManageTripsScreen = ({navigation}: any) => {
       />
       {noLinkedVehicle ? EmtpyFlatListText() : null}
       <FlatList
-        style={ManageTripsScreenStyles.flatlistStyle}
+        style={ManageTripsScreenStyles.flatList}
         data={vehicleList}
         renderItem={({item}) => renderItemComponentVehicleInfo(item)}
         refreshControl={

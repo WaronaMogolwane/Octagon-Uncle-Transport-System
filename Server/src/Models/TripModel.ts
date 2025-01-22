@@ -210,7 +210,7 @@ export const GetUpcomingTripsByBusinessId = async (
   );
 };
 
-export const GetDailBusinessTripByBusinessId = async (
+export const GetDailyBusinessTripByBusinessId = async (
   businessId: any,
   callback: (error, result) => void
 ) => {
@@ -219,6 +219,25 @@ export const GetDailBusinessTripByBusinessId = async (
       sql: "CALL GetDailyBusinessTrip(?);",
       timeout: 40000,
       values: [businessId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+export const GetDailyParentTripByParentId = async (
+  parentId: any,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetDailyParentTrip(?);",
+      timeout: 40000,
+      values: [parentId],
     },
     function (error, results, fields) {
       if (error) {

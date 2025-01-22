@@ -16,14 +16,21 @@ import {
   UndoTripAbsentEnd,
   UndoTripDropOffTime,
   UndoTripPickUpTime,
-  GetDailBusinessTrip,
+  GetDailyBusinessTrip,
+  GetDailyParentTrip,
 } from "../Controllers/TripController";
 
 const router = Router();
 
 router.get(
   "/get-daily-business-trip",
-  GetDailBusinessTrip,
+  GetDailyBusinessTrip,
+  async (req, res, next) => {}
+);
+
+router.get(
+  "/get-daily-parent-trip",
+  GetDailyParentTrip,
   async (req, res, next) => {}
 );
 

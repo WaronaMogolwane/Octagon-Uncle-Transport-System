@@ -645,7 +645,7 @@ export const ManageTripsScreenStyles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
   },
-  flatlistStyle: {backgroundColor: '#ffffff'},
+  flatList: {backgroundColor: '#ffffff'},
   emptyFlatlistText: {backgroundColor: '#ffffff', marginHorizontal: 5},
 });
 export const HomeScreenStyles = StyleSheet.create({
@@ -662,9 +662,21 @@ export const HomeScreenStyles = StyleSheet.create({
     marginBottom: 30,
   },
   secondTitleText: {
-    marginTop: 85,
+    marginTop: 80,
     textAlign: 'left',
     marginStart: 20,
+    marginBottom: 20,
+  },
+  flatList: {
+    borderRadius: 20,
+    borderWidth: 1,
+    marginHorizontal: 10,
+    height: '50%',
+  },
+  emptyFlatListText: {
+    textAlign: 'center',
+    color: COLORS.customBlue,
+    fontweight: 'bold',
   },
 });
 export const SmallHomeScreenCardStyles = StyleSheet.create({

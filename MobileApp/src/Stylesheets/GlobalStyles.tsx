@@ -648,3 +648,71 @@ export const ManageTripsScreenStyles = StyleSheet.create({
   flatlistStyle: {backgroundColor: '#ffffff'},
   emptyFlatlistText: {backgroundColor: '#ffffff', marginHorizontal: 5},
 });
+export const HomeScreenStyles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+    justifyContent: 'center',
+    marginBottom: 10,
+  },
+  titleText: {
+    textAlign: 'center',
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: COLORS.customBlack,
+    marginBottom: 30,
+  },
+  secondTitleText: {
+    marginTop: 85,
+    textAlign: 'left',
+    marginStart: 20,
+  },
+});
+export const SmallHomeScreenCardStyles = StyleSheet.create({
+  cardContainer: {
+    alignItems: 'center', // Center horizontally
+    justifyContent: 'center', // Center vertically
+    borderRadius: 20,
+    borderWidth: 1,
+    width: '45%',
+    height: 75,
+  },
+  primaryText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 5,
+    color: COLORS.customBlack,
+  },
+  secondaryText: {
+    fontSize: 14,
+    color: COLORS.customBlue,
+  },
+});
+export const StatRowCardStyles = StyleSheet.create({
+  statsContainer: {
+    marginBottom: 20, // Space above the bottom nav
+  },
+  statRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+    marginHorizontal: 20,
+  },
+  statLabel: {
+    fontSize: 16,
+    color: COLORS.customBlack,
+    fontWeight: 'bold',
+  },
+  statValues: {
+    flexDirection: 'row',
+  },
+  statValue: {
+    fontSize: 16,
+    // fontWeight: 'bold',
+    marginRight: 2,
+  },
+  statTotal: {
+    fontSize: 16,
+    color: 'grey',
+  },
+});

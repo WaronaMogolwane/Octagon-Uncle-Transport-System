@@ -4,6 +4,7 @@ import {Auth} from '../../../Classes/Auth';
 import {
   Dimensions,
   GestureResponderEvent,
+  ImageBackground,
   Pressable,
   StyleSheet,
 } from 'react-native';
@@ -64,6 +65,8 @@ import {GetBalanceByBusinessId} from '../../../Controllers/PaymentsController';
 import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
 import {TripSummaryBlock} from '../../../Components/TripSummaryBlock';
 import {IVehicle} from '../../../Props/VehicleProps';
+import {HomeScreenStyles, ThemeStyles} from '../../../Stylesheets/GlobalStyles';
+import StatRowCard from '../../../Components/Cards/StatRowCard';
 
 const HomeScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
@@ -99,8 +102,6 @@ const HomeScreen = ({navigation}: any) => {
 
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
-
-  const toast = useToast();
 
   const iconSize = 15;
   const iconStrokeWidth = 1;
@@ -346,74 +347,78 @@ const HomeScreen = ({navigation}: any) => {
 
   if (role == 1) {
     return (
-      <SafeAreaView
-        style={{flex: 1, backgroundColor: '#e8f0f3', height: '100%'}}>
+      <SafeAreaView style={ThemeStyles.container}>
         <ScrollView>
           <View style={{height: '25%'}}>
-            <View>
-              <View style={{marginStart: 15}}>
-                <Text
-                  style={{
-                    fontSize: 40,
-                    fontWeight: 'bold',
-                    color: 'black',
-                  }}>
-                  Hello
-                </Text>
-              </View>
-
-              <View style={{marginStart: 50}}>
-                <Text
-                  style={{
-                    fontSize: 40,
-                    fontWeight: 'bold',
-                    color: 'black',
-                    marginBottom: 50,
-                  }}>
-                  {userName}
-                </Text>
-              </View>
-            </View>
+            <ImageBackground
+              source={require('../../../Images/driver_image_homescreen.jpg')}
+              resizeMode="cover"
+              style={HomeScreenStyles.backgroundImage}
+            />
           </View>
-          <View
-            style={{
-              height: '25%',
-              marginBottom: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
+          <View style={{height: '25%'}}>
+            <Text style={HomeScreenStyles.titleText}>
+              Good morning, {userName}!
+            </Text>
             <View
               style={{
                 flexDirection: 'row',
-                justifyContent: 'space-between',
-                width: '90%',
+                justifyContent: 'space-evenly',
+                marginBottom: 10,
               }}>
               <SmallHomeScreenCard
-                primaryText={availableBalance}
-                secondaryText={'Available Balance'}
-                iconSelector={1}
+                primaryText={'R' + availableBalance}
+                secondaryText={'Balance'}
               />
-
               <SmallHomeScreenCard
-                primaryText={vehicleCount}
-                secondaryText={'Active Vehicles'}
-                iconSelector={2}
+                primaryText={vehicleCount ? vehicleCount.toString() : '0'}
+                secondaryText={'Active vehicle'}
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-evenly',
+              }}>
+              <SmallHomeScreenCard
+                primaryText={passengerCount}
+                secondaryText={'Active passengers'}
+              />
+              <SmallHomeScreenCard
+                primaryText={tripCount ? tripCount.toString() : '0'}
+                secondaryText={'Total trips'}
               />
             </View>
           </View>
-          <View style={{height: '25%', marginBottom: 12}}>
-            <LargeHomeScreenCard
-              primaryText={passengerCount}
-              secondaryText={'Active Passengers'}
-              iconSelector={3}
+          <View style={{height: '50%'}}>
+            <Text
+              style={[
+                HomeScreenStyles.titleText,
+                HomeScreenStyles.secondTitleText,
+              ]}>
+              Today's stats
+            </Text>
+            <StatRowCard
+              primaryText={'Missed'}
+              secondaryText={'Trips'}
+              tetiaryText={missedTripsCount ? missedTripsCount.toString() : '0'}
             />
-          </View>
-          <View style={{height: '25%', marginHorizontal: 14}}>
-            <TripSummaryBlock
-              allTripsCount={tripCount}
-              missedTripsCount={missedTripsCount}
-              activeTripsCount={activeTripsCount}
-              completedTripsCount={completedTripsCount}
+            <StatRowCard
+              primaryText={'Active'}
+              secondaryText={'Trips'}
+              tetiaryText={activeTripsCount ? activeTripsCount.toString() : '0'}
+            />
+            <StatRowCard
+              primaryText={'Completed'}
+              secondaryText={'Trips'}
+              tetiaryText={
+                completedTripsCount ? completedTripsCount.toString() : '0'
+              }
+            />
+            <StatRowCard
+              primaryText={'Total'}
+              secondaryText={'Trips'}
+              tetiaryText={tripCount ? tripCount.toString() : '0'}
             />
           </View>
         </ScrollView>
@@ -466,13 +471,11 @@ const HomeScreen = ({navigation}: any) => {
               <SmallHomeScreenCard
                 primaryText={'R 1000.00'}
                 secondaryText={'Available Balance'}
-                iconSelector={1}
               />
 
               <SmallHomeScreenCard
                 primaryText={passengerCount}
                 secondaryText={'All Passengers'}
-                iconSelector={3}
               />
             </View>
           </View>

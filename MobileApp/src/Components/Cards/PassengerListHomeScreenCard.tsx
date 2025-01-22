@@ -44,11 +44,6 @@ export const PassengerListHomeScreenCard = (
   return (
     <TouchableOpacity onPress={props.onPress}>
       <View style={PassengerParentCardListCardStyles.passengerItem}>
-        {/* <Image
-          source={require('../../Images/default_avatar_image.jpg')}
-          style={PassengerParentCardListCardStyles.passengerImage}
-          alt="passenger image avatar"
-        /> */}
         {userIcon}
         <View style={PassengerParentCardListCardStyles.parentInfo}>
           <Text style={PassengerParentCardListCardStyles.passengerName}>

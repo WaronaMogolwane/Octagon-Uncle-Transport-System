@@ -423,7 +423,7 @@ const HomeScreen = ({navigation}: any) => {
               marginBottom: 10,
             }}>
             <SmallHomeScreenCard
-              primaryText={'R' + availableBalance}
+              primaryText={availableBalance}
               secondaryText={'Balance'}
             />
             <SmallHomeScreenCard

@@ -68,6 +68,7 @@ import {Auth} from '../../../Classes/Auth';
 import {AlarmClock, Car} from 'lucide-react-native';
 import {Trip} from '../../../Models/Trip';
 import {useFormik} from 'formik';
+import {CustomButton1} from '../../../Components/Buttons';
 
 const AssignPassengerScreen = ({route, navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -167,21 +168,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     });
   };
 
-  const renderLabel = () => {
-    if (newPassengerId || isFocus) {
-      return (
-        <Text
-          style={[
-            AssignPassengerScreenStyles.label,
-            isFocus && {color: 'blue'},
-          ]}>
-          Please select passenger
-        </Text>
-      );
-    }
-    return null;
-  };
-
   const ClearModalUseState = () => {
     setPDVLId('');
     sethomeAddress('');
@@ -200,23 +186,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     setSaturday(false);
     setSunday(false);
     setNewPassengerId('');
-  };
-
-  const GoBackFab = () => {
-    return (
-      <Fab
-        onPress={() => {
-          navigation.navigate('Manage Trip');
-        }}
-        size="sm"
-        placement="bottom right"
-        isHovered={false}
-        isDisabled={false}
-        isPressed={false}>
-        <FabIcon as={ArrowLeftIcon} mr="$1" />
-        <FabLabel>Back</FabLabel>
-      </Fab>
-    );
   };
 
   const renderItemComponentPassengers = (itemData: any) => (
@@ -634,7 +603,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   };
 
   return (
-    <View style={{flex: 1, backgroundColor: '#e8f0f3'}}>
+    <View style={ThemeStyles.container}>
       {IsLoading ? (
         <View
           style={{
@@ -652,146 +621,99 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
           <Text>Working</Text>
         </View>
       ) : null}
-      <Card
-        size="sm"
-        variant="outline"
-        style={{
-          marginBottom: 10,
-          paddingTop: 0,
-          height: '38%',
-          marginHorizontal: 12,
-          backgroundColor: '#ffffff',
-          borderRadius: 5,
-          elevation: 10,
-          justifyContent: 'center',
-        }}>
-        <View style={{flexDirection: 'row'}}>
-          <View style={{width: '50%'}}>
-            <Text
-              style={{
-                fontWeight: 'bold',
-                fontSize: 15,
-                color: '#e89d0e',
-                marginBottom: 20,
-              }}>
-              {make}
-            </Text>
-          </View>
+      {CalenderModal()}
+      {showPopUp()}
 
-          <View style={{width: '50%'}}>
-            <Text
-              style={{
-                fontWeight: 'bold',
-                fontSize: 15,
-                // color: '#e89d0e',
-                textAlign: 'right',
-              }}>
-              {model}
-            </Text>
+      <Text style={AssignPassengerScreenStyles.titleText}>Vehicle</Text>
+      <Text style={AssignPassengerScreenStyles.secondTitleText}>
+        {make} {model}
+      </Text>
+      <Text style={AssignPassengerScreenStyles.thirdTitleText}>
+        License plate: {license}
+      </Text>
 
-            <Text
-              style={{
-                fontWeight: '400',
-                fontSize: 12,
-                // color: '#e89d0e',
-                marginBottom: 20,
-                textAlign: 'right',
-              }}>
-              ({license})
-            </Text>
-          </View>
-        </View>
-        <Dropdown
-          style={[
-            AssignPassengerScreenStyles.dropdown,
-            isFocus && {borderColor: 'blue'},
-          ]}
-          placeholderStyle={AssignPassengerScreenStyles.placeholderStyle}
-          selectedTextStyle={AssignPassengerScreenStyles.selectedTextStyle}
-          inputSearchStyle={AssignPassengerScreenStyles.inputSearchStyle}
-          iconStyle={AssignPassengerScreenStyles.iconStyle}
-          data={passengers}
-          search={true}
-          disable={isDisabled}
-          maxHeight={300}
-          labelField="passengerName"
-          valueField="passengerId"
-          placeholder={!isFocus ? 'Select passenger' : '...'}
-          searchPlaceholder="Search..."
-          value={newPassengerId}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={(item: any) => {
-            setNewPassengerId(item.passengerId);
-            setpassengerName(item.editedName);
-            setIsFocus(false);
+      <Dropdown
+        style={[
+          AssignPassengerScreenStyles.dropdown,
+          isFocus && {borderColor: 'blue'},
+        ]}
+        placeholderStyle={AssignPassengerScreenStyles.placeholderStyle}
+        selectedTextStyle={AssignPassengerScreenStyles.selectedTextStyle}
+        inputSearchStyle={AssignPassengerScreenStyles.inputSearchStyle}
+        iconStyle={AssignPassengerScreenStyles.iconStyle}
+        data={passengers}
+        search={true}
+        disable={isDisabled}
+        maxHeight={300}
+        labelField="passengerName"
+        valueField="passengerId"
+        placeholder={!isFocus ? 'Select passenger' : '...'}
+        searchPlaceholder="Search..."
+        value={newPassengerId}
+        onFocus={() => setIsFocus(true)}
+        onBlur={() => setIsFocus(false)}
+        onChange={(item: any) => {
+          setNewPassengerId(item.passengerId);
+          setpassengerName(item.editedName);
+          setIsFocus(false);
+        }}
+      />
+
+      <View style={AssignPassengerScreenStyles.buttonContainer}>
+        <CustomButton1
+          styles={AssignPassengerScreenStyles.button}
+          title="Add trip"
+          size="md"
+          action="primary"
+          isDisabled={false}
+          isFocusVisible={false}
+          onPress={() => {
+            if (newPassengerId != '') {
+              setIsLoading(true);
+              PrepareTrip();
+            } else {
+              ShowPickPassengerToast();
+            }
           }}
         />
-        <View
-          style={{
-            marginTop: 25,
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginBottom: 25,
-          }}>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-            }}>
-            <View style={{padding: 5}}>
-              <Button
-                size="md"
-                variant="solid"
-                action="secondary"
-                isDisabled={false}
-                isFocusVisible={false}
-                onPress={() => {
-                  if (newPassengerId != '') {
-                    setIsLoading(true);
-                    PrepareTrip();
-                  } else {
-                    ShowPickPassengerToast();
-                  }
-                }}>
-                <Car size={20} strokeWidth={1} color={'#FFFFFF'} />
-                <ButtonText> Add Trip</ButtonText>
-              </Button>
-            </View>
-            <View style={{padding: 5}}>
-              <Button
-                size="md"
-                variant="solid"
-                action="primary"
-                isDisabled={false}
-                isFocusVisible={false}
-                onPress={() => {
-                  if (newPassengerId != '') {
-                    setCalender(true);
-                  } else {
-                    ShowPickPassengerToast();
-                  }
-                }}>
-                <AlarmClock size={20} strokeWidth={1} color={'#FFFFFF'} />
-                <ButtonText> Schedule Trip</ButtonText>
-              </Button>
-            </View>
-          </View>
-        </View>
-      </Card>
+
+        <CustomButton1
+          styles={AssignPassengerScreenStyles.button}
+          title="Schedule trip"
+          size="md"
+          action="positive"
+          isDisabled={false}
+          isFocusVisible={false}
+          onPress={() => {
+            if (newPassengerId != '') {
+              setCalender(true);
+            } else {
+              ShowPickPassengerToast();
+            }
+          }}
+        />
+      </View>
+
+      <Text style={[AssignPassengerScreenStyles.titleText, {marginBottom: 20}]}>
+        Assigned passengers
+      </Text>
+
       <FlatList
-        style={{backgroundColor: '#e8f0f3'}}
         data={passengerList}
-        extraData={statusCode}
+        extraData
         renderItem={({item}) => renderItemComponentPassengers(item)}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
-      <View>{CalenderModal()}</View>
-      <View>{showPopUp()}</View>
 
-      {GoBackFab()}
+      {/* <Text style={AssignPassengerScreenStyles.titleText}>Weekly schedule</Text>
+      <Text style={AssignPassengerScreenStyles.secondTitleText}>
+        Moday to Friday
+      </Text>
+      <Text style={AssignPassengerScreenStyles.thirdTitleText}>
+        Drop off at 7:00am
+      </Text> */}
     </View>
   );
 };

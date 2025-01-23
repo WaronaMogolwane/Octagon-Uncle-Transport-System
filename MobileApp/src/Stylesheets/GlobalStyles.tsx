@@ -1,4 +1,4 @@
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet} from 'react-native';
 import COLORS from '../Const/colors';
 
 export const ThemeStyles = StyleSheet.create({
@@ -37,6 +37,7 @@ export const FormStyles = StyleSheet.create({
     borderWidth: 0.5,
     alignItems: 'center',
   },
+  customLabelFont: {fontSize: 15, fontWeight: '500', color: COLORS.customBlack},
 });
 export const FlatlistStyles = StyleSheet.create({
   container: {
@@ -142,12 +143,13 @@ export const AssignPassengerScreenStyles = StyleSheet.create({
     padding: 16,
   },
   dropdown: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
     height: 50,
-    borderColor: 'gray',
-    borderWidth: 0.5,
+    borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
+    marginHorizontal: 20,
+    marginBottom: 30,
   },
   icon: {
     marginRight: 5,
@@ -174,6 +176,39 @@ export const AssignPassengerScreenStyles = StyleSheet.create({
   inputSearchStyle: {
     height: 40,
     fontSize: 16,
+  },
+  titleText: {
+    textAlign: 'left',
+    marginStart: 20,
+    fontSize: 19.5,
+    fontWeight: 'bold',
+    color: COLORS.customBlack,
+    marginBottom: 30,
+  },
+  secondTitleText: {
+    fontSize: 17,
+    fontWeight: '400',
+    textAlign: 'left',
+    color: COLORS.customBlack,
+    marginStart: 20,
+  },
+  thirdTitleText: {
+    color: COLORS.customBlue,
+    fontSize: 17,
+    fontWeight: '400',
+    textAlign: 'left',
+    marginStart: 20,
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 20,
+  },
+
+  button: {
+    width: '45%',
+    marginBottom: 30,
   },
 });
 export const PassengerListActiveCardStyles = StyleSheet.create({
@@ -748,5 +783,54 @@ export const StatRowCardStyles = StyleSheet.create({
   statTotal: {
     fontSize: 16,
     color: 'grey',
+  },
+});
+export const PassengerListCardStyles = StyleSheet.create({
+  passengerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 15,
+    marginHorizontal: 14,
+  },
+  passengerImage: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    marginEnd: 15,
+    backgroundColor: '#f2f3f5',
+    width: 90,
+    height: 90,
+    borderRadius: 40,
+    marginRight: 10,
+  },
+  parentInfo: {
+    flex: 1,
+  },
+  passengerName: {
+    color: COLORS.customBlack,
+    fontSize: 15,
+    fontWeight: '400',
+  },
+  parentName: {
+    fontSize: 14,
+    color: COLORS.customBlack,
+
+    fontWeight: '400',
+  },
+  age: {
+    color: COLORS.customBlue,
+    fontSize: 15,
+    fontWeight: '400',
+  },
+  statusIndicatorActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'green',
+  },
+  statusIndicatorNotActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'red',
   },
 });

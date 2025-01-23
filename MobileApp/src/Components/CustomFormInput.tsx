@@ -20,7 +20,8 @@ import {
 import {FormStyles, ManageTripsScreenStyles} from '../Stylesheets/GlobalStyles';
 import {InputProps, SearchProps} from '../Models/FormControlProps';
 import {Search} from 'lucide-react-native';
-import {TextInput} from 'react-native';
+import {TextInput, ViewStyle} from 'react-native';
+import COLORS from '../Const/colors';
 
 export const CustomFormControlInput = (props: InputProps) => {
   const [showInputText, SetShowInputText] = useState(IsTextInput);
@@ -47,7 +48,7 @@ export const CustomFormControlInput = (props: InputProps) => {
         isDisabled={props.isDisabled}
         isRequired={props.isRequired}>
         <FormControlLabel style={{marginBottom: 12}}>
-          <FormControlLabelText style={{fontSize: 15}}>
+          <FormControlLabelText style={FormStyles.customLabelFont}>
             {props.labelText}
           </FormControlLabelText>
         </FormControlLabel>
@@ -131,7 +132,7 @@ export const CustomFormControlInputTwo = (props: InputProps) => {
         isDisabled={props.isDisabled}
         isRequired={props.isRequired}>
         <FormControlLabel style={{marginBottom: 12}}>
-          <FormControlLabelText style={{fontSize: 15}}>
+          <FormControlLabelText style={FormStyles.customLabelFont}>
             {props.labelText}
           </FormControlLabelText>
         </FormControlLabel>
@@ -190,7 +191,7 @@ export const CustomFormControlInputNumber = (props: InputProps) => {
         isDisabled={props.isDisabled}
         isRequired={props.isRequired}>
         <FormControlLabel style={{marginBottom: 12}}>
-          <FormControlLabelText style={{fontSize: 15}}>
+          <FormControlLabelText style={FormStyles.customLabelFont}>
             {props.labelText}
           </FormControlLabelText>
         </FormControlLabel>
@@ -250,7 +251,7 @@ export const CustomFormControlInputEmail = (props: InputProps) => {
         isDisabled={props.isDisabled}
         isRequired={props.isRequired}>
         <FormControlLabel style={{marginBottom: 12}}>
-          <FormControlLabelText style={{fontSize: 15}}>
+          <FormControlLabelText style={FormStyles.customLabelFont}>
             {props.labelText}
           </FormControlLabelText>
         </FormControlLabel>
@@ -310,7 +311,7 @@ export const CustomFormControlInputPhone = (props: InputProps) => {
         isDisabled={props.isDisabled}
         isRequired={props.isRequired}>
         <FormControlLabel style={{marginBottom: 12}}>
-          <FormControlLabelText style={{fontSize: 15}}>
+          <FormControlLabelText style={FormStyles.customLabelFont}>
             {props.labelText}
           </FormControlLabelText>
         </FormControlLabel>

@@ -55,10 +55,8 @@ const TripsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
 
-  // const userId = auth.GetUserId();
-  // const role: number = Number(auth.GetUserRole());
-  const role: number = 2;
-  const userId = '413f3c1e-6c7e-49a0-9056-db48c823b4d5';
+  const userId = auth.GetUserId();
+  const role: number = Number(auth.GetUserRole());
 
   const [UpcomingTripList, setUpcomingTripList] = useState([]);
   const [PastTripList, setPastTripList] = useState([]);

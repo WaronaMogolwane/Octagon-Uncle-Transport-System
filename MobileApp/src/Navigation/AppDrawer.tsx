@@ -174,7 +174,9 @@ const AppDrawer = ({navigation}: any) => {
                         break;
                       }
                       case 'Trips': {
-                        navigation.navigate('Manage Trip');
+                        role != 1
+                          ? navigation.goBack()
+                          : navigation.navigate('Manage Trip');
                         break;
                       }
                       case 'Payments': {

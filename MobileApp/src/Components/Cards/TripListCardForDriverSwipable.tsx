@@ -8,9 +8,18 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import {TripCardDriverStyles} from '../../Stylesheets/GlobalStyles';
-import {Card, Center} from '@gluestack-ui/themed';
-import {MoveLeft, MoveRight, WalletMinimal} from 'lucide-react-native';
+import {
+  TripCardDriverStyles,
+  TripCardDriverSwipableCardStyles,
+} from '../../Stylesheets/GlobalStyles';
+import {Card, Center, Image} from '@gluestack-ui/themed';
+import {
+  ArrowLeft,
+  ArrowRight,
+  MoveLeft,
+  MoveRight,
+  WalletMinimal,
+} from 'lucide-react-native';
 import COLORS from '../../Const/colors';
 import TripDestinationCard from './TripDestinationCard';
 
@@ -22,6 +31,12 @@ type tripCardSwipableProps = {
   pickUpLocation: string;
   tripStatus: number;
   leg: number;
+  handleIconPress: (
+    values:
+      | GestureResponderEvent
+      | React.FormEvent<HTMLFormElement>
+      | undefined,
+  ) => void;
   handlePickup: (
     values:
       | GestureResponderEvent
@@ -43,7 +58,9 @@ type tripCardSwipableProps = {
 };
 
 export const TripCardDriverSwipable = (props: tripCardSwipableProps) => {
-  const [IsLoading, setIsLoading] = useState(false);
+  const iconSize = 40;
+  const iconStrokeWidth = 2;
+
   const leftSwipe = (progress: any, dragX: any) => {
     const scale = dragX.interpolate({
       inputRange: [0, 100],
@@ -144,168 +161,88 @@ export const TripCardDriverSwipable = (props: tripCardSwipableProps) => {
       return null;
     } else if (props.tripStatus == 1) {
       return (
-        <View
-          style={{
-            borderRadius: 20, // Half of the width or height
-            backgroundColor: '#fadcdc',
-          }}>
-          <Text
-            style={{
-              textAlign: 'center',
+        <Text
+          style={[
+            TripCardDriverSwipableCardStyles.tripStatusText,
+            {
               color: '#c26b71',
-              fontWeight: '500',
-              padding: 5,
-            }}>
-            Uncompleted
-          </Text>
-        </View>
+            },
+          ]}>
+          Uncompleted
+        </Text>
       );
     } else if (props.tripStatus == 2) {
       return (
-        <View
-          style={{
-            borderRadius: 20, // Half of the width or height
-            backgroundColor: '#f5eede',
-          }}>
-          <Text
-            style={{
-              textAlign: 'center',
-              color: '#e89d0e',
-              fontWeight: '500',
-              padding: 5,
-            }}>
-            Picked-up
-          </Text>
-        </View>
+        <Text
+          style={[
+            TripCardDriverSwipableCardStyles.tripStatusText,
+            {color: '#e89d0e'},
+          ]}>
+          Picked-up
+        </Text>
       );
     } else if (props.tripStatus == 3) {
       return (
-        <View
-          style={{
-            borderRadius: 20, // Half of the width or height
-            backgroundColor: '#d6f3f1',
-          }}>
-          <Text
-            style={{
-              textAlign: 'center',
-              color: '#3ba2a9',
-              fontWeight: '500',
-              padding: 5,
-            }}>
-            Completed
-          </Text>
-        </View>
+        <Text
+          style={[
+            TripCardDriverSwipableCardStyles.tripStatusText,
+            {color: '#3ba2a9'},
+          ]}>
+          Completed
+        </Text>
       );
     }
   };
 
+  const arrowRight = (
+    <ArrowRight
+      size={iconSize}
+      strokeWidth={iconStrokeWidth}
+      color={'#3ba2a9'}
+    />
+  );
+
+  const arrowLeft = (
+    <ArrowLeft
+      size={iconSize}
+      strokeWidth={iconStrokeWidth}
+      color={'#c26b71'}
+    />
+  );
+
   return (
-    <View>
-      {IsLoading ? (
-        <View
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#ffffff75',
-            zIndex: 100,
-          }}>
-          <ActivityIndicator size="large" />
-          <Text>Working</Text>
+    <Swipeable renderLeftActions={leftSwipe} renderRightActions={rightSwipe}>
+      <View style={TripCardDriverSwipableCardStyles.container}>
+        <TouchableOpacity onPress={props.handleIconPress}>
+          <View style={TripCardDriverSwipableCardStyles.iconContainer}>
+            {props.leg == 0 ? arrowRight : arrowLeft}
+          </View>
+        </TouchableOpacity>
+
+        <View style={TripCardDriverSwipableCardStyles.textContainer}>
+          <View style={{marginEnd: 10}}>
+            <Text style={TripCardDriverSwipableCardStyles.passengerName}>
+              {props.passengerName}
+            </Text>
+            <Text style={TripCardDriverSwipableCardStyles.pickupDate}>
+              Date: {props.pickUpDate}
+            </Text>
+            {tripStatus()}
+          </View>
+          <View style={TripCardDriverSwipableCardStyles.timeContainer}>
+            {props.pickUpTime == '' ||
+            props.pickUpTime == undefined ||
+            props.pickUpTime == null ? null : (
+              <Text>Pickup time: {props.pickUpTime}</Text>
+            )}
+            {props.dropOffTime == '' ||
+            props.dropOffTime == undefined ||
+            props.dropOffTime == null ? null : (
+              <Text>Dropoff time: {props.dropOffTime}</Text>
+            )}
+          </View>
         </View>
-      ) : (
-        <Swipeable
-          renderLeftActions={leftSwipe}
-          renderRightActions={rightSwipe}>
-          <Card
-            size="sm"
-            variant="outline"
-            style={{
-              margin: 12,
-              backgroundColor: '#ffffff',
-              borderRadius: 30,
-              elevation: 5,
-            }}>
-            <View
-              style={{
-                marginBottom: 5,
-                alignItems: 'flex-start',
-                marginHorizontal: 15,
-                marginVertical: 10,
-                backgroundColor: '#ffffff',
-                flex: 1,
-                justifyContent: 'space-between',
-                borderRadius: 20,
-              }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  marginBottom: 10,
-                  alignItems: 'center',
-                }}>
-                <View style={{width: '50%'}}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: '600',
-                      textAlign: 'justify',
-                    }}>
-                    {props.passengerName}
-                  </Text>
-                </View>
-                <View style={{width: '50%'}}>
-                  <View style={{marginStart: 10}}>{tripStatus()}</View>
-                </View>
-              </View>
-
-              <View style={{flexDirection: 'row', marginBottom: 10}}>
-                <View style={{width: '50%'}}>
-                  <Text style={TripCardDriverStyles.cardText}>Pickup Date</Text>
-                  <Text>{props.pickUpDate}</Text>
-                </View>
-                <View style={{width: '50%'}}>
-                  {props.pickUpTime == '' ||
-                  props.pickUpTime == undefined ||
-                  props.pickUpTime == null ? null : (
-                    <View style={TripCardDriverStyles.cardContainer}>
-                      <Text style={TripCardDriverStyles.cardText}>
-                        Pickup Time
-                      </Text>
-                      <Text style={{marginEnd: 20}}> {props.pickUpTime}</Text>
-                    </View>
-                  )}
-                </View>
-              </View>
-
-              {props.dropOffTime == '' ||
-              props.dropOffTime == undefined ||
-              props.dropOffTime == null ? null : (
-                <View style={TripCardDriverStyles.cardContainer}>
-                  <Text style={TripCardDriverStyles.cardText}>
-                    Dropoff Time
-                  </Text>
-                  <Text style={{marginEnd: 20}}>{props.dropOffTime}</Text>
-                </View>
-              )}
-              <View style={TripCardDriverStyles.cardContainer}>
-                <View style={TripCardDriverStyles.cardContainer}>
-                  <Text style={TripCardDriverStyles.cardText}>
-                    Home Address
-                  </Text>
-                </View>
-                <View>
-                  <Text>{props.pickUpLocation}</Text>
-                </View>
-              </View>
-              {TripDestinationCard(props.leg)}
-            </View>
-          </Card>
-        </Swipeable>
-      )}
-    </View>
+      </View>
+    </Swipeable>
   );
 };

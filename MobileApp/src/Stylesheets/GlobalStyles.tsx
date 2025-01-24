@@ -1,5 +1,6 @@
 import {StyleSheet} from 'react-native';
 import COLORS from '../Const/colors';
+import {text} from 'stream/consumers';
 
 export const ThemeStyles = StyleSheet.create({
   container: {
@@ -833,4 +834,72 @@ export const PassengerListCardStyles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: 'red',
   },
+});
+export const TripScreenStyles = StyleSheet.create({
+  flatListText: {textAlign: 'center', marginTop: 10},
+  modalText: {
+    fontSize: 16,
+    color: COLORS.customBlack,
+    fontWeight: '500',
+    marginVertical: 10,
+  },
+  modalContainer: {alignItems: 'center', flex: 1},
+});
+export const TripCardDriverSwipableCardStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    marginHorizontal: 10,
+  },
+  iconContainer: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#f5efe8',
+    borderRadius: 10,
+    borderWidth: 1,
+    marginVertical: 10,
+    marginEnd: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textContainer: {
+    justifyContent: 'space-between',
+    marginVertical: 10,
+    flexDirection: 'row',
+    flex: 1,
+  },
+  passengerName: {fontWeight: '500', fontSize: 16, color: COLORS.customBlack},
+  pickupDate: {fontWeight: '400', fontSize: 14, color: COLORS.customBlue},
+  timeContainer: {
+    marginTop: 1,
+  },
+  tripStatusText: {fontWeight: '400', fontSize: 14},
+});
+export const TripCardParentCardStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    marginHorizontal: 10,
+  },
+  iconContainer: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#f5efe8',
+    borderRadius: 10,
+    borderWidth: 1,
+    marginVertical: 10,
+    marginEnd: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textContainer: {
+    justifyContent: 'space-between',
+    marginVertical: 10,
+    flexDirection: 'row',
+    flex: 1,
+  },
+  passengerName: {fontWeight: '500', fontSize: 16, color: COLORS.customBlack},
+  pickupDate: {fontWeight: '400', fontSize: 14, color: COLORS.customBlue},
+  timeContainer: {
+    marginTop: 1,
+  },
+  tripStatusText: {fontWeight: '400', fontSize: 14},
 });

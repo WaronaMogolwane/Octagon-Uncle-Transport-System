@@ -19,6 +19,6 @@ FROM
     Passenger ON Passenger.PassengerId = Trip.PassengerId
 WHERE
     Trip.DriverId = _DriverId
-        AND Trip.Date > current_date()
+        AND Trip.Date >= current_date()
         AND Trip.IsCompleted = '0';
 END

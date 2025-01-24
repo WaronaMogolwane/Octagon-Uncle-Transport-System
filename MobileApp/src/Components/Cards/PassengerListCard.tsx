@@ -5,10 +5,11 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import COLORS from '../../Const/colors';
-import {TripCardParentStyles} from '../../Stylesheets/GlobalStyles';
-import {GraduationCap, MapPin} from 'lucide-react-native';
-import {Card} from '@gluestack-ui/themed';
+import {
+  PassengerListCardStyles,
+  TripCardParentStyles,
+} from '../../Stylesheets/GlobalStyles';
+import {UserRound} from 'lucide-react-native';
 
 type passengerCardProps = {
   passengerName: string;
@@ -57,46 +58,33 @@ export const PassengerCardTwo = (props: passengerCardProps) => {
 };
 
 export const PassengerCard = (props: passengerCardProps) => {
-  const iconSize = 15;
+  const iconSize = 60;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';
 
-  const universityIcon = (
-    <GraduationCap
+  const userIcon = (
+    <UserRound
+      style={PassengerListCardStyles.passengerImage}
       size={iconSize}
       strokeWidth={iconStrokeWidth}
       color={iconColor}
     />
   );
 
-  const locationIcon = (
-    <MapPin size={iconSize} strokeWidth={iconStrokeWidth} color={iconColor} />
-  );
-
   return (
     <TouchableOpacity onPress={props.onPress}>
-      <Card
-        size="sm"
-        variant="outline"
-        style={{
-          margin: 12,
-          backgroundColor: '#ffffff',
-          borderRadius: 30,
-          elevation: 3,
-        }}>
-        <View
-          style={{
-            flex: 1,
-            borderRadius: 20,
-          }}>
-          <Text style={{fontSize: 16, fontWeight: '600', marginVertical: 5}}>
-            {universityIcon} {props.passengerName}
+      <View style={PassengerListCardStyles.passengerItem}>
+        {userIcon}
+        <View style={PassengerListCardStyles.parentInfo}>
+          <Text style={PassengerListCardStyles.passengerName}>
+            {props.passengerName}
           </Text>
-          <Text style={{fontSize: 16, fontWeight: '600', marginBottom: 5}}>
-            {locationIcon} {props.pickUpLocation}
+
+          <Text style={PassengerListCardStyles.age}>
+            {props.age} years old.
           </Text>
         </View>
-      </Card>
+      </View>
     </TouchableOpacity>
   );
 };

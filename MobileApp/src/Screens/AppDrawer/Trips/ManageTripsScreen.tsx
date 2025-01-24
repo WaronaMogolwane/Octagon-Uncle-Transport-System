@@ -6,7 +6,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {ChangeEvent, useContext, useEffect, useState} from 'react';
 import {VehicleCard} from '../../../Components/Cards/LinkedVehicleListCard';
 import {GetVehiclesAndDrivers} from '../../../Controllers/VehicleController';
 import {
@@ -27,11 +27,16 @@ import {
 } from '@gluestack-ui/themed';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
-import {FlatlistStyles} from '../../../Stylesheets/GlobalStyles';
+import {
+  FlatlistStyles,
+  ManageTripsScreenStyles,
+  ThemeStyles,
+} from '../../../Stylesheets/GlobalStyles';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import filter from 'lodash.filter';
 import {CurrentVehicle} from '../../../Models/CurrentVehicle';
 import {BookUser, Route} from 'lucide-react-native';
+import {CustomInputSearch} from '../../../Components/CustomFormInput';
 
 const ManageTripsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -52,12 +57,6 @@ const ManageTripsScreen = ({navigation}: any) => {
   const [selected, setSelected] = React.useState(new Set([]));
   const [currentVehicle, setCurrentVehicle] = useState<CurrentVehicle>();
 
-  const iconSize = 20;
-  const iconStrokeWidth = 1;
-  const iconColor = '#000000';
-
-  let vehicleInfo = {};
-
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     setNoLinkedVehicle(false);
@@ -69,6 +68,10 @@ const ManageTripsScreen = ({navigation}: any) => {
 
     setRefreshing(false);
   }, []);
+
+  const iconSize = 20;
+  const iconStrokeWidth = 1;
+  const iconColor = '#000000';
 
   useEffect(() => {
     setRefreshing(true);
@@ -147,29 +150,12 @@ const ManageTripsScreen = ({navigation}: any) => {
 
   const EmtpyFlatListText = () => {
     return (
-      <View style={{backgroundColor: '#e8f0f3', marginHorizontal: 5}}>
+      <View style={ManageTripsScreenStyles.emptyFlatlistText}>
         <Text style={{textAlign: 'center'}}>
           You currently have no linked vehicles. Please add vehicles and try
           again.
         </Text>
       </View>
-    );
-  };
-
-  const GoBackFab = () => {
-    return (
-      <Fab
-        onPress={() => {
-          navigation.navigate('Home');
-        }}
-        size="sm"
-        placement="bottom right"
-        isHovered={false}
-        isDisabled={false}
-        isPressed={false}>
-        <FabIcon as={ArrowLeftIcon} mr="$1" />
-        <FabLabel>Back</FabLabel>
-      </Fab>
     );
   };
 
@@ -200,7 +186,6 @@ const ManageTripsScreen = ({navigation}: any) => {
           setShowMenu(false);
           setIsOpen(false);
         }}
-        // style={{backgroundColor: '#7DD3F2'}}
         placement="top"
         trigger={({...triggerProps}) => {
           return (
@@ -239,7 +224,7 @@ const ManageTripsScreen = ({navigation}: any) => {
   };
 
   const handleSearch = (query: string) => {
-    setSearchQuery(query);
+    // setSearchQuery(query);
     const formattedQuery = query.toLowerCase();
     const filterData: any = filter(fullData, (user: any) => {
       return contains(user, formattedQuery);
@@ -266,40 +251,26 @@ const ManageTripsScreen = ({navigation}: any) => {
   };
 
   return (
-    <SafeAreaView style={FlatlistStyles.container}>
-      <TextInput
-        placeholder="Search"
-        clearButtonMode="always"
-        autoCapitalize="none"
-        style={styles.searchBox}
-        autoCorrect={false}
+    <SafeAreaView style={ThemeStyles.container}>
+      <CustomInputSearch
         value={searchQuery}
-        onChangeText={(query: string) => handleSearch(query)}
+        onChangeText={(query: any) => {
+          handleSearch(query);
+        }}
       />
       {noLinkedVehicle ? EmtpyFlatListText() : null}
       <FlatList
-        style={{backgroundColor: '#e8f0f3'}}
+        style={ManageTripsScreenStyles.flatList}
         data={vehicleList}
         renderItem={({item}) => renderItemComponentVehicleInfo(item)}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       />
-      {showMenu ? FabMenu() : GoBackFab()}
+
+      {showMenu ? FabMenu() : null}
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  searchBox: {
-    marginHorizontal: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-  },
-});
 
 export default ManageTripsScreen;

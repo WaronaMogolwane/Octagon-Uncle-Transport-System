@@ -12,12 +12,11 @@ import {
   useToast,
   Toast,
   ScrollView,
-  ArrowLeftIcon,
-  ButtonIcon,
-  ButtonText,
-  Button,
 } from '@gluestack-ui/themed';
-import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
+import {
+  EditUserDetailsScreenStyles,
+  ThemeStyles,
+} from '../../../Stylesheets/GlobalStyles';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -29,7 +28,7 @@ import {
 import {useContext, useEffect, useState} from 'react';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
-import {FilePen} from 'lucide-react-native';
+import {CustomButton1} from '../../../Components/Buttons';
 
 export default function EditUserDetailsScreen({navigation}: any) {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -212,7 +211,7 @@ export default function EditUserDetailsScreen({navigation}: any) {
     },
   });
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#e8f0f3'}}>
+    <SafeAreaView style={ThemeStyles.container}>
       {IsLoading ? (
         <View
           style={{
@@ -230,113 +229,80 @@ export default function EditUserDetailsScreen({navigation}: any) {
           <Text>Working</Text>
         </View>
       ) : null}
-      <ScrollView>
-        <View style={{alignItems: 'center'}}>
-          <View style={{paddingBottom: 15, paddingTop: 15}}>
-            <UserDetailForm
-              showButton={false}
-              heading={'Update your details below'}
-              firstNameIsInvalid={!!formik.errors.firstName}
-              firstNameOnChangeText={formik.handleChange('firstName')}
-              firstNameErrorText={formik?.errors?.firstName}
-              firstNameOnBlur={formik.handleBlur('firstName')}
-              firstNameValue={formik.values?.firstName!}
-              lastNameIsInvalid={!!formik.errors.lastName}
-              lastNameOnChangeText={formik.handleChange('lastName')}
-              lastNameErrorText={formik?.errors?.lastName}
-              lastNameOnBlur={formik.handleBlur('lastName')}
-              lastNameValue={formik.values?.lastName!}
-              phoneNumberIsInvalid={!!formik.errors.phoneNumber}
-              phoneNumberOnChangeText={formik.handleChange('phoneNumber')}
-              phoneNumberErrorText={formik?.errors?.phoneNumber}
-              phoneNumberOnBlur={formik.handleBlur('phoneNumber')}
-              phoneNumberValue={formik.values?.phoneNumber!}
-              addressline1IsInvalid={!!formik.errors.addressLine1}
-              addressline1OnChangeText={formik.handleChange('addressLine1')}
-              addressline1ErrorText={formik?.errors?.addressLine1}
-              addressline1OnBlur={formik.handleBlur('addressLine1')}
-              addressline1Value={formik.values?.addressLine1!}
-              addressline2IsInvalid={!!formik.errors.addressLine2}
-              addressline2OnChangeText={formik.handleChange('addressLine2')}
-              addressline2ErrorText={formik?.errors?.addressLine2}
-              addressline2OnBlur={formik.handleBlur('addressline2')}
-              addressline2Value={formik.values?.addressLine2!}
-              suburbIsInvalid={!!formik.errors.suburb}
-              suburbOnChangeText={formik.handleChange('suburb')}
-              suburbErrorText={formik?.errors?.suburb}
-              suburbOnBlur={formik.handleBlur('suburb')}
-              suburbValue={formik.values?.suburb!}
-              cityIsInvalid={!!formik.errors.city}
-              cityOnChangeText={formik.handleChange('city')}
-              cityErrorText={formik?.errors?.city}
-              cityOnBlur={formik.handleBlur('city')}
-              cityValue={formik.values?.city!}
-              provinceIsInvalid={!!formik.errors.province}
-              provinceOnChangeText={formik.handleChange('province')}
-              provinceErrorText={formik?.errors?.province}
-              provinceOnBlur={formik.handleBlur('province')}
-              provinceValue={formik.values?.province!}
-              postalCodeIsInvalid={!!formik.errors.postalCode}
-              postalCodeOnChangeText={formik.handleChange('postalCode')}
-              postalCodeErrorText={formik?.errors?.postalCode}
-              postalCodeOnBlur={formik.handleBlur('postalCode')}
-              postalCodeValue={formik.values?.postalCode!}
-              submitUserDetails={
-                formik.handleSubmit as (
-                  values:
-                    | GestureResponderEvent
-                    | React.FormEvent<HTMLFormElement>
-                    | undefined,
-                ) => void
-              }
-            />
-          </View>
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-              }}>
-              <View style={{padding: 5}}>
-                <Button
-                  size="md"
-                  variant="solid"
-                  action="secondary"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={() => {
-                    navigation.navigate('Profile');
-                  }}>
-                  <ButtonIcon as={ArrowLeftIcon} />
-                  <ButtonText>Back</ButtonText>
-                </Button>
-              </View>
-              <View style={{padding: 5}}>
-                <Button
-                  size="md"
-                  variant="solid"
-                  action="primary"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={
-                    formik.handleSubmit as (
-                      values:
-                        | GestureResponderEvent
-                        | React.FormEvent<HTMLFormElement>
-                        | undefined,
-                    ) => void
-                  }>
-                  <FilePen size={20} strokeWidth={1} color={'#FFFFFF'} />
-                  <ButtonText>Update</ButtonText>
-                </Button>
-              </View>
-            </View>
-          </View>
-        </View>
+      <ScrollView style={EditUserDetailsScreenStyles.container}>
+        <UserDetailForm
+          showButton={false}
+          heading={'Update your details below'}
+          firstNameIsInvalid={!!formik.errors.firstName}
+          firstNameOnChangeText={formik.handleChange('firstName')}
+          firstNameErrorText={formik?.errors?.firstName}
+          firstNameOnBlur={formik.handleBlur('firstName')}
+          firstNameValue={formik.values?.firstName!}
+          lastNameIsInvalid={!!formik.errors.lastName}
+          lastNameOnChangeText={formik.handleChange('lastName')}
+          lastNameErrorText={formik?.errors?.lastName}
+          lastNameOnBlur={formik.handleBlur('lastName')}
+          lastNameValue={formik.values?.lastName!}
+          phoneNumberIsInvalid={!!formik.errors.phoneNumber}
+          phoneNumberOnChangeText={formik.handleChange('phoneNumber')}
+          phoneNumberErrorText={formik?.errors?.phoneNumber}
+          phoneNumberOnBlur={formik.handleBlur('phoneNumber')}
+          phoneNumberValue={formik.values?.phoneNumber!}
+          addressline1IsInvalid={!!formik.errors.addressLine1}
+          addressline1OnChangeText={formik.handleChange('addressLine1')}
+          addressline1ErrorText={formik?.errors?.addressLine1}
+          addressline1OnBlur={formik.handleBlur('addressLine1')}
+          addressline1Value={formik.values?.addressLine1!}
+          addressline2IsInvalid={!!formik.errors.addressLine2}
+          addressline2OnChangeText={formik.handleChange('addressLine2')}
+          addressline2ErrorText={formik?.errors?.addressLine2}
+          addressline2OnBlur={formik.handleBlur('addressline2')}
+          addressline2Value={formik.values?.addressLine2!}
+          suburbIsInvalid={!!formik.errors.suburb}
+          suburbOnChangeText={formik.handleChange('suburb')}
+          suburbErrorText={formik?.errors?.suburb}
+          suburbOnBlur={formik.handleBlur('suburb')}
+          suburbValue={formik.values?.suburb!}
+          cityIsInvalid={!!formik.errors.city}
+          cityOnChangeText={formik.handleChange('city')}
+          cityErrorText={formik?.errors?.city}
+          cityOnBlur={formik.handleBlur('city')}
+          cityValue={formik.values?.city!}
+          provinceIsInvalid={!!formik.errors.province}
+          provinceOnChangeText={formik.handleChange('province')}
+          provinceErrorText={formik?.errors?.province}
+          provinceOnBlur={formik.handleBlur('province')}
+          provinceValue={formik.values?.province!}
+          postalCodeIsInvalid={!!formik.errors.postalCode}
+          postalCodeOnChangeText={formik.handleChange('postalCode')}
+          postalCodeErrorText={formik?.errors?.postalCode}
+          postalCodeOnBlur={formik.handleBlur('postalCode')}
+          postalCodeValue={formik.values?.postalCode!}
+          submitUserDetails={
+            formik.handleSubmit as (
+              values:
+                | GestureResponderEvent
+                | React.FormEvent<HTMLFormElement>
+                | undefined,
+            ) => void
+          }
+        />
+        <CustomButton1
+          styles={{marginTop: 10}}
+          title="Update and Continue"
+          size="md"
+          action="primary"
+          isDisabled={false}
+          isFocusVisible={false}
+          onPress={
+            formik.handleSubmit as (
+              values:
+                | GestureResponderEvent
+                | React.FormEvent<HTMLFormElement>
+                | undefined,
+            ) => void
+          }
+        />
       </ScrollView>
     </SafeAreaView>
   );

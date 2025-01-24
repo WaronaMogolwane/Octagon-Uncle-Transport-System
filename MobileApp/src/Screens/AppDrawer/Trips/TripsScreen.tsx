@@ -8,15 +8,16 @@ import {
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {TripCardParent} from '../../../Components/Cards/TripListForParentCard';
+import {
+  TripCardParent,
+  TripCardParentComplete,
+} from '../../../Components/Cards/TripListForParentCard';
 import {
   EndTrip,
   GetPastTripsForClient,
   GetPastTripsForDriver,
-  GetPastTripsForTransporter,
   GetUpcomingTripsForClient,
   GetUpcomingTripsForDriver,
-  GetUpcomingTripsForTransporter,
   SetTripDropOffPickUpTime as SetDropOffTime,
   SetTripPickUpTime,
   UndoTripDropOffTime,
@@ -25,25 +26,31 @@ import {
   UpdatePassengerStatus,
 } from '../../../Controllers/TripController';
 import {TripCardDriverSwipable} from '../../../Components/Cards/TripListCardForDriverSwipable';
-import {FlatlistStyles} from '../../../Stylesheets/GlobalStyles';
+import {
+  FlatlistStyles,
+  ThemeStyles,
+  TripScreenStyles,
+} from '../../../Stylesheets/GlobalStyles';
 import {TripCardDriver} from '../../../Components/Cards/TripListCardForDriver';
 import {
   useToast,
-  Fab,
-  FabIcon,
-  FabLabel,
-  ArrowLeftIcon,
+  Modal,
   Text,
   Toast,
   ToastTitle,
-  ToastDescription,
-  VStack,
+  CloseIcon,
+  Heading,
+  Icon,
+  ModalBackdrop,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
 } from '@gluestack-ui/themed';
-import {VehicleCard} from '../../../Components/Cards/LinkedVehicleListCard';
-import {GetVehiclesAndDrivers} from '../../../Controllers/VehicleController';
-import {GetDriverId} from '../../../Controllers/DriverVehicleLinkingController.tsx';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
+import {MoveDown} from 'lucide-react-native';
+import {set} from 'date-fns';
 
 const TripsScreen = ({navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
@@ -53,7 +60,6 @@ const TripsScreen = ({navigation}: any) => {
 
   const userId = auth.GetUserId();
   const role: number = Number(auth.GetUserRole());
-  // const role: number = 2;
 
   const [UpcomingTripList, setUpcomingTripList] = useState([]);
   const [PastTripList, setPastTripList] = useState([]);
@@ -68,7 +74,17 @@ const TripsScreen = ({navigation}: any) => {
   const [showNoPastTripText, setShowNoPastTripText] = useState(false);
 
   const [IsLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  const [homeAddress, setHomeAddress] = useState('');
+  const [destinationAddress, setDestinationAddress] = useState('');
+  const [tripLeg, setTripLeg] = useState(0);
+
   const toast = useToast();
+  const ref = React.useRef(null);
+
+  const iconSize = 40;
+  const iconStrokeWidth = 2;
 
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
@@ -113,13 +129,58 @@ const TripsScreen = ({navigation}: any) => {
       GetPastTrips();
       setRefreshingUpcomingTrips(false);
     }, 2000);
-  }, [role, userId, role]);
+  }, []);
+
+  const ClearStates = () => {
+    setHomeAddress('');
+    setDestinationAddress('');
+    setTripLeg(0);
+  };
+
+  const TripDestinationModal = () => {
+    return (
+      <Modal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          ClearStates();
+        }}
+        finalFocusRef={ref}>
+        <ModalBackdrop />
+        <ModalContent>
+          <ModalHeader>
+            <Heading size="lg">Address</Heading>
+            <ModalCloseButton>
+              <Icon as={CloseIcon} />
+            </ModalCloseButton>
+          </ModalHeader>
+          <ModalBody>
+            <View style={TripScreenStyles.modalContainer}>
+              <Text style={TripScreenStyles.modalText}>
+                {tripLeg == 0 ? homeAddress : destinationAddress}
+              </Text>
+              <MoveDown
+                size={iconSize}
+                strokeWidth={iconStrokeWidth}
+                color={tripLeg == 0 ? '#3ba2a9' : '#c26b71'}
+              />
+              <Text style={TripScreenStyles.modalText}>
+                {tripLeg == 0 ? destinationAddress : homeAddress}
+              </Text>
+            </View>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    );
+  };
 
   //Empty flatlist text is defined
   const EmtpyFlatListText = () => {
     return (
-      <View style={{backgroundColor: '#e8f0f3'}}>
-        <Text style={{textAlign: 'center'}}>You currently have no trips.</Text>
+      <View>
+        <Text style={TripScreenStyles.flatListText}>
+          You currently have no trips.
+        </Text>
       </View>
     );
   };
@@ -267,38 +328,23 @@ const TripsScreen = ({navigation}: any) => {
     }
   };
 
-  //Handles FAB onPress
-  const HandleBackFabPress = () => {
-    if (role == 2 || role == 3) {
-      navigation.goBack();
-    }
-    if (role == role) {
-      navigation.goBack();
-    } else {
-      // setTempUserId(userId);
-      // setTempRole(role);
-    }
-  };
-
-  //Defines the FAB for all roles
-  const GoBackFab = () => {
-    return (
-      <Fab
-        onPress={HandleBackFabPress}
-        size="sm"
-        placement="bottom right"
-        isHovered={false}
-        isDisabled={false}
-        isPressed={false}>
-        <FabIcon as={ArrowLeftIcon} mr="$1" />
-        <FabLabel>Back</FabLabel>
-      </Fab>
-    );
-  };
-
   //Contains card for Parent
   const renderItemComponentParent = (itemData: any) => (
     <TripCardParent
+      driverName={itemData.driverName}
+      pickUpTime={itemData.pickUpTime}
+      pickUpDate={itemData.pickUpDate}
+      passengerName={itemData.passengerName}
+      pickUpLocation={itemData.pickUpLocation}
+      tripStatus={itemData.tripStatus}
+      dropOffTime={itemData.dropoffTime}
+      leg={itemData.leg}
+    />
+  );
+
+  //Contains card for Parent
+  const renderItemComponentParentComplete = (itemData: any) => (
+    <TripCardParentComplete
       driverName={itemData.driverName}
       pickUpTime={itemData.pickUpTime}
       pickUpDate={itemData.pickUpDate}
@@ -337,11 +383,17 @@ const TripsScreen = ({navigation}: any) => {
           });
         }
       }}
+      handleIconPress={() => {
+        setShowModal(true);
+        setHomeAddress(itemData.pickUpLocation);
+        setDestinationAddress(itemData.dropOffLocation);
+        setTripLeg(itemData.leg);
+      }}
     />
   );
 
   //Contains card for Driver for past trips
-  const renderItemComponentDriver = (itemData: any) => (
+  const renderItemComponentDriverComplete = (itemData: any) => (
     <TripCardDriver
       passengerName={itemData.passengerName}
       pickUpTime={itemData.pickUpTime}
@@ -372,10 +424,9 @@ const TripsScreen = ({navigation}: any) => {
   function FirstRoute() {
     if (role == 2) {
       return (
-        <View style={FlatlistStyles.container}>
+        <View style={ThemeStyles.container}>
           {showNoFutureTripText ? EmtpyFlatListText() : null}
           <FlatList
-            style={{backgroundColor: '#e8f0f3'}}
             data={UpcomingTripList}
             extraData={statusCode}
             renderItem={({item}) => renderItemComponentParent(item)}
@@ -390,10 +441,9 @@ const TripsScreen = ({navigation}: any) => {
       );
     } else if (role == 3) {
       return (
-        <View style={FlatlistStyles.container}>
+        <View style={ThemeStyles.container}>
           {showNoFutureTripText ? EmtpyFlatListText() : null}
           <FlatList
-            style={{backgroundColor: '#e8f0f3'}}
             data={UpcomingTripList}
             extraData={statusCode}
             renderItem={({item}) => renderItemComponentDriverSwipable(item)}
@@ -413,13 +463,12 @@ const TripsScreen = ({navigation}: any) => {
   function SecondRoute() {
     if (role == 2) {
       return (
-        <View style={FlatlistStyles.container}>
+        <View style={ThemeStyles.container}>
           {showNoPastTripText ? EmtpyFlatListText() : null}
           <FlatList
-            style={{backgroundColor: '#e8f0f3'}}
             data={PastTripList}
             extraData={statusCode}
-            renderItem={({item}) => renderItemComponentParent(item)}
+            renderItem={({item}) => renderItemComponentParentComplete(item)}
             refreshControl={
               <RefreshControl
                 refreshing={refreshingPastTrips}
@@ -431,13 +480,12 @@ const TripsScreen = ({navigation}: any) => {
       );
     } else if (role == 3) {
       return (
-        <View style={FlatlistStyles.container}>
+        <View style={ThemeStyles.container}>
           {showNoPastTripText ? EmtpyFlatListText() : null}
           <FlatList
-            style={{backgroundColor: '#e8f0f3'}}
             data={PastTripList}
             extraData={statusCode}
-            renderItem={({item}) => renderItemComponentDriver(item)}
+            renderItem={({item}) => renderItemComponentDriverComplete(item)}
             refreshControl={
               <RefreshControl
                 refreshing={refreshingPastTrips}
@@ -452,7 +500,6 @@ const TripsScreen = ({navigation}: any) => {
 
   return (
     <NavigationContainer independent={true}>
-      {GoBackFab()}
       {IsLoading ? (
         <View
           style={{
@@ -470,10 +517,8 @@ const TripsScreen = ({navigation}: any) => {
           <Text>Working</Text>
         </View>
       ) : null}
-      <Tab.Navigator
-        screenOptions={{
-          tabBarStyle: {backgroundColor: '#e8f0f3', elevation: 10},
-        }}>
+      {TripDestinationModal()}
+      <Tab.Navigator>
         <Tab.Screen name="Upcoming Trips" component={FirstRoute} />
         <Tab.Screen name="Past Trips" component={SecondRoute} />
       </Tab.Navigator>

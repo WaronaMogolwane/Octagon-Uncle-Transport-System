@@ -100,6 +100,8 @@ export const GetActivePassengerForParentFromDB = async (parentId: string) => {
         passsengers = {
           passengerId: data.PassengerId,
           passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
+          firstName: data.FirstName,
+          lastName: data.LastName,
           editedName: `${data.FirstName} ${data.LastName}`,
           age: data.Age,
           homeAddress: data.HomeAddress,

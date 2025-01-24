@@ -1,6 +1,6 @@
-import { GestureResponderEvent } from 'react-native/Libraries/Types/CoreEventTypes';
-import React, { ChangeEvent, useEffect, useState } from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import React, {ChangeEvent, useEffect, useState} from 'react';
+import {StyleProp, ViewStyle} from 'react-native';
 
 export type InputProps = {
   isInvalid: boolean;
@@ -18,11 +18,22 @@ export type InputProps = {
   onChangeText?: (e: string | ChangeEvent<any>) => void;
 };
 
+export type SearchProps = {
+  value?: string;
+  onChangeText?: (e: string | ChangeEvent<any>) => void;
+};
+
 export type ButtonProps = {
   title?: string;
   size?: 'xs' | 'sm' | 'md' | 'lg' | undefined;
   variant?: string;
-  action?: "default" | "negative" | "primary" | "secondary" | "positive" | undefined;
+  action?:
+    | 'default'
+    | 'negative'
+    | 'primary'
+    | 'secondary'
+    | 'positive'
+    | undefined;
   isDisabled?: boolean;
   isFocusVisible?: boolean;
   buttonText?: string;

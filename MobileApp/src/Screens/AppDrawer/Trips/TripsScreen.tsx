@@ -8,7 +8,10 @@ import {
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {TripCardParent} from '../../../Components/Cards/TripListForParentCard';
+import {
+  TripCardParent,
+  TripCardParentComplete,
+} from '../../../Components/Cards/TripListForParentCard';
 import {
   EndTrip,
   GetPastTripsForClient,
@@ -339,6 +342,20 @@ const TripsScreen = ({navigation}: any) => {
     />
   );
 
+  //Contains card for Parent
+  const renderItemComponentParentComplete = (itemData: any) => (
+    <TripCardParentComplete
+      driverName={itemData.driverName}
+      pickUpTime={itemData.pickUpTime}
+      pickUpDate={itemData.pickUpDate}
+      passengerName={itemData.passengerName}
+      pickUpLocation={itemData.pickUpLocation}
+      tripStatus={itemData.tripStatus}
+      dropOffTime={itemData.dropoffTime}
+      leg={itemData.leg}
+    />
+  );
+
   //Contains for interactive card for driver for upcoming trips
   const renderItemComponentDriverSwipable = (itemData: any) => (
     <TripCardDriverSwipable
@@ -376,7 +393,7 @@ const TripsScreen = ({navigation}: any) => {
   );
 
   //Contains card for Driver for past trips
-  const renderItemComponentDriver = (itemData: any) => (
+  const renderItemComponentDriverComplete = (itemData: any) => (
     <TripCardDriver
       passengerName={itemData.passengerName}
       pickUpTime={itemData.pickUpTime}
@@ -451,7 +468,7 @@ const TripsScreen = ({navigation}: any) => {
           <FlatList
             data={PastTripList}
             extraData={statusCode}
-            renderItem={({item}) => renderItemComponentParent(item)}
+            renderItem={({item}) => renderItemComponentParentComplete(item)}
             refreshControl={
               <RefreshControl
                 refreshing={refreshingPastTrips}
@@ -468,7 +485,7 @@ const TripsScreen = ({navigation}: any) => {
           <FlatList
             data={PastTripList}
             extraData={statusCode}
-            renderItem={({item}) => renderItemComponentDriver(item)}
+            renderItem={({item}) => renderItemComponentDriverComplete(item)}
             refreshControl={
               <RefreshControl
                 refreshing={refreshingPastTrips}

@@ -9,7 +9,11 @@ import {
 import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {FlatlistStyles} from '../../../Stylesheets/GlobalStyles';
+import {
+  FlatlistStyles,
+  ThemeStyles,
+  TripTransporterCardStyles,
+} from '../../../Stylesheets/GlobalStyles';
 import {TripCardDriver} from '../../../Components/Cards/TripListCardForDriver';
 import {
   GetPastTripsForTransporter,
@@ -19,10 +23,25 @@ import {
 import {Auth} from '../../../Classes/Auth';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {
-  TripCardTransporter,
+  TripTransporterCard,
   TripCardTransporterComplete,
 } from '../../../Components/Cards/TripCardTransporter';
-import {ArrowLeftIcon, Fab, FabIcon, FabLabel} from '@gluestack-ui/themed';
+import {
+  ArrowLeftIcon,
+  CloseIcon,
+  Fab,
+  FabIcon,
+  FabLabel,
+  Heading,
+  Icon,
+  Modal,
+  ModalBackdrop,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+} from '@gluestack-ui/themed';
+import {MoveDown} from 'lucide-react-native';
 
 const TripTransporterScreen = ({route, navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
@@ -30,9 +49,12 @@ const TripTransporterScreen = ({route, navigation}: any) => {
   const [auth, setAuth] = useState(new Auth(session));
 
   const vehicleId = route.params.curentVehicle.vehicleId;
-
   const userId = auth.GetUserId();
+  const iconSize = 40;
+  const iconStrokeWidth = 2;
+  const ref = React.useRef(null);
 
+  const [showModal, setShowModal] = useState(false);
   const [UpcomingTripList, setUpcomingTripList] = useState([]);
   const [PastTripList, setPastTripList] = useState([]);
   const [showNoFutureTripText, setShowNoFutureTripText] = useState(false);
@@ -40,6 +62,10 @@ const TripTransporterScreen = ({route, navigation}: any) => {
   const [refreshingUpcomingTrips, setRefreshingUpcomingTrips] =
     React.useState(false);
   const [refreshingPastTrips, setRefreshingPastTrips] = React.useState(false);
+
+  const [homeAddress, setHomeAddress] = useState('');
+  const [destinationAddress, setDestinationAddress] = useState('');
+  const [tripLeg, setTripLeg] = useState(0);
 
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
@@ -86,9 +112,52 @@ const TripTransporterScreen = ({route, navigation}: any) => {
     }, 2000);
   }, [vehicleId]);
 
+  const ClearStates = () => {
+    setHomeAddress('');
+    setDestinationAddress('');
+    setTripLeg(0);
+  };
+
+  const TripDestinationModal = () => {
+    return (
+      <Modal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          ClearStates();
+        }}
+        finalFocusRef={ref}>
+        <ModalBackdrop />
+        <ModalContent>
+          <ModalHeader>
+            <Heading size="lg">Address</Heading>
+            <ModalCloseButton>
+              <Icon as={CloseIcon} />
+            </ModalCloseButton>
+          </ModalHeader>
+          <ModalBody>
+            <View style={TripTransporterCardStyles.modalContainer}>
+              <Text style={TripTransporterCardStyles.modalText}>
+                {tripLeg == 0 ? homeAddress : destinationAddress}
+              </Text>
+              <MoveDown
+                size={iconSize}
+                strokeWidth={iconStrokeWidth}
+                color={tripLeg == 0 ? '#3ba2a9' : '#c26b71'}
+              />
+              <Text style={TripTransporterCardStyles.modalText}>
+                {tripLeg == 0 ? destinationAddress : homeAddress}
+              </Text>
+            </View>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    );
+  };
+
   //Card defined for Transporter
   const renderItemComponentTransporter = (itemData: any) => (
-    <TripCardTransporter
+    <TripTransporterCard
       passengerName={itemData.passengerName}
       pickUpTime={itemData.pickUpTime}
       pickUpDate={itemData.pickUpDate}
@@ -96,6 +165,12 @@ const TripTransporterScreen = ({route, navigation}: any) => {
       tripStatus={itemData.tripStatus}
       dropOffTime={itemData.dropOffTime}
       leg={Number(itemData.leg)}
+      handleIconPress={() => {
+        setShowModal(true);
+        setHomeAddress(itemData.pickUpLocation);
+        setDestinationAddress(itemData.dropOffLocation);
+        setTripLeg(itemData.leg);
+      }}
     />
   );
 
@@ -109,14 +184,22 @@ const TripTransporterScreen = ({route, navigation}: any) => {
       tripStatus={itemData.tripStatus}
       dropOffTime={itemData.dropOffTime}
       leg={Number(itemData.leg)}
+      handleIconPress={() => {
+        setShowModal(true);
+        setHomeAddress(itemData.pickUpLocation);
+        setDestinationAddress(itemData.dropOffLocation);
+        setTripLeg(itemData.leg);
+      }}
     />
   );
 
   //Empty flatlist text is defined
   const EmtpyFlatListText = () => {
     return (
-      <View style={{backgroundColor: '#e8f0f3'}}>
-        <Text style={{textAlign: 'center'}}>You currently have no trips.</Text>
+      <View>
+        <Text style={TripTransporterCardStyles.emptyFlatListText}>
+          You currently have no trips.
+        </Text>
       </View>
     );
   };
@@ -163,10 +246,9 @@ const TripTransporterScreen = ({route, navigation}: any) => {
 
   function FirstRoute() {
     return (
-      <View style={FlatlistStyles.container}>
+      <View style={ThemeStyles.container}>
         {showNoFutureTripText ? EmtpyFlatListText() : null}
         <FlatList
-          style={{backgroundColor: '#e8f0f3'}}
           data={UpcomingTripList}
           extraData
           renderItem={({item}) => renderItemComponentTransporter(item)}
@@ -177,7 +259,6 @@ const TripTransporterScreen = ({route, navigation}: any) => {
             />
           }
         />
-        {GoBackFab()}
       </View>
     );
   }
@@ -185,10 +266,9 @@ const TripTransporterScreen = ({route, navigation}: any) => {
   //Contains Past Flatlist for all roles
   function SecondRoute() {
     return (
-      <View style={FlatlistStyles.container}>
+      <View style={ThemeStyles.container}>
         {showNoPastTripText ? EmtpyFlatListText() : null}
         <FlatList
-          style={{backgroundColor: '#e8f0f3'}}
           data={PastTripList}
           extraData
           renderItem={({item}) => renderItemComponentTransporterComplete(item)}
@@ -199,16 +279,13 @@ const TripTransporterScreen = ({route, navigation}: any) => {
             />
           }
         />
-        <View>{GoBackFab()}</View>
       </View>
     );
   }
   return (
     <NavigationContainer independent={true}>
-      <Tab.Navigator
-        screenOptions={{
-          tabBarStyle: {backgroundColor: '#e8f0f3', elevation: 10},
-        }}>
+      {TripDestinationModal()}
+      <Tab.Navigator>
         <Tab.Screen name="Upcoming Trips" component={FirstRoute} />
         <Tab.Screen name="Past Trips" component={SecondRoute} />
       </Tab.Navigator>

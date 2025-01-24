@@ -138,7 +138,7 @@ const ProfileScreen = ({navigation}: any) => {
       <SettingsCard
         Title={'Personal Information'}
         Description={'Edit or view personal information'}
-        HandleOnPress={() => navigation.navigate('Edit User Account')}
+        HandleOnPress={() => navigation.navigate('Edit User Details')}
       />
 
       <SettingsCard

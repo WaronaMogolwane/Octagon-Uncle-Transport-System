@@ -72,49 +72,22 @@ const ProfileScreen = ({navigation}: any) => {
             <View>
               <Text>Are you sure you want to sign out?</Text>
             </View>
-            <View style={{marginTop: 15}}></View>
           </ModalBody>
           <ModalFooter>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-              }}>
-              <View style={{padding: 5}}>
-                <Button
-                  size="md"
-                  variant="solid"
-                  action="secondary"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={() => {
-                    setShowModal(false);
-                  }}>
-                  <ButtonIcon as={ArrowLeftIcon} />
-                  <ButtonText>Back</ButtonText>
-                </Button>
-              </View>
-              <View style={{padding: 5}}>
-                <Button
-                  size="md"
-                  variant="solid"
-                  action="negative"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={async () => {
-                    ClearImageViaAsyncStorage().then(async () => {
-                      await signOut();
-                    });
-                  }}>
-                  <LogOut
-                    size={26}
-                    strokeWidth={1}
-                    color={'#FFFFFF'}
-                    style={ProfileScreenStyles.image}
-                  />
-                  <ButtonText>Sign Out</ButtonText>
-                </Button>
-              </View>
+            <View style={{flex: 1}}>
+              <CustomButton1
+                styles={{marginTop: 10}}
+                title="Sign out"
+                size="md"
+                action="negative"
+                isDisabled={false}
+                isFocusVisible={false}
+                onPress={async () => {
+                  ClearImageViaAsyncStorage().then(async () => {
+                    await signOut();
+                  });
+                }}
+              />
             </View>
           </ModalFooter>
         </ModalContent>

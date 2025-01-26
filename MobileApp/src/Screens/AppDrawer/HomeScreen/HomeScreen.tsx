@@ -13,7 +13,6 @@ import {
 import {
   GetAllActivePassengerForBusiness,
   GetAllActivePassengerForParent,
-  GetParentPassengers,
 } from '../../../Controllers/PassengerController';
 import {
   GetDriverVehicle,

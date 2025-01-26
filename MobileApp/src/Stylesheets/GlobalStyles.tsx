@@ -420,7 +420,6 @@ export const EditBusinessDetailScreenStyles = StyleSheet.create({
     marginHorizontal: 17,
   },
   body: {
-    marginTop: 50,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -725,8 +724,8 @@ export const HomeScreenStyles = StyleSheet.create({
   },
   vehicleImage: {
     margin: 12,
-    width: 120,
-    height: 150,
+    width: 110,
+    height: 125,
     borderRadius: 8,
     marginRight: 15,
   },
@@ -939,4 +938,10 @@ export const TripTransporterCardStyles = StyleSheet.create({
   },
   modalContainer: {alignItems: 'center', flex: 1},
   emptyFlatListText: {textAlign: 'center'},
+});
+export const SignInScreenStyles = StyleSheet.create({
+  container: {
+    justifyContent: 'center',
+    marginHorizontal: 50,
+  },
 });

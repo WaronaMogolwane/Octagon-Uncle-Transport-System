@@ -334,7 +334,11 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
           />
         </ScrollView>
       ) : (
-        <View style={EditBusinessDetailScreenStyles.body}>
+        <View
+          style={[
+            EditBusinessDetailScreenStyles.container,
+            EditBusinessDetailScreenStyles.body,
+          ]}>
           <View style={EditBusinessDetailScreenStyles.avatarContainer}>
             <Image
               alt="profile photo"

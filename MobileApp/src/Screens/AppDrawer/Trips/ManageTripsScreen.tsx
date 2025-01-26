@@ -59,14 +59,9 @@ const ManageTripsScreen = ({navigation}: any) => {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    setNoLinkedVehicle(false);
-
     setTimeout(() => {
-      //setRefreshing(true);
       GetLinkedVehicle();
     }, 2000);
-
-    setRefreshing(false);
   }, []);
 
   const iconSize = 20;
@@ -224,7 +219,7 @@ const ManageTripsScreen = ({navigation}: any) => {
   };
 
   const handleSearch = (query: string) => {
-    // setSearchQuery(query);
+    setSearchQuery(query);
     const formattedQuery = query.toLowerCase();
     const filterData: any = filter(fullData, (user: any) => {
       return contains(user, formattedQuery);

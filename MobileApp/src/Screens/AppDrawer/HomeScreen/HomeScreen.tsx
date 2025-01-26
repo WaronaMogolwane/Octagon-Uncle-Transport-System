@@ -52,8 +52,6 @@ const HomeScreen = ({navigation}: any) => {
   const [fullData, setFullData] = useState([]);
   const [activePassengers, setActivePassengers] = useState([]);
   const [isActivePassenger, setIsActivePassenger] = useState(false);
-  const [amount, setAmount] = useState('1300.00');
-  const [passengerList, setPassengerList] = useState([]);
 
   const [tripCount, setTripCount] = useState(0);
   const [missedTripsCount, setMissedTripsCount] = useState(0);

@@ -714,18 +714,18 @@ export const HomeScreenStyles = StyleSheet.create({
     fontweight: 'bold',
   },
   vehicleContainer: {
-    // alignItems: 'center', // Center horizontally
     // justifyContent: 'center', // Center vertically
     flexDirection: 'row',
     borderRadius: 20,
     borderWidth: 1,
     height: '100%',
     marginHorizontal: 10,
+    padding: 10,
   },
   vehicleImage: {
-    margin: 12,
+    marginEnd: 15,
     width: 110,
-    height: 125,
+    height: '100%',
     borderRadius: 8,
     marginRight: 15,
   },

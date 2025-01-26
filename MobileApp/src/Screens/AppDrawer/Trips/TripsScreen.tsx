@@ -88,46 +88,37 @@ const TripsScreen = ({navigation}: any) => {
 
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
-    setShowNoPastTripText(false);
 
     setTimeout(() => {
-      // setRefreshingPastTrips(true);
-      GetPastTrips()
-        .then(() => {
-          setRefreshingPastTrips(false);
-        })
-        .catch((error: any) => {
-          console.error(error);
-          setRefreshingPastTrips(false);
-        });
+      GetPastTrips().catch((error: any) => {
+        setRefreshingPastTrips(false);
+      });
+      GetUpcomingTrips().catch((error: any) => {
+        setRefreshingUpcomingTrips(false);
+      });
     }, 2000);
-    // setRefreshingPastTrips(false);
   }, []);
 
   const onRefreshUpcomingTrips = React.useCallback(() => {
-    setShowNoFutureTripText(false);
     setRefreshingUpcomingTrips(true);
 
     setTimeout(() => {
-      // setRefreshingUpcomingTrips(true);
-      GetUpcomingTrips()
-        .then(() => {
-          setRefreshingUpcomingTrips(false);
-        })
-        .catch(() => {
-          setRefreshingUpcomingTrips(false);
-        });
+      GetUpcomingTrips().catch((error: any) => {
+        setRefreshingUpcomingTrips(false);
+      });
+      GetPastTrips().catch((error: any) => {
+        setRefreshingPastTrips(false);
+      });
     }, 2000);
-
-    // setRefreshingUpcomingTrips(false);
   }, []);
 
   useEffect(() => {
-    setRefreshingUpcomingTrips(true);
     setTimeout(() => {
+      setRefreshingPastTrips(true);
+      setRefreshingUpcomingTrips(true);
+
       GetUpcomingTrips();
       GetPastTrips();
-      setRefreshingUpcomingTrips(false);
     }, 2000);
   }, []);
 
@@ -283,9 +274,13 @@ const TripsScreen = ({navigation}: any) => {
     if (role == 2) {
       return await GetUpcomingTripsForClient(userId).then(trip => {
         if (trip.length == 0) {
+          setUpcomingTripList([]);
           setShowNoFutureTripText(true);
+          setRefreshingUpcomingTrips(false);
         } else {
           setUpcomingTripList(trip);
+          setRefreshingUpcomingTrips(false);
+          setShowNoFutureTripText(false);
         }
       });
     } else if (role == 3) {
@@ -293,10 +288,15 @@ const TripsScreen = ({navigation}: any) => {
         if (trip.length == 0) {
           setUpcomingTripList([]);
           setShowNoFutureTripText(true);
-          setIsLoading(false);
+          setRefreshingUpcomingTrips(false);
+
+          // setIsLoading(false);
         } else {
           setUpcomingTripList(trip);
-          setIsLoading(false);
+          setRefreshingUpcomingTrips(false);
+          setShowNoFutureTripText(false);
+
+          // setIsLoading(false);
         }
       });
     }
@@ -307,22 +307,29 @@ const TripsScreen = ({navigation}: any) => {
     if (role == 2) {
       return await GetPastTripsForClient(userId).then(trip => {
         if (trip.length == 0) {
+          setPastTripList([]);
           setShowNoPastTripText(true);
+          setRefreshingPastTrips(false);
         } else {
+          setShowNoPastTripText(true);
           setPastTripList(trip);
+          setRefreshingPastTrips(false);
         }
       });
     } else if (role == 3) {
       return await GetPastTripsForDriver(userId).then(trip => {
         if (trip.length == 0) {
           setShowNoPastTripText(true);
-
           setPastTripList([]);
-          setIsLoading(false);
+          setRefreshingPastTrips(false);
+
+          // setIsLoading(false);
         } else {
           setPastTripList(trip);
           setShowNoPastTripText(false);
-          setIsLoading(false);
+          setRefreshingPastTrips(false);
+
+          // setIsLoading(false);
         }
       });
     }
@@ -500,7 +507,7 @@ const TripsScreen = ({navigation}: any) => {
 
   return (
     <NavigationContainer independent={true}>
-      {IsLoading ? (
+      {/* {IsLoading ? (
         <View
           style={{
             position: 'absolute',
@@ -516,7 +523,7 @@ const TripsScreen = ({navigation}: any) => {
           <ActivityIndicator size="large" />
           <Text>Working</Text>
         </View>
-      ) : null}
+      ) : null} */}
       {TripDestinationModal()}
       <Tab.Navigator>
         <Tab.Screen name="Upcoming Trips" component={FirstRoute} />

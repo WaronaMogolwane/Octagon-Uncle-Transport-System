@@ -35,12 +35,7 @@ export const AddPassengerToDB = async (passenger: Passenger) => {
   return statusCode;
 };
 
-export const GetPassengerFromDatabase = async (
-  passengerId: string,
-  uid: string,
-) => {};
-
-export const GetActivePassengerForBusinessFromDB = async (
+export const GetUnassignedPassengerForBusinessFromDB = async (
   businessId: string,
 ) => {
   let result: any;
@@ -53,6 +48,48 @@ export const GetActivePassengerForBusinessFromDB = async (
         BusinessId: businessId,
       },
     })
+    .then((response: any) => {
+      let res = [...response.data.result];
+
+      res.forEach(data => {
+        passsengers = {
+          passengerId: data.PassengerId,
+          passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
+          editedName: `${data.FirstName} ${data.LastName}`,
+          age: data.Age,
+          homeAddress: data.HomeAddress,
+          destinationAddress: data.DestinationAddress,
+          parentId: data.ParentId,
+        };
+
+        tripData.push(passsengers);
+      });
+
+      result = tripData;
+    })
+    .catch((error: any) => {
+      result = error;
+    });
+
+  return result;
+};
+
+export const GetActivePassengerForBusinessFromDB = async (
+  businessId: string,
+) => {
+  let result: any;
+  const tripData: {}[] = [];
+  let passsengers = {};
+
+  await axios
+    .get(
+      `${SERVER_HOST}:${SERVER_PORT}/passenger/get-business-active-passengers`,
+      {
+        params: {
+          BusinessId: businessId,
+        },
+      },
+    )
     .then((response: any) => {
       let res = [...response.data.result];
 

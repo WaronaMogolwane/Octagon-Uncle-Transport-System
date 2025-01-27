@@ -206,11 +206,11 @@ export const AssignPassengerScreenStyles = StyleSheet.create({
     justifyContent: 'space-between',
     marginHorizontal: 20,
   },
-
   button: {
     width: '45%',
     marginBottom: 30,
   },
+  flatListText: {textAlign: 'center', marginTop: 5},
 });
 export const PassengerListActiveCardStyles = StyleSheet.create({
   activeText: {
@@ -694,7 +694,7 @@ export const HomeScreenStyles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: COLORS.customBlack,
-    marginBottom: 30,
+    marginBottom: 25,
   },
   secondTitleText: {
     marginTop: 80,

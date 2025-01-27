@@ -11,7 +11,7 @@ import {
   SafeAreaView,
 } from '@gluestack-ui/themed';
 import {
-  GetUnassignedActivePassengerForBusiness,
+  GetActivePassengerForBusiness,
   GetAllActivePassengerForParent,
 } from '../../../Controllers/PassengerController';
 import {
@@ -304,7 +304,7 @@ const HomeScreen = ({navigation}: any) => {
 
   const GetPassengers = async () => {
     try {
-      const result = await GetUnassignedActivePassengerForBusiness(businessId);
+      const result = await GetActivePassengerForBusiness(businessId);
       if (result.length != 0) {
         setPassengerCount(result.length.toString());
       } else {

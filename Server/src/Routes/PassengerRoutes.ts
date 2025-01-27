@@ -1,7 +1,6 @@
 import Router from "express-promise-router";
 import {
   AddPassenger,
-  GetPassengersByBusiness,
   GetPassengersByParent,
   GetPassenger,
   UpdatePassengerDetail,
@@ -11,6 +10,8 @@ import {
   DeletePassenger,
   DeletePassengerRequest,
   GetActivePassengersByParent,
+  GetPassengersActiveByBusiness,
+  GetPassengersDropdownByBusiness,
 } from "../Controllers/PassengerController";
 
 const router = Router();
@@ -39,7 +40,13 @@ router.get(
 
 router.get(
   "/get-business-passengers",
-  GetPassengersByBusiness,
+  GetPassengersDropdownByBusiness,
+  async (req, res, next) => {}
+);
+
+router.get(
+  "/get-business-active-passengers",
+  GetPassengersActiveByBusiness,
   async (req, res, next) => {}
 );
 

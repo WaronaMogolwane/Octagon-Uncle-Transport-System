@@ -69,46 +69,37 @@ const TripTransporterScreen = ({route, navigation}: any) => {
 
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
-    setShowNoPastTripText(false);
 
     setTimeout(() => {
-      setRefreshingUpcomingTrips(true);
-      GetPastTrips()
-        .then(() => {
-          setRefreshingPastTrips(false);
-        })
-        .catch(() => {
-          setRefreshingPastTrips(false);
-        });
+      GetPastTrips().catch(() => {
+        setRefreshingPastTrips(false);
+      });
+      GetUpcomingTrips().catch(() => {
+        setRefreshingUpcomingTrips(false);
+      });
     }, 2000);
-    setRefreshingPastTrips(false);
   }, []);
 
   const onRefreshUpcomingTrips = React.useCallback(() => {
-    setShowNoFutureTripText(false);
     setRefreshingUpcomingTrips(true);
 
     setTimeout(() => {
-      setRefreshingUpcomingTrips(true);
-      GetUpcomingTrips()
-        .then(() => {
-          setRefreshingUpcomingTrips(false);
-        })
-        .catch(() => {
-          setRefreshingUpcomingTrips(false);
-        });
+      GetUpcomingTrips().catch(() => {
+        setRefreshingUpcomingTrips(false);
+      });
+      GetPastTrips().catch(() => {
+        setRefreshingPastTrips(false);
+      });
     }, 2000);
-
-    setRefreshingUpcomingTrips(false);
   }, []);
 
   useEffect(() => {
     setRefreshingUpcomingTrips(true);
+    setRefreshingPastTrips(true);
 
     setTimeout(() => {
       GetUpcomingTrips();
       GetPastTrips();
-      setRefreshingUpcomingTrips(false);
     }, 2000);
   }, [vehicleId]);
 
@@ -204,30 +195,17 @@ const TripTransporterScreen = ({route, navigation}: any) => {
     );
   };
 
-  const GoBackFab = () => {
-    return (
-      <Fab
-        onPress={() => {
-          navigation.navigate('Manage Trip');
-        }}
-        size="sm"
-        placement="bottom right"
-        isHovered={false}
-        isDisabled={false}
-        isPressed={false}>
-        <FabIcon as={ArrowLeftIcon} mr="$1" />
-        <FabLabel>Back</FabLabel>
-      </Fab>
-    );
-  };
-
   const GetUpcomingTrips = async () => {
     return await GetUpcomingTripsForTransporter(userId, vehicleId).then(
       trip => {
         if (trip[0] == '') {
           setShowNoFutureTripText(true);
+          setUpcomingTripList([]);
+          setRefreshingUpcomingTrips(false);
         } else {
+          setShowNoFutureTripText(false);
           setUpcomingTripList(trip);
+          setRefreshingUpcomingTrips(false);
         }
       },
     );
@@ -238,8 +216,12 @@ const TripTransporterScreen = ({route, navigation}: any) => {
     return await GetPastTripsForTransporter(userId, vehicleId).then(trip => {
       if (trip[0] == '') {
         setShowNoPastTripText(true);
+        setPastTripList([]);
+        setRefreshingPastTrips(false);
       } else {
         setPastTripList(trip);
+        setShowNoPastTripText(false);
+        setRefreshingPastTrips(false);
       }
     });
   };

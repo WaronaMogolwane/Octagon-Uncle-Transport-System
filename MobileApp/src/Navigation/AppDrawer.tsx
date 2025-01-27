@@ -154,74 +154,49 @@ const AppDrawer = ({navigation}: any) => {
         header: ({navigation, route, options}) => {
           const title = getHeaderTitle(options, route.name);
 
+          const iconSeletor = () => {
+            if (
+              title == 'User Account' ||
+              title == 'Edit Personal Details' ||
+              title == 'Business Information'
+            ) {
+              return <ArrowLeft size={25} strokeWidth={2} color={'black'} />;
+            } else if (title == 'Assign Passenger') {
+              return <ArrowLeft size={25} strokeWidth={2} color={'black'} />;
+            } else if (title == 'Trips') {
+              if (role != 1) {
+                return <AlignLeft size={25} strokeWidth={2} color={'black'} />;
+              } else {
+                return <ArrowLeft size={25} strokeWidth={2} color={'black'} />;
+              }
+            } else {
+              return <AlignLeft size={25} strokeWidth={2} color={'black'} />;
+            }
+          };
+
           return (
             <View style={AppDrawerScreenStyles.toolbarContainer}>
               <View style={{width: '20%'}}>
                 <Pressable
                   style={AppDrawerScreenStyles.toolbarLeftContainer}
                   onPress={() => {
-                    switch (title) {
-                      case 'Home': {
-                        navigation.toggleDrawer();
-                        break;
-                      }
-                      case 'Manage Trips': {
-                        navigation.goBack();
-                        break;
-                      }
-                      case 'Assign Passenger': {
-                        navigation.navigate('Manage Trip');
-                        break;
-                      }
-                      case 'Trips': {
-                        role != 1
-                          ? navigation.goBack()
-                          : navigation.navigate('Manage Trip');
-                        break;
-                      }
-                      case 'Payments': {
-                        navigation.goBack();
-                        break;
-                      }
-                      case 'Vehicles': {
-                        navigation.goBack();
-                        break;
-                      }
-                      case 'Drivers': {
-                        navigation.goBack();
-                        break;
-                      }
-                      case 'Clients': {
-                        navigation.goBack();
-                        break;
-                      }
-                      case 'Passengers': {
-                        navigation.goBack();
-                        break;
-                      }
-                      case 'Profile': {
-                        navigation.goBack();
-                        break;
-                      }
-                      case 'User Account': {
-                        navigation.navigate('Profile');
-                        break;
-                      }
-                      case 'Edit Personal Details': {
-                        navigation.navigate('Profile');
-                        break;
-                      }
-                      case 'Business Information': {
-                        navigation.navigate('Profile');
-                        break;
-                      }
+                    if (
+                      title == 'User Account' ||
+                      title == 'Edit Personal Details' ||
+                      title == 'Business Information'
+                    ) {
+                      navigation.navigate('Profile');
+                    } else if (title == 'Assign Passenger') {
+                      navigation.navigate('Manage Trip');
+                    } else if (title == 'Trips') {
+                      role != 1
+                        ? navigation.toggleDrawer()
+                        : navigation.navigate('Manage Trip');
+                    } else {
+                      navigation.toggleDrawer();
                     }
                   }}>
-                  {title != 'Home' ? (
-                    <ArrowLeft size={25} strokeWidth={2} color={'black'} />
-                  ) : (
-                    <AlignLeft size={25} strokeWidth={2} color={'black'} />
-                  )}
+                  {iconSeletor()}
                 </Pressable>
               </View>
               <View style={{width: '60%', justifyContent: 'center'}}>

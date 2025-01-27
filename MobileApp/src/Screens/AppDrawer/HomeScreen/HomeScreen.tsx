@@ -11,9 +11,8 @@ import {
   SafeAreaView,
 } from '@gluestack-ui/themed';
 import {
-  GetAllActivePassengerForBusiness,
+  GetUnassignedActivePassengerForBusiness,
   GetAllActivePassengerForParent,
-  GetParentPassengers,
 } from '../../../Controllers/PassengerController';
 import {
   GetDriverVehicle,
@@ -53,8 +52,6 @@ const HomeScreen = ({navigation}: any) => {
   const [fullData, setFullData] = useState([]);
   const [activePassengers, setActivePassengers] = useState([]);
   const [isActivePassenger, setIsActivePassenger] = useState(false);
-  const [amount, setAmount] = useState('1300.00');
-  const [passengerList, setPassengerList] = useState([]);
 
   const [tripCount, setTripCount] = useState(0);
   const [missedTripsCount, setMissedTripsCount] = useState(0);
@@ -307,7 +304,7 @@ const HomeScreen = ({navigation}: any) => {
 
   const GetPassengers = async () => {
     try {
-      const result = await GetAllActivePassengerForBusiness(businessId);
+      const result = await GetUnassignedActivePassengerForBusiness(businessId);
       if (result.length != 0) {
         setPassengerCount(result.length.toString());
       } else {

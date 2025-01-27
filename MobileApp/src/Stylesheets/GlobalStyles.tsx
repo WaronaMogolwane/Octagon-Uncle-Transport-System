@@ -206,11 +206,11 @@ export const AssignPassengerScreenStyles = StyleSheet.create({
     justifyContent: 'space-between',
     marginHorizontal: 20,
   },
-
   button: {
     width: '45%',
     marginBottom: 30,
   },
+  flatListText: {textAlign: 'center', marginTop: 5},
 });
 export const PassengerListActiveCardStyles = StyleSheet.create({
   activeText: {
@@ -420,7 +420,6 @@ export const EditBusinessDetailScreenStyles = StyleSheet.create({
     marginHorizontal: 17,
   },
   body: {
-    marginTop: 50,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -695,7 +694,7 @@ export const HomeScreenStyles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: COLORS.customBlack,
-    marginBottom: 30,
+    marginBottom: 25,
   },
   secondTitleText: {
     marginTop: 80,
@@ -715,18 +714,18 @@ export const HomeScreenStyles = StyleSheet.create({
     fontweight: 'bold',
   },
   vehicleContainer: {
-    // alignItems: 'center', // Center horizontally
     // justifyContent: 'center', // Center vertically
     flexDirection: 'row',
     borderRadius: 20,
     borderWidth: 1,
     height: '100%',
     marginHorizontal: 10,
+    padding: 10,
   },
   vehicleImage: {
-    margin: 12,
-    width: 120,
-    height: 150,
+    marginEnd: 15,
+    width: 110,
+    height: '100%',
     borderRadius: 8,
     marginRight: 15,
   },
@@ -939,4 +938,10 @@ export const TripTransporterCardStyles = StyleSheet.create({
   },
   modalContainer: {alignItems: 'center', flex: 1},
   emptyFlatListText: {textAlign: 'center'},
+});
+export const SignInScreenStyles = StyleSheet.create({
+  container: {
+    justifyContent: 'center',
+    marginHorizontal: 50,
+  },
 });

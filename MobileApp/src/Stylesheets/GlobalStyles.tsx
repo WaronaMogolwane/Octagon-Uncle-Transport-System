@@ -1,6 +1,5 @@
 import {StyleSheet} from 'react-native';
 import COLORS from '../Const/colors';
-import {text} from 'stream/consumers';
 
 export const ThemeStyles = StyleSheet.create({
   container: {
@@ -1054,6 +1053,12 @@ export const AuthenticationStackStyles = StyleSheet.create({
   },
 });
 export const SignUpScreenStyles = StyleSheet.create({
+  container: {
+    marginTop: 15,
+    marginHorizontal: 17,
+  },
+});
+export const PersonalDetailsScreenStyles = StyleSheet.create({
   container: {
     marginTop: 15,
     marginHorizontal: 17,

@@ -9,7 +9,10 @@ import {
   Toast,
   ScrollView,
 } from '@gluestack-ui/themed';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {
+  PersonalDetailsScreenStyles,
+  ThemeStyles,
+} from '../../Stylesheets/GlobalStyles';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -149,7 +152,7 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
   return (
     <ScrollView>
       <SafeAreaView style={ThemeStyles.container}>
-        <View style={ThemeStyles.container}>
+        {/* <View style={ThemeStyles.container}>
           <View style={{margin: 5}}>
             <Image
               size="xl"
@@ -160,8 +163,8 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
               }}
             />
           </View>
-        </View>
-        <View style={{paddingBottom: 15, paddingTop: 15}}>
+        </View> */}
+        <View style={PersonalDetailsScreenStyles.container}>
           <UserDetailForm
             showButton={true}
             heading="Add User Details"

@@ -949,4 +949,113 @@ export const SignInScreenStyles = StyleSheet.create({
     justifyContent: 'center',
     marginHorizontal: 50,
   },
+  image: {
+    marginBottom: 35,
+    marginTop: 80,
+    height: 100,
+    width: '100%',
+  },
+  loginText: {
+    textAlign: 'center',
+    marginBottom: 13,
+    fontWeight: '500',
+    color: COLORS.customBlack,
+    fontSize: 26,
+  },
+});
+export const SelectUserRoleScreenStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    marginHorizontal: 20,
+  },
+});
+export const SelectUserRoleFormStyles = StyleSheet.create({
+  loginText: {
+    textAlign: 'left',
+    marginBottom: 13,
+    fontWeight: '500',
+    color: COLORS.customBlack,
+    fontSize: 20,
+  },
+});
+export const AuthenticationStackStyles = StyleSheet.create({
+  header: {
+    backgroundColor: '#20B2AA',
+  },
+  headerContent: {
+    padding: 30,
+    alignItems: 'center',
+  },
+
+  image: {
+    width: 40,
+    height: 40,
+  },
+
+  body: {
+    padding: 30,
+  },
+  box: {
+    padding: 5,
+    marginTop: 5,
+    marginBottom: 5,
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    shadowColor: 'black',
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      height: 1,
+      width: -2,
+    },
+    elevation: 2,
+  },
+  username: {
+    color: '#20B2AA',
+    fontSize: 22,
+    alignSelf: 'center',
+    marginLeft: 10,
+  },
+  container: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  coverPhoto: {
+    width: '100%',
+    height: 120,
+    resizeMode: 'cover',
+  },
+  avatarContainer: {
+    alignItems: 'center',
+    marginTop: -75,
+  },
+  avatar: {
+    width: 130,
+    height: 130,
+    borderRadius: 75,
+  },
+  name: {
+    marginTop: 15,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  toolbarContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+  },
+  toolbarLeftContainer: {marginVertical: 15, marginStart: 15},
+  toolbarRightContainer: {marginVertical: 15, marginEnd: 15},
+  toolbarText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: COLORS.customBlack,
+  },
+});
+export const SignUpScreenStyles = StyleSheet.create({
+  container: {
+    marginTop: 15,
+    marginHorizontal: 17,
+  },
 });

@@ -4,14 +4,16 @@ import {
   Text,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {
   PassengerListCardStyles,
   TripCardParentStyles,
 } from '../../Stylesheets/GlobalStyles';
 import {UserRound} from 'lucide-react-native';
+import {GetPassengerSchedule} from '../../Controllers/PassengerScheduleController';
 
 type passengerCardProps = {
+  passengerId: string;
   passengerName: string;
   age: string;
   pickUpLocation: string;
@@ -24,40 +26,10 @@ type passengerCardProps = {
   ) => void;
 };
 
-export const PassengerCardTwo = (props: passengerCardProps) => {
-  return (
-    <TouchableOpacity onPress={props.onPress}>
-      <View style={TripCardParentStyles.cardBorder}>
-        <View style={TripCardParentStyles.cardContainer}>
-          <View>
-            <Text style={TripCardParentStyles.cardText}>Passenger Name: </Text>
-          </View>
-          <View>
-            <Text style={{padding: 1}}>{props.passengerName}</Text>
-          </View>
-        </View>
-        <View style={TripCardParentStyles.cardContainer}>
-          <View>
-            <Text style={TripCardParentStyles.cardText}>Passenger Age: </Text>
-          </View>
-          <View>
-            <Text style={{padding: 1}}>{props.age}</Text>
-          </View>
-        </View>
-        <View style={TripCardParentStyles.cardContainer}>
-          <View>
-            <Text style={TripCardParentStyles.cardText}>Location: </Text>
-          </View>
-          <View>
-            <Text style={{padding: 2}}>{props.pickUpLocation}</Text>
-          </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-};
-
 export const PassengerCard = (props: passengerCardProps) => {
+  const [isScheduled, setIsScheduled] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
   const iconSize = 60;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';
@@ -70,6 +42,16 @@ export const PassengerCard = (props: passengerCardProps) => {
       color={iconColor}
     />
   );
+
+  GetPassengerSchedule(props.passengerId).then((response: any) => {
+    if (response[0].passengerId == props.passengerId) {
+      setIsScheduled(true);
+      setIsVisible(true);
+    } else {
+      setIsScheduled(false);
+      setIsVisible(true);
+    }
+  });
 
   return (
     <TouchableOpacity onPress={props.onPress}>
@@ -84,6 +66,20 @@ export const PassengerCard = (props: passengerCardProps) => {
             {props.age} years old.
           </Text>
         </View>
+
+        {isVisible ? (
+          <View>
+            {isScheduled ? (
+              <Text style={PassengerListCardStyles.scheduledText}>
+                scheduled
+              </Text>
+            ) : (
+              <Text style={PassengerListCardStyles.notScheduledText}>
+                not scheduled
+              </Text>
+            )}
+          </View>
+        ) : null}
       </View>
     </TouchableOpacity>
   );

@@ -9,5 +9,7 @@ const COLORS = {
   green: '#008000',
   customBlack: '#090e11',
   customBlue: '#547088',
+  customRed: '#c26b71',
+  customGreen: '#3ba2a9',
 };
 export default COLORS;

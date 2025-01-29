@@ -59,6 +59,7 @@ export const AddTempPassengerScheduleToDB = async (passengerId: string) => {
 
 export const GetPassengerScheduleFromDB = async (passengerId: string) => {
   let res: any;
+  let errorCode: any;
   await axios
     .get(
       `${SERVER_HOST}:${SERVER_PORT}/passenger-schedule/get-passenger-schedule`,
@@ -85,10 +86,10 @@ export const GetPassengerScheduleFromDB = async (passengerId: string) => {
     })
     .catch((error: AxiosError) => {
       console.log(error.message);
-      res = error;
+      errorCode = error;
     });
 
-  return res;
+  return [res, errorCode];
 };
 
 export const UpdatePassengerScheduleToDB = async (

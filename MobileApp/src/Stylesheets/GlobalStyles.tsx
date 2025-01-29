@@ -821,17 +821,15 @@ export const PassengerListCardStyles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '400',
   },
-  statusIndicatorActive: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: 'green',
+  scheduledText: {
+    fontWeight: '500',
+    fontSize: 14,
+    color: COLORS.green,
   },
-  statusIndicatorNotActive: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: 'red',
+  notScheduledText: {
+    fontWeight: '500',
+    fontSize: 14,
+    color: COLORS.customRed,
   },
 });
 export const TripScreenStyles = StyleSheet.create({

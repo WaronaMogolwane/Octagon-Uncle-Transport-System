@@ -85,13 +85,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const [passengerId, setPassngerId] = useState('');
   const [pDVLId, setPDVLId] = useState('');
 
-  const [monday, setMonday] = useState(false);
-  const [tuesday, setTuesday] = useState(false);
-  const [wednesday, setWednesday] = useState(false);
-  const [thursday, setThursday] = useState(false);
-  const [friday, setFriday] = useState(false);
-  const [saturday, setSaturday] = useState(false);
-  const [sunday, setSunday] = useState(false);
   const [IsLoading, setIsLoading] = useState(false);
   const [isLoadingSmall, setIsLoadingSmall] = useState(false);
 
@@ -180,13 +173,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   };
 
   const ClearCalender = () => {
-    setMonday(false);
-    setTuesday(false);
-    setWednesday(false);
-    setThursday(false);
-    setFriday(false);
-    setSaturday(false);
-    setSunday(false);
     setNewPassengerId('');
   };
 
@@ -205,6 +191,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         setdestinationAdress(itemData.dropOffLocation);
         setAge(itemData.age);
       }}
+      passengerId={itemData.passengerId}
     />
   );
 
@@ -234,16 +221,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             AddPassengerSchedule(newSchedule).then((result2: any) => {
               if (result2 == 200) {
                 setNewPassengerId('');
-
-                setMonday(false);
-                setTuesday(false);
-                setWednesday(false);
-                setThursday(false);
-                setFriday(false);
-                setSaturday(false);
-                setSunday(false);
                 setIsLoading(false);
-
                 GetPassengers();
               }
             });

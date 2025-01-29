@@ -1,5 +1,5 @@
 import {SERVER_HOST, SERVER_PORT} from '@env';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import {Passenger} from '../Models/Passenger';
 import {SplitTimeString, ConvertDate} from '../Services/DataConverterService';
 
@@ -39,6 +39,8 @@ export const GetUnassignedPassengerForBusinessFromDB = async (
   businessId: string,
 ) => {
   let result: any;
+  let status: any;
+  let errorCode: any;
   const tripData: {}[] = [];
   let passsengers = {};
 
@@ -50,6 +52,7 @@ export const GetUnassignedPassengerForBusinessFromDB = async (
     })
     .then((response: any) => {
       let res = [...response.data.result];
+      status = response.status;
 
       res.forEach(data => {
         passsengers = {
@@ -67,11 +70,11 @@ export const GetUnassignedPassengerForBusinessFromDB = async (
 
       result = tripData;
     })
-    .catch((error: any) => {
-      result = error;
+    .catch((error: AxiosError) => {
+      errorCode = error;
     });
 
-  return result;
+  return [result, status, errorCode];
 };
 
 export const GetActivePassengerForBusinessFromDB = async (

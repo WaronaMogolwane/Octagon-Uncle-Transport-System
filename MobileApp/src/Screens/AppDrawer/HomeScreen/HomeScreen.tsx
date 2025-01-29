@@ -152,13 +152,13 @@ const HomeScreen = ({navigation}: any) => {
     }
   }, []);
 
-  useEffect(() => {
-    if (role == 3) {
-      CheckTrip().then((result: any) => {
-        setIsStarted(result);
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (role == 3) {
+  //     CheckTrip().then((result: any) => {
+  //       setIsStarted(result);
+  //     });
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (fullData[0] != '' && fullData.length > 0) {
@@ -399,6 +399,20 @@ const HomeScreen = ({navigation}: any) => {
     );
   };
 
+  const getTimeOfDay = (): string => {
+    const hour = new Date().getHours();
+
+    if (hour >= 6 && hour < 12) {
+      return 'Morning';
+    } else if (hour >= 12 && hour < 18) {
+      return 'Afternoon';
+    } else if (hour >= 18 && hour < 21) {
+      return 'Evening';
+    } else {
+      return 'Night';
+    }
+  };
+
   if (role == 1) {
     return (
       <SafeAreaView style={ThemeStyles.container}>
@@ -448,6 +462,7 @@ const HomeScreen = ({navigation}: any) => {
             style={[
               HomeScreenStyles.titleText,
               HomeScreenStyles.secondTitleText,
+              {marginTop: 85.5, marginBottom: 13.5},
             ]}>
             Today's stats
           </Text>
@@ -480,16 +495,22 @@ const HomeScreen = ({navigation}: any) => {
     return (
       <SafeAreaView style={ThemeStyles.container}>
         <View style={{height: '25%'}}>
-          <ImageBackground
-            source={require('../../../Images/driver_image_homescreen.jpg')}
-            resizeMode="cover"
-            style={HomeScreenStyles.backgroundImage}
-          />
+          <Text style={HomeScreenStyles.primaryHeading}>Good</Text>
+          <Text style={[HomeScreenStyles.primaryHeading, {marginStart: 50}]}>
+            {getTimeOfDay()}
+          </Text>
+          <Text
+            style={[
+              HomeScreenStyles.primaryHeading,
+              HomeScreenStyles.secondaryHeading,
+            ]}>
+            {userName}
+          </Text>
         </View>
         <View style={{height: '25%'}}>
-          <Text style={HomeScreenStyles.titleText}>
+          {/* <Text style={HomeScreenStyles.titleText}>
             Good morning, {userName}!
-          </Text>
+          </Text> */}
           <View
             style={{
               flexDirection: 'row',
@@ -539,11 +560,11 @@ const HomeScreen = ({navigation}: any) => {
               completedTripsCount ? completedTripsCount.toString() : '0'
             }
           />
-          {/* <StatRowCard
+          <StatRowCard
             primaryText={'Total'}
             secondaryText={'Trips'}
             tetiaryText={tripCount ? tripCount.toString() : '0'}
-          /> */}
+          />
         </View>
       </SafeAreaView>
     );
@@ -551,16 +572,18 @@ const HomeScreen = ({navigation}: any) => {
     return (
       <SafeAreaView style={ThemeStyles.container}>
         <View style={{height: '25%'}}>
-          <ImageBackground
-            source={require('../../../Images/driver_image_homescreen.jpg')}
-            resizeMode="cover"
-            style={HomeScreenStyles.backgroundImage}
-          />
+          <Text style={[HomeScreenStyles.primaryHeading, {marginStart: 50}]}>
+            {getTimeOfDay()}
+          </Text>
+          <Text
+            style={[
+              HomeScreenStyles.primaryHeading,
+              HomeScreenStyles.secondaryHeading,
+            ]}>
+            {userName}
+          </Text>
         </View>
         <View style={{height: '25%'}}>
-          <Text style={HomeScreenStyles.titleText}>
-            Good morning, {userName}!
-          </Text>
           <View style={HomeScreenStyles.vehicleContainer}>
             <Image
               source={{
@@ -622,11 +645,11 @@ const HomeScreen = ({navigation}: any) => {
               completedTripsCount ? completedTripsCount.toString() : '0'
             }
           />
-          {/* <StatRowCard
+          <StatRowCard
             primaryText={'Total'}
             secondaryText={'Trips'}
             tetiaryText={tripCount ? tripCount.toString() : '0'}
-          /> */}
+          />
         </View>
       </SafeAreaView>
     );

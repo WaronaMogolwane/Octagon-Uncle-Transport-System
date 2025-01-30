@@ -210,7 +210,10 @@ export const CustomFormControlInputNumber = (props: InputProps) => {
             value={props.value}
           />
           {props.type == 'password' ? (
-            <InputSlot onPress={handleState} pr="$3">
+            <InputSlot
+              onPress={handleState}
+              pr="$3"
+              style={{backgroundColor: '#f2f3f5'}}>
               <InputIcon as={showInputText ? EyeIcon : EyeOffIcon} />
             </InputSlot>
           ) : null}

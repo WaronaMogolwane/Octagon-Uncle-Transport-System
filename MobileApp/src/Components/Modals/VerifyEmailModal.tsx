@@ -31,7 +31,8 @@ const VerifyEmailModal = (props: VerifyOtpModalProps) => {
     <View>
       <Modal
         isOpen={props.ShowModal}
-        onClose={props.CloseOtpModalButtonOnPress}>
+        onClose={props.CloseOtpModalButtonOnPress}
+        style={{backgroundColor: '#ffffff'}}>
         <ModalBackdrop style={{backgroundColor: '#ffffff'}} />
         <ModalContent>
           <ModalHeader>

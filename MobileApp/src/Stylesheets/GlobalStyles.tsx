@@ -1070,3 +1070,96 @@ export const BusinessDetailsScreenStyles = StyleSheet.create({
     marginHorizontal: 17,
   },
 });
+export const ClientListCardStyles = StyleSheet.create({
+  passengerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10.5,
+    marginHorizontal: 14,
+  },
+  passengerImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 10,
+  },
+  parentInfo: {
+    flex: 1,
+  },
+  clientName: {
+    color: COLORS.customBlack,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  passengerCount: {
+    fontSize: 14,
+    color: COLORS.customBlack,
+
+    fontWeight: '400',
+  },
+  clientEmail: {
+    fontSize: 14,
+    color: COLORS.customBlue,
+
+    fontWeight: '400',
+  },
+  statusIndicatorActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'green',
+  },
+  statusIndicatorNotActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'red',
+  },
+});
+export const PendingDriverListCardStyles = StyleSheet.create({
+  passengerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10.5,
+    marginHorizontal: 14,
+  },
+  passengerImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 10,
+  },
+  parentInfo: {
+    flex: 1,
+  },
+  clientName: {
+    color: COLORS.customBlack,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  passengerCount: {
+    fontSize: 14,
+    color: COLORS.customBlack,
+
+    fontWeight: '400',
+  },
+  clientEmail: {
+    marginBottom: 10,
+    fontSize: 14,
+    color: COLORS.customBlue,
+
+    fontWeight: '400',
+  },
+  statusIndicatorActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'green',
+  },
+  statusIndicatorNotActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'red',
+  },
+});

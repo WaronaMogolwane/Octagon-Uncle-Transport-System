@@ -965,7 +965,7 @@ export const SignInScreenStyles = StyleSheet.create({
 export const SelectUserRoleScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    marginTop: 15,
     marginHorizontal: 20,
   },
 });
@@ -1059,6 +1059,12 @@ export const SignUpScreenStyles = StyleSheet.create({
   },
 });
 export const PersonalDetailsScreenStyles = StyleSheet.create({
+  container: {
+    marginTop: 15,
+    marginHorizontal: 17,
+  },
+});
+export const BusinessDetailsScreenStyles = StyleSheet.create({
   container: {
     marginTop: 15,
     marginHorizontal: 17,

@@ -32,7 +32,7 @@ const ClientDetailsModal = (props: ClientDetailsModalProps) => {
         isOpen={props.ShowModal}
         onClose={props.CloseOtpModalButtonOnPress}>
         <ModalBackdrop />
-        <ModalContent backgroundColor="#fff">
+        <ModalContent backgroundColor="#ffffff">
           <ModalHeader>
             <Heading size="lg">Manage Client</Heading>
             <ModalCloseButton>

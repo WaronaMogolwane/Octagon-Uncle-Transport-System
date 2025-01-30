@@ -6,24 +6,6 @@ import {
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {
-  Button,
-  ButtonText,
-  CloseIcon,
-  EditIcon,
-  Fab,
-  FabIcon,
-  Heading,
-  Icon,
-  Image,
-  Menu,
-  MenuItem,
-  MenuItemLabel,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
   Text,
   Toast,
   ToastDescription,
@@ -36,27 +18,19 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {
-  AssignPassengerScreenStyles,
+  BusinessDetailsScreenStyles,
   ThemeStyles,
 } from '../../Stylesheets/GlobalStyles';
 import {BusinessDetailForm} from '../../Components/Forms/BusinessDetailForm';
 import {AddBusinessDetail} from '../../Controllers/BusinessDetailController';
-import {
-  CustomFormControlInput,
-  CustomFormControlInputNumber,
-} from '../../Components/CustomFormInput';
 import {BankingDetail} from '../../Models/BankingDetail';
 import {
   AddBankingDetail,
   GetBanksList,
-  ValidateAccount,
 } from '../../Controllers/BankingDetailController';
 import {Auth} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
-import {Dropdown} from 'react-native-element-dropdown';
 import {useStorageState} from '../../Services/StorageStateService';
-import {OpenCamera, OpenFilePicker} from '../../Services/CameraService';
-import {ImageOrVideo} from 'react-native-image-crop-picker';
 import BankingDetailModal from '../../Components/Modals/BankingDetailModal';
 
 const BusinessDetailsScreen = ({navigation, route}: any) => {
@@ -351,7 +325,7 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
             <Text>Working</Text>
           </View>
         ) : null}
-        <View style={{paddingBottom: 15, paddingTop: 15}}>
+        <View style={BusinessDetailsScreenStyles.container}>
           <BankingDetailModal
             ShowModal={showModal}
             DropdownIsFocus={isFocus}

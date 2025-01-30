@@ -52,8 +52,6 @@ import {
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
 import {MoveDown} from 'lucide-react-native';
-import {set} from 'date-fns';
-import {date} from 'yup';
 
 const TripsScreen = ({navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
@@ -440,49 +438,26 @@ const TripsScreen = ({navigation}: any) => {
       dropOffTime={itemData.dropOffTime}
       leg={itemData.leg}
       handleUndo={() => {
-        // console.log('Mobile current date ' + currentDate);
-        // console.log('DB Date current date ' + itemData.pickUpDate.toString());
-
-        // if (itemData.tripStatus == 0) {
-        //   if (currentDate == itemData.pickUpDate.toString()) {
-        //     UndoTripEnd(itemData.tripId).then(() => {
-        //       setIsLoading(true);
-        //       GetUpcomingTrips();
-        //       GetPastTrips();
-        //     });
-        //   } else {
-        //     WarningToast();
-        //   }
-        // } else if (itemData.tripStatus == 1) {
-        //   if (currentDate == itemData.pickUpDate.toString()) {
-        //     UndoTripEnd(itemData.tripId).then(() => {
-        //       setIsLoading(true);
-        //       GetUpcomingTrips();
-        //       GetPastTrips();
-        //     });
-        //   } else {
-        //     WarningToast();
-        //   }
-        // } else if (itemData.tripStatus == 3) {
-        //   UndoTripDropOffTime(itemData.tripId).then(() => {
-        //     setIsLoading(true);
-        //     GetUpcomingTrips();
-        //     GetPastTrips();
-        //   });
-        // }
-
         if (itemData.tripStatus == 0) {
-          UndoTripEnd(itemData.tripId).then(() => {
-            setIsLoading(true);
-            GetUpcomingTrips();
-            GetPastTrips();
-          });
+          if (currentDate == itemData.pickUpDate.toString()) {
+            UndoTripEnd(itemData.tripId).then(() => {
+              setIsLoading(true);
+              GetUpcomingTrips();
+              GetPastTrips();
+            });
+          } else {
+            WarningToast();
+          }
         } else if (itemData.tripStatus == 1) {
-          UndoTripEnd(itemData.tripId).then(() => {
-            setIsLoading(true);
-            GetUpcomingTrips();
-            GetPastTrips();
-          });
+          if (currentDate == itemData.pickUpDate.toString()) {
+            UndoTripEnd(itemData.tripId).then(() => {
+              setIsLoading(true);
+              GetUpcomingTrips();
+              GetPastTrips();
+            });
+          } else {
+            WarningToast();
+          }
         } else if (itemData.tripStatus == 3) {
           UndoTripDropOffTime(itemData.tripId).then(() => {
             setIsLoading(true);

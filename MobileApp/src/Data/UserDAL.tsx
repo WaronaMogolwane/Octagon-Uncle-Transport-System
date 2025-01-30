@@ -28,6 +28,28 @@ export const GetUserFromDB = async (userId: string) => {
   return res;
 };
 
+export const GetUserActiveStatusFromDB = async (userId: string) => {
+  let res: any;
+  let errorCode: any;
+
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/user/get-user-active-status`, {
+      params: {
+        UserId: userId,
+      },
+    })
+    .then((response: AxiosResponse) => {
+      let result = response.data.result[0];
+
+      res = result;
+    })
+    .catch((error: AxiosError) => {
+      console.error(error);
+      errorCode = error;
+    });
+  return [res, errorCode];
+};
+
 export const UpdateUserEmailInDB = async (
   userId: string,
   email: string,

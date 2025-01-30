@@ -79,3 +79,23 @@ export const UpdateUserPasswordByUserId = async (
     }
   );
 };
+
+export const GetUserActiveStatusByUserId = async (
+  userId: string,
+  callback: (error: any, result: any) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetUserActiveStatus(?);",
+      timeout: 40000,
+      values: [userId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};

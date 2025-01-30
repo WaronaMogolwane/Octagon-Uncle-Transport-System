@@ -2,14 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
 import {FlatList, ImageBackground, StyleSheet} from 'react-native';
-import {
-  Text,
-  Card,
-  Image,
-  ScrollView,
-  View,
-  SafeAreaView,
-} from '@gluestack-ui/themed';
+import {Text, Image, View, SafeAreaView} from '@gluestack-ui/themed';
 import {
   GetActivePassengerForBusiness,
   GetAllActivePassengerForParent,
@@ -27,7 +20,6 @@ import {
   GetUpcomingTripsForClient,
   GetUpcomingTripsForDriver,
 } from '../../../Controllers/TripController';
-import {TripsBlockDiver} from '../../../Components/TripsBlockDriver';
 import filter from 'lodash.filter';
 import {GetUserProfileImage} from '../../../Controllers/UserDetailController';
 import {
@@ -572,6 +564,7 @@ const HomeScreen = ({navigation}: any) => {
     return (
       <SafeAreaView style={ThemeStyles.container}>
         <View style={{height: '25%'}}>
+          <Text style={HomeScreenStyles.primaryHeading}>Good</Text>
           <Text style={[HomeScreenStyles.primaryHeading, {marginStart: 50}]}>
             {getTimeOfDay()}
           </Text>

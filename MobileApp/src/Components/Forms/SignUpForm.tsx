@@ -10,7 +10,7 @@ import {
 export const SignUpForm = (props: SignUpFormProps) => {
   return (
     <View>
-      <Heading mb="$3">Sign Up</Heading>
+      {/* <Heading mb="$3">Sign Up</Heading> */}
       <VStack>
         <CustomFormControlInput
           labelText="Email"

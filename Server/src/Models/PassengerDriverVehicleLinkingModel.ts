@@ -25,7 +25,6 @@ export const GetPassengerDriverVehicleLinkingByBusinessId = async (
   businessInfo: any,
   callback: (error, result) => void
 ) => {
-  console.log(businessInfo.businessId, businessInfo.dVLId);
   DbPool.query(
     {
       sql: "CALL GetPassengerDriverVehicleLinking(?,?);",

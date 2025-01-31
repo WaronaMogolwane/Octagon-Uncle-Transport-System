@@ -5,7 +5,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {View, GestureResponderEvent} from 'react-native';
 import {SignUpForm} from '../../Components/Forms/SignUpForm';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {SignUpScreenStyles, ThemeStyles} from '../../Stylesheets/GlobalStyles';
 import {UserSignUp} from '../../Controllers/AuthenticationController';
 import {User} from '../../Models/UserModel';
 import {useStorageState} from '../../Services/StorageStateService';
@@ -146,7 +146,7 @@ const SignUpScreen = ({route, navigation}: any) => {
 
   return (
     <SafeAreaView style={ThemeStyles.container}>
-      <View>
+      <View style={SignUpScreenStyles.container}>
         <SignUpForm
           emailIsInvalid={!!formik.errors.email}
           emailOnChangeText={formik.handleChange('email')}

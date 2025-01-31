@@ -164,8 +164,6 @@ export const GetUpcomingTripsDriverFromDB = async (driverId: string) => {
       result = tripData;
     })
     .catch((error: AxiosError) => {
-      console.info(error.message);
-      console.info(error.stack);
       result = error;
     });
 

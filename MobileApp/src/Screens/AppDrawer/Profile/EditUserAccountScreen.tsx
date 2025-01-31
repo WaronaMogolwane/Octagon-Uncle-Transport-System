@@ -320,7 +320,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />
-        <ModalContent>
+        <ModalContent style={{backgroundColor: '#ffffff'}}>
           <ModalHeader>
             <Heading size="lg">Update Email</Heading>
             <ModalCloseButton>

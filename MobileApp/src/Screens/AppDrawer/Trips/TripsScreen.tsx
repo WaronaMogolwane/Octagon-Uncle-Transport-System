@@ -46,11 +46,12 @@ import {
   ModalCloseButton,
   ModalContent,
   ModalHeader,
+  VStack,
+  ToastDescription,
 } from '@gluestack-ui/themed';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
 import {MoveDown} from 'lucide-react-native';
-import {set} from 'date-fns';
 
 const TripsScreen = ({navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
@@ -85,6 +86,14 @@ const TripsScreen = ({navigation}: any) => {
 
   const iconSize = 40;
   const iconStrokeWidth = 2;
+
+  let currentDate = new Date()
+    .toLocaleDateString('en-ZA', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    })
+    .replace(/\//g, '-');
 
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
@@ -121,6 +130,25 @@ const TripsScreen = ({navigation}: any) => {
       GetPastTrips();
     }, 2000);
   }, []);
+
+  const WarningToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="error" variant="outline">
+            <VStack space="xs">
+              <ToastTitle>Cannot Restore Trip</ToastTitle>
+              <ToastDescription>
+                The date for this trip has passed and cannot be undone.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
 
   const ClearStates = () => {
     setHomeAddress('');
@@ -290,13 +318,13 @@ const TripsScreen = ({navigation}: any) => {
           setShowNoFutureTripText(true);
           setRefreshingUpcomingTrips(false);
 
-          // setIsLoading(false);
+          setIsLoading(false);
         } else {
           setUpcomingTripList(trip);
           setRefreshingUpcomingTrips(false);
           setShowNoFutureTripText(false);
 
-          // setIsLoading(false);
+          setIsLoading(false);
         }
       });
     }
@@ -323,13 +351,13 @@ const TripsScreen = ({navigation}: any) => {
           setPastTripList([]);
           setRefreshingPastTrips(false);
 
-          // setIsLoading(false);
+          setIsLoading(false);
         } else {
           setPastTripList(trip);
           setShowNoPastTripText(false);
           setRefreshingPastTrips(false);
 
-          // setIsLoading(false);
+          setIsLoading(false);
         }
       });
     }
@@ -410,12 +438,26 @@ const TripsScreen = ({navigation}: any) => {
       dropOffTime={itemData.dropOffTime}
       leg={itemData.leg}
       handleUndo={() => {
-        if (itemData.tripStatus == 1) {
-          UndoTripEnd(itemData.tripId).then(() => {
-            setIsLoading(true);
-            GetUpcomingTrips();
-            GetPastTrips();
-          });
+        if (itemData.tripStatus == 0) {
+          if (currentDate == itemData.pickUpDate.toString()) {
+            UndoTripEnd(itemData.tripId).then(() => {
+              setIsLoading(true);
+              GetUpcomingTrips();
+              GetPastTrips();
+            });
+          } else {
+            WarningToast();
+          }
+        } else if (itemData.tripStatus == 1) {
+          if (currentDate == itemData.pickUpDate.toString()) {
+            UndoTripEnd(itemData.tripId).then(() => {
+              setIsLoading(true);
+              GetUpcomingTrips();
+              GetPastTrips();
+            });
+          } else {
+            WarningToast();
+          }
         } else if (itemData.tripStatus == 3) {
           UndoTripDropOffTime(itemData.tripId).then(() => {
             setIsLoading(true);
@@ -507,7 +549,7 @@ const TripsScreen = ({navigation}: any) => {
 
   return (
     <NavigationContainer independent={true}>
-      {/* {IsLoading ? (
+      {IsLoading ? (
         <View
           style={{
             position: 'absolute',
@@ -523,7 +565,7 @@ const TripsScreen = ({navigation}: any) => {
           <ActivityIndicator size="large" />
           <Text>Working</Text>
         </View>
-      ) : null} */}
+      ) : null}
       {TripDestinationModal()}
       <Tab.Navigator>
         <Tab.Screen name="Upcoming Trips" component={FirstRoute} />

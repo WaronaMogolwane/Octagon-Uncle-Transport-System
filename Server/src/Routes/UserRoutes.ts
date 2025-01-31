@@ -2,6 +2,7 @@ import Router from "express-promise-router";
 import {
   CheckUserEmail,
   GetUser,
+  GetUserActiveStatus,
   UpdateUserEmail,
   UpdateUserPassword,
 } from "../Controllers/UserController";
@@ -9,6 +10,12 @@ import {
 const router = Router();
 
 router.get("/get-user", GetUser, async (req, res, next) => {});
+
+router.get(
+  "/get-user-active-status",
+  GetUserActiveStatus,
+  async (req, res, next) => {}
+);
 
 router.get("/check-user-email", CheckUserEmail, async (req, res, next) => {});
 

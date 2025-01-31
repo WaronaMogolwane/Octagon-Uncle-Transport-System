@@ -1,8 +1,11 @@
-import {GestureResponderEvent} from 'react-native';
+import {GestureResponderEvent, View} from 'react-native';
 import React, {useContext, useState} from 'react';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {
+  SelectUserRoleScreenStyles,
+  ThemeStyles,
+} from '../../Stylesheets/GlobalStyles';
 import {SignInForm} from '../../Components/Forms/SignInForm';
 import {
   useToast,
@@ -123,36 +126,38 @@ const SelectUserRoleScreen = ({navigation}: any) => {
   };
   return (
     <SafeAreaView style={ThemeStyles.container}>
-      <SelectUserRoleForm
-        userRoleSelectValue={formik.values?.selectedUserRole.toString()}
-        userRoleSelectOnChangeText={formik.handleChange('selectedUserRole')}
-        userRoleSelectIsInvalid={!!formik.errors.selectedUserRole}
-        userRoleSelectErrorText={formik?.errors?.selectedUserRole}
-        userRoleSelectOnBlur={formik.handleBlur('selectedUserRole')}
-        nextButtonOnPress={
-          formik.handleSubmit as (
-            values:
-              | GestureResponderEvent
-              | React.FormEvent<HTMLFormElement>
-              | undefined,
-          ) => void
-        }
-      />
-      <VerifyEmailModal
-        otpIsInvalid={!!formik.errors.otp}
-        otpOnChangeText={formik.handleChange('otp')}
-        otpErrorText={formik?.errors?.otp}
-        otpOnBlur={formik.handleBlur('otp')}
-        otpValue={formik.values?.otp}
-        ShowModal={showModal}
-        ToEmailAddress={''}
-        VerifyOtpButtonOnPress={() => {
-          EmailVerification();
-        }}
-        CloseOtpModalButtonOnPress={() => {
-          setShowModal(false);
-        }}
-      />
+      <View style={SelectUserRoleScreenStyles.container}>
+        <SelectUserRoleForm
+          userRoleSelectValue={formik.values?.selectedUserRole.toString()}
+          userRoleSelectOnChangeText={formik.handleChange('selectedUserRole')}
+          userRoleSelectIsInvalid={!!formik.errors.selectedUserRole}
+          userRoleSelectErrorText={formik?.errors?.selectedUserRole}
+          userRoleSelectOnBlur={formik.handleBlur('selectedUserRole')}
+          nextButtonOnPress={
+            formik.handleSubmit as (
+              values:
+                | GestureResponderEvent
+                | React.FormEvent<HTMLFormElement>
+                | undefined,
+            ) => void
+          }
+        />
+        <VerifyEmailModal
+          otpIsInvalid={!!formik.errors.otp}
+          otpOnChangeText={formik.handleChange('otp')}
+          otpErrorText={formik?.errors?.otp}
+          otpOnBlur={formik.handleBlur('otp')}
+          otpValue={formik.values?.otp}
+          ShowModal={showModal}
+          ToEmailAddress={''}
+          VerifyOtpButtonOnPress={() => {
+            EmailVerification();
+          }}
+          CloseOtpModalButtonOnPress={() => {
+            setShowModal(false);
+          }}
+        />
+      </View>
     </SafeAreaView>
   );
 };

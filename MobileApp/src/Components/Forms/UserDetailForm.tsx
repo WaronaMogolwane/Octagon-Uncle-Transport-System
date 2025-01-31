@@ -118,7 +118,11 @@ export function UserDetailForm(props: UserDetailsFormProps) {
           value={props.postalCodeValue}
         />
         {props.showButton ? (
-          <CustomButton1 title={'Submit'} onPress={props.submitUserDetails} />
+          <CustomButton1
+            title={'Submit'}
+            onPress={props.submitUserDetails}
+            styles={{marginTop: 15}}
+          />
         ) : null}
       </VStack>
     </View>

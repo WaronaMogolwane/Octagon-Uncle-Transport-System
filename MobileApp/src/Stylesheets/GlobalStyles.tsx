@@ -1,6 +1,5 @@
 import {StyleSheet} from 'react-native';
 import COLORS from '../Const/colors';
-import {text} from 'stream/consumers';
 
 export const ThemeStyles = StyleSheet.create({
   container: {
@@ -634,16 +633,6 @@ export const PassengerParentCardListCardStyles = StyleSheet.create({
 });
 export const LinkedVehicleListCardListCardStyles = StyleSheet.create({
   vehicleItem: {
-    // flexDirection: 'row',
-    // backgroundColor: 'white',
-    // borderRadius: 10,
-    // padding: 15,
-    // marginBottom: 15,
-    // shadowColor: '#000', // Add shadow
-    // shadowOffset: {width: 0, height: 2},
-    // shadowOpacity: 0.1,
-    // shadowRadius: 4,
-    // elevation: 3, // For Android shadow
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 10.5,
@@ -689,15 +678,22 @@ export const HomeScreenStyles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 10,
   },
+  primaryHeading: {
+    marginStart: 20,
+    fontSize: 28,
+    fontWeight: '500',
+    color: COLORS.customBlack,
+  },
+  secondaryHeading: {marginStart: 100},
   titleText: {
     textAlign: 'center',
     fontSize: 22,
     fontWeight: 'bold',
     color: COLORS.customBlack,
-    marginBottom: 25,
+    marginBottom: 30,
   },
   secondTitleText: {
-    marginTop: 80,
+    marginTop: 27,
     textAlign: 'left',
     marginStart: 20,
     marginBottom: 20,
@@ -821,17 +817,15 @@ export const PassengerListCardStyles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '400',
   },
-  statusIndicatorActive: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: 'green',
+  scheduledText: {
+    fontWeight: '500',
+    fontSize: 14,
+    color: COLORS.green,
   },
-  statusIndicatorNotActive: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: 'red',
+  notScheduledText: {
+    fontWeight: '500',
+    fontSize: 14,
+    color: COLORS.customRed,
   },
 });
 export const TripScreenStyles = StyleSheet.create({
@@ -943,5 +937,297 @@ export const SignInScreenStyles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     marginHorizontal: 50,
+  },
+  image: {
+    marginBottom: 35,
+    marginTop: 80,
+    height: 100,
+    width: '100%',
+  },
+  loginText: {
+    textAlign: 'center',
+    marginBottom: 13,
+    fontWeight: '500',
+    color: COLORS.customBlack,
+    fontSize: 26,
+  },
+});
+export const SelectUserRoleScreenStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 15,
+    marginHorizontal: 20,
+  },
+});
+export const SelectUserRoleFormStyles = StyleSheet.create({
+  loginText: {
+    textAlign: 'left',
+    marginBottom: 13,
+    fontWeight: '500',
+    color: COLORS.customBlack,
+    fontSize: 20,
+  },
+});
+export const AuthenticationStackStyles = StyleSheet.create({
+  header: {
+    backgroundColor: '#20B2AA',
+  },
+  headerContent: {
+    padding: 30,
+    alignItems: 'center',
+  },
+
+  image: {
+    width: 40,
+    height: 40,
+  },
+
+  body: {
+    padding: 30,
+  },
+  box: {
+    padding: 5,
+    marginTop: 5,
+    marginBottom: 5,
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    shadowColor: 'black',
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      height: 1,
+      width: -2,
+    },
+    elevation: 2,
+  },
+  username: {
+    color: '#20B2AA',
+    fontSize: 22,
+    alignSelf: 'center',
+    marginLeft: 10,
+  },
+  container: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  coverPhoto: {
+    width: '100%',
+    height: 120,
+    resizeMode: 'cover',
+  },
+  avatarContainer: {
+    alignItems: 'center',
+    marginTop: -75,
+  },
+  avatar: {
+    width: 130,
+    height: 130,
+    borderRadius: 75,
+  },
+  name: {
+    marginTop: 15,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  toolbarContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#ffffff',
+  },
+  toolbarLeftContainer: {marginVertical: 15, marginStart: 15},
+  toolbarRightContainer: {marginVertical: 15, marginEnd: 15},
+  toolbarText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: COLORS.customBlack,
+  },
+});
+export const SignUpScreenStyles = StyleSheet.create({
+  container: {
+    marginTop: 15,
+    marginHorizontal: 17,
+  },
+});
+export const PersonalDetailsScreenStyles = StyleSheet.create({
+  container: {
+    marginTop: 15,
+    marginHorizontal: 17,
+  },
+});
+export const BusinessDetailsScreenStyles = StyleSheet.create({
+  container: {
+    marginTop: 15,
+    marginHorizontal: 17,
+  },
+});
+export const ClientListCardStyles = StyleSheet.create({
+  passengerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10.5,
+    marginHorizontal: 14,
+  },
+  passengerImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 10,
+  },
+  parentInfo: {
+    flex: 1,
+  },
+  clientName: {
+    color: COLORS.customBlack,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  passengerCount: {
+    fontSize: 14,
+    color: COLORS.customBlack,
+
+    fontWeight: '400',
+  },
+  clientEmail: {
+    fontSize: 14,
+    color: COLORS.customBlue,
+
+    fontWeight: '400',
+  },
+  statusIndicatorActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'green',
+  },
+  statusIndicatorNotActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'red',
+  },
+});
+export const PendingDriverListCardStyles = StyleSheet.create({
+  passengerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10.5,
+    marginHorizontal: 14,
+  },
+  passengerImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 10,
+  },
+  parentInfo: {
+    flex: 1,
+  },
+  clientName: {
+    color: COLORS.customBlack,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  passengerCount: {
+    fontSize: 14,
+    color: COLORS.customBlack,
+
+    fontWeight: '400',
+  },
+  clientEmail: {
+    marginBottom: 10,
+    fontSize: 14,
+    color: COLORS.customBlue,
+
+    fontWeight: '400',
+  },
+  statusIndicatorActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'green',
+  },
+  statusIndicatorNotActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'red',
+  },
+});
+export const DriverListCardStyles = StyleSheet.create({
+  passengerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10.5,
+    marginHorizontal: 14,
+  },
+  passengerImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 10,
+  },
+  parentInfo: {
+    flex: 1,
+  },
+  clientName: {
+    color: COLORS.customBlack,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  passengerCount: {
+    fontSize: 14,
+    color: COLORS.customBlack,
+
+    fontWeight: '400',
+  },
+  clientEmail: {
+    fontSize: 14,
+    color: COLORS.customBlue,
+
+    fontWeight: '400',
+  },
+  statusIndicatorActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'green',
+  },
+  statusIndicatorNotActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'red',
+  },
+});
+export const VehicleListCardStyles = StyleSheet.create({
+  vehicleItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10.5,
+    marginHorizontal: 14,
+    padding: 5,
+  },
+  vehicleImage: {
+    width: 60,
+    height: 75,
+    borderRadius: 8,
+    marginRight: 15,
+  },
+  vehicleInfo: {
+    flex: 1,
+    justifyContent: 'center', // Vertically center text
+  },
+  vehicleTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: COLORS.customBlack,
+  },
+  licenseNumber: {
+    color: COLORS.customBlue,
+    fontSize: 14,
+  },
+  driverName: {
+    color: COLORS.customBlack,
+    fontSize: 14,
   },
 });

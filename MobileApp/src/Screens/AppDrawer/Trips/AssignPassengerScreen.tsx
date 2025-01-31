@@ -1,10 +1,4 @@
-import {
-  ActivityIndicator,
-  FlatList,
-  RefreshControl,
-  Text,
-  View,
-} from 'react-native';
+import {ActivityIndicator, FlatList, Text, View} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {Dropdown} from 'react-native-element-dropdown';
 import {
@@ -12,7 +6,8 @@ import {
   ThemeStyles,
 } from '../../../Stylesheets/GlobalStyles';
 import {
-  GetAllActivePassengerForBusiness,
+  GetActivePassengerForBusiness,
+  GetUnassignedActivePassengerForBusiness,
   UpdateIsAssigned,
 } from '../../../Controllers/PassengerController';
 import {
@@ -65,26 +60,21 @@ import {AuthContext} from '../../../Services/AuthenticationService';
 import {PassengerCard} from '../../../Components/Cards/PassengerListCard';
 import {AddTrip} from '../../../Controllers/TripController';
 import {Auth} from '../../../Classes/Auth';
-import {AlarmClock, Car} from 'lucide-react-native';
 import {Trip} from '../../../Models/Trip';
-import {useFormik} from 'formik';
 import {CustomButton1} from '../../../Components/Buttons';
 
 const AssignPassengerScreen = ({route, navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
 
-  const initialState = [''];
-
   const [newPassengerId, setNewPassengerId] = useState('');
   const [isFocus, setIsFocus] = useState(false);
   const [passengers, setPassengers] = useState([]);
   const [passengerList, setpassengerList] = useState([]);
-  const [statusCode, setStatusCode] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [calender, setCalender] = useState(false);
   const [modifyCalender, setModifyCalender] = useState(false);
-  const [values, setValues] = useState(initialState);
+  const [values, setValues] = useState(['']);
 
   const [isDisabled, setIsDisabled] = useState(true);
 
@@ -95,16 +85,10 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const [passengerId, setPassngerId] = useState('');
   const [pDVLId, setPDVLId] = useState('');
 
-  const [monday, setMonday] = useState(false);
-  const [tuesday, setTuesday] = useState(false);
-  const [wednesday, setWednesday] = useState(false);
-  const [thursday, setThursday] = useState(false);
-  const [friday, setFriday] = useState(false);
-  const [saturday, setSaturday] = useState(false);
-  const [sunday, setSunday] = useState(false);
   const [IsLoading, setIsLoading] = useState(false);
+  const [isLoadingSmall, setIsLoadingSmall] = useState(false);
 
-  const [refreshing, setRefreshing] = React.useState(false);
+  const [isEmptyFlatList, setIsEmptyFlatList] = useState(true);
 
   const ref = React.useRef(null);
   const toast = useToast();
@@ -116,10 +100,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const dvlId = route.params.curentVehicle.dVLId;
 
   const businessId = auth.GetBusinessId();
-  const onRefresh = React.useCallback(() => {
-    setIsLoading(true);
-    GetPassengers();
-  }, []);
 
   useEffect(() => {
     setIsLoading(true);
@@ -129,24 +109,39 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   const defaultData: never[] = [];
 
   const GetPassengers = async () => {
-    GetAllActivePassengerForBusiness(businessId).then((response: any) => {
-      if (response.code != 'ERR_BAD_REQUEST') {
-        setIsDisabled(false);
-        setPassengers(response);
+    GetUnassignedActivePassengerForBusiness(businessId).then(
+      (response: any) => {
+        if (response[0] != '' && response[1] == 200) {
+          setIsDisabled(false);
+          setPassengers(response[0]);
+          setIsLoading(false);
+        } else {
+          setPassengers(defaultData);
+          setIsDisabled(true);
+          setIsLoading(false);
+          //Toast Notifiaction
+          NoPassengerToast();
+        }
+      },
+    );
+    GetPassengerDriverVehicleLinking(businessId, dvlId)
+      .then(passengers => {
+        if (passengers[0] != '') {
+          setpassengerList(passengers[0]);
+          setIsEmptyFlatList(false);
+        } else {
+          setIsEmptyFlatList(true);
+          setpassengerList([]);
+        }
+      })
+      .catch(error => {
+        console.error(
+          'Error fetching passenger driver vehicle linking:',
+          error,
+        );
         setIsLoading(false);
-      } else {
-        setPassengers(defaultData);
-        setIsDisabled(true);
-        setIsLoading(false);
-
-        //Toast Notifiaction
-        NoPassengerToast();
-      }
-    });
-    GetPassengerDriverVehicleLinking(businessId, dvlId).then(passengers => {
-      setpassengerList(passengers);
-      setStatusCode(!statusCode);
-    });
+        setIsEmptyFlatList(true);
+      });
   };
 
   const NoPassengerToast = () => {
@@ -178,13 +173,6 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
   };
 
   const ClearCalender = () => {
-    setMonday(false);
-    setTuesday(false);
-    setWednesday(false);
-    setThursday(false);
-    setFriday(false);
-    setSaturday(false);
-    setSunday(false);
     setNewPassengerId('');
   };
 
@@ -203,6 +191,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         setdestinationAdress(itemData.dropOffLocation);
         setAge(itemData.age);
       }}
+      passengerId={itemData.passengerId}
     />
   );
 
@@ -214,13 +203,13 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     );
 
     let newSchedule = new PassengerSchedule(
-      monday,
-      tuesday,
-      wednesday,
-      thursday,
-      friday,
-      saturday,
-      sunday,
+      values.includes('monday') ? true : false,
+      values.includes('tuesday') ? true : false,
+      values.includes('wedndeday') ? true : false,
+      values.includes('thursday') ? true : false,
+      values.includes('friday') ? true : false,
+      values.includes('saturday') ? true : false,
+      values.includes('sunday') ? true : false,
       newPassengerId,
       vehicleId,
     );
@@ -232,16 +221,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             AddPassengerSchedule(newSchedule).then((result2: any) => {
               if (result2 == 200) {
                 setNewPassengerId('');
-
-                setMonday(false);
-                setTuesday(false);
-                setWednesday(false);
-                setThursday(false);
-                setFriday(false);
-                setSaturday(false);
-                setSunday(false);
                 setIsLoading(false);
-
                 GetPassengers();
               }
             });
@@ -288,13 +268,13 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
 
   const ModifyCalender = async () => {
     let newSchedule = new PassengerSchedule(
-      monday,
-      tuesday,
-      wednesday,
-      thursday,
-      friday,
-      saturday,
-      sunday,
+      values.includes('monday') ? true : false,
+      values.includes('tuesday') ? true : false,
+      values.includes('wedndeday') ? true : false,
+      values.includes('thursday') ? true : false,
+      values.includes('friday') ? true : false,
+      values.includes('saturday') ? true : false,
+      values.includes('sunday') ? true : false,
       passengerId,
       vehicleId,
     );
@@ -329,7 +309,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     });
   };
 
-  const showPopUp = () => {
+  const showPopUpModal = () => {
     return (
       <Modal
         isOpen={showModal}
@@ -347,9 +327,22 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
-            <Text>Age: {age}</Text>
-            <Text>Homeaddress: {homeAddress}</Text>
-            <Text>Destination Address: {destinationAdress}</Text>
+            {isLoadingSmall ? (
+              <View
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 100,
+                }}>
+                <ActivityIndicator size="large" />
+              </View>
+            ) : (
+              <>
+                <Text>Age: {age}</Text>
+                <Text>Homeaddress: {homeAddress}</Text>
+                <Text>Destination Address: {destinationAdress}</Text>
+              </>
+            )}
           </ModalBody>
           <ModalFooter>
             <Button
@@ -370,13 +363,15 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
               action="negative"
               borderWidth="$0"
               onPress={() => {
+                setIsLoadingSmall(true);
                 RemovePassengerDriverLinking(pDVLId).then(response => {
                   if (response == 200) {
                     GetPassengers();
+                    setShowModal(false);
                     ClearModalUseState();
                     ClearCalender();
-                    setShowModal(false);
                   }
+                  setIsLoadingSmall(false);
                 });
               }}>
               <ButtonText>Delete</ButtonText>
@@ -389,13 +384,37 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
 
   const GetScheduleForPassengers = (passengerId: string) => {
     GetPassengerSchedule(passengerId).then((result: any) => {
-      setMonday(result.monday === 1);
-      setTuesday(result.tuesday === 1);
-      setWednesday(result.wednesday === 1);
-      setThursday(result.thursday === 1);
-      setFriday(result.friday === 1);
-      setSaturday(result.saturday === 1);
-      setSunday(result.sunday === 1);
+      const newValues = [];
+
+      if (result.monday === 1) {
+        newValues.push('monday');
+      }
+
+      if (result.tuesday === 1) {
+        newValues.push('tuesday');
+      }
+
+      if (result.wednesday === 1) {
+        newValues.push('wednesday');
+      }
+
+      if (result.thursday === 1) {
+        newValues.push('thursday');
+      }
+
+      if (result.friday === 1) {
+        newValues.push('friday');
+      }
+
+      if (result.saturday === 1) {
+        newValues.push('saturday');
+      }
+
+      if (result.sunday === 1) {
+        newValues.push('sunday');
+      }
+
+      setValues(newValues); // Use the state update function to set the new values
     });
 
     setCalender(true);
@@ -406,7 +425,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       <Modal
         isOpen={calender}
         onClose={() => {
-          setValues(initialState);
+          setValues([]);
           ClearModalUseState();
           ClearCalender();
           setCalender(false);
@@ -432,82 +451,63 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
                 }}>
                 <VStack space="xl">
                   <Checkbox
-                    isChecked={monday}
+                    isChecked={values.includes('monday') ? true : false}
                     aria-label="Monday"
-                    value={'monday'}
-                    onChange={() => setMonday(!monday)}>
+                    value={'monday'}>
                     <CheckboxIndicator mr="$2">
                       <CheckboxIcon as={CheckIcon} />
                     </CheckboxIndicator>
                     <CheckboxLabel>Monday</CheckboxLabel>
                   </Checkbox>
                   <Checkbox
-                    isChecked={tuesday}
+                    isChecked={values.includes('tuesday') ? true : false}
                     aria-label="Tuesday"
-                    value="tuesday"
-                    onPress={() => {
-                      setTuesday(!tuesday);
-                    }}>
+                    value="tuesday">
                     <CheckboxIndicator mr="$2">
                       <CheckboxIcon as={CheckIcon} />
                     </CheckboxIndicator>
                     <CheckboxLabel>Tuesday</CheckboxLabel>
                   </Checkbox>
                   <Checkbox
-                    isChecked={wednesday}
+                    isChecked={values.includes('wednesday') ? true : false}
                     aria-label="Wednesday"
-                    value="wednesday"
-                    onPress={() => {
-                      setWednesday(!wednesday);
-                    }}>
+                    value="wednesday">
                     <CheckboxIndicator mr="$2">
                       <CheckboxIcon as={CheckIcon} />
                     </CheckboxIndicator>
                     <CheckboxLabel>Wednseday</CheckboxLabel>
                   </Checkbox>
                   <Checkbox
-                    isChecked={thursday}
+                    isChecked={values.includes('thursday') ? true : false}
                     aria-label="Thursday"
-                    value="thursday"
-                    onPress={() => {
-                      setThursday(!thursday);
-                    }}>
+                    value="thursday">
                     <CheckboxIndicator mr="$2">
                       <CheckboxIcon as={CheckIcon} />
                     </CheckboxIndicator>
                     <CheckboxLabel>Thursday</CheckboxLabel>
                   </Checkbox>
                   <Checkbox
-                    isChecked={friday}
+                    isChecked={values.includes('friday') ? true : false}
                     aria-label="Friday"
-                    value="friday"
-                    onPress={() => {
-                      setFriday(!friday);
-                    }}>
+                    value="friday">
                     <CheckboxIndicator mr="$2">
                       <CheckboxIcon as={CheckIcon} />
                     </CheckboxIndicator>
                     <CheckboxLabel>Friday</CheckboxLabel>
                   </Checkbox>
                   <Checkbox
-                    isChecked={saturday}
+                    isChecked={values.includes('saturday') ? true : false}
                     aria-label="Saturday"
-                    value="saturday"
-                    onPress={() => {
-                      setSaturday(!saturday);
-                    }}>
+                    value="saturday">
                     <CheckboxIndicator mr="$2">
                       <CheckboxIcon as={CheckIcon} />
                     </CheckboxIndicator>
                     <CheckboxLabel>Saturday</CheckboxLabel>
                   </Checkbox>
                   <Checkbox
-                    isChecked={sunday}
+                    isChecked={values.includes('sunday') ? true : false}
                     aria-label="Sunday"
-                    value="sunday"
-                    onPress={() => {
-                      setSunday(!sunday);
-                    }}>
+                    value="sunday">
                     <CheckboxIndicator mr="$2">
                       <CheckboxIcon as={CheckIcon} />
                     </CheckboxIndicator>
@@ -518,51 +518,25 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             </View>
           </ModalBody>
           <ModalFooter>
-            <ScrollView>
-              <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
+            <View style={{flex: 1}}>
+              <Button
+                size="sm"
+                action="positive"
+                borderWidth="$0"
+                onPress={() => {
+                  if (modifyCalender == true) {
+                    setIsLoading(true);
+                    ModifyCalender();
+                  } else {
+                    setIsLoading(true);
+                    PrepareSchedule();
+                  }
+                  setValues([]);
+                  setCalender(false);
                 }}>
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                  }}>
-                  <View style={{padding: 5}}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      action="secondary"
-                      mr="$3"
-                      onPress={() => {
-                        setCalender(false);
-                      }}>
-                      <ButtonText>Back</ButtonText>
-                    </Button>
-                  </View>
-                  <View style={{padding: 5}}>
-                    <Button
-                      size="sm"
-                      action="positive"
-                      borderWidth="$0"
-                      onPress={() => {
-                        if (modifyCalender == true) {
-                          setIsLoading(true);
-                          ModifyCalender();
-                        } else {
-                          setIsLoading(true);
-                          PrepareSchedule();
-                        }
-                        setValues(initialState);
-                        setCalender(false);
-                      }}>
-                      <ButtonText>Comfirm</ButtonText>
-                    </Button>
-                  </View>
-                </View>
-              </View>
-            </ScrollView>
+                <ButtonText>Comfirm</ButtonText>
+              </Button>
+            </View>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -602,6 +576,16 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
     });
   };
 
+  const EmtpyFlatListText = () => {
+    return (
+      <View>
+        <Text style={AssignPassengerScreenStyles.flatListText}>
+          There are no passengers assigned to this vehicle.
+        </Text>
+      </View>
+    );
+  };
+
   return (
     <View style={ThemeStyles.container}>
       {IsLoading ? (
@@ -618,12 +602,10 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             zIndex: 100,
           }}>
           <ActivityIndicator size="large" />
-          <Text>Working</Text>
         </View>
       ) : null}
       {CalenderModal()}
-      {showPopUp()}
-
+      {showPopUpModal()}
       <Text style={AssignPassengerScreenStyles.titleText}>Vehicle</Text>
       <Text style={AssignPassengerScreenStyles.secondTitleText}>
         {make} {model}
@@ -697,23 +679,12 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       <Text style={[AssignPassengerScreenStyles.titleText, {marginBottom: 20}]}>
         Assigned passengers
       </Text>
-
+      {isEmptyFlatList ? EmtpyFlatListText() : null}
       <FlatList
         data={passengerList}
         extraData
         renderItem={({item}) => renderItemComponentPassengers(item)}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
       />
-
-      {/* <Text style={AssignPassengerScreenStyles.titleText}>Weekly schedule</Text>
-      <Text style={AssignPassengerScreenStyles.secondTitleText}>
-        Moday to Friday
-      </Text>
-      <Text style={AssignPassengerScreenStyles.thirdTitleText}>
-        Drop off at 7:00am
-      </Text> */}
     </View>
   );
 };

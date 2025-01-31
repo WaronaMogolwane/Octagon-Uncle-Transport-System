@@ -108,8 +108,9 @@ export function BusinessDetailForm(props: AddBusinessDetailFormProps) {
       {props.showButton ? (
         <Button
           size="sm"
-          action="positive"
+          action="primary"
           borderWidth="$0"
+          style={{marginVertical: 15}}
           onPress={props.submitBusinessDetail}>
           <ButtonText>{props.buttonText}</ButtonText>
         </Button>

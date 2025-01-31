@@ -633,16 +633,6 @@ export const PassengerParentCardListCardStyles = StyleSheet.create({
 });
 export const LinkedVehicleListCardListCardStyles = StyleSheet.create({
   vehicleItem: {
-    // flexDirection: 'row',
-    // backgroundColor: 'white',
-    // borderRadius: 10,
-    // padding: 15,
-    // marginBottom: 15,
-    // shadowColor: '#000', // Add shadow
-    // shadowOffset: {width: 0, height: 2},
-    // shadowOpacity: 0.1,
-    // shadowRadius: 4,
-    // elevation: 3, // For Android shadow
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 10.5,
@@ -1161,5 +1151,83 @@ export const PendingDriverListCardStyles = StyleSheet.create({
     height: 10,
     borderRadius: 5,
     backgroundColor: 'red',
+  },
+});
+export const DriverListCardStyles = StyleSheet.create({
+  passengerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10.5,
+    marginHorizontal: 14,
+  },
+  passengerImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginRight: 10,
+  },
+  parentInfo: {
+    flex: 1,
+  },
+  clientName: {
+    color: COLORS.customBlack,
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  passengerCount: {
+    fontSize: 14,
+    color: COLORS.customBlack,
+
+    fontWeight: '400',
+  },
+  clientEmail: {
+    fontSize: 14,
+    color: COLORS.customBlue,
+
+    fontWeight: '400',
+  },
+  statusIndicatorActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'green',
+  },
+  statusIndicatorNotActive: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: 'red',
+  },
+});
+export const VehicleListCardStyles = StyleSheet.create({
+  vehicleItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10.5,
+    marginHorizontal: 14,
+    padding: 5,
+  },
+  vehicleImage: {
+    width: 60,
+    height: 75,
+    borderRadius: 8,
+    marginRight: 15,
+  },
+  vehicleInfo: {
+    flex: 1,
+    justifyContent: 'center', // Vertically center text
+  },
+  vehicleTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: COLORS.customBlack,
+  },
+  licenseNumber: {
+    color: COLORS.customBlue,
+    fontSize: 14,
+  },
+  driverName: {
+    color: COLORS.customBlack,
+    fontSize: 14,
   },
 });

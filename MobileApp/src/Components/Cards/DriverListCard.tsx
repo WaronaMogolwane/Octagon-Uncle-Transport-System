@@ -30,7 +30,10 @@ import {
 import {CustomButton1, CustomButton3} from '../Buttons';
 import {GestureResponderEvent} from 'react-native';
 import {Vehicle} from '../../Models/VehicleModel';
-import {ClientListCardStyles} from '../../Stylesheets/GlobalStyles';
+import {
+  ClientListCardStyles,
+  DriverListCardStyles,
+} from '../../Stylesheets/GlobalStyles';
 
 export const PendingDriverListCard = (props: {
   firstName: string;
@@ -78,7 +81,7 @@ export const DriverListCard = (props: {
 }) => {
   return (
     <Pressable onPress={props.handleDriverCardPress}>
-      <HStack space="md">
+      {/* <HStack space="md">
         <Avatar>
           <AvatarFallbackText>Profile Picture</AvatarFallbackText>
           <AvatarImage
@@ -94,7 +97,25 @@ export const DriverListCard = (props: {
           <Text size="sm">{'Vehicle: ' + props.vehicleLicenseNumber}</Text>
         </VStack>
       </HStack>
-      <Divider my="$3" />
+      <Divider my="$3" /> */}
+      <View style={DriverListCardStyles.passengerItem}>
+        <Image
+          source={{
+            uri: 'https://media.licdn.com/dms/image/C4D03AQFotIRK58pRNA/profile-displayphoto-shrink_200_200/0/1525163555622?e=2147483647&v=beta&t=lvummEevyaevcll0SjNg8UvthCNqz05ate3HonR4zfc',
+          }}
+          alt="Driver profile picture."
+          style={DriverListCardStyles.passengerImage}
+        />
+        <View style={DriverListCardStyles.parentInfo}>
+          <Text style={DriverListCardStyles.clientName}>
+            {props.firstName} {props.lastName}
+          </Text>
+          <Text style={DriverListCardStyles.clientEmail}>{props.email}</Text>
+          <Text style={DriverListCardStyles.passengerCount}>
+            {'Vehicle: ' + props.vehicleLicenseNumber}
+          </Text>
+        </View>
+      </View>
     </Pressable>
   );
 };

@@ -49,6 +49,7 @@ import {
 import NotificationToast from '../../../Components/Toasts/NotificationToast';
 import NotificationAlert from '../../../Components/Alerts/NotificationAlert';
 import {OpenCamera} from '../../../Services/CameraService';
+import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 
 const ManageVehiclesScreen = ({route, navigation}: any) => {
   const {session}: any = useContext(AuthContext);
@@ -602,7 +603,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   }, [formik.values.newLinkedDriverId]);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={ThemeStyles.container}>
       {IsLoading ? (
         <View
           style={{

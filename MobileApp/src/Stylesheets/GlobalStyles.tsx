@@ -707,7 +707,7 @@ export const HomeScreenStyles = StyleSheet.create({
   emptyFlatListText: {
     textAlign: 'center',
     color: COLORS.customBlue,
-    fontWeight: 'bold',
+    fontWeight: '400',
   },
   piesChartTitle: {
     textAlign: 'center',

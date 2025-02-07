@@ -391,38 +391,40 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
 
   const GetScheduleForPassengers = (passengerId: string) => {
     GetPassengerSchedule(passengerId).then((result: any) => {
-      const newValues = [];
+      if (result[0] != undefined) {
+        const newValues = [];
 
-      if (result[0].monday === 1) {
-        newValues.push('monday');
+        if (result[0].monday === 1) {
+          newValues.push('monday');
+        }
+
+        if (result[0].tuesday === 1) {
+          newValues.push('tuesday');
+        }
+
+        if (result[0].wednesday === 1) {
+          newValues.push('wednesday');
+        }
+
+        if (result[0].thursday === 1) {
+          newValues.push('thursday');
+        }
+
+        if (result[0].friday === 1) {
+          newValues.push('friday');
+        }
+
+        if (result[0].saturday === 1) {
+          newValues.push('saturday');
+        }
+
+        if (result[0].sunday === 1) {
+          newValues.push('sunday');
+        }
+
+        setValues(newValues); // Use the state update function to set the new values
+        setIsButtonHidden(true);
       }
-
-      if (result[0].tuesday === 1) {
-        newValues.push('tuesday');
-      }
-
-      if (result[0].wednesday === 1) {
-        newValues.push('wednesday');
-      }
-
-      if (result[0].thursday === 1) {
-        newValues.push('thursday');
-      }
-
-      if (result[0].friday === 1) {
-        newValues.push('friday');
-      }
-
-      if (result[0].saturday === 1) {
-        newValues.push('saturday');
-      }
-
-      if (result[0].sunday === 1) {
-        newValues.push('sunday');
-      }
-
-      setValues(newValues); // Use the state update function to set the new values
-      setIsButtonHidden(true);
     });
 
     // setCalender(true);

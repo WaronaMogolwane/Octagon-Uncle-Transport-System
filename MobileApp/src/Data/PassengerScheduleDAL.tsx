@@ -71,18 +71,22 @@ export const GetPassengerScheduleFromDB = async (passengerId: string) => {
     )
     .then((response: AxiosResponse) => {
       const [scheduleData] = response.data.result;
-      res = new PassengerSchedule(
-        scheduleData.Monday,
-        scheduleData.Tuesday,
-        scheduleData.Wednesday,
-        scheduleData.Thursday,
-        scheduleData.Friday,
-        scheduleData.Saturday,
-        scheduleData.Sunday,
-        scheduleData.PassengerId,
-        scheduleData.DriverVehicleLinkingId,
-        scheduleData.PassengerScheduleId,
-      );
+      if (scheduleData == undefined) {
+        res = null;
+      } else {
+        res = new PassengerSchedule(
+          scheduleData.Monday,
+          scheduleData.Tuesday,
+          scheduleData.Wednesday,
+          scheduleData.Thursday,
+          scheduleData.Friday,
+          scheduleData.Saturday,
+          scheduleData.Sunday,
+          scheduleData.PassengerId,
+          scheduleData.DriverVehicleLinkingId,
+          scheduleData.PassengerScheduleId,
+        );
+      }
     })
     .catch((error: AxiosError) => {
       console.log(error.message);

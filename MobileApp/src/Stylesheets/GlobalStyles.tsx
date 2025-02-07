@@ -4,7 +4,7 @@ import COLORS from '../Const/colors';
 export const ThemeStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: COLORS.white,
   },
   logo: {
     marginBottom: 32,
@@ -690,7 +690,7 @@ export const HomeScreenStyles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     color: COLORS.customBlack,
-    marginBottom: 30,
+    // marginBottom: 5,
   },
   secondTitleText: {
     marginTop: 27,
@@ -707,7 +707,12 @@ export const HomeScreenStyles = StyleSheet.create({
   emptyFlatListText: {
     textAlign: 'center',
     color: COLORS.customBlue,
-    fontweight: 'bold',
+    fontWeight: 'bold',
+  },
+  piesChartTitle: {
+    textAlign: 'center',
+    color: COLORS.customBlue,
+    fontWeight: '400',
   },
   vehicleContainer: {
     // justifyContent: 'center', // Center vertically
@@ -731,6 +736,20 @@ export const HomeScreenStyles = StyleSheet.create({
   itemPrimaryText: {color: COLORS.customBlack, fontWeight: '500'},
   itemSecondaryText: {color: COLORS.customBlue, fontWeight: '500'},
   vehicleInfo: {justifyContent: 'space-evenly'},
+  chartContainer: {
+    height: '30%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    paddingTop: 10,
+  },
+  legend: {
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: 20,
+    marginBottom: 5,
+  },
 });
 export const SmallHomeScreenCardStyles = StyleSheet.create({
   cardContainer: {

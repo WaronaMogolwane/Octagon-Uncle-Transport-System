@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
-import {FlatList, ImageBackground, StyleSheet} from 'react-native';
+import {Dimensions, FlatList, ImageBackground, StyleSheet} from 'react-native';
 import {Text, Image, View, SafeAreaView} from '@gluestack-ui/themed';
 import {
   GetActivePassengerForBusiness,
@@ -33,6 +33,8 @@ import {IVehicle} from '../../../Props/VehicleProps';
 import {HomeScreenStyles, ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 import StatRowCard from '../../../Components/Cards/StatRowCard';
 import {PassengerListHomeScreenCard} from '../../../Components/Cards/PassengerListHomeScreenCard';
+import COLORS from '../../../Const/colors';
+import {PieChart} from 'react-native-gifted-charts/dist/PieChart';
 
 const HomeScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
@@ -51,7 +53,11 @@ const HomeScreen = ({navigation}: any) => {
   const [completedTripsCount, setCompleteTripsCount] = useState(0);
   const [availableBalance, setAvailableBalance] = useState('0');
 
+  const screenWidth = Dimensions.get('window').width;
+
   const [isStarted, setIsStarted] = useState(true);
+  const [showExternalLabel, setShowExternalLabel] = useState(false);
+  const [showPieChartText, setShowPieChartText] = useState(false);
 
   const [vehicle, setVehicle] = useState<IVehicle>({
     Make: 'undefined',
@@ -122,6 +128,67 @@ const HomeScreen = ({navigation}: any) => {
       firstName: 'Trevor ',
       lastName: 'James',
       isActive: true,
+    },
+  ];
+
+  const pieData = [
+    {
+      name: 'Paid ',
+      clients: 7,
+      color: COLORS.customGreen,
+      legendFontColor: '#7F7F7F',
+      legendFontSize: 12,
+      shiftX: 28,
+      shiftY: -18,
+    },
+    {
+      name: 'Not yet paid',
+      clients: 4,
+      color: COLORS.customYellow,
+      legendFontColor: '#7F7F7F',
+      legendFontSize: 12,
+      shiftX: 28,
+      shiftY: -18,
+    },
+    {
+      name: 'Missed payment',
+      clients: 4,
+      color: COLORS.customRed,
+      legendFontColor: '#7F7F7F',
+      legendFontSize: 12,
+      focused: true,
+      shiftX: 28,
+      shiftY: -18,
+    },
+  ];
+
+  const data6 = [
+    {
+      id: 1,
+      value: 50,
+      color: COLORS.customGreen,
+      text: '50',
+      textColor: COLORS.customBlack,
+      textSize: 14,
+      fontWeight: '500',
+    },
+    {
+      id: 2,
+      value: 80,
+      color: COLORS.customYellow,
+      text: '80',
+      textColor: COLORS.customBlack,
+      textSize: 14,
+      fontWeight: '500',
+    },
+    {
+      id: 3,
+      value: 90,
+      color: COLORS.customRed,
+      text: '90',
+      textColor: COLORS.customBlack,
+      textSize: 14,
+      fontWeight: '500',
     },
   ];
 
@@ -405,25 +472,72 @@ const HomeScreen = ({navigation}: any) => {
     }
   };
 
+  const PieChartText = () => {
+    return (
+      <View>
+        <Text style={HomeScreenStyles.piesChartTitle}>Payment summary</Text>
+      </View>
+    );
+  };
+
+  const renderLegend = (text: any, color: any) => {
+    return (
+      <View style={{flexDirection: 'row', marginBottom: 12}}>
+        <View
+          style={{
+            height: 18,
+            width: 18,
+            marginRight: 10,
+            borderRadius: 4,
+            backgroundColor: color || 'white',
+          }}
+        />
+        <Text style={{color: COLORS.customBlack, fontSize: 16}}>
+          {text || ''}
+        </Text>
+      </View>
+    );
+  };
+
   if (role == 1) {
     return (
       <SafeAreaView style={ThemeStyles.container}>
-        <View style={{height: '25%'}}>
-          <ImageBackground
-            source={require('../../../Images/driver_image_homescreen.jpg')}
-            resizeMode="cover"
-            style={HomeScreenStyles.backgroundImage}
-          />
-        </View>
-        <View style={{height: '25%'}}>
-          <Text style={HomeScreenStyles.titleText}>
+        <View style={HomeScreenStyles.chartContainer}>
+          {/* <Text style={HomeScreenStyles.titleText}>
             Good morning, {userName}!
-          </Text>
+          </Text> */}
+          <PieChart
+            donut
+            semiCircle
+            focusOnPress
+            // toggleFocusOnPress
+            data={data6}
+            radius={90}
+            innerRadius={75}
+            centerLabelComponent={PieChartText}
+            extraRadius={30}
+            labelsPosition={'onBorder'}
+            onPress={() => {
+              setShowPieChartText(!showPieChartText);
+            }}
+            showText={showPieChartText}
+          />
+          <View style={HomeScreenStyles.legend}>
+            {renderLegend('Paid', COLORS.customGreen)}
+            {renderLegend('Pending', COLORS.customYellow)}
+            {renderLegend('Failed', COLORS.customRed)}
+          </View>
+        </View>
+        <View style={{height: '20%'}}>
+          {/* <Text style={HomeScreenStyles.titleText}>
+            Good morning, {userName}!
+          </Text> */}
           <View
             style={{
               flexDirection: 'row',
               justifyContent: 'space-evenly',
               marginBottom: 10,
+              marginTop: 25,
             }}>
             <SmallHomeScreenCard
               primaryText={availableBalance}

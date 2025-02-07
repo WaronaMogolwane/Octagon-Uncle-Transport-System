@@ -1,6 +1,7 @@
 import {
   AddPassengerScheduleToDB,
   AddTempPassengerScheduleToDB,
+  CheckPassengerScheduleFromDB,
   GetPassengerScheduleFromDB,
   UpdatePassengerScheduleToDB,
 } from '../Data/PassengerScheduleDAL';
@@ -18,6 +19,10 @@ export const AddTempPassengerSchedule = async (passengerId: string) => {
 
 export const GetPassengerSchedule = async (passengerId: string) => {
   return await GetPassengerScheduleFromDB(passengerId);
+};
+
+export const CheckPassengerSchedule = async (passengerId: string) => {
+  return await CheckPassengerScheduleFromDB(passengerId);
 };
 
 export const UpdatePassengerSchedule = async (

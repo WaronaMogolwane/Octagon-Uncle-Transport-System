@@ -92,6 +92,31 @@ export const GetPassengerScheduleFromDB = async (passengerId: string) => {
   return [res, errorCode];
 };
 
+export const CheckPassengerScheduleFromDB = async (passengerId: string) => {
+  let res: any;
+  let errorCode: any;
+  await axios
+    .get(
+      `${SERVER_HOST}:${SERVER_PORT}/passenger-schedule/get-passenger-schedule-check-availability`,
+      {
+        params: {
+          PassengerId: passengerId,
+        },
+      },
+    )
+    .then((response: AxiosResponse) => {
+      const [scheduleData] = response.data.result;
+
+      res = scheduleData;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error.message);
+      errorCode = error;
+    });
+
+  return [res, errorCode];
+};
+
 export const UpdatePassengerScheduleToDB = async (
   passengerSchedule: PassengerSchedule,
 ) => {

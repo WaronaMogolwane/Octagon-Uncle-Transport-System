@@ -3,6 +3,7 @@ import { PassengerSchedule } from "../Classes/PassengerSchedule";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 import {
   AutoInsertPassengerSchedule,
+  CheckPassengerSchedule,
   GetPassengerSchedule,
   InsertPassengerSchedule,
   InsertTempPassengerSchedule,
@@ -79,12 +80,26 @@ export const GetPassengerScheduleByPassengerId = async (
     if (error) {
       const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result[0],
+      });
+    }
+  });
+};
+
+export const CheckPassengerScheduleByPassengerId = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  let passengerId = req.query.PassengerId;
+
+  await CheckPassengerSchedule(passengerId, (error, result) => {
+    if (error) {
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else {
       res.status(200).json({
         RecordRetrieved: true,

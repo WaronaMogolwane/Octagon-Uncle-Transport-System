@@ -42,8 +42,6 @@ const HomeScreen = ({navigation}: any) => {
   const [passengerCount, setPassengerCount] = useState('0');
   const [vehicleCount, setVehicleCount] = useState('');
   const [userName, setUserName] = useState('');
-  const [tripData, setTripData] = useState(['']);
-  const [fullData, setFullData] = useState([]);
   const [activePassengers, setActivePassengers] = useState([]);
   const [isActivePassenger, setIsActivePassenger] = useState(false);
 
@@ -53,10 +51,7 @@ const HomeScreen = ({navigation}: any) => {
   const [completedTripsCount, setCompleteTripsCount] = useState(0);
   const [availableBalance, setAvailableBalance] = useState('0');
 
-  const screenWidth = Dimensions.get('window').width;
-
   const [isStarted, setIsStarted] = useState(true);
-  const [showExternalLabel, setShowExternalLabel] = useState(false);
   const [showPieChartText, setShowPieChartText] = useState(false);
 
   const [vehicle, setVehicle] = useState<IVehicle>({
@@ -67,127 +62,44 @@ const HomeScreen = ({navigation}: any) => {
     LicenseNumber: 'undefined',
   });
 
-  const role: number = Number(auth.GetUserRole());
-  // const role: number = 2;
+  // const role: number = Number(auth.GetUserRole());
+  const role: number = 2;
 
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
 
-  const iconSize = 15;
-  const iconStrokeWidth = 1;
-  const iconColor = '#000000';
-
   const storageUrl: string =
     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
 
-  const data = [
-    {
-      tripId: '1',
-      driverName: 'Driver Dan',
-      pickUpDate: '08/07/2005',
-      passengerName: 'Kelcie Cash',
-      isActive: false,
-    },
-    {
-      tripId: '2',
-      driverName: 'Driver Dan',
-      pickUpDate: '08/07/2005',
-      passengerName: 'Tsephi Ncube',
-      isActive: true,
-    },
-    {
-      tripId: '3',
-      driverName: 'Driver Dan',
-      pickUpDate: '08/07/2005',
-      passengerName: 'Sockman Grootman',
-      isActive: false,
-    },
-  ];
-
-  const data2 = [
-    {
-      tripId: '1',
-      firstName: 'John',
-      lastName: 'Snow',
-      isActive: true,
-    },
-    {
-      tripId: '2',
-      firstName: 'Jane',
-      lastName: 'Snow',
-      isActive: true,
-    },
-    {
-      tripId: '3',
-      firstName: 'Mary',
-      lastName: 'Snow',
-      isActive: true,
-    },
-    {
-      tripId: '4',
-      firstName: 'Trevor ',
-      lastName: 'James',
-      isActive: true,
-    },
-  ];
-
-  const pieData = [
-    {
-      name: 'Paid ',
-      clients: 7,
-      color: COLORS.customGreen,
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 12,
-      shiftX: 28,
-      shiftY: -18,
-    },
-    {
-      name: 'Not yet paid',
-      clients: 4,
-      color: COLORS.customYellow,
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 12,
-      shiftX: 28,
-      shiftY: -18,
-    },
-    {
-      name: 'Missed payment',
-      clients: 4,
-      color: COLORS.customRed,
-      legendFontColor: '#7F7F7F',
-      legendFontSize: 12,
-      focused: true,
-      shiftX: 28,
-      shiftY: -18,
-    },
-  ];
-
-  const data6 = [
+  const pieChartData = [
     {
       id: 1,
       value: 50,
       color: COLORS.customGreen,
-      text: '50',
       textColor: COLORS.customBlack,
       textSize: 14,
+      textBackgroundColor: COLORS.customGreen,
+      textBackgroundRadius: 14,
       fontWeight: '500',
     },
     {
       id: 2,
       value: 80,
       color: COLORS.customYellow,
-      text: '80',
       textColor: COLORS.customBlack,
       textSize: 14,
+      textBackgroundColor: COLORS.customYellow,
+      textBackgroundRadius: 14,
       fontWeight: '500',
     },
     {
       id: 3,
       value: 90,
       color: COLORS.customRed,
-      text: '90',
       textColor: COLORS.customBlack,
       textSize: 14,
+      textBackgroundColor: COLORS.customRed,
+      textBackgroundRadius: 14,
       fontWeight: '500',
     },
   ];
@@ -204,7 +116,6 @@ const HomeScreen = ({navigation}: any) => {
       GetDailyParentTrips();
       GetPassengers();
       GetActivePasengers();
-      GetUpcomingTrips();
     } else if (role == 3) {
       GetVehicleInfomation();
       GetDailyDriverTrips();
@@ -218,12 +129,6 @@ const HomeScreen = ({navigation}: any) => {
   //     });
   //   }
   // }, []);
-
-  useEffect(() => {
-    if (fullData[0] != '' && fullData.length > 0) {
-      handleSearch();
-    }
-  }, [fullData]);
 
   useEffect(() => {
     const fetchProfileImage = async () => {
@@ -335,18 +240,6 @@ const HomeScreen = ({navigation}: any) => {
     });
   };
 
-  const GetUpcomingTrips = async () => {
-    if (role == 2) {
-      await GetUpcomingTripsForClient(userId).then((response: any) => {
-        setFullData(response);
-      });
-    } else if (role == 3) {
-      await GetUpcomingTripsForDriver(userId).then(response => {
-        setFullData(response);
-      });
-    }
-  };
-
   const GetVehicleCount = async () => {
     await GetVehicles(businessId, (error: any, result: any) => {
       if (error) {
@@ -406,25 +299,6 @@ const HomeScreen = ({navigation}: any) => {
       });
   };
 
-  const handleSearch = () => {
-    const date = new Date().toLocaleDateString('en-CA');
-    const formattedQuery = date;
-
-    const filterData: any = filter(fullData, (user: any) => {
-      return contains(user, formattedQuery);
-    });
-
-    setTripData(filterData);
-  };
-
-  const contains = ({pickUpDate}: any, query: any) => {
-    if (pickUpDate.toLowerCase().includes(query)) {
-      return true;
-    }
-
-    return false;
-  };
-
   const GetAvailableBalance = async (businessId: string) => {
     return await GetBalanceByBusinessId(
       businessId,
@@ -475,7 +349,7 @@ const HomeScreen = ({navigation}: any) => {
   const PieChartText = () => {
     return (
       <View>
-        <Text style={HomeScreenStyles.piesChartTitle}>Payment summary</Text>
+        <Text style={HomeScreenStyles.piesChartTitle}>Payments</Text>
       </View>
     );
   };
@@ -503,19 +377,18 @@ const HomeScreen = ({navigation}: any) => {
     return (
       <SafeAreaView style={ThemeStyles.container}>
         <View style={HomeScreenStyles.chartContainer}>
-          {/* <Text style={HomeScreenStyles.titleText}>
+          <Text style={HomeScreenStyles.titleText}>
             Good morning, {userName}!
-          </Text> */}
+          </Text>
           <PieChart
             donut
             semiCircle
-            focusOnPress
-            // toggleFocusOnPress
-            data={data6}
-            radius={90}
-            innerRadius={75}
+            data={pieChartData}
+            radius={80}
+            innerRadius={65}
+            showValuesAsLabels
+            showTextBackground
             centerLabelComponent={PieChartText}
-            extraRadius={30}
             labelsPosition={'onBorder'}
             onPress={() => {
               setShowPieChartText(!showPieChartText);

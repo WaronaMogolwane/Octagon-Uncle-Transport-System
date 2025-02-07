@@ -140,3 +140,23 @@ export const TruncateTempPassengerSchedule = async (
     }
   );
 };
+
+export const CheckPassengerSchedule = async (
+  passengerId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL CheckPassengerSchedule(?);",
+      timeout: 40000,
+      values: [passengerId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};

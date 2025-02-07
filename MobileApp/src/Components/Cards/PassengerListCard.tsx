@@ -10,7 +10,7 @@ import {
   TripCardParentStyles,
 } from '../../Stylesheets/GlobalStyles';
 import {UserRound} from 'lucide-react-native';
-import {GetPassengerSchedule} from '../../Controllers/PassengerScheduleController';
+import {CheckPassengerSchedule} from '../../Controllers/PassengerScheduleController';
 
 type passengerCardProps = {
   passengerId: string;
@@ -43,11 +43,11 @@ export const PassengerCard = (props: passengerCardProps) => {
     />
   );
 
-  GetPassengerSchedule(props.passengerId).then((response: any) => {
-    if (response[0].passengerId == props.passengerId) {
+  CheckPassengerSchedule(props.passengerId).then((response: any) => {
+    if (response[0].status == 1) {
       setIsScheduled(true);
       setIsVisible(true);
-    } else {
+    } else if (response[0].status == 0) {
       setIsScheduled(false);
       setIsVisible(true);
     }

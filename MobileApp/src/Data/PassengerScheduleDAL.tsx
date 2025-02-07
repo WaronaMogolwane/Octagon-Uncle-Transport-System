@@ -71,18 +71,47 @@ export const GetPassengerScheduleFromDB = async (passengerId: string) => {
     )
     .then((response: AxiosResponse) => {
       const [scheduleData] = response.data.result;
-      res = new PassengerSchedule(
-        scheduleData.Monday,
-        scheduleData.Tuesday,
-        scheduleData.Wednesday,
-        scheduleData.Thursday,
-        scheduleData.Friday,
-        scheduleData.Saturday,
-        scheduleData.Sunday,
-        scheduleData.PassengerId,
-        scheduleData.DriverVehicleLinkingId,
-        scheduleData.PassengerScheduleId,
-      );
+      if (scheduleData == undefined) {
+        res = null;
+      } else {
+        res = new PassengerSchedule(
+          scheduleData.Monday,
+          scheduleData.Tuesday,
+          scheduleData.Wednesday,
+          scheduleData.Thursday,
+          scheduleData.Friday,
+          scheduleData.Saturday,
+          scheduleData.Sunday,
+          scheduleData.PassengerId,
+          scheduleData.DriverVehicleLinkingId,
+          scheduleData.PassengerScheduleId,
+        );
+      }
+    })
+    .catch((error: AxiosError) => {
+      console.log(error.message);
+      errorCode = error;
+    });
+
+  return [res, errorCode];
+};
+
+export const CheckPassengerScheduleFromDB = async (passengerId: string) => {
+  let res: any;
+  let errorCode: any;
+  await axios
+    .get(
+      `${SERVER_HOST}:${SERVER_PORT}/passenger-schedule/get-passenger-schedule-check-availability`,
+      {
+        params: {
+          PassengerId: passengerId,
+        },
+      },
+    )
+    .then((response: AxiosResponse) => {
+      const [scheduleData] = response.data.result;
+
+      res = scheduleData;
     })
     .catch((error: AxiosError) => {
       console.log(error.message);

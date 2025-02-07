@@ -87,8 +87,8 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
 
   const [IsLoading, setIsLoading] = useState(false);
   const [isLoadingSmall, setIsLoadingSmall] = useState(false);
-
   const [isEmptyFlatList, setIsEmptyFlatList] = useState(true);
+  const [isButtonHidden, setIsButtonHidden] = useState(false);
 
   const ref = React.useRef(null);
   const toast = useToast();
@@ -183,6 +183,8 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
       pickUpLocation={itemData.pickUpLocation}
       dropOffLocation={itemData.dropOffLocation}
       onPress={() => {
+        GetScheduleForPassengers(itemData.passengerId);
+
         setShowModal(true);
         setPassngerId(itemData.passengerId);
         setPDVLId(itemData.pDVLId);
@@ -315,6 +317,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         isOpen={showModal}
         onClose={() => {
           setShowModal(false);
+          setIsButtonHidden(false);
           // ClearModalUseState();
         }}
         finalFocusRef={ref}>
@@ -345,19 +348,23 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
             )}
           </ModalBody>
           <ModalFooter>
-            <Button
-              variant="outline"
-              size="sm"
-              action="secondary"
-              mr="$3"
-              onPress={() => {
-                setShowModal(false);
-                ClearCalender();
-                GetScheduleForPassengers(passengerId);
-                setModifyCalender(true);
-              }}>
-              <ButtonText>Edit Schedule</ButtonText>
-            </Button>
+            {isButtonHidden ? (
+              <Button
+                variant="outline"
+                size="sm"
+                action="secondary"
+                mr="$3"
+                onPress={() => {
+                  setShowModal(false);
+                  ClearCalender();
+                  // GetScheduleForPassengers(passengerId);
+                  setModifyCalender(true);
+                  setCalender(true);
+                }}>
+                <ButtonText>Edit Schedule</ButtonText>
+              </Button>
+            ) : null}
+
             <Button
               size="sm"
               action="negative"
@@ -384,40 +391,43 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
 
   const GetScheduleForPassengers = (passengerId: string) => {
     GetPassengerSchedule(passengerId).then((result: any) => {
-      const newValues = [];
+      if (result[0] != undefined) {
+        const newValues = [];
 
-      if (result.monday === 1) {
-        newValues.push('monday');
+        if (result[0].monday === 1) {
+          newValues.push('monday');
+        }
+
+        if (result[0].tuesday === 1) {
+          newValues.push('tuesday');
+        }
+
+        if (result[0].wednesday === 1) {
+          newValues.push('wednesday');
+        }
+
+        if (result[0].thursday === 1) {
+          newValues.push('thursday');
+        }
+
+        if (result[0].friday === 1) {
+          newValues.push('friday');
+        }
+
+        if (result[0].saturday === 1) {
+          newValues.push('saturday');
+        }
+
+        if (result[0].sunday === 1) {
+          newValues.push('sunday');
+        }
+
+        setValues(newValues); // Use the state update function to set the new values
+        setIsButtonHidden(true);
       }
-
-      if (result.tuesday === 1) {
-        newValues.push('tuesday');
-      }
-
-      if (result.wednesday === 1) {
-        newValues.push('wednesday');
-      }
-
-      if (result.thursday === 1) {
-        newValues.push('thursday');
-      }
-
-      if (result.friday === 1) {
-        newValues.push('friday');
-      }
-
-      if (result.saturday === 1) {
-        newValues.push('saturday');
-      }
-
-      if (result.sunday === 1) {
-        newValues.push('sunday');
-      }
-
-      setValues(newValues); // Use the state update function to set the new values
     });
 
-    setCalender(true);
+    // setCalender(true);
   };
 
   const CalenderModal = () => {

@@ -62,8 +62,8 @@ const HomeScreen = ({navigation}: any) => {
     LicenseNumber: 'undefined',
   });
 
-  // const role: number = Number(auth.GetUserRole());
-  const role: number = 2;
+  const role: number = Number(auth.GetUserRole());
+  // const role: number = 2;
 
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();

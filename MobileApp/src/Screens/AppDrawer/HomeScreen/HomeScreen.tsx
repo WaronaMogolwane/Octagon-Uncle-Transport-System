@@ -378,7 +378,7 @@ const HomeScreen = ({navigation}: any) => {
       <SafeAreaView style={ThemeStyles.container}>
         <View style={HomeScreenStyles.chartContainer}>
           <Text style={HomeScreenStyles.titleText}>
-            Good morning, {userName}!
+            Good {getTimeOfDay()}, {userName}!
           </Text>
           <PieChart
             donut

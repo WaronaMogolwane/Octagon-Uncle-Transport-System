@@ -75,10 +75,11 @@ const SelectUserRoleScreen = ({navigation}: any) => {
       }
     },
   });
-  const GoToSignUpPage = (userRole: string, businessId: string) => {
+  const GoToSignUpPage = (userRole: string, userInvitation: any) => {
     navigation.navigate('Sign Up', {
       userRole: userRole,
-      businessId: businessId,
+      businessId: userInvitation.BusinessId,
+      userId: userInvitation.UserId,
     });
   };
 
@@ -93,10 +94,7 @@ const SelectUserRoleScreen = ({navigation}: any) => {
           } else if (result) {
             setShowModal(false);
             ShowToast();
-            GoToSignUpPage(
-              formik.values.selectedUserRole,
-              result.Data.BusinessId,
-            );
+            GoToSignUpPage(formik.values.selectedUserRole, result.Data);
           }
         }
       },

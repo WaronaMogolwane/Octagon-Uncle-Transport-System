@@ -1,5 +1,5 @@
 import { BankTransfer, Recipient, Transfer, TransferRecipient, TransferWebHookEvent } from './../Classes/Transfer';
-import { GetBulkChargesForToday, InsertNewBulkCharge, GetNewBulkCharge, InsertNewTransfer, AreRecurringChargesPendingToday, InsertPendingCharges, GetAvailableBalanceByBusinessId, GetUpcomingPaymentSummaryByBusinessId, GetDeclinedPaymentSummaryByBusinessId, GetPaymentsSummaryForThisMonthByBusinessId, GetPaymentsByBusinessId, GetCardAuthorizationsByUserId, GetMonthlyPaymentDetailsByUserId } from './../Models/PaymentsModel';
+import { GetBulkChargesForToday, InsertNewBulkCharge, GetNewBulkCharge, InsertNewTransfer, AreRecurringChargesPendingToday, InsertPendingCharges, GetAvailableBalanceByBusinessId, GetUpcomingPaymentSummaryByBusinessId, GetDeclinedPaymentSummaryByBusinessId, GetPaymentsSummaryForThisMonthByBusinessId, GetPaymentsByBusinessId, GetCardAuthorizationsByUserId, GetMonthlyPaymentDetailsByUserId, InsertPaymentSchedule } from './../Models/PaymentsModel';
 import { InitiateBulkCharge, ChargeAuthorization, CreateNewPaystackRefund, CreateTransferRecipient, InitiateTransfer } from './../Services/PaystackService';
 import { Authorization, Data, RefundWebhookEvent, TransactionWebhookEvent } from './../Classes/WebhookEvent';
 import { NextFunction, Request, Response } from "express";
@@ -19,6 +19,7 @@ import { AxiosResponse } from 'axios';
 import { CustomLogger } from '../Classes/CustomLogger';
 import { OkPacket, QueryError } from 'mysql2';
 import { TransferResponse } from '../Classes/BankTransferResponse';
+import { PaymentSchedule } from '../Classes/PaymentSchedule';
 const bulkChargeSize: number = 1000;
 
 const Logger: CustomLogger = new CustomLogger();
@@ -48,7 +49,27 @@ export const CreateNewCustomer = async (req: Request, res: Response, next: NextF
 }
 export const CreateNewPlan = (req: Request, res: Response, next: NextFunction) => {
 }
-export const CreateNewSubscription = (req: Request, res: Response, next: NextFunction) => {
+export const CreateNewPaymentSchedule = async (req: Request, res: Response, next: NextFunction) => {
+    const reqBody: any = req.body;
+    let newPaymentSchedule: PaymentSchedule = ({
+        PaymentsScheduleId: reqBody.paymentsScheduleId,
+        UserId: reqBody.userId,
+        Amount: reqBody.amount,
+        CardAuthorisationId: reqBody.cardAuthorisationId,
+        PaymentDay: reqBody.paymentDay,
+        DateCreated: reqBody.DateCreated,
+        IsActive: true
+    })
+    await InsertPaymentSchedule(newPaymentSchedule, (error: any, result: any) => {
+        if (error) {
+            const err: Error = new Error(error.message)
+            next(new ErrorResponse(400, err.message, err.stack));
+        }
+        else {
+            res.status(200).json({ message: "Payment scehdule successfully created." })
+        }
+    })
+
 }
 export const CreateNewTransferRecipient = async (req: Request, res: Response, next: NextFunction) => {
     const reqBody: any = req.body;
@@ -107,6 +128,8 @@ export const CreateNewCardAuthorisation = async (webhookEvent: TransactionWebhoo
         }
     })
 }
+export const CreateNewSubscription = (req: Request, res: Response, next: NextFunction) => { }
+
 export const CreateNewCharge = async (req: Request, res: Response, next: NextFunction) => {
     await ChargeAuthorization(req, res, (error: any, response: any) => {
         if (error) {

@@ -19,7 +19,7 @@ import {
 import {AuthContext} from '../../Services/AuthenticationService';
 
 const SignUpScreen = ({route, navigation}: any) => {
-  const {userRole, businessId} = route.params;
+  const {userRole, businessId, userId} = route.params;
   const [showModal, setShowModal] = useState(false);
   const {signIn, session, signUp, emailOtp, verifyOtp}: any =
     useContext(AuthContext);
@@ -124,6 +124,7 @@ const SignUpScreen = ({route, navigation}: any) => {
   };
   const SignUpNewUser: any = async () => {
     const newUser: User = {
+      userId: userId,
       email: formik.values.email,
       password: formik.values.password,
       businessId: businessId,

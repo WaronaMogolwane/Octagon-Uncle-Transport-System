@@ -162,6 +162,7 @@ export const CreateUserWithEmailPassword = async (
       Email: user.email,
       UserRole: user.userRole,
       BusinessId: user.businessId,
+      UserId: user.userId,
     })
     .then((response: any) => {
       callback(null, response);

@@ -5,6 +5,7 @@ import { DbPool } from "../Services/DatabaseService";
 import { UserCredentials } from "../Classes/UserCredentials";
 import { UserInvitation } from "../Classes/UserInvitation";
 import { ErrorResponse } from "../Classes/ErrorResponse";
+import { randomUUID } from "node:crypto";
 
 export const InsertOtp = async (
   email: string,
@@ -100,9 +101,10 @@ export const InsertUserInvitation = async (
   userInvitation: UserInvitation,
   callback: (error: any, result: any) => void,
 ) => {
+  const newUserId: string = randomUUID();
   DbPool.query(
     {
-      sql: "CALL InsertUserInvitation(?,?,?,?,?,?)",
+      sql: "CALL InsertUserInvitation(?,?,?,?,?,?,?)",
       timeout: 40000,
       values: [
         userInvitation.businessId,
@@ -111,6 +113,7 @@ export const InsertUserInvitation = async (
         userInvitation.userEmail,
         userInvitation.firstName,
         userInvitation.lastName,
+        newUserId
       ],
     },
     (err, res) => {

@@ -169,7 +169,9 @@ export const DeleteDriverVehicleLink = async (
   let driverId: string = req.body.DriverId;
   await DeleteDriverVehicleLinkByDriverId(driverId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(400, error.message));
+      const err: Error = new Error(error.message)
+      next(new ErrorResponse(400, err.message, err.stack));
+
     } else {
       res.status(200).send(result);
     }
@@ -183,7 +185,9 @@ export const DeleteVehicle = async (req: any, res: any, next: any) => {
     vehicleId,
     (error, result) => {
       if (error) {
-        next(new ErrorResponse(400, error.message));
+        const err: Error = new Error(error.message)
+        next(new ErrorResponse(400, err.message, err.stack));
+
       } else {
         res.status(200).send(result);
       }
@@ -194,7 +198,9 @@ export const GetVehicles = async (req: any, res: any, next: any) => {
   let businessId = req.query.businessId;
   await GetVehiclesByBusinessId(businessId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(400, error.message));
+      const err: Error = new Error(error.message)
+      next(new ErrorResponse(400, err.message, err.stack));
+
     } else {
       if (result[0]) {
         res.status(200).send(result[0]);
@@ -210,7 +216,9 @@ export const GetDriverVehicle = async (req: any, res: any, next: any) => {
   await GetVehiclesByDriverId(driverId, (error, result) => {
 
     if (error) {
-      next(new ErrorResponse(400, error.message));
+      const err: Error = new Error(error.message)
+      next(new ErrorResponse(400, err.message, err.stack));
+
     } else {
       if (result[0]) {
         res.status(200).send(result[0]);

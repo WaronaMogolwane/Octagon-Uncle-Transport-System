@@ -162,6 +162,7 @@ const TripsScreen = ({navigation}: any) => {
     setTripLeg(0);
   };
 
+  //Modal for driver that shows the address
   const TripDestinationModal = () => {
     return (
       <Modal
@@ -391,6 +392,7 @@ const TripsScreen = ({navigation}: any) => {
     />
   );
 
+  //Modal for parent warning about cancelling the trip
   const TripWarningModal = () => {
     return (
       <Modal

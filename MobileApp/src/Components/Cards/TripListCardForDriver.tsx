@@ -6,15 +6,9 @@ import {
   View,
 } from 'react-native';
 import React from 'react';
-import {
-  TripCardDriverStyles,
-  TripCardDriverSwipableCardStyles,
-} from '../../Stylesheets/GlobalStyles';
-import {Card} from '@gluestack-ui/themed';
+import {TripCardDriverSwipableCardStyles} from '../../Stylesheets/GlobalStyles';
 import {Swipeable} from 'react-native-gesture-handler';
-import {MoveRight, MoveLeft, ArrowRight, ArrowLeft} from 'lucide-react-native';
-import COLORS from '../../Const/colors';
-import TripDestinationCard from './TripDestinationCard';
+import {ArrowRight, ArrowLeft} from 'lucide-react-native';
 
 type tripCardProps = {
   passengerName: string;
@@ -153,12 +147,16 @@ export const TripCardDriver = (props: tripCardProps) => {
             {props.pickUpTime == '' ||
             props.pickUpTime == undefined ||
             props.pickUpTime == null ? null : (
-              <Text>Pickup time: {props.pickUpTime}</Text>
+              <Text style={TripCardDriverSwipableCardStyles.pickupDate}>
+                Pickup time: {props.pickUpTime}
+              </Text>
             )}
             {props.dropOffTime == '' ||
             props.dropOffTime == undefined ||
             props.dropOffTime == null ? null : (
-              <Text>Dropoff time: {props.dropOffTime}</Text>
+              <Text style={TripCardDriverSwipableCardStyles.pickupDate}>
+                Dropoff time: {props.dropOffTime}
+              </Text>
             )}
           </View>
         </View>

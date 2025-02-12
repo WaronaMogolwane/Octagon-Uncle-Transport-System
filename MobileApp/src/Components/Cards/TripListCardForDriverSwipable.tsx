@@ -4,24 +4,11 @@ import {
   TouchableOpacity,
   Animated,
   GestureResponderEvent,
-  ActivityIndicator,
 } from 'react-native';
-import React, {useState} from 'react';
+import React from 'react';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
-import {
-  TripCardDriverStyles,
-  TripCardDriverSwipableCardStyles,
-} from '../../Stylesheets/GlobalStyles';
-import {Card, Center, Image} from '@gluestack-ui/themed';
-import {
-  ArrowLeft,
-  ArrowRight,
-  MoveLeft,
-  MoveRight,
-  WalletMinimal,
-} from 'lucide-react-native';
-import COLORS from '../../Const/colors';
-import TripDestinationCard from './TripDestinationCard';
+import {TripCardDriverSwipableCardStyles} from '../../Stylesheets/GlobalStyles';
+import {ArrowLeft, ArrowRight} from 'lucide-react-native';
 
 type tripCardSwipableProps = {
   passengerName: string;
@@ -233,12 +220,16 @@ export const TripCardDriverSwipable = (props: tripCardSwipableProps) => {
             {props.pickUpTime == '' ||
             props.pickUpTime == undefined ||
             props.pickUpTime == null ? null : (
-              <Text>Pickup time: {props.pickUpTime}</Text>
+              <Text style={TripCardDriverSwipableCardStyles.pickupDate}>
+                Pickup time: {props.pickUpTime}
+              </Text>
             )}
             {props.dropOffTime == '' ||
             props.dropOffTime == undefined ||
             props.dropOffTime == null ? null : (
-              <Text>Dropoff time: {props.dropOffTime}</Text>
+              <Text style={TripCardDriverSwipableCardStyles.pickupDate}>
+                Dropoff time: {props.dropOffTime}
+              </Text>
             )}
           </View>
         </View>

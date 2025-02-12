@@ -260,6 +260,7 @@ export const ManagePassengerScreenStyles = StyleSheet.create({
     marginStart: 5,
   },
   modalButtonContainer: {
+    justifyContent: 'center',
     flexDirection: 'row',
     marginHorizontal: 5,
     width: '100%',

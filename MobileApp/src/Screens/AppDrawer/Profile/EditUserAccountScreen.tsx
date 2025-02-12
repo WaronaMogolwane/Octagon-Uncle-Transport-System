@@ -152,7 +152,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
 
   const SendOtp = async () => {
     CheckDuplicateEmail(emailFormik.values.email.trim()).then((result: any) => {
-      if (result[0].result == true) {
+      if (result[0].result[0] == true) {
         emailOtp(emailFormik.values.email.trim(), (error: any, result: any) => {
           if (error) {
             console.error(error);

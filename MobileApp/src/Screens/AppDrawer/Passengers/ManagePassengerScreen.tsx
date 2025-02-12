@@ -832,7 +832,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                     styles={
                       ManagePassengerScreenStyles.editPassengerModalButton
                     }
-                    title="Edit Passenger"
+                    title="Edit"
                     size="sm"
                     action="secondary"
                     isDisabled={false}
@@ -847,7 +847,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                     styles={
                       ManagePassengerScreenStyles.deletePassengerModalButton
                     }
-                    title="Delete Passenger"
+                    title="Delete"
                     size="sm"
                     action="negative"
                     isDisabled={false}

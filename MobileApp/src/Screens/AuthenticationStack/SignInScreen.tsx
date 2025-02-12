@@ -90,13 +90,13 @@ const SignInScreen = ({navigation}: any) => {
           }
         />
         <CustomButton3
+          onPress={GoToForgotPasswordPage}
+          title={'Forgot Password'}
+        />
+        <CustomButton3
           onPress={GoToUserRoleSelectPage}
           title={'New around here? Create an account'}
         />
-        {/* <CustomButton3
-        onPress={GoToForgotPasswordPage}
-        title={'Forgot Password'}
-      /> */}
       </View>
     </SafeAreaView>
   );

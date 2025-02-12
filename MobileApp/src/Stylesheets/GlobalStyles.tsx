@@ -882,7 +882,7 @@ export const TripCardDriverSwipableCardStyles = StyleSheet.create({
   passengerName: {fontWeight: '500', fontSize: 16, color: COLORS.customBlack},
   pickupDate: {fontWeight: '400', fontSize: 14, color: COLORS.customBlue},
   timeContainer: {
-    marginTop: 1,
+    justifyContent: 'center',
   },
   tripStatusText: {fontWeight: '400', fontSize: 14},
 });
@@ -1248,5 +1248,11 @@ export const VehicleListCardStyles = StyleSheet.create({
   driverName: {
     color: COLORS.customBlack,
     fontSize: 14,
+  },
+});
+export const ForgotPasswordScreenStyles = StyleSheet.create({
+  container: {
+    marginTop: 10,
+    marginHorizontal: 20,
   },
 });

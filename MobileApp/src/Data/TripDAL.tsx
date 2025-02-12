@@ -412,6 +412,7 @@ export const GetDailytTripsDriverFromDB = async (driverId: string) => {
           dropOffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
           leg: data.Leg,
+          isCompleted: data.IsCompleted,
         };
 
         tripData.push(trip);

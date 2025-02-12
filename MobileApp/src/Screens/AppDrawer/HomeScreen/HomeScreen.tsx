@@ -165,15 +165,15 @@ const HomeScreen = ({navigation}: any) => {
 
         result.forEach((item: any) => {
           if (item.tripStatus == 1) {
-            setMissedTripsCount(missedTripsCount + 1);
+            setMissedTripsCount(prevCount => prevCount + 1);
           }
 
           if (item.tripStatus == 2) {
-            setActiveTripsCount(activeTripsCount + 1);
+            setActiveTripsCount(prevCount => prevCount + 1);
           }
 
           if (item.tripStatus == 3) {
-            setCompleteTripsCount(completedTripsCount + 1);
+            setCompleteTripsCount(prevCount => prevCount + 1);
           }
         });
       } else {
@@ -194,15 +194,15 @@ const HomeScreen = ({navigation}: any) => {
 
         result.forEach((item: any) => {
           if (item.tripStatus == 1) {
-            setMissedTripsCount(missedTripsCount + 1);
+            setMissedTripsCount(prevCount => prevCount + 1);
           }
 
           if (item.tripStatus == 2) {
-            setActiveTripsCount(activeTripsCount + 1);
+            setActiveTripsCount(prevCount => prevCount + 1);
           }
 
           if (item.tripStatus == 3) {
-            setCompleteTripsCount(completedTripsCount + 1);
+            setCompleteTripsCount(prevCount => prevCount + 1);
           }
         });
       } else {
@@ -223,15 +223,15 @@ const HomeScreen = ({navigation}: any) => {
 
         result.forEach((item: any) => {
           if (item.tripStatus == 1) {
-            setMissedTripsCount(missedTripsCount + 1);
+            setMissedTripsCount(prevCount => prevCount + 1);
           }
 
           if (item.tripStatus == 2) {
-            setActiveTripsCount(activeTripsCount + 1);
+            setActiveTripsCount(prevCount => prevCount + 1);
           }
 
-          if (item.tripStatus == 3) {
-            setCompleteTripsCount(completedTripsCount + 1);
+          if (item.tripStatus == 3 && item.isCompleted == 1) {
+            setCompleteTripsCount(prevCount => prevCount + 1);
           }
         });
       } else {

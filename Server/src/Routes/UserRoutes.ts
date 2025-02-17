@@ -3,6 +3,7 @@ import {
   CheckUserEmail,
   GetUser,
   GetUserActiveStatus,
+  RestoreUserPassword,
   UpdateUserEmail,
   UpdateUserPassword,
 } from "../Controllers/UserController";
@@ -28,6 +29,12 @@ router.patch(
 router.patch(
   "/update-user-password",
   UpdateUserPassword,
+  async (req, res, next) => {}
+);
+
+router.patch(
+  "/restore-user-password",
+  RestoreUserPassword,
   async (req, res, next) => {}
 );
 export default router;

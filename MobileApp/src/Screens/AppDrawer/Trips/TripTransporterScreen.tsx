@@ -1,24 +1,14 @@
-import {
-  FlatList,
-  GestureResponderEvent,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {FlatList, RefreshControl, Text, View} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {
-  FlatlistStyles,
   ThemeStyles,
   TripTransporterCardStyles,
 } from '../../../Stylesheets/GlobalStyles';
-import {TripCardDriver} from '../../../Components/Cards/TripListCardForDriver';
 import {
   GetPastTripsForTransporter,
   GetUpcomingTripsForTransporter,
-  UndoTripDropOffTime,
 } from '../../../Controllers/TripController';
 import {Auth} from '../../../Classes/Auth';
 import {AuthContext} from '../../../Services/AuthenticationService';
@@ -27,11 +17,7 @@ import {
   TripCardTransporterComplete,
 } from '../../../Components/Cards/TripCardTransporter';
 import {
-  ArrowLeftIcon,
   CloseIcon,
-  Fab,
-  FabIcon,
-  FabLabel,
   Heading,
   Icon,
   Modal,

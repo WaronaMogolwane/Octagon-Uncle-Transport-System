@@ -1,17 +1,16 @@
 import {
   GestureResponderEvent,
+  Image,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import React from 'react';
 import {
-  TripCardDriverStyles,
+  TripCardStyles,
   TripTransporterCardStyles,
 } from '../../Stylesheets/GlobalStyles';
-import {Card} from '@gluestack-ui/themed';
-import {ArrowLeft, ArrowRight} from 'lucide-react-native';
-import TripDestinationCard from './TripDestinationCard';
+import {ChevronLeft, ChevronRight} from 'lucide-react-native';
 
 type tripCardProps = {
   passengerName: string;
@@ -30,8 +29,8 @@ type tripCardProps = {
 };
 
 export const TripTransporterCard = (props: tripCardProps) => {
-  const iconSize = 40;
-  const iconStrokeWidth = 2;
+  const iconSize = 35;
+  const iconStrokeWidth = 1.2;
 
   const tripStatus = () => {
     if (props.tripStatus == 0) {
@@ -72,58 +71,59 @@ export const TripTransporterCard = (props: tripCardProps) => {
   };
 
   const arrowRight = (
-    <ArrowRight
+    <ChevronRight
       size={iconSize}
       strokeWidth={iconStrokeWidth}
       color={'#3ba2a9'}
+      style={{marginEnd: 10}}
     />
   );
 
   const arrowLeft = (
-    <ArrowLeft
+    <ChevronLeft
       size={iconSize}
       strokeWidth={iconStrokeWidth}
       color={'#c26b71'}
+      style={{marginEnd: 10}}
     />
   );
-  return (
-    <View style={TripTransporterCardStyles.container}>
-      <TouchableOpacity onPress={props.handleIconPress}>
-        <View style={TripTransporterCardStyles.iconContainer}>
-          {props.leg == 0 ? arrowRight : arrowLeft}
-        </View>
-      </TouchableOpacity>
 
-      <View style={TripTransporterCardStyles.textContainer}>
-        <View style={{marginEnd: 10}}>
-          <Text style={TripTransporterCardStyles.passengerName}>
-            {props.passengerName}
-          </Text>
-          <Text style={TripTransporterCardStyles.pickupDate}>
-            Date: {props.pickUpDate}
-          </Text>
-          {tripStatus()}
-        </View>
+  function getMeridiem(): string {
+    const now = new Date();
+    const hours = now.getHours();
+    return hours >= 12 ? 'PM' : 'AM';
+  }
+
+  return (
+    <View style={TripCardStyles.passengerItem}>
+      <Image
+        source={require('../../Images/default_avatar_image.jpg')}
+        style={TripCardStyles.profileImage}
+      />
+
+      <View style={TripCardStyles.passengerInfo}>
+        <Text style={TripCardStyles.passengerName}>
+          {props.passengerName}, {props.pickUpDate.replace(/-/g, '/')}
+        </Text>
         <View style={TripTransporterCardStyles.timeContainer}>
           {props.pickUpTime == '' ||
           props.pickUpTime == undefined ||
           props.pickUpTime == null ? null : (
-            <Text>Pickup time: {props.pickUpTime}</Text>
-          )}
-          {props.dropOffTime == '' ||
-          props.dropOffTime == undefined ||
-          props.dropOffTime == null ? null : (
-            <Text>Dropoff time: {props.dropOffTime}</Text>
+            <Text style={TripCardStyles.pickupTime}>
+              Pickup: {props.pickUpTime + ' ' + getMeridiem()}
+            </Text>
           )}
         </View>
+        {tripStatus()}
       </View>
+      {props.leg == 0 ? arrowRight : arrowLeft}
     </View>
   );
 };
 
 export const TripCardTransporterComplete = (props: tripCardProps) => {
   const iconSize = 40;
-  const iconStrokeWidth = 2;
+  const iconStrokeWidth = 1.2;
 
   const tripStatus = () => {
     if (props.tripStatus == 0) {
@@ -174,7 +174,7 @@ export const TripCardTransporterComplete = (props: tripCardProps) => {
   };
 
   const arrowRight = (
-    <ArrowRight
+    <ChevronRight
       size={iconSize}
       strokeWidth={iconStrokeWidth}
       color={'#3ba2a9'}
@@ -182,44 +182,50 @@ export const TripCardTransporterComplete = (props: tripCardProps) => {
   );
 
   const arrowLeft = (
-    <ArrowLeft
+    <ChevronLeft
       size={iconSize}
       strokeWidth={iconStrokeWidth}
       color={'#c26b71'}
     />
   );
 
-  return (
-    <View style={TripTransporterCardStyles.container}>
-      <TouchableOpacity onPress={props.handleIconPress}>
-        <View style={TripTransporterCardStyles.iconContainer}>
-          {props.leg == 0 ? arrowRight : arrowLeft}
-        </View>
-      </TouchableOpacity>
+  function getMeridiem(): string {
+    const now = new Date();
+    const hours = now.getHours();
+    return hours >= 12 ? 'PM' : 'AM';
+  }
 
-      <View style={TripTransporterCardStyles.textContainer}>
-        <View style={{marginEnd: 10}}>
-          <Text style={TripTransporterCardStyles.passengerName}>
-            {props.passengerName}
-          </Text>
-          <Text style={TripTransporterCardStyles.pickupDate}>
-            Date: {props.pickUpDate}
-          </Text>
-          {tripStatus()}
-        </View>
+  return (
+    <View style={TripCardStyles.passengerItem}>
+      <Image
+        source={require('../../Images/default_avatar_image.jpg')}
+        style={TripCardStyles.profileImage}
+      />
+
+      <View style={TripCardStyles.passengerInfo}>
+        <Text style={TripCardStyles.passengerName}>
+          {props.passengerName}, {props.pickUpDate.replace(/-/g, '/')}
+        </Text>
         <View style={TripTransporterCardStyles.timeContainer}>
           {props.pickUpTime == '' ||
           props.pickUpTime == undefined ||
           props.pickUpTime == null ? null : (
-            <Text>Pickup time: {props.pickUpTime}</Text>
+            <Text style={TripCardStyles.pickupTime}>
+              Pickup: {props.pickUpTime + ' ' + getMeridiem()}
+            </Text>
           )}
+
           {props.dropOffTime == '' ||
           props.dropOffTime == undefined ||
           props.dropOffTime == null ? null : (
-            <Text>Dropoff time: {props.dropOffTime}</Text>
+            <Text style={TripCardStyles.dropOffTime}>
+              Dropoff: {props.dropOffTime + ' ' + getMeridiem()}
+            </Text>
           )}
         </View>
+        {tripStatus()}
       </View>
+      {props.leg == 0 ? arrowRight : arrowLeft}
     </View>
   );
 };

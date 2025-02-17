@@ -130,3 +130,30 @@ export const UpdateUserPasswordInDB = async (
 
   return [data, statusCode, errorMessage];
 };
+
+export const RestoreUserPasswordInDB = async (
+  userId: string,
+  newPassword: string,
+) => {
+  let statusCode: any;
+  let data: any;
+  let errorMessage: any;
+
+  await axios
+    .patch(`${SERVER_HOST}:${SERVER_PORT}/user/restore-user-password`, {
+      user: {
+        UserId: userId,
+        Password: newPassword,
+      },
+    })
+    .then((response: any) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: any) => {
+      console.log(error);
+      errorMessage = error;
+    });
+
+  return [data, statusCode, errorMessage];
+};

@@ -14,6 +14,7 @@ import {
 } from '../../../Components/Cards/TripListForParentCard';
 import {
   EndTrip,
+  GetDailytTripsDriver,
   GetPastTripsForClient,
   GetPastTripsForDriver,
   GetUpcomingTripsForClient,
@@ -25,13 +26,15 @@ import {
   UndoTripPickUpTime,
   UpdatePassengerStatus,
 } from '../../../Controllers/TripController';
-import {TripCardDriverSwipable} from '../../../Components/Cards/TripListCardForDriverSwipable';
 import {
   FlatlistStyles,
   ThemeStyles,
   TripScreenStyles,
 } from '../../../Stylesheets/GlobalStyles';
-import {TripCardDriver} from '../../../Components/Cards/TripListCardForDriver';
+import {
+  TripCardDriver,
+  TripCardDriverSwipable,
+} from '../../../Components/Cards/TripListCardForDriver';
 import {
   useToast,
   Modal,
@@ -48,10 +51,13 @@ import {
   ModalHeader,
   VStack,
   ToastDescription,
+  ModalFooter,
 } from '@gluestack-ui/themed';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
 import {MoveDown} from 'lucide-react-native';
+import {CustomButton1} from '../../../Components/Buttons';
+import COLORS from '../../../Const/colors';
 
 const TripsScreen = ({navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
@@ -76,6 +82,8 @@ const TripsScreen = ({navigation}: any) => {
 
   const [IsLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [cancelTrip, setCancelTrip] = useState(false);
+  const [tripId, setTripId] = useState('');
 
   const [homeAddress, setHomeAddress] = useState('');
   const [destinationAddress, setDestinationAddress] = useState('');
@@ -156,6 +164,7 @@ const TripsScreen = ({navigation}: any) => {
     setTripLeg(0);
   };
 
+  //Modal for driver that shows the address
   const TripDestinationModal = () => {
     return (
       <Modal
@@ -339,7 +348,7 @@ const TripsScreen = ({navigation}: any) => {
           setShowNoPastTripText(true);
           setRefreshingPastTrips(false);
         } else {
-          setShowNoPastTripText(true);
+          setShowNoPastTripText(false);
           setPastTripList(trip);
           setRefreshingPastTrips(false);
         }
@@ -374,8 +383,80 @@ const TripsScreen = ({navigation}: any) => {
       tripStatus={itemData.tripStatus}
       dropOffTime={itemData.dropoffTime}
       leg={itemData.leg}
+      handleAbsentPassenger={() => {
+        if (itemData.tripStatus == 0) {
+          setTripId(itemData.tripId);
+          setCancelTrip(true);
+        } else {
+          ShowErrorToast();
+        }
+      }}
     />
   );
+
+  //Modal for parent warning about cancelling the trip
+  const TripWarningModal = () => {
+    return (
+      <Modal
+        style={TripScreenStyles.modalContainer}
+        isOpen={cancelTrip}
+        onClose={() => {
+          setCancelTrip(false);
+        }}
+        finalFocusRef={ref}>
+        <ModalBackdrop />
+        <ModalContent style={{backgroundColor: '#ffffff'}}>
+          <ModalHeader>
+            <Heading size="lg">Warning</Heading>
+            <ModalCloseButton>
+              <Icon as={CloseIcon} />
+            </ModalCloseButton>
+          </ModalHeader>
+          <ModalBody>
+            <Text>
+              You are about to cancel this pickup. Please note it cannot be
+              reversed.
+            </Text>
+          </ModalBody>
+          <ModalFooter
+            style={{
+              justifyContent: 'center',
+            }}>
+            <CustomButton1
+              title="Cancel trip"
+              size="md"
+              action="negative"
+              isDisabled={false}
+              isFocusVisible={false}
+              onPress={() => {
+                ChangeTripStatus(tripId, 1);
+              }}
+            />
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    );
+  };
+
+  // Error toast
+  const ShowErrorToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="error" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Cannot cancel</ToastTitle>
+              <ToastDescription>
+                The trip cannot be cancelled because it has already begun.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
 
   //Contains card for Parent
   const renderItemComponentParentComplete = (itemData: any) => (
@@ -388,6 +469,7 @@ const TripsScreen = ({navigation}: any) => {
       tripStatus={itemData.tripStatus}
       dropOffTime={itemData.dropoffTime}
       leg={itemData.leg}
+      handleAbsentPassenger={() => {}}
     />
   );
 
@@ -560,6 +642,7 @@ const TripsScreen = ({navigation}: any) => {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: '#ffffff75',
+            // backgroundColor: COLORS.grey,
             zIndex: 100,
           }}>
           <ActivityIndicator size="large" />
@@ -567,6 +650,7 @@ const TripsScreen = ({navigation}: any) => {
         </View>
       ) : null}
       {TripDestinationModal()}
+      {TripWarningModal()}
       <Tab.Navigator>
         <Tab.Screen name="Upcoming Trips" component={FirstRoute} />
         <Tab.Screen name="Past Trips" component={SecondRoute} />

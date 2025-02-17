@@ -26,7 +26,8 @@ const AuthenticationStack = () => {
             if (
               title == 'User Role' ||
               title == 'Sign Up' ||
-              title == 'Business Information'
+              title == 'Business Information' ||
+              title == 'Forgot Password'
             ) {
               return <ArrowLeft size={25} strokeWidth={2} color={'black'} />;
             } else {
@@ -35,7 +36,7 @@ const AuthenticationStack = () => {
           };
 
           const titleSelector = () => {
-            if (title == 'Sign In' || title == 'User Role') {
+            if (title == 'Sign In') {
               return '';
             } else {
               return title;
@@ -48,10 +49,10 @@ const AuthenticationStack = () => {
                 <Pressable
                   style={AuthenticationStackStyles.toolbarLeftContainer}
                   onPress={() => {
-                    if (title == 'User Role') {
+                    if (title == 'User Role' || title == 'Forgot Password') {
                       navigation.navigate('Sign In');
-                    } else if (title == 'Assign Passenger') {
-                      navigation.navigate('Manage Trip');
+                    } else if (title == 'Sign Up') {
+                      navigation.navigate('User Role');
                     }
                   }}>
                   {iconSeletor()}

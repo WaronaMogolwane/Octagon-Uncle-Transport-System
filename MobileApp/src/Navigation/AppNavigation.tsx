@@ -29,7 +29,7 @@ const AppNav = () => {
 
   if (isLoading) {
     return (
-      <View style={ThemeStyles.container}>
+      <View style={[ThemeStyles.container, {justifyContent: 'center'}]}>
         <ActivityIndicator size={'large'} />
       </View>
     );

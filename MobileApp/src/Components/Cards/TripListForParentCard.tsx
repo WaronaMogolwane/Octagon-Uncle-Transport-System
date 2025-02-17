@@ -1,12 +1,17 @@
 import {
   Animated,
   GestureResponderEvent,
+  Image,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 import React from 'react';
-import {TripCardDriverSwipableCardStyles} from '../../Stylesheets/GlobalStyles';
+import {
+  TripCardDriverSwipableCardStyles,
+  TripCardStyles,
+  TripTransporterCardStyles,
+} from '../../Stylesheets/GlobalStyles';
 import {ArrowLeft, ArrowRight} from 'lucide-react-native';
 import {Swipeable} from 'react-native-gesture-handler';
 
@@ -29,7 +34,7 @@ type tripCardProps = {
 
 export const TripCardParent = (props: tripCardProps) => {
   const iconSize = 40;
-  const iconStrokeWidth = 2;
+  const iconStrokeWidth = 1.2;
 
   const leftSwipe = (progress: any, dragX: any) => {
     const scale = dragX.interpolate({
@@ -119,42 +124,39 @@ export const TripCardParent = (props: tripCardProps) => {
       color={'#c26b71'}
     />
   );
+
+  function getMeridiem(): string {
+    const now = new Date();
+    const hours = now.getHours();
+    return hours >= 12 ? 'PM' : 'AM';
+  }
   return (
     <Swipeable renderLeftActions={leftSwipe}>
-      <View style={TripCardDriverSwipableCardStyles.container}>
-        <View style={TripCardDriverSwipableCardStyles.iconContainer}>
-          {props.leg == 0 ? arrowRight : arrowLeft}
-        </View>
-        <View style={TripCardDriverSwipableCardStyles.textContainer}>
-          <View style={{marginEnd: 10}}>
-            <Text style={TripCardDriverSwipableCardStyles.passengerName}>
-              {props.passengerName}
-            </Text>
-            <Text style={TripCardDriverSwipableCardStyles.pickupDate}>
-              Date: {props.pickUpDate}
-            </Text>
-            <Text style={TripCardDriverSwipableCardStyles.pickupDate}>
+      <View style={TripCardStyles.passengerItem}>
+        <Image
+          source={require('../../Images/default_avatar_image.jpg')}
+          style={TripCardStyles.profileImage}
+        />
+
+        <View style={TripCardStyles.passengerInfo}>
+          <Text style={TripCardStyles.passengerName}>
+            {props.passengerName}, {props.pickUpDate.replace(/-/g, '/')}
+          </Text>
+          <View style={TripTransporterCardStyles.timeContainer}>
+            <Text style={TripCardStyles.driverName}>
               Driver: {props.driverName}
             </Text>
-          </View>
-          <View style={TripCardDriverSwipableCardStyles.timeContainer}>
             {props.pickUpTime == '' ||
             props.pickUpTime == undefined ||
             props.pickUpTime == null ? null : (
-              <Text style={TripCardDriverSwipableCardStyles.pickupDate}>
-                Pickup time: {props.pickUpTime}
+              <Text style={TripCardStyles.pickupTime}>
+                Pickup: {props.pickUpTime + ' ' + getMeridiem()}
               </Text>
             )}
-            {props.dropOffTime == '' ||
-            props.dropOffTime == undefined ||
-            props.dropOffTime == null ? null : (
-              <Text style={TripCardDriverSwipableCardStyles.pickupDate}>
-                Dropoff time: {props.dropOffTime}
-              </Text>
-            )}
-            {tripStatus()}
           </View>
+          {tripStatus()}
         </View>
+        {props.leg == 0 ? arrowRight : arrowLeft}
       </View>
     </Swipeable>
   );
@@ -227,37 +229,46 @@ export const TripCardParentComplete = (props: tripCardProps) => {
       color={'#c26b71'}
     />
   );
+
+  function getMeridiem(): string {
+    const now = new Date();
+    const hours = now.getHours();
+    return hours >= 12 ? 'PM' : 'AM';
+  }
   return (
-    <View style={TripCardDriverSwipableCardStyles.container}>
-      <View style={TripCardDriverSwipableCardStyles.iconContainer}>
-        {props.leg == 0 ? arrowRight : arrowLeft}
-      </View>
-      <View style={TripCardDriverSwipableCardStyles.textContainer}>
-        <View style={{marginEnd: 10}}>
-          <Text style={TripCardDriverSwipableCardStyles.passengerName}>
-            {props.passengerName}
-          </Text>
-          <Text style={TripCardDriverSwipableCardStyles.pickupDate}>
-            Date: {props.pickUpDate}
-          </Text>
-          <Text style={TripCardDriverSwipableCardStyles.pickupDate}>
+    <View style={TripCardStyles.passengerItem}>
+      <Image
+        source={require('../../Images/default_avatar_image.jpg')}
+        style={TripCardStyles.profileImage}
+      />
+
+      <View style={TripCardStyles.passengerInfo}>
+        <Text style={TripCardStyles.passengerName}>
+          {props.passengerName}, {props.pickUpDate.replace(/-/g, '/')}
+        </Text>
+        <View style={TripTransporterCardStyles.timeContainer}>
+          <Text style={TripCardStyles.driverName}>
             Driver: {props.driverName}
           </Text>
-        </View>
-        <View style={TripCardDriverSwipableCardStyles.timeContainer}>
           {props.pickUpTime == '' ||
           props.pickUpTime == undefined ||
           props.pickUpTime == null ? null : (
-            <Text>Pickup time: {props.pickUpTime}</Text>
+            <Text style={TripCardStyles.pickupTime}>
+              Pickup: {props.pickUpTime + ' ' + getMeridiem()}
+            </Text>
           )}
+
           {props.dropOffTime == '' ||
           props.dropOffTime == undefined ||
           props.dropOffTime == null ? null : (
-            <Text>Dropoff time: {props.dropOffTime}</Text>
+            <Text style={TripCardStyles.dropOffTime}>
+              Dropoff: {props.dropOffTime + ' ' + getMeridiem()}
+            </Text>
           )}
-          {tripStatus()}
         </View>
+        {tripStatus()}
       </View>
+      {props.leg == 0 ? arrowRight : arrowLeft}
     </View>
   );
 };

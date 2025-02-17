@@ -941,7 +941,8 @@ export const TripTransporterCardStyles = StyleSheet.create({
   passengerName: {fontWeight: '500', fontSize: 16, color: COLORS.customBlack},
   pickupDate: {fontWeight: '400', fontSize: 14, color: COLORS.customBlue},
   timeContainer: {
-    marginTop: 1,
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
   tripStatusText: {fontWeight: '400', fontSize: 14},
   modalText: {
@@ -1255,5 +1256,31 @@ export const ForgotPasswordScreenStyles = StyleSheet.create({
   container: {
     marginTop: 10,
     marginHorizontal: 20,
+  },
+});
+export const TripCardStyles = StyleSheet.create({
+  passengerList: {
+    marginBottom: 20,
+  },
+  passengerItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+  },
+  profileImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    marginHorizontal: 11,
+  },
+  passengerInfo: {
+    flex: 1,
+  },
+  passengerName: {fontWeight: '500', fontSize: 16, color: COLORS.customBlack},
+  pickupTime: {fontWeight: '400', fontSize: 14, color: COLORS.customBlue},
+  dropOffTime: {fontWeight: '400', fontSize: 14, color: COLORS.customBlue},
+  driverName: {fontWeight: '400', fontSize: 16, color: COLORS.customBlue},
+  timeContainer: {
+    justifyContent: 'flex-start',
   },
 });

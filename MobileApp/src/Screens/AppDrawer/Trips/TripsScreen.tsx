@@ -26,13 +26,15 @@ import {
   UndoTripPickUpTime,
   UpdatePassengerStatus,
 } from '../../../Controllers/TripController';
-import {TripCardDriverSwipable} from '../../../Components/Cards/TripListCardForDriverSwipable';
 import {
   FlatlistStyles,
   ThemeStyles,
   TripScreenStyles,
 } from '../../../Stylesheets/GlobalStyles';
-import {TripCardDriver} from '../../../Components/Cards/TripListCardForDriver';
+import {
+  TripCardDriver,
+  TripCardDriverSwipable,
+} from '../../../Components/Cards/TripListCardForDriver';
 import {
   useToast,
   Modal,

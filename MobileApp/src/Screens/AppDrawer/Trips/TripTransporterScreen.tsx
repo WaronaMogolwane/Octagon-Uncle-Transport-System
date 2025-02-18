@@ -28,6 +28,7 @@ import {
   ModalHeader,
 } from '@gluestack-ui/themed';
 import {MoveDown} from 'lucide-react-native';
+import GroupedFlatList from '../../../Components/GroupedFlatList';
 
 const TripTransporterScreen = ({route, navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
@@ -36,6 +37,7 @@ const TripTransporterScreen = ({route, navigation}: any) => {
 
   const vehicleId = route.params.curentVehicle.vehicleId;
   const userId = auth.GetUserId();
+  const role = auth.GetUserRole();
   const iconSize = 40;
   const iconStrokeWidth = 2;
   const ref = React.useRef(null);
@@ -230,29 +232,18 @@ const TripTransporterScreen = ({route, navigation}: any) => {
       </View>
     );
   }
-
   //Contains Past Flatlist for all roles
   function SecondRoute() {
-    return (
-      <View style={ThemeStyles.container}>
-        {showNoPastTripText ? EmtpyFlatListText() : null}
-        <FlatList
-          data={PastTripList}
-          extraData
-          renderItem={({item}) => renderItemComponentTransporterComplete(item)}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshingPastTrips}
-              onRefresh={onRefreshPastTrips}
-            />
-          }
-        />
-      </View>
-    );
+    return <GroupedFlatList pastTrips={PastTripList} role={role} />;
   }
   return (
     <NavigationContainer independent={true}>
       {TripDestinationModal()}
+      <View style={{padding: 10, backgroundColor: '#E0F7FA'}}>
+        <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
+          Gemini 2.0 Flash (Preview) Enabled for all clients
+        </Text>
+      </View>
       <Tab.Navigator>
         <Tab.Screen name="Upcoming Trips" component={FirstRoute} />
         <Tab.Screen name="Past Trips" component={SecondRoute} />

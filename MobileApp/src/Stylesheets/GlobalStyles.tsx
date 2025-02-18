@@ -1284,3 +1284,42 @@ export const TripCardStyles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
 });
+export const GroupedFlatListStyles = StyleSheet.create({
+  header: {
+    padding: 16,
+    // backgroundColor: COLORS.white,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  headerText: {
+    fontWeight: '400',
+    fontSize: 18,
+    color: COLORS.customBlack,
+  },
+  currentDateHeader: {
+    padding: 16,
+    backgroundColor: COLORS.white,
+    color: COLORS.customBlack,
+    fontSize: 16,
+    fontWeight: '400',
+  },
+  recordItem: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  groupHeader: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    padding: 16,
+    backgroundColor: COLORS.white,
+    // borderBottomWidth: 1,
+    // borderBottomColor: '#ddd',
+  },
+  groupHeaderText: {
+    fontWeight: '400',
+    fontSize: 16,
+    color: COLORS.customBlack,
+  },
+  container: {backgroundColor: COLORS.white},
+});

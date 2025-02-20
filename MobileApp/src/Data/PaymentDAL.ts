@@ -1,6 +1,28 @@
 import { SERVER_HOST, SERVER_PORT } from "@env";
 import axios from "axios";
 import { CardAuthorisation } from "../Models/PaymentsModel";
+import { PaymentSchedule } from "../Models/PaymentShedule";
+
+export const InsertPaymentSchedule = async (
+    newPaymentSchedule: PaymentSchedule,
+    callback: (error: any, result: any) => void,
+) => {
+    await axios
+        .post(`${SERVER_HOST}:${SERVER_PORT}/payments/create-payment-schedule`, {
+            PaymentsScheduleId: newPaymentSchedule.PaymentsScheduleId,
+            UserId: newPaymentSchedule.UserId,
+            Amount: newPaymentSchedule.Amount,
+            CardAuthorisationId: newPaymentSchedule.CardAuthorisationId,
+            PaymentDay: newPaymentSchedule.PaymentDay,
+            DateCreated: newPaymentSchedule.DateCreated,
+        })
+        .then((response: any) => {
+            callback(null, response);
+        })
+        .catch((error: any) => {
+            callback(error, null);
+        });
+};
 
 export const GetAvailableBalanceByBusinessId = async (businessId: string, callback: (error: any, result: any) => void) => {
     await axios

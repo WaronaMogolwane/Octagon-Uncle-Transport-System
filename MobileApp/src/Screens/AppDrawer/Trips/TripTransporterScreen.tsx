@@ -239,11 +239,6 @@ const TripTransporterScreen = ({route, navigation}: any) => {
   return (
     <NavigationContainer independent={true}>
       {TripDestinationModal()}
-      <View style={{padding: 10, backgroundColor: '#E0F7FA'}}>
-        <Text style={{textAlign: 'center', fontWeight: 'bold'}}>
-          Gemini 2.0 Flash (Preview) Enabled for all clients
-        </Text>
-      </View>
       <Tab.Navigator>
         <Tab.Screen name="Upcoming Trips" component={FirstRoute} />
         <Tab.Screen name="Past Trips" component={SecondRoute} />

@@ -14,7 +14,6 @@ import {
 } from '../../../Components/Cards/TripListForParentCard';
 import {
   EndTrip,
-  GetDailytTripsDriver,
   GetPastTripsForClient,
   GetPastTripsForDriver,
   GetUpcomingTripsForClient,
@@ -817,21 +816,6 @@ const TripsScreen = ({navigation}: any) => {
   function SecondRoute() {
     if (role == 2) {
       return (
-        // <View style={ThemeStyles.container}>
-        //   {showNoPastTripText ? EmtpyFlatListText() : null}
-        //   <FlatList
-        //     data={PastTripList}
-        //     extraData={statusCode}
-        //     renderItem={({item}) => renderItemComponentParentComplete(item)}
-        //     refreshControl={
-        //       <RefreshControl
-        //         refreshing={refreshingPastTrips}
-        //         onRefresh={onRefreshPastTrips}
-        //       />
-        //     }
-        //   />
-        // </View>
-        // <GroupedFlatList pastTrips={PastTripList} role={role.toString()} />
         <FlatList
           style={GroupedFlatListStyles.container}
           ListHeaderComponent={
@@ -863,21 +847,6 @@ const TripsScreen = ({navigation}: any) => {
       );
     } else if (role == 3) {
       return (
-        // <View style={ThemeStyles.container}>
-        //   {showNoPastTripText ? EmtpyFlatListText() : null}
-        //   <FlatList
-        //     data={PastTripList}
-        //     extraData={statusCode}
-        //     renderItem={({item}) => renderItemComponentDriverComplete(item)}
-        //     refreshControl={
-        //       <RefreshControl
-        //         refreshing={refreshingPastTrips}
-        //         onRefresh={onRefreshPastTrips}
-        //       />
-        //     }
-        //   />
-        // </View>
-        // <GroupedFlatList pastTrips={PastTripList} role={role.toString()} />
         <FlatList
           style={GroupedFlatListStyles.container}
           ListHeaderComponent={
@@ -923,7 +892,6 @@ const TripsScreen = ({navigation}: any) => {
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: '#ffffff75',
-            // backgroundColor: COLORS.grey,
             zIndex: 100,
           }}>
           <ActivityIndicator size="large" />

@@ -1,26 +1,14 @@
-import {
-  ActivityIndicator,
-  Image,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {ActivityIndicator, Image, StyleSheet, Text, View} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
+import RNFS from 'react-native-fs';
 import {
   Fab,
-  FabIcon,
-  ArrowLeftIcon,
-  FabLabel,
   ModalBackdrop,
   ModalContent,
   ModalCloseButton,
   ModalHeader,
   Heading,
   ModalBody,
-  CloseIcon,
-  Icon,
   Modal,
   useToast,
   Toast,
@@ -29,15 +17,13 @@ import {
   ToastTitle,
   Button,
   ButtonText,
-  TrashIcon,
-  ButtonIcon,
   Menu,
-  AddIcon,
   MenuItem,
   MenuItemLabel,
   EditIcon,
-  Card,
-  ModalFooter,
+  CloseIcon,
+  FabIcon,
+  Icon,
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
 import {CustomButton1} from '../../../Components/Buttons';
@@ -55,16 +41,12 @@ import {
 import {useFormik} from 'formik';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import VerifyEmailModal from '../../../Components/Modals/VerifyEmailModal';
-import {err} from 'react-native-svg/lib/typescript/xml';
 import {Auth} from '../../../Classes/Auth';
 import {OpenCamera, OpenFilePicker} from '../../../Services/CameraService';
 import {ImageOrVideo} from 'react-native-image-crop-picker';
-import {Camera} from 'lucide-react';
-import {Images} from 'lucide-react';
-import {Aperture} from 'lucide-react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   ClearImageViaAsyncStorage,
+  DeleteImage,
   RestoreImageViaAsyncStorage,
   SaveImageViaAsyncStorage,
 } from '../../../Services/ImageStorageService';
@@ -99,6 +81,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
   const [IsLoading, setIsLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
@@ -113,15 +96,13 @@ const EditUserAccountScreen = ({navigation}: any) => {
   const ref = React.useRef(null);
   const toast = useToast();
 
-  const date = new Date();
-
   useEffect(() => {
     GetCredentials();
   }, [refreshData]);
 
   useEffect(() => {
     if (isUpdating) {
-      SaveImageViaAsyncStorage(profileImage);
+      SaveImage(storageUrl + profileImage);
     }
   }, [profileImage]);
 
@@ -503,6 +484,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
           setProfileImage('');
           setIsUpdating(false);
         });
+        DeleteImage();
       }
     });
   };
@@ -559,12 +541,43 @@ const EditUserAccountScreen = ({navigation}: any) => {
       if (response[1] == 200) {
         GetUserProfileImage(userId).then((result: any) => {
           if (result[1] == 200) {
-            setProfileImage(result[0]);
             setIsUpdating(false);
+            SaveImage(storageUrl + result[0]);
           }
         });
       }
     });
+  };
+
+  const SaveImage = async (imageUrl: string) => {
+    const downloadDest = `${RNFS.DocumentDirectoryPath}/profile_image.jpg`;
+
+    try {
+      // Check if file already exists
+      const fileExists = await RNFS.exists(downloadDest);
+
+      // If file exists, delete it
+      if (fileExists) {
+        await RNFS.unlink(downloadDest);
+        // console.log('Old image deleted:', downloadDest);
+      }
+
+      // Download and save the new image
+      const downloadResponse = await RNFS.downloadFile({
+        fromUrl: imageUrl,
+        toFile: downloadDest,
+      }).promise;
+
+      if (downloadResponse.statusCode === 200) {
+        // console.log('Image saved successfully:', downloadDest);
+        setProfileImage(`file://${downloadDest}?${Date.now()}`);
+        SaveImageViaAsyncStorage(`file://${downloadDest}`);
+      } else {
+        // console.log('Failed to save image:', downloadResponse.statusCode);
+      }
+    } catch (err) {
+      // console.log('Error saving image:', err);
+    }
   };
 
   const emailInitialValues = {
@@ -672,27 +685,6 @@ const EditUserAccountScreen = ({navigation}: any) => {
 
   return (
     <View style={ThemeStyles.container}>
-      {isUpdating ? (
-        <View
-          style={{
-            width: 150,
-            height: 150,
-            borderRadius: 75,
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#ffffff75',
-            zIndex: 100,
-          }}>
-          <ActivityIndicator size="large" />
-          <Text>Working</Text>
-        </View>
-      ) : null}
-
       {EmailModal()}
       {EmailVerificationModal()}
       {ChangePasswordModal()}
@@ -702,19 +694,27 @@ const EditUserAccountScreen = ({navigation}: any) => {
           EditUserAccountScreenStyles.container,
           EditUserAccountScreenStyles.avatarContainer,
         ]}>
+        {isUpdating ? (
+          <View
+            style={{
+              ...StyleSheet.absoluteFillObject,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#ffffff75',
+              zIndex: 100,
+              borderRadius: 75,
+            }}>
+            <ActivityIndicator size="large" />
+            <Text>Working</Text>
+          </View>
+        ) : null}
+
         <Image
           style={EditUserAccountScreenStyles.avatar}
           source={
-            profileImage == ''
-              ? require('../../../Images/default_avatar_image.jpg')
-              : {
-                  uri:
-                    storageUrl +
-                    profileImage +
-                    '?xc=' +
-                    date.getTime() +
-                    date.getDate(),
-                }
+            profileImage !== ''
+              ? {uri: profileImage}
+              : require('../../../Images/default_avatar_image.jpg')
           }
         />
         <View style={EditUserAccountScreenStyles.fabPosition}>

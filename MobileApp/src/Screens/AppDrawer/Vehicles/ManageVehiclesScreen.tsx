@@ -49,6 +49,7 @@ import {
 import NotificationToast from '../../../Components/Toasts/NotificationToast';
 import NotificationAlert from '../../../Components/Alerts/NotificationAlert';
 import {OpenCamera} from '../../../Services/CameraService';
+import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 
 const ManageVehiclesScreen = ({route, navigation}: any) => {
   const {session}: any = useContext(AuthContext);
@@ -84,12 +85,9 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   const [showNewVehicleDetailsModal, setShowNewVehicleDetailsModal] =
     useState(false);
   const [showRemoveVehicleDialog, setShowRemoveVehicleDialog] = useState(false);
-  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
-  const [vehicleDetails, setVehicleDetails] = useState([]);
   const [selected, setSelected] = React.useState(new Set([]));
   const [vehicleFrontImage, setVehicleFrontImage] = useState('');
   const [vehicleRearImage, setVehicleRearImage] = useState('');
-  const [licensePlateImage, setLicensePlateImage] = useState('');
   const [showCaptureImageAlert, setShowCaptureImageAlert] = useState(false);
   const [captureImageAlertTitle, setCaptureImageAlertTitle] = useState(
     'Successfully scanned',
@@ -97,8 +95,6 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   const [captureImageAlertDescription, setCaptureImageAlertDescription] =
     useState('Please take a picture of the front and rear of the vehicle.');
   const [confirmButtonTitle, setConfirmButtonTitle] = useState('Capture front');
-
-  const [vehicleIsSaving, setVehicleIsSaving] = useState(true);
   const [driversList, setDriversList] = useState<[]>();
   const [newLinkedDriverId, setNewLinkedDriverId] = useState('');
   const [driverList, setDriverList] = useState<[]>();
@@ -607,7 +603,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   }, [formik.values.newLinkedDriverId]);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={ThemeStyles.container}>
       {IsLoading ? (
         <View
           style={{

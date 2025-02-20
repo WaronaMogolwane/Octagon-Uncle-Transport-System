@@ -2,6 +2,7 @@ import Router from "express-promise-router";
 import {
   AddPassengerSchedule,
   AddTempPassengerSchedule,
+  CheckPassengerScheduleByPassengerId,
   GetPassengerScheduleByPassengerId,
   UpdatePassengerScheduleByPassengerId,
 } from "../Controllers/PassengerScheduleController";
@@ -23,6 +24,12 @@ router.post(
 router.get(
   "/get-passenger-schedule",
   GetPassengerScheduleByPassengerId,
+  async (req, res, next) => {}
+);
+
+router.get(
+  "/get-passenger-schedule-check-availability",
+  CheckPassengerScheduleByPassengerId,
   async (req, res, next) => {}
 );
 

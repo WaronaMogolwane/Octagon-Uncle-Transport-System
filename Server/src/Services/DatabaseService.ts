@@ -14,4 +14,5 @@ export const DbPool = mysql.createPool({
   multipleStatements: true,
   connectionLimit: 10,
   queueLimit: 0,
+  timezone: "Z",
 });

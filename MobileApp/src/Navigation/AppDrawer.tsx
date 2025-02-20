@@ -18,17 +18,14 @@ import EditUserDetailsScreen from '../Screens/AppDrawer/Profile/EditUserDetailsS
 import {Auth} from '../Classes/Auth';
 import {AuthContext} from '../Services/AuthenticationService';
 import {
+  ArrowLeft,
   AlignLeft,
   Aperture,
-  Baby,
   Bell,
   Bolt,
-  BookUser,
-  Bus,
   CarFront,
   GraduationCap,
   HandCoins,
-  KeySquare,
   Route,
   ShipWheel,
   University,
@@ -38,10 +35,10 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {GetUser} from '../Controllers/UserController';
 import {ScrollView} from 'react-native-gesture-handler';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
 import {getHeaderTitle} from '@react-navigation/elements';
 import TripTransporterScreen from '../Screens/AppDrawer/Trips/TripTransporterScreen';
+import {AppDrawerScreenStyles} from '../Stylesheets/GlobalStyles';
 
 const AppDrawer = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -49,7 +46,6 @@ const AppDrawer = ({navigation}: any) => {
   const [fullname, setFullname] = useState('');
   const [profileImage, setProfileImage] = useState('');
   const [isReloading, setIsReloading] = useState(false);
-  const [tracker, setTracker] = useState(false);
 
   const role: number = Number(auth.GetUserRole());
   // const role: number = 1;
@@ -109,12 +105,12 @@ const AppDrawer = ({navigation}: any) => {
               <View>
                 <View>
                   <Image
-                    style={styles.coverPhoto}
+                    style={AppDrawerScreenStyles.coverPhoto}
                     alt="profile photo"
                     source={require('../Images/background_image.jpg')}
                   />
                 </View>
-                <View style={styles.avatarContainer}>
+                <View style={AppDrawerScreenStyles.avatarContainer}>
                   <Pressable
                     onPress={() => {
                       navigation.navigate('Profile');
@@ -133,10 +129,10 @@ const AppDrawer = ({navigation}: any) => {
                                 date.getDate(),
                             }
                       }
-                      style={styles.avatar}
+                      style={AppDrawerScreenStyles.avatar}
                     />
                   </Pressable>
-                  <Text style={styles.name}>{fullname}</Text>
+                  <Text style={AppDrawerScreenStyles.name}>{fullname}</Text>
                   <Text
                     style={{fontSize: 16, color: '#111', paddingBottom: 10}}>
                     {RoleLabel(role)}
@@ -150,7 +146,7 @@ const AppDrawer = ({navigation}: any) => {
       }}
       initialRouteName="Home"
       screenOptions={{
-        drawerStyle: {backgroundColor: '#e8f0f3', width: 250},
+        drawerStyle: {backgroundColor: '#ffffff', width: 250},
         headerTintColor: '#e8f0f3',
         headerTitleStyle: {fontWeight: 'bold'},
         drawerActiveTintColor: 'blue',
@@ -158,26 +154,53 @@ const AppDrawer = ({navigation}: any) => {
         header: ({navigation, route, options}) => {
           const title = getHeaderTitle(options, route.name);
 
+          const iconSeletor = () => {
+            if (
+              title == 'User Account' ||
+              title == 'Edit Personal Details' ||
+              title == 'Business Information'
+            ) {
+              return <ArrowLeft size={25} strokeWidth={2} color={'black'} />;
+            } else if (title == 'Assign Passenger') {
+              return <ArrowLeft size={25} strokeWidth={2} color={'black'} />;
+            } else if (title == 'Trips') {
+              if (role != 1) {
+                return <AlignLeft size={25} strokeWidth={2} color={'black'} />;
+              } else {
+                return <ArrowLeft size={25} strokeWidth={2} color={'black'} />;
+              }
+            } else {
+              return <AlignLeft size={25} strokeWidth={2} color={'black'} />;
+            }
+          };
+
           return (
-            <View style={{flexDirection: 'row', backgroundColor: '#e8f0f3'}}>
+            <View style={AppDrawerScreenStyles.toolbarContainer}>
               <View style={{width: '20%'}}>
                 <Pressable
-                  style={{marginVertical: 15, marginStart: 15}}
+                  style={AppDrawerScreenStyles.toolbarLeftContainer}
                   onPress={() => {
-                    navigation.toggleDrawer();
-                    setIsReloading(!isReloading);
+                    if (
+                      title == 'User Account' ||
+                      title == 'Edit Personal Details' ||
+                      title == 'Business Information'
+                    ) {
+                      navigation.navigate('Profile');
+                    } else if (title == 'Assign Passenger') {
+                      navigation.navigate('Manage Trip');
+                    } else if (title == 'Trips') {
+                      role != 1
+                        ? navigation.toggleDrawer()
+                        : navigation.navigate('Manage Trip');
+                    } else {
+                      navigation.toggleDrawer();
+                    }
                   }}>
-                  <AlignLeft size={25} strokeWidth={2} color={'black'} />
+                  {iconSeletor()}
                 </Pressable>
               </View>
               <View style={{width: '60%', justifyContent: 'center'}}>
-                <Text
-                  style={{
-                    fontSize: 25,
-                    fontWeight: 'bold',
-                    textAlign: 'center',
-                    color: 'black',
-                  }}>
+                <Text style={AppDrawerScreenStyles.toolbarText}>
                   {title != 'Home' ? title : ''}
                 </Text>
               </View>
@@ -187,11 +210,13 @@ const AppDrawer = ({navigation}: any) => {
                   alignItems: 'flex-end',
                 }}>
                 <Pressable
-                  style={{marginVertical: 15, marginEnd: 15}}
+                  style={AppDrawerScreenStyles.toolbarRightContainer}
                   onPress={() => {
                     navigation.toggleDrawer();
                   }}>
-                  <Bell size={25} strokeWidth={2} color={'black'} />
+                  {title == 'Home' ? (
+                    <Bell size={25} strokeWidth={2} color={'black'} />
+                  ) : null}
                 </Pressable>
               </View>
             </View>
@@ -316,7 +341,7 @@ const AppDrawer = ({navigation}: any) => {
         name="Edit Business Details"
         component={EditBusinessDetailsScreen}
         options={{
-          title: 'Business',
+          title: 'Business Information',
           drawerItemStyle: {display: 'none'},
           drawerIcon: () => (
             <Aperture
@@ -339,11 +364,10 @@ const AppDrawer = ({navigation}: any) => {
         name="Edit User Details"
         component={EditUserDetailsScreen}
         options={{
-          title: 'Personal Details',
+          title: 'Edit Personal Details',
           drawerItemStyle: {display: 'none'},
         }}
       />
-
       <Drawer.Screen
         name="Business Detail"
         component={BusinessDetailsScreen}
@@ -406,68 +430,5 @@ const AppDrawer = ({navigation}: any) => {
     </Drawer.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: '#20B2AA',
-  },
-  headerContent: {
-    padding: 30,
-    alignItems: 'center',
-  },
-
-  image: {
-    width: 40,
-    height: 40,
-  },
-
-  body: {
-    padding: 30,
-  },
-  box: {
-    padding: 5,
-    marginTop: 5,
-    marginBottom: 5,
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    shadowColor: 'black',
-    shadowOpacity: 0.2,
-    shadowOffset: {
-      height: 1,
-      width: -2,
-    },
-    elevation: 2,
-  },
-  username: {
-    color: '#20B2AA',
-    fontSize: 22,
-    alignSelf: 'center',
-    marginLeft: 10,
-  },
-  container: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  coverPhoto: {
-    width: '100%',
-    height: 120,
-    resizeMode: 'cover',
-  },
-  avatarContainer: {
-    alignItems: 'center',
-    marginTop: -75,
-  },
-  avatar: {
-    width: 130,
-    height: 130,
-    borderRadius: 75,
-  },
-  name: {
-    marginTop: 15,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-});
 
 export default AppDrawer;

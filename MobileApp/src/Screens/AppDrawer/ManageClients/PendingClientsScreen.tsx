@@ -25,6 +25,7 @@ import {
 } from '../../../Services/AuthenticationService';
 import {PendingDriverListCard} from '../../../Components/Cards/DriverListCard';
 import {Auth} from '../../../Classes/Auth';
+import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 
 export const PendingClientsScreen = () => {
   const {session}: any = useContext(AuthContext);
@@ -124,7 +125,7 @@ export const PendingClientsScreen = () => {
     }
   }, [session]);
   return (
-    <View style={{flex: 1}}>
+    <View style={ThemeStyles.container}>
       {PendingClientsList[0] ? (
         <FlatList
           data={PendingClientsList}

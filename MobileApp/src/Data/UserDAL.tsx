@@ -28,6 +28,28 @@ export const GetUserFromDB = async (userId: string) => {
   return res;
 };
 
+export const GetUserActiveStatusFromDB = async (userId: string) => {
+  let res: any;
+  let errorCode: any;
+
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/user/get-user-active-status`, {
+      params: {
+        UserId: userId,
+      },
+    })
+    .then((response: AxiosResponse) => {
+      let result = response.data.result[0];
+
+      res = result;
+    })
+    .catch((error: AxiosError) => {
+      console.error(error);
+      errorCode = error;
+    });
+  return [res, errorCode];
+};
+
 export const UpdateUserEmailInDB = async (
   userId: string,
   email: string,
@@ -95,6 +117,33 @@ export const UpdateUserPasswordInDB = async (
         UserId: userId,
         Password: newPassword,
         OldPassword: oldPassword,
+      },
+    })
+    .then((response: any) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: any) => {
+      console.log(error);
+      errorMessage = error;
+    });
+
+  return [data, statusCode, errorMessage];
+};
+
+export const RestoreUserPasswordInDB = async (
+  userId: string,
+  newPassword: string,
+) => {
+  let statusCode: any;
+  let data: any;
+  let errorMessage: any;
+
+  await axios
+    .patch(`${SERVER_HOST}:${SERVER_PORT}/user/restore-user-password`, {
+      user: {
+        UserId: userId,
+        Password: newPassword,
       },
     })
     .then((response: any) => {

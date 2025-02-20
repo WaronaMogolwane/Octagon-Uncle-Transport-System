@@ -37,6 +37,7 @@ import {
   MenuItemLabel,
   EditIcon,
   Card,
+  ModalFooter,
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
 import {CustomButton1} from '../../../Components/Buttons';
@@ -49,6 +50,7 @@ import {
 import {
   CustomFormControlInput,
   CustomFormControlInputEmail,
+  CustomFormControlInputTwo,
 } from '../../../Components/CustomFormInput';
 import {useFormik} from 'formik';
 import {AuthContext} from '../../../Services/AuthenticationService';
@@ -71,6 +73,10 @@ import {
   GetUserProfileImage,
   UpdateProfileUrl,
 } from '../../../Controllers/UserDetailController';
+import {
+  EditUserAccountScreenStyles,
+  ThemeStyles,
+} from '../../../Stylesheets/GlobalStyles';
 
 const EditUserAccountScreen = ({navigation}: any) => {
   const {session, emailOtp, verifyOtp}: any = useContext(AuthContext);
@@ -85,7 +91,6 @@ const EditUserAccountScreen = ({navigation}: any) => {
   const [isChanged, setIsChanged] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const [confirmButtonTitle, setConfirmButtonTitle] = useState('Capture front');
   const [selected, setSelected] = React.useState(new Set([]));
 
   const [showEmailModal, setShowEmailModal] = useState(false);
@@ -147,7 +152,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
 
   const SendOtp = async () => {
     CheckDuplicateEmail(emailFormik.values.email.trim()).then((result: any) => {
-      if (result[0].result == true) {
+      if (result[0].result[0] == true) {
         emailOtp(emailFormik.values.email.trim(), (error: any, result: any) => {
           if (error) {
             console.error(error);
@@ -308,13 +313,14 @@ const EditUserAccountScreen = ({navigation}: any) => {
   const EmailModal = () => {
     return (
       <Modal
+        style={EditUserAccountScreenStyles.container}
         isOpen={showEmailModal}
         onClose={() => {
           setShowEmailModal(false);
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />
-        <ModalContent>
+        <ModalContent style={{backgroundColor: '#ffffff'}}>
           <ModalHeader>
             <Heading size="lg">Update Email</Heading>
             <ModalCloseButton>
@@ -322,33 +328,29 @@ const EditUserAccountScreen = ({navigation}: any) => {
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
-            <View>
-              <Text>Please enter your new email address below</Text>
-            </View>
-            <View>
-              <CustomFormControlInputEmail
-                labelText="New Email"
-                isInvalid={!!emailFormik.errors.email}
-                isDisabled={false}
-                type="text"
-                value={emailFormik.values?.email}
-                onChangeText={emailFormik.handleChange('email')}
-                errorText={emailFormik?.errors?.email}
-                isRequired={false}
-                onBlur={emailFormik.handleBlur('email')}
-              />
-            </View>
-            <View>
-              <Button
-                size="sm"
-                action="positive"
-                borderWidth="$0"
-                onPress={() => {
-                  SendOtp();
-                }}>
-                <ButtonText>Verify</ButtonText>
-              </Button>
-            </View>
+            <Text style={EditUserAccountScreenStyles.modalText}>
+              Please enter your new email address below
+            </Text>
+            <CustomFormControlInputEmail
+              labelText="New email"
+              isInvalid={!!emailFormik.errors.email}
+              isDisabled={false}
+              type="text"
+              value={emailFormik.values?.email}
+              onChangeText={emailFormik.handleChange('email')}
+              errorText={emailFormik?.errors?.email}
+              isRequired={false}
+              onBlur={emailFormik.handleBlur('email')}
+            />
+
+            <CustomButton1
+              title="Verify"
+              size="md"
+              action="primary"
+              isDisabled={false}
+              isFocusVisible={false}
+              onPress={SendOtp}
+            />
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -365,7 +367,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />
-        <ModalContent>
+        <ModalContent style={{backgroundColor: '#ffffff'}}>
           <ModalHeader>
             <Heading size="lg">Update Password</Heading>
             <ModalCloseButton>
@@ -392,7 +394,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
                 onPress={() => {
                   navigation.navigate('Forgot Password');
                 }}
-                style={styles.changeAvatarButtonText}>
+                style={EditUserAccountScreenStyles.changeAvatarButtonText}>
                 Forgot password?
               </Text>
             </View>
@@ -524,7 +526,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
           }
         }}
         closeOnSelect={true}
-        placement="bottom"
+        placement="bottom right"
         trigger={({...triggerProps}) => {
           return (
             <Fab
@@ -568,6 +570,11 @@ const EditUserAccountScreen = ({navigation}: any) => {
   const emailInitialValues = {
     email: '',
     otp: '',
+  };
+
+  const formikInitialValues = {
+    email: email,
+    password: password,
   };
 
   const passwordInitialValues = {
@@ -639,11 +646,38 @@ const EditUserAccountScreen = ({navigation}: any) => {
     },
   });
 
+  const formik = useFormik({
+    initialValues: formikInitialValues,
+    enableReinitialize: true,
+
+    onSubmit: async (values, {resetForm}) => {
+      if (emailFormik.isValid) {
+        if (!isEmailVerified) {
+          await emailOtp(
+            emailFormik.values.email,
+            (error: any, result: any) => {
+              if (error) {
+                console.error(error);
+              } else {
+                setShowEmailVerificationModal(true);
+              }
+            },
+          );
+        } else {
+          //await SignUpNewUser();
+        }
+      }
+    },
+  });
+
   return (
-    <View style={styles.container}>
-      {IsLoading ? (
+    <View style={ThemeStyles.container}>
+      {isUpdating ? (
         <View
           style={{
+            width: 150,
+            height: 150,
+            borderRadius: 75,
             position: 'absolute',
             left: 0,
             right: 0,
@@ -655,36 +689,21 @@ const EditUserAccountScreen = ({navigation}: any) => {
             zIndex: 100,
           }}>
           <ActivityIndicator size="large" />
-          <Text>Saving</Text>
+          <Text>Working</Text>
         </View>
       ) : null}
 
-      <View>{EmailModal()}</View>
-      <View>{EmailVerificationModal()}</View>
-      <View>{ChangePasswordModal()}</View>
-      <View style={styles.avatarContainer}>
-        {isUpdating ? (
-          <View
-            style={{
-              width: 150,
-              height: 150,
-              borderRadius: 75,
-              position: 'absolute',
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: '#ffffff75',
-              zIndex: 100,
-            }}>
-            <ActivityIndicator size="large" />
-            <Text>Working</Text>
-          </View>
-        ) : null}
+      {EmailModal()}
+      {EmailVerificationModal()}
+      {ChangePasswordModal()}
+
+      <View
+        style={[
+          EditUserAccountScreenStyles.container,
+          EditUserAccountScreenStyles.avatarContainer,
+        ]}>
         <Image
-          style={styles.avatar}
+          style={EditUserAccountScreenStyles.avatar}
           source={
             profileImage == ''
               ? require('../../../Images/default_avatar_image.jpg')
@@ -698,124 +717,54 @@ const EditUserAccountScreen = ({navigation}: any) => {
                 }
           }
         />
-        <Text></Text>
-        <FabMenu />
+        <View style={EditUserAccountScreenStyles.fabPosition}>
+          <FabMenu />
+        </View>
       </View>
 
-      <View style={styles.form}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          editable={false}
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
+      <View style={EditUserAccountScreenStyles.form}>
+        <CustomFormControlInputEmail
+          isDisabled={true}
+          labelText="Email"
+          placeHolder="email"
+          isInvalid={!!formik.errors.email}
+          isRequired={false}
+          type="text"
+          onChangeText={formik.handleChange('email')}
+          onBlur={formik.handleBlur('email')}
+          errorText={formik?.errors?.email}
+          value={formik.values?.email!}
         />
         <Text
           onPress={() => {
             setShowEmailModal(true);
           }}
-          style={styles.changeAvatarButtonText}>
+          style={EditUserAccountScreenStyles.changeAvatarButtonText}>
           Change Email
         </Text>
 
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          editable={false}
-          secureTextEntry={true}
-          textContentType="password"
-          style={styles.input}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
+        <CustomFormControlInputTwo
+          isDisabled={true}
+          labelText="Password"
+          placeHolder="password"
+          isInvalid={!!formik.errors.password}
+          isRequired={false}
+          type="password"
+          onChangeText={formik.handleChange('password')}
+          onBlur={formik.handleBlur('password')}
+          errorText={formik?.errors?.password}
+          value={formik.values?.password!}
         />
         <Text
           onPress={() => {
             setShowChangePassword(true);
           }}
-          style={styles.changeAvatarButtonText}>
+          style={EditUserAccountScreenStyles.changeAvatarButtonText}>
           Change Password
         </Text>
-
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop: 50,
-          }}>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-            }}>
-            <View style={{padding: 5}}>
-              <Button
-                size="md"
-                variant="solid"
-                action="secondary"
-                isDisabled={false}
-                isFocusVisible={false}
-                onPress={() => {
-                  navigation.navigate('Profile');
-                }}>
-                <ButtonIcon as={ArrowLeftIcon} />
-                <ButtonText>Back</ButtonText>
-              </Button>
-            </View>
-          </View>
-        </View>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: '#e8f0f3',
-  },
-  form: {
-    width: '90%',
-  },
-  label: {
-    marginTop: 20,
-  },
-  input: {
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    fontSize: 18,
-    backgroundColor: '#fff',
-  },
-  button: {
-    marginTop: 20,
-    backgroundColor: '#1E90FF',
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  avatarContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  avatar: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-  },
-  changeAvatarButton: {
-    marginTop: 10,
-  },
-  changeAvatarButtonText: {
-    color: '#1E90FF',
-    fontSize: 16,
-  },
-});
 
 export default EditUserAccountScreen;

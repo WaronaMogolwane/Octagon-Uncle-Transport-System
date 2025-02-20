@@ -164,7 +164,6 @@ export const GetUpcomingTripsDriverFromDB = async (driverId: string) => {
       result = tripData;
     })
     .catch((error: AxiosError) => {
-      console.error(error);
       result = error;
     });
 
@@ -331,6 +330,89 @@ export const GetDailytTripsTransporterFromDB = async (businessId: string) => {
           dropOffLocation: data.DestinationAddress,
           tripStatus: Number(data.TripStatus),
           leg: data.Leg,
+        };
+
+        tripData.push(trip);
+      });
+
+      result = tripData;
+    })
+    .catch((error: any) => {
+      console.log(error);
+      result = error;
+    });
+
+  return result;
+};
+
+export const GetDailytTripsParentFromDB = async (parentId: string) => {
+  let result: any;
+  const tripData: {}[] = [];
+  let trip = {};
+
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/trip/get-daily-parent-trip`, {
+      params: {
+        ParentId: parentId,
+      },
+    })
+    .then((response: any) => {
+      let res = [...response.data.result];
+
+      res.forEach(data => {
+        trip = {
+          tripId: data.TripId,
+          passengerId: data.PassengerId,
+          passengerName: data.PassengerFirstName + ' ' + data.PassengerLastName,
+          pickUpTime: SplitTimeString(data.PickUpTime),
+          dropOffUpTime: SplitTimeString(data.DropoffTime),
+          pickUpDate: ConvertDate(data.Date),
+          pickUpLocation: data.HomeAddress,
+          dropOffLocation: data.DestinationAddress,
+          tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
+        };
+
+        tripData.push(trip);
+      });
+
+      result = tripData;
+    })
+    .catch((error: any) => {
+      console.log(error);
+      result = error;
+    });
+
+  return result;
+};
+
+export const GetDailytTripsDriverFromDB = async (driverId: string) => {
+  let result: any;
+  const tripData: {}[] = [];
+  let trip = {};
+
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/trip/get-daily-driver-trip`, {
+      params: {
+        DriverId: driverId,
+      },
+    })
+    .then((response: any) => {
+      let res = [...response.data.result];
+
+      res.forEach(data => {
+        trip = {
+          tripId: data.TripId,
+          passengerId: data.PassengerId,
+          passengerName: data.PassengerFirstName + ' ' + data.PassengerLastName,
+          pickUpTime: SplitTimeString(data.PickUpTime),
+          dropOffUpTime: SplitTimeString(data.DropoffTime),
+          pickUpDate: ConvertDate(data.Date),
+          pickUpLocation: data.HomeAddress,
+          dropOffLocation: data.DestinationAddress,
+          tripStatus: Number(data.TripStatus),
+          leg: data.Leg,
+          isCompleted: data.IsCompleted,
         };
 
         tripData.push(trip);

@@ -1,13 +1,14 @@
-import {GestureResponderEvent} from 'react-native';
+import {GestureResponderEvent, Text} from 'react-native';
 import React, {useContext} from 'react';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {SignInScreenStyles, ThemeStyles} from '../../Stylesheets/GlobalStyles';
 import {SignInForm} from '../../Components/Forms/SignInForm';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {CustomButton3} from '../../Components/Buttons';
 import {AxiosError} from 'axios';
+import {Image, View} from '@gluestack-ui/themed';
 
 const SignInScreen = ({navigation}: any) => {
   const {signIn, session}: any = useContext(AuthContext);
@@ -60,34 +61,43 @@ const SignInScreen = ({navigation}: any) => {
   };
   return (
     <SafeAreaView style={ThemeStyles.container}>
-      <SignInForm
-        emailIsInvalid={!!formik.errors.email}
-        emailOnChangeText={formik.handleChange('email')}
-        emailErrorText={formik?.errors?.email}
-        emailOnBlur={formik.handleBlur('email')}
-        emailValue={formik.values?.email}
-        passwordIsInvalid={!!formik.errors.password}
-        passwordOnChangeText={formik.handleChange('password')}
-        passwordErrorText={formik?.errors?.password}
-        passwordOnBlur={formik.handleBlur('password')}
-        passwordValue={formik.values?.password}
-        signInButtonOnPress={
-          formik.handleSubmit as (
-            values:
-              | GestureResponderEvent
-              | React.FormEvent<HTMLFormElement>
-              | undefined,
-          ) => void
-        }
+      <Image
+        source={require('../../Images/octagon_logo.jpg')}
+        resizeMode="contain"
+        alt="ocatagon uncle logo"
+        style={SignInScreenStyles.image}
       />
-      <CustomButton3
-        onPress={GoToUserRoleSelectPage}
-        title={'New around here? Create an account'}
-      />
-      {/* <CustomButton3
-        onPress={GoToForgotPasswordPage}
-        title={'Forgot Password'}
-      /> */}
+      <View style={SignInScreenStyles.container}>
+        {/* <Text style={SignInScreenStyles.loginText}>Sign In</Text> */}
+        <SignInForm
+          emailIsInvalid={!!formik.errors.email}
+          emailOnChangeText={formik.handleChange('email')}
+          emailErrorText={formik?.errors?.email}
+          emailOnBlur={formik.handleBlur('email')}
+          emailValue={formik.values?.email}
+          passwordIsInvalid={!!formik.errors.password}
+          passwordOnChangeText={formik.handleChange('password')}
+          passwordErrorText={formik?.errors?.password}
+          passwordOnBlur={formik.handleBlur('password')}
+          passwordValue={formik.values?.password}
+          signInButtonOnPress={
+            formik.handleSubmit as (
+              values:
+                | GestureResponderEvent
+                | React.FormEvent<HTMLFormElement>
+                | undefined,
+            ) => void
+          }
+        />
+        <CustomButton3
+          onPress={GoToForgotPasswordPage}
+          title={'Forgot Password'}
+        />
+        <CustomButton3
+          onPress={GoToUserRoleSelectPage}
+          title={'New around here? Create an account'}
+        />
+      </View>
     </SafeAreaView>
   );
 };

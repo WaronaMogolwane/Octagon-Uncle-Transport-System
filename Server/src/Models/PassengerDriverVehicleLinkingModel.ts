@@ -22,14 +22,14 @@ export const InsertPassengerDriverVehicleLinking = async (
 };
 
 export const GetPassengerDriverVehicleLinkingByBusinessId = async (
-  businessId: string,
+  businessInfo: any,
   callback: (error, result) => void
 ) => {
   DbPool.query(
     {
-      sql: "CALL GetPassengerDriverVehicleLinking(?);",
+      sql: "CALL GetPassengerDriverVehicleLinking(?,?);",
       timeout: 40000,
-      values: [businessId],
+      values: [businessInfo.businessId, businessInfo.dVLId],
     },
     function (error, results, fields) {
       if (error) {

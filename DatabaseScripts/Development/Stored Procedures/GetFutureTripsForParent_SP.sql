@@ -27,6 +27,6 @@ FROM
     
 WHERE
     Passenger.ParentId = _ParentId
-    AND Trip.Date > current_date()
+    AND Trip.Date >= current_date()
     AND Trip.IsCompleted ='0';
 END

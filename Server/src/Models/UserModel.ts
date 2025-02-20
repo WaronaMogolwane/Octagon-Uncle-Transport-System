@@ -79,3 +79,43 @@ export const UpdateUserPasswordByUserId = async (
     }
   );
 };
+
+export const RestoreUserPasswordByUserId = async (
+  user: any,
+  callback: (error: any, result: any) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL RestoreUserPassword(?,?);",
+      timeout: 40000,
+      values: [user.password, user.userId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const GetUserActiveStatusByUserId = async (
+  userId: string,
+  callback: (error: any, result: any) => void
+) => {
+  DbPool.query(
+    {
+      sql: "CALL GetUserActiveStatus(?);",
+      timeout: 40000,
+      values: [userId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};

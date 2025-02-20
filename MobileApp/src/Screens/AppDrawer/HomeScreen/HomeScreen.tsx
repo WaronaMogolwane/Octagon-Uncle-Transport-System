@@ -1,39 +1,11 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
+import {Dimensions, FlatList, ImageBackground, StyleSheet} from 'react-native';
+import {Text, Image, View, SafeAreaView} from '@gluestack-ui/themed';
 import {
-  Dimensions,
-  GestureResponderEvent,
-  Pressable,
-  StyleSheet,
-} from 'react-native';
-import {
-  Text,
-  Card,
-  Toast,
-  ToastDescription,
-  ToastTitle,
-  useToast,
-  VStack,
-  Image,
-  ScrollView,
-  View,
-  SafeAreaView,
-} from '@gluestack-ui/themed';
-import {
-  AlignLeft,
-  Baby,
-  Bell,
-  CarFront,
-  GraduationCap,
-  Route,
-  WalletMinimal,
-} from 'lucide-react-native';
-import {
-  GetAllActivePassengerForBusiness,
+  GetActivePassengerForBusiness,
   GetAllActivePassengerForParent,
-  GetAllPassengerForBusiness,
-  GetParentPassengers,
 } from '../../../Controllers/PassengerController';
 import {
   GetDriverVehicle,
@@ -41,16 +13,13 @@ import {
 } from '../../../Controllers/VehicleController';
 import {GetUser} from '../../../Controllers/UserController';
 import {CheckTrip, StartTrip} from '../../../Services/TripServices';
-import Carousel from 'react-native-reanimated-carousel';
-import {TripsBlock} from '../../../Components/TripsBlock';
 import {
+  GetDailytTripsDriver,
+  GetDailytTripsParent,
   GetDailytTripsTransporter,
   GetUpcomingTripsForClient,
   GetUpcomingTripsForDriver,
 } from '../../../Controllers/TripController';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {PassengerBlock} from '../../../Components/PassengerBlock';
-import {TripsBlockDiver} from '../../../Components/TripsBlockDriver';
 import filter from 'lodash.filter';
 import {GetUserProfileImage} from '../../../Controllers/UserDetailController';
 import {
@@ -58,12 +27,14 @@ import {
   SaveImageViaAsyncStorage,
 } from '../../../Services/ImageStorageService';
 import SmallHomeScreenCard from '../../../Components/Cards/SmallHomeScreenCard';
-import LargeHomeScreenCard from '../../../Components/Cards/LargeHomeScreenCard';
 import {FormatBalance} from '../../../Utilities/CurrencyFormat';
 import {GetBalanceByBusinessId} from '../../../Controllers/PaymentsController';
-import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
-import {TripSummaryBlock} from '../../../Components/TripSummaryBlock';
 import {IVehicle} from '../../../Props/VehicleProps';
+import {HomeScreenStyles, ThemeStyles} from '../../../Stylesheets/GlobalStyles';
+import StatRowCard from '../../../Components/Cards/StatRowCard';
+import {PassengerListHomeScreenCard} from '../../../Components/Cards/PassengerListHomeScreenCard';
+import COLORS from '../../../Const/colors';
+import {PieChart} from 'react-native-gifted-charts/dist/PieChart';
 
 const HomeScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
@@ -71,11 +42,8 @@ const HomeScreen = ({navigation}: any) => {
   const [passengerCount, setPassengerCount] = useState('0');
   const [vehicleCount, setVehicleCount] = useState('');
   const [userName, setUserName] = useState('');
-  const [tripData, setTripData] = useState(['']);
-  const [fullData, setFullData] = useState([]);
   const [activePassengers, setActivePassengers] = useState([]);
-  const [amount, setAmount] = useState('1300.00');
-  const [passengerList, setPassengerList] = useState([]);
+  const [isActivePassenger, setIsActivePassenger] = useState(false);
 
   const [tripCount, setTripCount] = useState(0);
   const [missedTripsCount, setMissedTripsCount] = useState(0);
@@ -84,7 +52,7 @@ const HomeScreen = ({navigation}: any) => {
   const [availableBalance, setAvailableBalance] = useState('0');
 
   const [isStarted, setIsStarted] = useState(true);
-  const [noActivePassenger, setNoActivePassenger] = useState(true);
+  const [showPieChartText, setShowPieChartText] = useState(false);
 
   const [vehicle, setVehicle] = useState<IVehicle>({
     Make: 'undefined',
@@ -95,41 +63,44 @@ const HomeScreen = ({navigation}: any) => {
   });
 
   const role: number = Number(auth.GetUserRole());
-  // const role: number = 3;
+  // const role: number = 2;
 
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
 
-  const toast = useToast();
-
-  const iconSize = 15;
-  const iconStrokeWidth = 1;
-  const iconColor = '#000000';
-
   const storageUrl: string =
     'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
 
-  const data = [
+  const pieChartData = [
     {
-      tripId: '1',
-      driverName: 'Driver Dan',
-      pickUpDate: '08/07/2005',
-      passengerName: 'Kelcie Cash',
-      isActive: false,
+      id: 1,
+      value: 50,
+      color: COLORS.customGreen,
+      textColor: COLORS.customBlack,
+      textSize: 14,
+      textBackgroundColor: COLORS.customGreen,
+      textBackgroundRadius: 14,
+      fontWeight: '500',
     },
     {
-      tripId: '2',
-      driverName: 'Driver Dan',
-      pickUpDate: '08/07/2005',
-      passengerName: 'Tsephi Ncube',
-      isActive: true,
+      id: 2,
+      value: 80,
+      color: COLORS.customYellow,
+      textColor: COLORS.customBlack,
+      textSize: 14,
+      textBackgroundColor: COLORS.customYellow,
+      textBackgroundRadius: 14,
+      fontWeight: '500',
     },
     {
-      tripId: '3',
-      driverName: 'Driver Dan',
-      pickUpDate: '08/07/2005',
-      passengerName: 'Sockman Grootman',
-      isActive: false,
+      id: 3,
+      value: 90,
+      color: COLORS.customRed,
+      textColor: COLORS.customBlack,
+      textSize: 14,
+      textBackgroundColor: COLORS.customRed,
+      textBackgroundRadius: 14,
+      fontWeight: '500',
     },
   ];
 
@@ -142,28 +113,22 @@ const HomeScreen = ({navigation}: any) => {
       GetAvailableBalance(auth.GetBusinessId());
       GetDailyBusinessTrips();
     } else if (role == 2) {
+      GetDailyParentTrips();
       GetPassengers();
       GetActivePasengers();
-      GetUpcomingTrips();
     } else if (role == 3) {
       GetVehicleInfomation();
-      GetUpcomingTrips();
+      GetDailyDriverTrips();
     }
   }, []);
 
-  useEffect(() => {
-    if (role == 3) {
-      CheckTrip().then((result: any) => {
-        setIsStarted(result);
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    if (fullData[0] != '' && fullData.length > 0) {
-      handleSearch();
-    }
-  }, [fullData]);
+  // useEffect(() => {
+  //   if (role == 3) {
+  //     CheckTrip().then((result: any) => {
+  //       setIsStarted(result);
+  //     });
+  //   }
+  // }, []);
 
   useEffect(() => {
     const fetchProfileImage = async () => {
@@ -200,15 +165,15 @@ const HomeScreen = ({navigation}: any) => {
 
         result.forEach((item: any) => {
           if (item.tripStatus == 1) {
-            setMissedTripsCount(missedTripsCount + 1);
+            setMissedTripsCount(prevCount => prevCount + 1);
           }
 
           if (item.tripStatus == 2) {
-            setActiveTripsCount(activeTripsCount + 1);
+            setActiveTripsCount(prevCount => prevCount + 1);
           }
 
           if (item.tripStatus == 3) {
-            setCompleteTripsCount(completedTripsCount + 1);
+            setCompleteTripsCount(prevCount => prevCount + 1);
           }
         });
       } else {
@@ -217,16 +182,62 @@ const HomeScreen = ({navigation}: any) => {
     });
   };
 
-  const GetUpcomingTrips = async () => {
-    if (role == 2) {
-      await GetUpcomingTripsForClient(userId).then((response: any) => {
-        setFullData(response);
-      });
-    } else if (role == 3) {
-      await GetUpcomingTripsForDriver(userId).then(response => {
-        setFullData(response);
-      });
-    }
+  const GetDailyParentTrips = async () => {
+    setTripCount(0);
+    setMissedTripsCount(0);
+    setActiveTripsCount(0);
+    setCompleteTripsCount(0);
+
+    await GetDailytTripsParent(userId).then((result: any) => {
+      if (result.length != 0) {
+        setTripCount(result.length);
+
+        result.forEach((item: any) => {
+          if (item.tripStatus == 1) {
+            setMissedTripsCount(prevCount => prevCount + 1);
+          }
+
+          if (item.tripStatus == 2) {
+            setActiveTripsCount(prevCount => prevCount + 1);
+          }
+
+          if (item.tripStatus == 3) {
+            setCompleteTripsCount(prevCount => prevCount + 1);
+          }
+        });
+      } else {
+        setTripCount(0);
+      }
+    });
+  };
+
+  const GetDailyDriverTrips = async () => {
+    setTripCount(0);
+    setMissedTripsCount(0);
+    setActiveTripsCount(0);
+    setCompleteTripsCount(0);
+
+    await GetDailytTripsDriver(userId).then((result: any) => {
+      if (result.length != 0) {
+        setTripCount(result.length);
+
+        result.forEach((item: any) => {
+          if (item.tripStatus == 1) {
+            setMissedTripsCount(prevCount => prevCount + 1);
+          }
+
+          if (item.tripStatus == 2) {
+            setActiveTripsCount(prevCount => prevCount + 1);
+          }
+
+          if (item.tripStatus == 3 && item.isCompleted == 1) {
+            setCompleteTripsCount(prevCount => prevCount + 1);
+          }
+        });
+      } else {
+        setTripCount(0);
+      }
+    });
   };
 
   const GetVehicleCount = async () => {
@@ -245,7 +256,7 @@ const HomeScreen = ({navigation}: any) => {
 
   const GetPassengers = async () => {
     try {
-      const result = await GetAllActivePassengerForBusiness(businessId);
+      const result = await GetActivePassengerForBusiness(businessId);
       if (result.length != 0) {
         setPassengerCount(result.length.toString());
       } else {
@@ -259,8 +270,6 @@ const HomeScreen = ({navigation}: any) => {
 
   const GetVehicleInfomation = async () => {
     GetDriverVehicle(userId).then(result => {
-      console.info(result);
-
       if (result != undefined) {
         setVehicle(result[0]);
       } else {
@@ -272,10 +281,10 @@ const HomeScreen = ({navigation}: any) => {
   const GetActivePasengers = async () => {
     await GetAllActivePassengerForParent(userId).then(result => {
       if (result.length > 0 && result[0] !== '') {
-        setNoActivePassenger(false);
+        setIsActivePassenger(true);
         setActivePassengers(result);
       } else {
-        setNoActivePassenger(true);
+        setIsActivePassenger(false);
       }
     });
   };
@@ -290,47 +299,6 @@ const HomeScreen = ({navigation}: any) => {
       });
   };
 
-  const GetPassegersByParent = async () => {
-    await GetParentPassengers(userId).then((result: any) => {
-      if (result.length != 0) {
-        setPassengerCount(result.length.toString());
-        // setNoPassenger(false);
-        // setPassengerList(result);
-        // setStatusCode(!statusCode);
-        // setIsLoading(false);
-      } else {
-        //   setNoPassenger(true);
-        //   setIsLoading(false);
-      }
-    });
-  };
-
-  const handleSearch = () => {
-    const date = new Date().toLocaleDateString('en-CA');
-    const formattedQuery = date;
-
-    const filterData: any = filter(fullData, (user: any) => {
-      return contains(user, formattedQuery);
-    });
-
-    setTripData(filterData);
-  };
-
-  const contains = ({pickUpDate}: any, query: any) => {
-    if (pickUpDate.toLowerCase().includes(query)) {
-      return true;
-    }
-
-    return false;
-  };
-
-  const universityIcon = (
-    <GraduationCap
-      size={iconSize}
-      strokeWidth={iconStrokeWidth}
-      color={iconColor}
-    />
-  );
   const GetAvailableBalance = async (businessId: string) => {
     return await GetBalanceByBusinessId(
       businessId,
@@ -344,442 +312,328 @@ const HomeScreen = ({navigation}: any) => {
     );
   };
 
+  const renderItemComponentPassengers = (itemData: any) => (
+    <PassengerListHomeScreenCard
+      firstName={itemData.firstName}
+      lastName={itemData.lastName}
+      isActive={true}
+      isDeleted={false}
+      onPress={() => {}}
+    />
+  );
+
+  const EmtpyFlatListText = () => {
+    return (
+      <View>
+        <Text style={HomeScreenStyles.emptyFlatListText}>
+          You have no active passengers
+        </Text>
+      </View>
+    );
+  };
+
+  const getTimeOfDay = (): string => {
+    const hour = new Date().getHours();
+
+    if (hour >= 6 && hour < 12) {
+      return 'Morning';
+    } else if (hour >= 12 && hour < 18) {
+      return 'Afternoon';
+    } else if (hour >= 18 && hour < 21) {
+      return 'Evening';
+    } else {
+      return 'Night';
+    }
+  };
+
+  const PieChartText = () => {
+    return (
+      <View>
+        <Text style={HomeScreenStyles.piesChartTitle}>Payments</Text>
+      </View>
+    );
+  };
+
+  const renderLegend = (text: any, color: any) => {
+    return (
+      <View style={{flexDirection: 'row', marginBottom: 12}}>
+        <View
+          style={{
+            height: 18,
+            width: 18,
+            marginRight: 10,
+            borderRadius: 4,
+            backgroundColor: color || 'white',
+          }}
+        />
+        <Text style={{color: COLORS.customBlack, fontSize: 16}}>
+          {text || ''}
+        </Text>
+      </View>
+    );
+  };
+
   if (role == 1) {
     return (
-      <SafeAreaView
-        style={{flex: 1, backgroundColor: '#e8f0f3', height: '100%'}}>
-        <ScrollView>
-          <View style={{height: '25%'}}>
-            <View>
-              <View style={{marginStart: 15}}>
-                <Text
-                  style={{
-                    fontSize: 40,
-                    fontWeight: 'bold',
-                    color: 'black',
-                  }}>
-                  Hello
-                </Text>
-              </View>
-
-              <View style={{marginStart: 50}}>
-                <Text
-                  style={{
-                    fontSize: 40,
-                    fontWeight: 'bold',
-                    color: 'black',
-                    marginBottom: 50,
-                  }}>
-                  {userName}
-                </Text>
-              </View>
-            </View>
+      <SafeAreaView style={ThemeStyles.container}>
+        <View style={HomeScreenStyles.chartContainer}>
+          <Text style={HomeScreenStyles.titleText}>
+            Good {getTimeOfDay()}, {userName}!
+          </Text>
+          <PieChart
+            donut
+            semiCircle
+            data={pieChartData}
+            radius={80}
+            innerRadius={65}
+            showValuesAsLabels
+            showTextBackground
+            centerLabelComponent={PieChartText}
+            labelsPosition={'onBorder'}
+            onPress={() => {
+              setShowPieChartText(!showPieChartText);
+            }}
+            showText={showPieChartText}
+          />
+          <View style={HomeScreenStyles.legend}>
+            {renderLegend('Paid', COLORS.customGreen)}
+            {renderLegend('Pending', COLORS.customYellow)}
+            {renderLegend('Failed', COLORS.customRed)}
+          </View>
+        </View>
+        <View style={{height: '20%'}}>
+          {/* <Text style={HomeScreenStyles.titleText}>
+            Good morning, {userName}!
+          </Text> */}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-evenly',
+              marginBottom: 10,
+              marginTop: 25,
+            }}>
+            <SmallHomeScreenCard
+              primaryText={availableBalance}
+              secondaryText={'Balance'}
+            />
+            <SmallHomeScreenCard
+              primaryText={vehicleCount ? vehicleCount.toString() : '0'}
+              secondaryText={'Active vehicle'}
+            />
           </View>
           <View
             style={{
-              height: '25%',
-              marginBottom: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'space-evenly',
             }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                width: '90%',
-              }}>
-              <SmallHomeScreenCard
-                primaryText={availableBalance}
-                secondaryText={'Available Balance'}
-                iconSelector={1}
-              />
-
-              <SmallHomeScreenCard
-                primaryText={vehicleCount}
-                secondaryText={'Active Vehicles'}
-                iconSelector={2}
-              />
-            </View>
-          </View>
-          <View style={{height: '25%', marginBottom: 12}}>
-            <LargeHomeScreenCard
+            <SmallHomeScreenCard
               primaryText={passengerCount}
-              secondaryText={'Active Passengers'}
-              iconSelector={3}
+              secondaryText={'Active passengers'}
+            />
+            <SmallHomeScreenCard
+              primaryText={tripCount ? tripCount.toString() : '0'}
+              secondaryText={'Total trips'}
             />
           </View>
-          <View style={{height: '25%', marginHorizontal: 14}}>
-            <TripSummaryBlock
-              allTripsCount={tripCount}
-              missedTripsCount={missedTripsCount}
-              activeTripsCount={activeTripsCount}
-              completedTripsCount={completedTripsCount}
-            />
-          </View>
-        </ScrollView>
+        </View>
+        <View style={{height: '50%'}}>
+          <Text
+            style={[
+              HomeScreenStyles.titleText,
+              HomeScreenStyles.secondTitleText,
+              {marginTop: 85.5, marginBottom: 13.5},
+            ]}>
+            Today's stats
+          </Text>
+          <StatRowCard
+            primaryText={'Missed'}
+            secondaryText={'Trips'}
+            tetiaryText={missedTripsCount ? missedTripsCount.toString() : '0'}
+          />
+          <StatRowCard
+            primaryText={'Active'}
+            secondaryText={'Trips'}
+            tetiaryText={activeTripsCount ? activeTripsCount.toString() : '0'}
+          />
+          <StatRowCard
+            primaryText={'Completed'}
+            secondaryText={'Trips'}
+            tetiaryText={
+              completedTripsCount ? completedTripsCount.toString() : '0'
+            }
+          />
+          {/* <StatRowCard
+            primaryText={'Total'}
+            secondaryText={'Trips'}
+            tetiaryText={tripCount ? tripCount.toString() : '0'}
+          /> */}
+        </View>
       </SafeAreaView>
     );
   } else if (role == 2) {
     return (
-      <SafeAreaView
-        style={{flex: 1, backgroundColor: '#e8f0f3', height: '100%'}}>
-        <ScrollView>
-          <View style={{height: '30%'}}>
-            <View>
-              <View style={{marginStart: 15}}>
-                <Text
-                  style={{
-                    fontSize: 40,
-                    fontWeight: 'bold',
-                    color: 'black',
-                  }}>
-                  Hello
-                </Text>
-              </View>
-
-              <View style={{marginStart: 50}}>
-                <Text
-                  style={{
-                    fontSize: 40,
-                    fontWeight: 'bold',
-                    color: 'black',
-                    marginBottom: 50,
-                  }}>
-                  {userName}
-                </Text>
-              </View>
-            </View>
-          </View>
+      <SafeAreaView style={ThemeStyles.container}>
+        <View style={{height: '25%'}}>
+          <Text style={HomeScreenStyles.primaryHeading}>Good</Text>
+          <Text style={[HomeScreenStyles.primaryHeading, {marginStart: 50}]}>
+            {getTimeOfDay()}
+          </Text>
+          <Text
+            style={[
+              HomeScreenStyles.primaryHeading,
+              HomeScreenStyles.secondaryHeading,
+            ]}>
+            {userName}
+          </Text>
+        </View>
+        <View style={{height: '25%'}}>
+          {/* <Text style={HomeScreenStyles.titleText}>
+            Good morning, {userName}!
+          </Text> */}
           <View
             style={{
-              height: '35%',
+              flexDirection: 'row',
+              justifyContent: 'space-evenly',
               marginBottom: 10,
-              justifyContent: 'center',
-              alignItems: 'center',
             }}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                width: '90%',
-              }}>
-              <SmallHomeScreenCard
-                primaryText={'R 1000.00'}
-                secondaryText={'Available Balance'}
-                iconSelector={1}
-              />
-
-              <SmallHomeScreenCard
-                primaryText={passengerCount}
-                secondaryText={'All Passengers'}
-                iconSelector={3}
-              />
-            </View>
+            <SmallHomeScreenCard
+              primaryText={'R' + availableBalance}
+              secondaryText={'Balance due'}
+            />
+            <SmallHomeScreenCard
+              primaryText={passengerCount ? passengerCount.toString() : '0'}
+              secondaryText={'All passengers'}
+            />
           </View>
-          <View style={{height: '30%', marginBottom: 12}}>
-            {noActivePassenger ? (
-              <Card
-                size="sm"
-                variant="outline"
-                style={{
-                  marginHorizontal: 17,
-                  marginBottom: 10,
-                  backgroundColor: '#ffffff',
-                  borderRadius: 5,
-                  elevation: 10,
-                }}>
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    textAlign: 'center',
-                    marginBottom: 10,
-                  }}>
-                  Active Passengers
-                </Text>
-                <View
-                  style={{
-                    marginBottom: 10,
-                    alignItems: 'flex-start',
-                    marginHorizontal: 15,
-                  }}>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontWeight: '600',
-                    }}>
-                    You have no active passengers
-                  </Text>
-                </View>
-              </Card>
-            ) : (
-              <Card
-                size="sm"
-                variant="outline"
-                style={{
-                  marginHorizontal: 17,
-                  marginBottom: 10,
-                  backgroundColor: '#ffffff',
-                  borderRadius: 5,
-                  elevation: 10,
-                }}>
-                <Text style={{fontWeight: 'bold', textAlign: 'center'}}>
-                  Active Passengers
-                </Text>
-
-                <ScrollView>
-                  <View
-                    style={{
-                      marginVertical: 10,
-                      marginBottom: 5,
-                      alignItems: 'flex-start',
-                      marginHorizontal: 15,
-                    }}>
-                    {activePassengers.map((item: any) => {
-                      return (
-                        <View
-                          style={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            marginVertical: 10,
-                            backgroundColor: '#ffffff',
-                          }}
-                          key={item.passengerId}>
-                          <View
-                            style={{
-                              flexDirection: 'row',
-                              justifyContent: 'space-between',
-                              alignItems: 'center',
-                              borderRadius: 20,
-                            }}>
-                            <View>
-                              <Text style={{fontSize: 16, fontWeight: '600'}}>
-                                {universityIcon} {item.editedName}
-                              </Text>
-                            </View>
-
-                            <View>
-                              <Text style={{fontSize: 16, fontWeight: '600'}}>
-                                <View
-                                  style={{
-                                    flex: 1,
-                                    display: 'flex',
-                                    borderRadius: 20, // Half of the width or
-                                    backgroundColor: '#d6f3f1',
-                                  }}>
-                                  <Text
-                                    style={{
-                                      padding: -100,
-                                      color: '#3ba2a9',
-                                      fontWeight: '500',
-                                    }}>
-                                    Active
-                                  </Text>
-                                </View>
-                              </Text>
-                            </View>
-                          </View>
-                        </View>
-                      );
-                    })}
-                  </View>
-                </ScrollView>
-              </Card>
-            )}
+          <View style={HomeScreenStyles.flatList}>
+            {isActivePassenger ? null : EmtpyFlatListText()}
+            <FlatList
+              extraData
+              data={activePassengers}
+              renderItem={({item}) => renderItemComponentPassengers(item)}
+            />
           </View>
-        </ScrollView>
+        </View>
+        <View style={{height: '50%'}}>
+          <Text
+            style={[
+              HomeScreenStyles.titleText,
+              HomeScreenStyles.secondTitleText,
+            ]}>
+            Today's stats
+          </Text>
+          <StatRowCard
+            primaryText={'Missed'}
+            secondaryText={'Trips'}
+            tetiaryText={missedTripsCount ? missedTripsCount.toString() : '0'}
+          />
+          <StatRowCard
+            primaryText={'Active'}
+            secondaryText={'Trips'}
+            tetiaryText={activeTripsCount ? activeTripsCount.toString() : '0'}
+          />
+          <StatRowCard
+            primaryText={'Completed'}
+            secondaryText={'Trips'}
+            tetiaryText={
+              completedTripsCount ? completedTripsCount.toString() : '0'
+            }
+          />
+          <StatRowCard
+            primaryText={'Total'}
+            secondaryText={'Trips'}
+            tetiaryText={tripCount ? tripCount.toString() : '0'}
+          />
+        </View>
       </SafeAreaView>
     );
   } else if (role == 3) {
     return (
-      <SafeAreaView
-        style={{flex: 1, backgroundColor: '#e8f0f3', height: '100%'}}>
-        <ScrollView>
-          <View style={{height: '33.3%'}}>
-            <View>
-              <View style={{marginStart: 15}}>
-                <Text
-                  style={{
-                    fontSize: 40,
-                    fontWeight: 'bold',
-                    color: 'black',
-                  }}>
-                  Hello
+      <SafeAreaView style={ThemeStyles.container}>
+        <View style={{height: '25%'}}>
+          <Text style={HomeScreenStyles.primaryHeading}>Good</Text>
+          <Text style={[HomeScreenStyles.primaryHeading, {marginStart: 50}]}>
+            {getTimeOfDay()}
+          </Text>
+          <Text
+            style={[
+              HomeScreenStyles.primaryHeading,
+              HomeScreenStyles.secondaryHeading,
+            ]}>
+            {userName}
+          </Text>
+        </View>
+        <View style={{height: '25%'}}>
+          <View style={HomeScreenStyles.vehicleContainer}>
+            <Image
+              source={{
+                uri: storageUrl + vehicle.FrontImageUrl,
+              }}
+              alt="Vehicle front picture."
+              style={HomeScreenStyles.vehicleImage}
+            />
+            <View style={HomeScreenStyles.vehicleInfo}>
+              <View style={HomeScreenStyles.itemContainer}>
+                <Text style={HomeScreenStyles.itemPrimaryText}>Make: </Text>
+                <Text style={HomeScreenStyles.itemSecondaryText}>
+                  {vehicle.Make}
                 </Text>
               </View>
-
-              <View style={{marginStart: 50}}>
-                <Text
-                  style={{
-                    fontSize: 40,
-                    fontWeight: 'bold',
-                    color: 'black',
-                    marginBottom: 50,
-                  }}>
-                  {userName}
+              <View style={HomeScreenStyles.itemContainer}>
+                <Text style={HomeScreenStyles.itemPrimaryText}>Model: </Text>
+                <Text style={HomeScreenStyles.itemSecondaryText}>
+                  {vehicle.Model}
+                </Text>
+              </View>
+              <View style={HomeScreenStyles.itemContainer}>
+                <Text style={HomeScreenStyles.itemPrimaryText}>Color: </Text>
+                <Text style={HomeScreenStyles.itemSecondaryText}>
+                  {vehicle.Colour}
+                </Text>
+              </View>
+              <View style={HomeScreenStyles.itemContainer}>
+                <Text style={HomeScreenStyles.itemPrimaryText}>License: </Text>
+                <Text style={HomeScreenStyles.itemSecondaryText}>
+                  {vehicle.LicenseNumber}
                 </Text>
               </View>
             </View>
           </View>
-          <View style={{height: '33.3%'}}>
-            <Card
-              size="sm"
-              variant="outline"
-              style={{
-                marginHorizontal: 12,
-                marginBottom: 10,
-                backgroundColor: '#ffffff',
-                borderRadius: 5,
-                elevation: 10,
-              }}>
-              <Text
-                style={{
-                  // fontSize: 15,
-                  marginStart: 15,
-                  fontWeight: '500',
-                  textAlign: 'left',
-                  marginTop: 5,
-                  marginBottom: 15,
-                }}>
-                Your Vehicle
-              </Text>
-              <View style={{flexDirection: 'row', flex: 1, marginBottom: 10}}>
-                <View style={{width: '33%'}}>
-                  <Image
-                    style={{
-                      width: 100,
-                      aspectRatio: 1 / 1,
-                      marginHorizontal: 12,
-                      height: 100,
-                      borderRadius: 50, // Half of the width or height
-                      display: 'flex', // Flexbox layout
-                      flexDirection: 'row', // Horizontal arrangement
-                      alignItems: 'center', // Align items vertically
-                      justifyContent: 'center',
-                    }}
-                    source={{
-                      uri:
-                        storageUrl + vehicle.FrontImageUrl ||
-                        'https://eu.amcdn.co.za/cars/toyota-quantum-2-5d-4d-ses-fikile-2012-id-64381431-type-main.jpg',
-                    }}
-                    alt="Vehicle front picture."
-                  />
-                </View>
-
-                <View style={{width: '67%'}}>
-                  <View
-                    style={{
-                      marginTop: 15,
-                      marginBottom: 30,
-                      flexDirection: 'row',
-                      justifyContent: 'space-evenly',
-                      alignItems: 'flex-start',
-                    }}>
-                    <Text style={styles.cardText}>{vehicle.Make}</Text>
-                    <Text style={styles.cardText}>{vehicle.Model}</Text>
-                  </View>
-                  <View
-                    style={{
-                      marginStart: 12,
-                      flexDirection: 'row',
-                      justifyContent: 'space-evenly',
-                      alignItems: 'flex-start',
-                    }}>
-                    <Text style={styles.cardText}>{vehicle.Colour}</Text>
-                    <Text style={styles.cardText}>{vehicle.LicenseNumber}</Text>
-                  </View>
-                </View>
-              </View>
-            </Card>
-          </View>
-          <View style={{height: '33.3%'}}>
-            <TripsBlockDiver tripList={tripData} />
-          </View>
-        </ScrollView>
+        </View>
+        <View style={{height: '50%'}}>
+          <Text
+            style={[
+              HomeScreenStyles.titleText,
+              HomeScreenStyles.secondTitleText,
+            ]}>
+            Today's stats
+          </Text>
+          <StatRowCard
+            primaryText={'Missed'}
+            secondaryText={'Trips'}
+            tetiaryText={missedTripsCount ? missedTripsCount.toString() : '0'}
+          />
+          <StatRowCard
+            primaryText={'Active'}
+            secondaryText={'Trips'}
+            tetiaryText={activeTripsCount ? activeTripsCount.toString() : '0'}
+          />
+          <StatRowCard
+            primaryText={'Completed'}
+            secondaryText={'Trips'}
+            tetiaryText={
+              completedTripsCount ? completedTripsCount.toString() : '0'
+            }
+          />
+          <StatRowCard
+            primaryText={'Total'}
+            secondaryText={'Trips'}
+            tetiaryText={tripCount ? tripCount.toString() : '0'}
+          />
+        </View>
       </SafeAreaView>
     );
   }
 };
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: '#20B2AA',
-  },
-  cardText: {fontWeight: '500', fontSize: 16},
-  headerContent: {
-    padding: 30,
-    alignItems: 'center',
-  },
-
-  image: {
-    width: 40,
-    height: 40,
-  },
-
-  body: {
-    padding: 30,
-  },
-  box: {
-    padding: 5,
-    marginTop: 5,
-    marginBottom: 5,
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    shadowColor: 'black',
-    shadowOpacity: 0.2,
-    shadowOffset: {
-      height: 1,
-      width: -2,
-    },
-    elevation: 2,
-  },
-  username: {
-    color: '#20B2AA',
-    fontSize: 22,
-    alignSelf: 'center',
-    marginLeft: 10,
-  },
-  container: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  coverPhoto: {
-    width: '100%',
-    height: 130,
-    resizeMode: 'cover',
-  },
-  avatarContainer: {
-    alignItems: 'center',
-    marginTop: -75,
-  },
-  avatar: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-  },
-  name: {
-    marginTop: 15,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  quicksandLight: {
-    fontFamily: 'Quicksand-Light',
-    fontSize: 20,
-  },
-  quicksandRegular: {
-    fontFamily: 'Quicksand-Regular',
-    fontSize: 20,
-  },
-  ralewayItalic: {
-    fontFamily: 'Raleway-Italic',
-    fontSize: 20,
-  },
-  ralewayThin: {
-    fontFamily: 'Raleway-ThinItalic',
-    fontSize: 20,
-  },
-});
 
 export default HomeScreen;

@@ -32,7 +32,7 @@ const BankingDetailModal = (props: BankingDetailDetailModalProps) => {
       isOpen={props.ShowModal}
       onClose={props.CloseBankingDetailModalButtonOnPress}>
       <ModalBackdrop />
-      <ModalContent>
+      <ModalContent style={{backgroundColor: '#ffffff'}}>
         <ModalHeader>
           <Heading size="lg">Banking Details</Heading>
           <ModalCloseButton>

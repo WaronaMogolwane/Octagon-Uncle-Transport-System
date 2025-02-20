@@ -4,13 +4,16 @@ import {
   Text,
   View,
 } from 'react-native';
-import React from 'react';
-import COLORS from '../../Const/colors';
-import {TripCardParentStyles} from '../../Stylesheets/GlobalStyles';
-import {GraduationCap, MapPin} from 'lucide-react-native';
-import {Card} from '@gluestack-ui/themed';
+import React, {useState} from 'react';
+import {
+  PassengerListCardStyles,
+  TripCardParentStyles,
+} from '../../Stylesheets/GlobalStyles';
+import {UserRound} from 'lucide-react-native';
+import {CheckPassengerSchedule} from '../../Controllers/PassengerScheduleController';
 
 type passengerCardProps = {
+  passengerId: string;
   passengerName: string;
   age: string;
   pickUpLocation: string;
@@ -23,80 +26,61 @@ type passengerCardProps = {
   ) => void;
 };
 
-export const PassengerCardTwo = (props: passengerCardProps) => {
-  return (
-    <TouchableOpacity onPress={props.onPress}>
-      <View style={TripCardParentStyles.cardBorder}>
-        <View style={TripCardParentStyles.cardContainer}>
-          <View>
-            <Text style={TripCardParentStyles.cardText}>Passenger Name: </Text>
-          </View>
-          <View>
-            <Text style={{padding: 1}}>{props.passengerName}</Text>
-          </View>
-        </View>
-        <View style={TripCardParentStyles.cardContainer}>
-          <View>
-            <Text style={TripCardParentStyles.cardText}>Passenger Age: </Text>
-          </View>
-          <View>
-            <Text style={{padding: 1}}>{props.age}</Text>
-          </View>
-        </View>
-        <View style={TripCardParentStyles.cardContainer}>
-          <View>
-            <Text style={TripCardParentStyles.cardText}>Location: </Text>
-          </View>
-          <View>
-            <Text style={{padding: 2}}>{props.pickUpLocation}</Text>
-          </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-};
-
 export const PassengerCard = (props: passengerCardProps) => {
-  const iconSize = 15;
+  const [isScheduled, setIsScheduled] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const iconSize = 60;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';
 
-  const universityIcon = (
-    <GraduationCap
+  const userIcon = (
+    <UserRound
+      style={PassengerListCardStyles.passengerImage}
       size={iconSize}
       strokeWidth={iconStrokeWidth}
       color={iconColor}
     />
   );
 
-  const locationIcon = (
-    <MapPin size={iconSize} strokeWidth={iconStrokeWidth} color={iconColor} />
-  );
+  CheckPassengerSchedule(props.passengerId).then((response: any) => {
+    if (response[0].status == 1) {
+      setIsScheduled(true);
+      setIsVisible(true);
+    } else if (response[0].status == 0) {
+      setIsScheduled(false);
+      setIsVisible(true);
+    }
+  });
 
   return (
     <TouchableOpacity onPress={props.onPress}>
-      <Card
-        size="sm"
-        variant="outline"
-        style={{
-          margin: 12,
-          backgroundColor: '#ffffff',
-          borderRadius: 30,
-          elevation: 3,
-        }}>
-        <View
-          style={{
-            flex: 1,
-            borderRadius: 20,
-          }}>
-          <Text style={{fontSize: 16, fontWeight: '600', marginVertical: 5}}>
-            {universityIcon} {props.passengerName}
+      <View style={PassengerListCardStyles.passengerItem}>
+        {userIcon}
+        <View style={PassengerListCardStyles.parentInfo}>
+          <Text style={PassengerListCardStyles.passengerName}>
+            {props.passengerName}
           </Text>
-          <Text style={{fontSize: 16, fontWeight: '600', marginBottom: 5}}>
-            {locationIcon} {props.pickUpLocation}
+
+          <Text style={PassengerListCardStyles.age}>
+            {props.age} years old.
           </Text>
         </View>
-      </Card>
+
+        {isVisible ? (
+          <View>
+            {isScheduled ? (
+              <Text style={PassengerListCardStyles.scheduledText}>
+                scheduled
+              </Text>
+            ) : (
+              <Text style={PassengerListCardStyles.notScheduledText}>
+                not scheduled
+              </Text>
+            )}
+          </View>
+        ) : null}
+      </View>
     </TouchableOpacity>
   );
 };

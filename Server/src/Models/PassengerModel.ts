@@ -107,13 +107,33 @@ export const UpdateIsAssigned = async (
   );
 };
 
-export const GetActivePassengersByBusinessId = async (
+export const GetPassengersByBusinessId = async (
   businessId: string,
   callback: (error, result) => void
 ) => {
   DbPool.query(
     {
       sql: "call GetPassengerByBusinessId(?)",
+      timeout: 40000,
+      values: [businessId],
+    },
+    function (error, results, fields) {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, results);
+      }
+    }
+  );
+};
+
+export const GetActivePassengersByBusinessId = async (
+  businessId: string,
+  callback: (error, result) => void
+) => {
+  DbPool.query(
+    {
+      sql: "call GetPassengerActiveByBusinessId(?)",
       timeout: 40000,
       values: [businessId],
     },

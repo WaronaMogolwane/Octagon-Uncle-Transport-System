@@ -6,8 +6,9 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
-  TextInput,
   View,
+  TextInput,
+  ScrollView,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {
@@ -59,6 +60,7 @@ import {
   AssignPassengerScreenStyles,
   FlatlistStyles,
   ManagePassengerScreenStyles,
+  ThemeStyles,
 } from '../../../Stylesheets/GlobalStyles';
 import {Dropdown} from 'react-native-element-dropdown';
 import {NavigationContainer} from '@react-navigation/native';
@@ -69,6 +71,7 @@ import PassengerListPendingCard from '../../../Components/Cards/PassengerListPen
 import {Auth} from '../../../Classes/Auth';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import filter from 'lodash.filter';
+import {CustomButton1} from '../../../Components/Buttons';
 
 const ManagePassengerScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -92,7 +95,6 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [postalCode, setPostalCode] = useState('');
   const [homeAddress, setHomeAddress] = useState('');
   const [destinationAddress, setDestinationAddress] = useState('');
-  const [isActive, setIsActive] = useState('');
   const [isActiveText, setIsActiveText] = useState('');
 
   const ref = React.useRef(null);
@@ -100,7 +102,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [isFocus, setIsFocus] = useState(false);
 
   const [allPassengers, setAllPassengers] = useState([]);
-  const [allPassengersFiltered, setAllPassengersFiltered] = useState([]);
+  const [fullData, setFullData] = useState([]);
 
   const [allPendingPassengers, setPendingPassengers] = useState([]);
 
@@ -120,12 +122,14 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const [IsLoading, setIsLoading] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [fullData, setFullData] = useState([]);
+  const [editable, setEditable] = useState(true);
 
   const userId = auth.GetUserId();
-  const businessId = auth.GetBusinessId();
   const role: number = Number(auth.GetUserRole());
-  // const role: number = 1;
+  const businessId = auth.GetBusinessId();
+
+  // const userId = 'b14d9894-1a61-4f41-89e9-29ba6a7449c4';
+  // const role: number = 2;
 
   const defaultReasons = [
     {
@@ -151,13 +155,21 @@ const ManagePassengerScreen = ({navigation}: any) => {
     GetPassengers();
   }, []);
 
+  useEffect(() => {
+    if (fullData.length > 0) {
+      handleSearch('');
+    }
+  }, [fullData]);
+
   const GetPassengers = async () => {
     if (role == 1) {
       //Transporter
       await GetAllPassengerForBusiness(businessId).then((result: any) => {
         if (result.length != 0) {
           setNoPassenger(false);
-          setAllPassengers(result);
+          setFullData(result);
+
+          // setAllPassengers(result);
           setStatusCode(!statusCode);
           setIsLoading(false);
         } else {
@@ -429,7 +441,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
           setShowReason(false);
         }}
         finalFocusRef={ref}>
-        <ModalBackdrop />
+        <ModalBackdrop style={{backgroundColor: '#ffffff'}} />
         <ModalContent>
           <ModalHeader>
             <Heading size="lg">Delete Request</Heading>
@@ -494,57 +506,35 @@ const ManagePassengerScreen = ({navigation}: any) => {
                 </View>
               </View>
             ) : null}
-          </ModalBody>
-          <ModalFooter>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-              }}>
-              <View style={{padding: 5}}>
-                <Button
-                  size="md"
-                  variant="solid"
-                  action="secondary"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={() => {
-                    setShowReason(false);
-                  }}>
-                  <ButtonIcon as={ArrowLeftIcon} />
-                  <ButtonText>Back</ButtonText>
-                </Button>
-              </View>
-              <View style={{padding: 5}}>
-                <Button
-                  size="md"
-                  variant="solid"
-                  action="negative"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={() => {
-                    DeletePassengerRequest(passengerId, reason.trim()).then(
-                      (result: any) => {
-                        if (result[1] == 200) {
-                          GetPassengers();
-                          setShowButton(false);
-                          setShowCard(false);
-                          setShowReason(false);
 
-                          ShowSuccessToast();
-                        } else {
-                          //Something went wrong
-                          ShowToast();
-                        }
-                      },
-                    );
-                  }}>
-                  <ButtonIcon as={TrashIcon} />
-                  <ButtonText>Delete</ButtonText>
-                </Button>
-              </View>
-            </View>
-          </ModalFooter>
+            <CustomButton1
+              styles={
+                ManagePassengerScreenStyles.deletePassengerReasonModalButton
+              }
+              title="Delete"
+              size="md"
+              action="negative"
+              isDisabled={false}
+              isFocusVisible={false}
+              onPress={() => {
+                DeletePassengerRequest(passengerId, reason.trim()).then(
+                  (result: any) => {
+                    if (result[1] == 200) {
+                      GetPassengers();
+                      setShowButton(false);
+                      setShowCard(false);
+                      setShowReason(false);
+
+                      ShowSuccessToast();
+                    } else {
+                      //Something went wrong
+                      ShowToast();
+                    }
+                  },
+                );
+              }}
+            />
+          </ModalBody>
         </ModalContent>
       </Modal>
     );
@@ -560,19 +550,19 @@ const ManagePassengerScreen = ({navigation}: any) => {
           setShowReasonField(false);
         }}
         finalFocusRef={ref}>
-        <ModalBackdrop />
-        <ModalContent>
-          <ModalHeader>
-            <Heading size="lg">Passenger Summary</Heading>
-            <ModalCloseButton>
-              <Icon as={CloseIcon} />
-            </ModalCloseButton>
-          </ModalHeader>
-          <ModalBody>
-            <View>
+        <ModalBackdrop style={{backgroundColor: '#ffffff'}} />
+        <ModalContent style={{height: '80%'}}>
+          <ScrollView>
+            <ModalHeader>
+              <Heading size="lg">Passenger Summary</Heading>
+              <ModalCloseButton>
+                <Icon as={CloseIcon} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
               <VStack>
                 <CustomFormControlInput
-                  labelText="Parent Name"
+                  labelText="Parent name"
                   isInvalid={false}
                   isDisabled={true}
                   type="text"
@@ -580,7 +570,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                   isRequired={false}
                 />
                 <CustomFormControlInput
-                  labelText="Child Firstname"
+                  labelText="Child firstname"
                   isInvalid={false}
                   isDisabled={true}
                   type="text"
@@ -589,7 +579,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                 />
 
                 <CustomFormControlInput
-                  labelText="Child Lastname"
+                  labelText="Child lastname"
                   isInvalid={false}
                   isDisabled={true}
                   type="text"
@@ -605,7 +595,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                   isRequired={false}
                 />
                 <CustomFormControlInput
-                  labelText="Home Address"
+                  labelText="Home address"
                   isInvalid={false}
                   isDisabled={true}
                   type="text"
@@ -614,7 +604,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                 />
 
                 <CustomFormControlInput
-                  labelText="Destination Address"
+                  labelText="Destination address"
                   isInvalid={false}
                   isDisabled={true}
                   type="text"
@@ -623,7 +613,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                 />
 
                 <CustomFormControlInput
-                  labelText="Active Status"
+                  labelText="Active status"
                   isInvalid={false}
                   isDisabled={true}
                   type="text"
@@ -633,7 +623,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
 
                 {showReasonField ? (
                   <CustomFormControlInput
-                    labelText="Reason For Passenger Deletion"
+                    labelText="Reason for passenger deletion"
                     isInvalid={false}
                     isDisabled={true}
                     type="text"
@@ -643,9 +633,10 @@ const ManagePassengerScreen = ({navigation}: any) => {
                 ) : null}
 
                 {showButton ? (
-                  <Button
+                  <CustomButton1
+                    styles={{marginTop: 10}}
+                    title="Delete"
                     size="md"
-                    variant="solid"
                     action="negative"
                     isDisabled={false}
                     isFocusVisible={false}
@@ -663,14 +654,12 @@ const ManagePassengerScreen = ({navigation}: any) => {
                           ShowToast();
                         }
                       });
-                    }}>
-                    <ButtonIcon as={TrashIcon} />
-                    <ButtonText>Delete</ButtonText>
-                  </Button>
+                    }}
+                  />
                 ) : null}
               </VStack>
-            </View>
-          </ModalBody>
+            </ModalBody>
+          </ScrollView>
         </ModalContent>
       </Modal>
     );
@@ -776,16 +765,16 @@ const ManagePassengerScreen = ({navigation}: any) => {
           setShowCard(false);
         }}
         finalFocusRef={ref}>
-        <ModalBackdrop />
+        <ModalBackdrop style={{backgroundColor: '#ffffff'}} />
         <ModalContent>
-          <ModalHeader>
-            <Heading size="lg">Passenger Details</Heading>
-            <ModalCloseButton>
-              <Icon as={CloseIcon} />
-            </ModalCloseButton>
-          </ModalHeader>
-          <ModalBody>
-            <View>
+          <ScrollView style={{height: '80%'}}>
+            <ModalHeader>
+              <Heading size="lg">Passenger Details</Heading>
+              <ModalCloseButton>
+                <Icon as={CloseIcon} />
+              </ModalCloseButton>
+            </ModalHeader>
+            <ModalBody>
               <VStack>
                 <CustomFormControlInput
                   labelText="Firstname"
@@ -838,45 +827,43 @@ const ManagePassengerScreen = ({navigation}: any) => {
                   value={isActiveText}
                   isRequired={false}
                 />
+                <View style={ManagePassengerScreenStyles.modalButtonContainer}>
+                  <CustomButton1
+                    styles={
+                      ManagePassengerScreenStyles.editPassengerModalButton
+                    }
+                    title="Edit"
+                    size="sm"
+                    action="secondary"
+                    isDisabled={false}
+                    isFocusVisible={false}
+                    onPress={() => {
+                      setUpdate(true);
+                      setShowCard(false);
+                    }}
+                  />
 
-                <View>
-                  <View style={{padding: 5}}>
-                    <Button
-                      size="md"
-                      variant="solid"
-                      action="secondary"
-                      isDisabled={false}
-                      isFocusVisible={false}
-                      onPress={() => {
-                        setUpdate(true);
-                        setShowCard(false);
-                      }}>
-                      <ButtonIcon as={EditIcon} />
-                      <ButtonText>Edit Passenger</ButtonText>
-                    </Button>
-                  </View>
-                  <View style={{padding: 5}}>
-                    <Button
-                      size="md"
-                      variant="solid"
-                      action="negative"
-                      isDisabled={false}
-                      isFocusVisible={false}
-                      onPress={() => {
-                        if (isDeleted) {
-                          showDeletePendingToast();
-                        } else {
-                          setShowReason(true);
-                        }
-                      }}>
-                      <ButtonIcon as={TrashIcon} />
-                      <ButtonText>Delete Passenger</ButtonText>
-                    </Button>
-                  </View>
+                  <CustomButton1
+                    styles={
+                      ManagePassengerScreenStyles.deletePassengerModalButton
+                    }
+                    title="Delete"
+                    size="sm"
+                    action="negative"
+                    isDisabled={false}
+                    isFocusVisible={false}
+                    onPress={() => {
+                      if (isDeleted) {
+                        showDeletePendingToast();
+                      } else {
+                        setShowReason(true);
+                      }
+                    }}
+                  />
                 </View>
               </VStack>
-            </View>
-          </ModalBody>
+            </ModalBody>
+          </ScrollView>
         </ModalContent>
       </Modal>
     );
@@ -1000,7 +987,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
   const EmtpyPassengerFlatListText = () => {
     return (
       <View>
-        <Text>You currently have no trips.</Text>
+        <Text style={{textAlign: 'center'}}>You currently have no trips.</Text>
       </View>
     );
   };
@@ -1080,14 +1067,14 @@ const ManagePassengerScreen = ({navigation}: any) => {
     });
   };
 
-  const handleSearch = (query: string) => {
+  const handleSearch = (query: any) => {
     setSearchQuery(query);
-    const formattedQuery = query;
-    const filterData: any = filter(allPassengers, (user: any) => {
+    const formattedQuery = query.toLowerCase();
+    const filterData: any = filter(fullData, (user: any) => {
       return contains(user, formattedQuery);
     });
 
-    setAllPassengersFiltered(filterData);
+    setAllPassengers(filterData);
   };
 
   const contains = (
@@ -1095,9 +1082,9 @@ const ManagePassengerScreen = ({navigation}: any) => {
     query: any,
   ) => {
     if (
-      parentName.includes(query) ||
-      passengerFirstName.includes(query) ||
-      passengerLastName.includes(query)
+      parentName.toLowerCase().includes(query) ||
+      passengerFirstName.toLowerCase().includes(query) ||
+      passengerLastName.toLowerCase().includes(query)
     ) {
       return true;
     }
@@ -1105,53 +1092,21 @@ const ManagePassengerScreen = ({navigation}: any) => {
     return false;
   };
 
-  //Handles FAB onPress
-  const HandleBackFabPress = () => {
-    navigation.goBack();
-  };
-
-  //Defines the FAB
-  const GoBackFab = () => {
-    return (
-      <Fab
-        onPress={HandleBackFabPress}
-        size="sm"
-        placement="bottom right"
-        isHovered={false}
-        isDisabled={false}
-        isPressed={false}>
-        <FabIcon as={ArrowLeftIcon} mr="$1" />
-        <FabLabel>Back</FabLabel>
-      </Fab>
-    );
-  };
-
   //Contains Upcoming Flatlist for all roles
   function FirstRoute() {
     return (
-      <View style={{flex: 1}}>
-        <View style={FlatlistStyles.container}>
-          <TextInput
-            placeholder="Search"
-            clearButtonMode="always"
-            autoCapitalize="none"
-            style={styles.searchBox}
-            autoCorrect={false}
-            value={searchQuery}
-            onChangeText={(query: string) => handleSearch(query)}
-          />
-          <View>{showPassengerSummaryModal()}</View>
-          {noPassenger ? EmtpyFlatListText() : null}
-          <FlatList
-            style={{backgroundColor: '#e8f0f3'}}
-            data={allPassengersFiltered}
-            extraData={statusCode}
-            renderItem={({item}) => renderItemComponentAllPassengers(item)}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
-        </View>
+      <View style={ThemeStyles.container}>
+        {showPassengerSummaryModal()}
+        {noPassenger ? EmtpyFlatListText() : null}
+        <FlatList
+          style={ManagePassengerScreenStyles.flatList}
+          data={allPassengers}
+          extraData
+          renderItem={({item}) => renderItemComponentAllPassengers(item)}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
       </View>
     );
   }
@@ -1159,20 +1114,18 @@ const ManagePassengerScreen = ({navigation}: any) => {
   //Contains Past Flatlist for all roles
   function SecondRoute() {
     return (
-      <View style={{flex: 1}}>
-        <View style={FlatlistStyles.container}>
-          <View>{showPassengerSummaryModal()}</View>
-          {noPendingPassenger ? EmtpyPassengerFlatListText() : null}
-          <FlatList
-            style={{backgroundColor: '#e8f0f3'}}
-            data={allPendingPassengers}
-            extraData={statusCode}
-            renderItem={({item}) => renderItemComponentPendingPassengers(item)}
-            refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          />
-        </View>
+      <View style={ThemeStyles.container}>
+        {showPassengerSummaryModal()}
+        {noPendingPassenger ? EmtpyPassengerFlatListText() : null}
+        <FlatList
+          style={ManagePassengerScreenStyles.flatList}
+          data={allPendingPassengers}
+          extraData
+          renderItem={({item}) => renderItemComponentPendingPassengers(item)}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        />
       </View>
     );
   }
@@ -1196,93 +1149,73 @@ const ManagePassengerScreen = ({navigation}: any) => {
           <Text>Working</Text>
         </View>
       ) : null}
-      {GoBackFab()}
+      {role == 1 ? (
+        <View style={ManagePassengerScreenStyles.flatList}>
+          <TextInput
+            editable={editable}
+            placeholder="Search"
+            clearButtonMode="always"
+            autoCapitalize="none"
+            style={ManagePassengerScreenStyles.searchBox}
+            autoCorrect={false}
+            value={searchQuery}
+            onChangeText={(query: string) => {
+              handleSearch(query);
+            }}
+          />
+        </View>
+      ) : null}
+
       {role == 1 ? (
         <Tab.Navigator
           screenOptions={{
-            tabBarStyle: {backgroundColor: '#e8f0f3', elevation: 10},
+            tabBarContentContainerStyle:
+              ManagePassengerScreenStyles.tabBarContentContainerStyle,
+            tabBarStyle: ManagePassengerScreenStyles.tabBarStyle,
+            tabBarIndicatorStyle:
+              ManagePassengerScreenStyles.tabBarIndicatorStyle,
+            tabBarBounces: true,
+          }}
+          screenListeners={{
+            state: e => {
+              if (e.data.state?.index == 0) {
+                setEditable(true);
+              } else if (e.data.state?.index == 1) {
+                setEditable(false);
+              }
+            },
           }}>
           <Tab.Screen name="All Passengers" component={FirstRoute} />
           <Tab.Screen name="Pending Removals" component={SecondRoute} />
         </Tab.Navigator>
       ) : (
-        <SafeAreaView style={{flex: 1, backgroundColor: '#e8f0f3'}}>
-          <View style={{flex: 1}}>
-            <Card
-              size="sm"
-              variant="outline"
-              style={{
-                marginHorizontal: 12,
-                backgroundColor: '#ffffff',
-                borderRadius: 5,
-                elevation: 10,
-                justifyContent: 'center',
-              }}>
-              <View>
-                <Text
-                  style={{
-                    fontWeight: 'bold',
-                    fontSize: 15,
-                    color: '#e89d0e',
-                  }}>
-                  Create Passenger
-                </Text>
-                <Text
-                  style={{
-                    marginTop: 20,
-                    fontSize: 18,
-                    marginBottom: 30,
-                    color: '#4b4842',
-                  }}>
-                  Press "Create Passenger" button to add new passenger.
-                </Text>
-              </View>
+        <SafeAreaView style={ThemeStyles.container}>
+          {showPopUpModal()}
+          {showReasonModal()}
+          {showUpdatePopUpModal()}
+          {showPassengerCardModal()}
 
-              <View
-                style={{
-                  alignItems: 'center', // Align items vertically
-                  justifyContent: 'center',
-                  display: 'flex', // Flexbox layout
-                }}>
-                <View>
-                  {showPassengerCardModal()}
-                  <Button
-                    style={{width: '50%'}}
-                    size="md"
-                    variant="solid"
-                    action="primary"
-                    isDisabled={false}
-                    isFocusVisible={false}
-                    onPress={() => {
-                      setShowPModal(true);
-                    }}>
-                    <ButtonIcon as={AddIcon} />
-                    <ButtonText>Create Passenger</ButtonText>
-                  </Button>
-                </View>
-              </View>
-            </Card>
+          <View style={{height: '90%'}}>
+            {noPassenger ? EmtpyPassengerFlatListText() : null}
+            <FlatList
+              data={passengerList}
+              extraData={statusCode}
+              renderItem={({item}) => renderItemComponentPassengers(item)}
+            />
+          </View>
 
-            <View>{showPopUpModal()}</View>
-            <View>{showReasonModal()}</View>
-            <View>{showUpdatePopUpModal()}</View>
-            <View style={{marginTop: 5, padding: 1}}>
-              <TextInput
-                placeholder="Search"
-                clearButtonMode="always"
-                autoCapitalize="none"
-                style={styles.searchBox}
-                autoCorrect={false}
-                value={searchQuery}
-                onChangeText={(query: string) => handleSearch(query)}
-              />
-              {noPassenger ? EmtpyPassengerFlatListText() : null}
-              <FlatList
-                data={passengerList}
-                extraData={statusCode}
-                renderItem={({item}) => renderItemComponentPassengers(item)}
-              />
-            </View>
+          <View style={{height: '10%'}}>
+            <CustomButton1
+              styles={ManagePassengerScreenStyles.parentButton}
+              title="Add new passenger"
+              size="md"
+              action="primary"
+              isDisabled={false}
+              isFocusVisible={false}
+              onPress={() => {
+                setShowPModal(true);
+              }}
+            />
           </View>
         </SafeAreaView>
       )}
@@ -1291,15 +1224,3 @@ const ManagePassengerScreen = ({navigation}: any) => {
 };
 
 export default ManagePassengerScreen;
-
-const styles = StyleSheet.create({
-  searchBox: {
-    // marginHorizontal: 12,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderColor: '#ccc',
-    // borderWidth: 1,
-    // borderRadius: 8,
-    backgroundColor: '#fff',
-  },
-});

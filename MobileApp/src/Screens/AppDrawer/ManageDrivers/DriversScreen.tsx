@@ -21,6 +21,7 @@ import {
 } from '../../../Services/AuthenticationService';
 import {GestureResponderEvent} from 'react-native';
 import {Auth} from '../../../Classes/Auth';
+import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 export const DriversScreen = () => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
@@ -147,7 +148,7 @@ export const DriversScreen = () => {
     GetDrivers(auth.GetBusinessId());
   }, [auth]);
   return (
-    <View style={{flex: 1}}>
+    <View style={ThemeStyles.container}>
       {DriversList[0] ? (
         <FlatList
           mt="$3"

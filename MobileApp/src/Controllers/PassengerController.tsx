@@ -1,8 +1,7 @@
 import {
   AddPassengerToDB,
-  GetPassengerFromDatabase,
   DeletePassengerFromDB as DeletePassengerFromDB,
-  GetActivePassengerForBusinessFromDB,
+  GetUnassignedPassengerForBusinessFromDB,
   UpdateIsAssignedInDB,
   UpdatePassengerInDB,
   GetParentPassengersFromDB,
@@ -10,6 +9,7 @@ import {
   GetPendingPassengerForBusinessFromDB,
   DeletePassengerRequestFromDB,
   GetActivePassengerForParentFromDB,
+  GetActivePassengerForBusinessFromDB,
 } from '../Data/PassengerDAL';
 import {Passenger} from '../Models/Passenger';
 
@@ -17,28 +17,30 @@ export const AddPassenger = async (passenger: Passenger) => {
   return await AddPassengerToDB(passenger);
 };
 
-export const GetPassenger = async (passengerId: string, uid: string) => {
-  return await GetPassengerFromDatabase(passengerId, uid);
-};
-
 export const GetParentPassengers = async (parentId: string) => {
   return await GetParentPassengersFromDB(parentId);
 };
 
-export const GetAllActivePassengerForBusiness = async (businessId: string) => {
-  return GetActivePassengerForBusinessFromDB(businessId);
+export const GetUnassignedActivePassengerForBusiness = async (
+  businessId: string,
+) => {
+  return await GetUnassignedPassengerForBusinessFromDB(businessId);
+};
+
+export const GetActivePassengerForBusiness = async (businessId: string) => {
+  return await GetActivePassengerForBusinessFromDB(businessId);
 };
 
 export const GetAllActivePassengerForParent = async (parentId: string) => {
-  return GetActivePassengerForParentFromDB(parentId);
+  return await GetActivePassengerForParentFromDB(parentId);
 };
 
 export const GetAllPendingPassengerForBusiness = async (businessId: string) => {
-  return GetPendingPassengerForBusinessFromDB(businessId);
+  return await GetPendingPassengerForBusinessFromDB(businessId);
 };
 
 export const GetAllPassengerForBusiness = async (businessId: string) => {
-  return GetAllPassengerForBusinessFromDB(businessId);
+  return await GetAllPassengerForBusinessFromDB(businessId);
 };
 
 export const DeletePassenger = async (passengerId: string) => {

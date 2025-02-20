@@ -1,26 +1,7 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {Text, View} from 'react-native';
 import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  ScrollView,
-  GestureResponderEvent,
-} from 'react-native';
-
-import {
-  Banknote,
-  BookUser,
-  BriefcaseBusiness,
-  LogOut,
-  User,
-} from 'lucide-react-native';
-import {
-  ArrowLeftIcon,
-  Button,
-  ButtonIcon,
-  ButtonText,
   CloseIcon,
   Heading,
   Icon,
@@ -32,12 +13,10 @@ import {
   ModalHeader,
   ModalBody,
 } from '@gluestack-ui/themed';
-import {Auth} from '../../../Classes/Auth';
-import {GetUser} from '../../../Controllers/UserController';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {
-  RestoreImageViaAsyncStorage,
   ClearImageViaAsyncStorage,
+  DeleteImage,
 } from '../../../Services/ImageStorageService';
 import {
   ProfileScreenStyles,
@@ -45,6 +24,7 @@ import {
 } from '../../../Stylesheets/GlobalStyles';
 import {SettingsCard} from '../../../Components/Cards/SettingsCard';
 import {CustomButton1} from '../../../Components/Buttons';
+import RNFS from 'react-native-fs';
 
 const ProfileScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
@@ -83,9 +63,7 @@ const ProfileScreen = ({navigation}: any) => {
                 isDisabled={false}
                 isFocusVisible={false}
                 onPress={async () => {
-                  ClearImageViaAsyncStorage().then(async () => {
-                    await signOut();
-                  });
+                  SignOut();
                 }}
               />
             </View>
@@ -93,6 +71,13 @@ const ProfileScreen = ({navigation}: any) => {
         </ModalContent>
       </Modal>
     );
+  };
+
+  const SignOut = async () => {
+    ClearImageViaAsyncStorage().then(async () => {
+      DeleteImage();
+      await signOut();
+    });
   };
 
   return (

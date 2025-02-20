@@ -6,7 +6,10 @@ import {View, GestureResponderEvent} from 'react-native';
 import {SignUpForm} from '../../Components/Forms/SignUpForm';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
 import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
-import {UserSignUp} from '../../Controllers/AuthenticationController';
+import {
+  GetUserInvitation,
+  UserSignUp,
+} from '../../Controllers/AuthenticationController';
 import {User} from '../../Models/UserModel';
 import {useStorageState} from '../../Services/StorageStateService';
 import {
@@ -123,26 +126,36 @@ const SignUpScreen = ({route, navigation}: any) => {
     );
   };
   const SignUpNewUser: any = async () => {
-    const newUser: User = {
-      userId: userId,
-      email: formik.values.email,
-      password: formik.values.password,
-      businessId: businessId,
-      userRole: userRole,
-    };
+    await GetUserInvitation(
+      formik.values.email,
+      userRole,
+      async (error: any, result: any) => {
+        if (error) {
+        } else {
+          const newUserId: any = result[0].UserId;
+          const newUser: User = {
+            userId: newUserId,
+            email: formik.values.email,
+            password: formik.values.password,
+            businessId: businessId,
+            userRole: userRole,
+          };
 
-    await signUp(newUser, (error: any, result: any) => {
-      if (error) {
-        console.error(error);
-      } else {
-        ShowToast();
-        navigation.navigate({
-          name: 'Personal Details',
-          params: {sessionId: result.headers.sessionid},
-          merge: true,
-        });
-      }
-    });
+          await signUp(newUser, (error: any, result: any) => {
+            if (error) {
+              console.error(error);
+            } else {
+              ShowToast();
+              navigation.navigate({
+                name: 'Personal Details',
+                params: {sessionId: result.headers.sessionid},
+                merge: true,
+              });
+            }
+          });
+        }
+      },
+    );
   };
 
   return (

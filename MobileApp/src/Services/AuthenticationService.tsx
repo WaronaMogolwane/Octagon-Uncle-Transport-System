@@ -133,7 +133,7 @@ export function SessionProvider(props: any, navigation: any) {
           userinvitation: UserInvitation,
           callback: (error: any, resul: any) => void,
         ) => {
-          await InsertUserInvitation(userinvitation, (error, result) => {
+          await InsertUserInvitation(userinvitation, (error, result: any) => {
             if (error) {
               callback(error, null);
             } else {
@@ -248,6 +248,25 @@ export const InsertUserInvitation = async (
       lastName: userInvitation.lastName,
       userEmail: userInvitation.userEmail,
       userRole: userInvitation.userRole,
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
+};
+export const GetUserInvitationByEmail = async (
+  email: string,
+  userRole: number,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/auth/get-user-invitation`, {
+      params: {
+        email: email,
+        userRole: userRole,
+      },
     })
     .then((response: any) => {
       callback(null, response);

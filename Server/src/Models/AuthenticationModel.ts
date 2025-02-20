@@ -120,7 +120,11 @@ export const InsertUserInvitation = async (
       if (err) {
         callback(err, null);
       } else {
-        callback(null, res);
+        const response = {
+          result: res,
+          userId: newUserId
+        };
+        callback(null, response);
       }
     },
   );
@@ -204,6 +208,25 @@ export const UpdateUserInvitationToUsed = async (
       if (err) {
         callback(err, null);
       } else {
+        callback(null, res);
+      }
+    })
+}
+export const GetUserInvitationByEmailAndUserRole = async (email: string, userRole: string, callback: (error: any, result: any) => void) => {
+  DbPool.query({
+    sql: "CALL GetUserInvitationByEmailUserRole(?,?)",
+    timeout: 40000,
+    values: [
+      email,
+      userRole
+    ],
+  },
+    (err, res) => {
+
+      if (err) {
+        callback(err, null);
+      }
+      else {
         callback(null, res);
       }
     })

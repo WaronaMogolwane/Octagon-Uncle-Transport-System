@@ -1,9 +1,9 @@
-import {RemovePassengerDriverLinkingFromDB} from './../Data/PassengerDriverVehicleLinkingDAL';
-import {ChangeEvent} from 'react';
-import {GestureResponderEvent} from 'react-native';
-import {RemoveVehicleAlertProps} from './RemoveDriverAlertProps';
-import {RemoveClientAlertProps} from './RemoveClientAlertProps';
-import {RemoveDriverAlertProps} from './RemoveVehicleAlertProps';
+import { RemovePassengerDriverLinkingFromDB } from './../Data/PassengerDriverVehicleLinkingDAL';
+import { ChangeEvent } from 'react';
+import { GestureResponderEvent } from 'react-native';
+import { RemoveVehicleAlertProps } from './RemoveDriverAlertProps';
+import { RemoveClientAlertProps } from './RemoveClientAlertProps';
+import { RemoveDriverAlertProps } from './RemoveVehicleAlertProps';
 
 export type VerifyOtpModalProps = {
   ShowModal: boolean;
@@ -15,6 +15,27 @@ export type VerifyOtpModalProps = {
   otpValue: string;
   VerifyOtpButtonOnPress: () => void;
   CloseOtpModalButtonOnPress: () => void;
+};
+export type PaymentScheduleModalProps = {
+  ShowModal: boolean;
+  AmountIsInvalid: boolean;
+  AmountOnChangeText: (e: string | ChangeEvent<any>) => void;
+  AmountErrorText: string | undefined;
+  AmountOnBlur: (e: any) => void;
+  AmountValue: string;
+  PaymentDayIsInvalid: boolean;
+  PaymentDayOnChangeText: (e: string | ChangeEvent<any>) => void;
+  PaymentDayErrorText: string | undefined;
+  PaymentDayOnBlur: (e: any) => void;
+  PaymentDayValue: string;
+  SendInviteOnPress: (
+    values:
+      | GestureResponderEvent
+      | React.FormEvent<HTMLFormElement>
+      | undefined,
+  ) => void;
+  CloseModalOnPress: () => void;
+  BackOnPpress: () => void;
 };
 export type InvitationModalProps = {
   ShowModal: boolean;
@@ -33,6 +54,7 @@ export type InvitationModalProps = {
   emailErrorText: string | undefined;
   emailOnBlur: (e: any) => void;
   emailValue: string;
+  confirmButtonText?: string;
   SendInviteOnPress: (
     values:
       | GestureResponderEvent

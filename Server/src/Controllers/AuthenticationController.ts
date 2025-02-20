@@ -12,6 +12,7 @@ import {
   UpdateUserInvitationToUsed,
   UpdateUserToNotActive,
   GetClientsByBusinessId,
+  GetUserInvitationByEmailAndUserRole,
 } from "../Models/AuthenticationModel";
 import { randomUUID } from "crypto";
 import { User } from "../Classes/User";
@@ -240,7 +241,7 @@ export const SendUserInvitation = async (req: any, res: any, next: any) => {
     } else {
       SendEmail(emailData).then(
         (value) => {
-          res.status(200).send("User invitation sent.");
+          res.status(200).json(result)
         },
         (error) => {
           next(error);
@@ -248,6 +249,25 @@ export const SendUserInvitation = async (req: any, res: any, next: any) => {
       );
     }
   })
+}
+export const GetInvitationByEmailAndRole = async (req: Request, res: Response, next: NextFunction) => {
+  let email: string = req.query.email.toString();
+  let userRole: string = req.query.userRole.toString();
+  await GetUserInvitationByEmailAndUserRole(email, userRole, (error, result) => {
+    if (error) {
+      const err: Error = new Error(error.message)
+      next(new ErrorResponse(400, err.message, err.stack));
+
+    }
+    else {
+      if (result[0]) {
+        res.status(200).json(result[0]);
+      }
+      else {
+        res.status(400).send(new ErrorResponse(400, "No pending invitations found."));
+      }
+    }
+  });
 }
 export const GetPendingInvitations = async (req: Request, res: Response, next: NextFunction) => {
   let businessId: string = req.query.businessId.toString();
@@ -342,5 +362,4 @@ export const DeactivateUser = async (req: Request, res: Response, next: NextFunc
     }
   });
 }
-export { GetClientsByBusinessId };
 

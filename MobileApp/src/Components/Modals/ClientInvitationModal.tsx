@@ -35,7 +35,7 @@ const ClientInvitationModal = (props: InvitationModalProps) => {
         <ModalBackdrop />
         <ModalContent>
           <ModalHeader>
-            <Heading size="lg">Invite Client</Heading>
+            <Heading size="lg">Invite your clients</Heading>
             <ModalCloseButton>
               <Icon as={CloseIcon} />
             </ModalCloseButton>
@@ -89,7 +89,11 @@ const ClientInvitationModal = (props: InvitationModalProps) => {
               action="positive"
               borderWidth="$0"
               onPress={props.SendInviteOnPress}>
-              <ButtonText>Invite Client</ButtonText>
+              <ButtonText>
+                {props.confirmButtonText
+                  ? props.confirmButtonText
+                  : 'Invite client'}
+              </ButtonText>
             </Button>
           </ModalFooter>
         </ModalContent>

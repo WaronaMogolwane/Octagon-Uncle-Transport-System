@@ -52,11 +52,11 @@ export const CreateNewPlan = (req: Request, res: Response, next: NextFunction) =
 export const CreateNewPaymentSchedule = async (req: Request, res: Response, next: NextFunction) => {
     const reqBody: any = req.body;
     let newPaymentSchedule: PaymentSchedule = ({
-        PaymentsScheduleId: reqBody.paymentsScheduleId,
-        UserId: reqBody.userId,
-        Amount: reqBody.amount,
-        CardAuthorisationId: reqBody.cardAuthorisationId,
-        PaymentDay: reqBody.paymentDay,
+        PaymentsScheduleId: reqBody.PaymentsScheduleId,
+        UserId: reqBody.UserId,
+        Amount: reqBody.Amount,
+        CardAuthorisationId: reqBody.CardAuthorisationId,
+        PaymentDay: reqBody.PaymentDay,
         DateCreated: reqBody.DateCreated,
         IsActive: true
     })

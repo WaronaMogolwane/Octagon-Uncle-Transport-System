@@ -12,10 +12,12 @@ import {
   SendUserInvitation,
   UserLogin,
   VerifyOtp,
-  VerifyUserInvitation
+  VerifyUserInvitation,
+  GetInvitationByEmailAndRole
 
 } from "../Controllers/AuthenticationController";
 import { CreateJWT } from '../Middleware/Auth';
+import { GetUserInvitation } from '../Models/AuthenticationModel';
 const router = Router();
 
 router.post("/register-user", RegisterUser, CreateJWT, async (req, res, next) => {
@@ -35,6 +37,8 @@ router.post("/create-invitation", SendUserInvitation, (req, res) => { });
 router.post("/verify-invitation", VerifyUserInvitation, async (req, res) => {
 });
 router.get("/get-pending-invitations", GetPendingInvitations, async (req, res) => {
+});
+router.get("/get-user-invitation", GetInvitationByEmailAndRole, async (req, res) => {
 });
 router.delete("/delete-user-invitation", RemoveUserInvitation, async (req, res) => {
 });

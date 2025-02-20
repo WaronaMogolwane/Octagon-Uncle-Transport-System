@@ -1,7 +1,19 @@
-import { GetAvailableBalanceByBusinessId, GetCardAuthorizationsByUserId, GetDeclinedPaymentSummaryByBusinessId, GetPaymentsByBusinessId, GetPaymentsSummaryForThisMonthByBusinessId, GetUpcomingPaymentSummaryByBusinessId } from "../Data/PaymentDAL";
+import { GetAvailableBalanceByBusinessId, GetCardAuthorizationsByUserId, GetDeclinedPaymentSummaryByBusinessId, GetPaymentsByBusinessId, GetPaymentsSummaryForThisMonthByBusinessId, GetUpcomingPaymentSummaryByBusinessId, InsertPaymentSchedule } from "../Data/PaymentDAL";
+import { PaymentSchedule } from "../Models/PaymentShedule";
 import { AuthorizationCharge } from "../Models/PaymentsModel";
 import { ChargeAuthorization, GetMonthlyPaymentDetailsByUserId, InitializeTransaction } from "../Services/PaymentsService";
 
+
+export const CreatePaymentSchedule = async (newPaymentSchedule: PaymentSchedule, callback: (error: any, result: any) => void) => {
+    return await InsertPaymentSchedule(newPaymentSchedule, (error: any, result: any) => {
+        if (error) {
+            callback(error, null);
+        }
+        else {
+            callback(null, result);
+        }
+    });
+};
 export const GetBalanceByBusinessId = async (businessId: string, callback: (error: any, result: any) => void) => {
     return await GetAvailableBalanceByBusinessId(businessId, (error: any, result: any) => {
         if (error) {

@@ -2,9 +2,7 @@ import {
   ActivityIndicator,
   FlatList,
   GestureResponderEvent,
-  Pressable,
   RefreshControl,
-  StyleSheet,
   Text,
   View,
   TextInput,
@@ -31,25 +29,11 @@ import {
   Icon,
   CloseIcon,
   ModalBody,
-  ModalFooter,
-  ButtonText,
-  Button,
-  ButtonIcon,
-  AddIcon,
-  Input,
-  InputField,
   useToast,
   Toast,
   ToastDescription,
   ToastTitle,
   VStack,
-  Fab,
-  FabLabel,
-  FabIcon,
-  ArrowLeftIcon,
-  TrashIcon,
-  EditIcon,
-  Card,
 } from '@gluestack-ui/themed';
 import * as yup from 'yup';
 import {useFormik} from 'formik';
@@ -58,7 +42,6 @@ import {Passenger} from '../../../Models/Passenger';
 import {CustomFormControlInput} from '../../../Components/CustomFormInput';
 import {
   AssignPassengerScreenStyles,
-  FlatlistStyles,
   ManagePassengerScreenStyles,
   ThemeStyles,
 } from '../../../Stylesheets/GlobalStyles';
@@ -365,7 +348,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
               <Icon as={CloseIcon} />
             </ModalCloseButton>
           </ModalHeader>
-          <ModalBody>
+          <ModalBody style={{height: '80%'}}>
             <View style={{marginBottom: 30}}>
               <AddPassengerForm
                 firstNameIsInvalid={!!formik.errors.firstname}

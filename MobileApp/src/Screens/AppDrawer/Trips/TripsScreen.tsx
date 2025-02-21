@@ -87,6 +87,7 @@ const TripsScreen = ({navigation}: any) => {
   const [auth, setAuth] = useState(new Auth(session));
 
   const userId = auth.GetUserId();
+
   const role: number = Number(auth.GetUserRole());
 
   const [UpcomingTripList, setUpcomingTripList] = useState([]);
@@ -260,7 +261,7 @@ const TripsScreen = ({navigation}: any) => {
 
   // Render a single record item
   const renderItem = ({item}: {item: Record}) => {
-    if (Number(role) === 2) {
+    if (role === 2) {
       return (
         <TripCardParentComplete
           driverName={item.driverName ?? ''}
@@ -351,6 +352,7 @@ const TripsScreen = ({navigation}: any) => {
                         data={records}
                         keyExtractor={item => item.tripId}
                         renderItem={renderItem}
+                        extraData
                       />
                     )}
                   </View>
@@ -680,21 +682,6 @@ const TripsScreen = ({navigation}: any) => {
     });
   };
 
-  //Contains card for Parent
-  const renderItemComponentParentComplete = (itemData: any) => (
-    <TripCardParentComplete
-      driverName={itemData.driverName}
-      pickUpTime={itemData.pickUpTime}
-      pickUpDate={itemData.pickUpDate}
-      passengerName={itemData.passengerName}
-      pickUpLocation={itemData.pickUpLocation}
-      tripStatus={itemData.tripStatus}
-      dropOffTime={itemData.dropoffTime}
-      leg={itemData.leg}
-      handleAbsentPassenger={() => {}}
-    />
-  );
-
   //Contains for interactive card for driver for upcoming trips
   const renderItemComponentDriverSwipable = (itemData: any) => (
     <TripCardDriverSwipable
@@ -727,48 +714,6 @@ const TripsScreen = ({navigation}: any) => {
         setHomeAddress(itemData.pickUpLocation);
         setDestinationAddress(itemData.dropOffLocation);
         setTripLeg(itemData.leg);
-      }}
-    />
-  );
-
-  //Contains card for Driver for past trips
-  const renderItemComponentDriverComplete = (itemData: any) => (
-    <TripCardDriver
-      passengerName={itemData.passengerName}
-      pickUpTime={itemData.pickUpTime}
-      pickUpDate={itemData.pickUpDate}
-      pickUpLocation={itemData.pickUpLocation}
-      tripStatus={itemData.tripStatus}
-      dropOffTime={itemData.dropOffTime}
-      leg={itemData.leg}
-      handleUndo={() => {
-        if (itemData.tripStatus == 0) {
-          if (currentDate == itemData.pickUpDate.toString()) {
-            UndoTripEnd(itemData.tripId).then(() => {
-              setIsLoading(true);
-              GetUpcomingTrips();
-              GetPastTrips();
-            });
-          } else {
-            WarningToast();
-          }
-        } else if (itemData.tripStatus == 1) {
-          if (currentDate == itemData.pickUpDate.toString()) {
-            UndoTripEnd(itemData.tripId).then(() => {
-              setIsLoading(true);
-              GetUpcomingTrips();
-              GetPastTrips();
-            });
-          } else {
-            WarningToast();
-          }
-        } else if (itemData.tripStatus == 3) {
-          UndoTripDropOffTime(itemData.tripId).then(() => {
-            setIsLoading(true);
-            GetUpcomingTrips();
-            GetPastTrips();
-          });
-        }
       }}
     />
   );
@@ -826,10 +771,12 @@ const TripsScreen = ({navigation}: any) => {
                   <Text style={GroupedFlatListStyles.currentDateHeader}>
                     Today ({currentDate.replace(/-/g, '/')})
                   </Text>
+                  {showNoPastTripText ? EmtpyFlatListText() : null}
                   <FlatList
                     data={currentDateRecords}
                     keyExtractor={item => item.tripId}
                     renderItem={renderItem}
+                    extraData
                   />
                 </View>
               )}
@@ -837,6 +784,13 @@ const TripsScreen = ({navigation}: any) => {
           }
           data={[]} // Empty data array because we're rendering everything manually
           renderItem={() => null} // No need to render items here
+          extraData
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshingPastTrips}
+              onRefresh={onRefreshPastTrips}
+            />
+          }
           ListFooterComponent={
             <View style={GroupedFlatListStyles.container}>
               {/* Render grouped data */}
@@ -857,15 +811,24 @@ const TripsScreen = ({navigation}: any) => {
                   <Text style={GroupedFlatListStyles.currentDateHeader}>
                     Today ({currentDate.replace(/-/g, '/')})
                   </Text>
+                  {showNoPastTripText ? EmtpyFlatListText() : null}
                   <FlatList
                     data={currentDateRecords}
                     keyExtractor={item => item.tripId}
                     renderItem={renderItem}
+                    extraData
                   />
                 </View>
               )}
             </>
           }
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshingPastTrips}
+              onRefresh={onRefreshPastTrips}
+            />
+          }
+          extraData
           data={[]} // Empty data array because we're rendering everything manually
           renderItem={() => null} // No need to render items here
           ListFooterComponent={

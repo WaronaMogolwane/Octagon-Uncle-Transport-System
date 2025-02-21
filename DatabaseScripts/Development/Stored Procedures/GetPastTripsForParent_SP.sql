@@ -25,7 +25,9 @@ FROM
 		INNER JOIN
 	Vehicle ON Vehicle.VehicleId = Trip.VehicleId
 WHERE
-    Passenger.ParentId = _ParentId
-    AND Trip.Date < current_date()
-    OR Trip.IsCompleted = '1';
+    (Passenger.ParentId = _ParentId
+    AND Trip.Date < current_date())
+    OR (Passenger.ParentId = _ParentId
+    AND
+    Trip.IsCompleted = '1');
 END

@@ -92,7 +92,7 @@ const AppDrawer = ({navigation}: any) => {
     };
 
     checkImage();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   return (
     <Drawer.Navigator
@@ -112,23 +112,16 @@ const AppDrawer = ({navigation}: any) => {
                   <Pressable
                     onPress={() => navigation.navigate('Profile')}
                     style={({pressed}) => [{opacity: pressed ? 0.7 : 1}]}>
-                    {profileImageExists ? (
-                      <Image
-                        style={AppDrawerScreenStyles.avatar}
-                        alt="Profile Photo"
-                        source={{
-                          uri: `file://${
-                            RNFS.DocumentDirectoryPath
-                          }/profile_image.jpg?${Date.now()}`,
-                        }}
-                      />
-                    ) : (
-                      <Image
-                        style={AppDrawerScreenStyles.avatar}
-                        alt="Profile Photo"
-                        source={require('../Images/default_avatar_image.jpg')}
-                      />
-                    )}
+                    <Image
+                      defaultSource={require('../Images/default_avatar_image.jpg')}
+                      style={AppDrawerScreenStyles.avatar}
+                      alt="Profile Photo"
+                      source={{
+                        uri: `file://${
+                          RNFS.DocumentDirectoryPath
+                        }/profile_image.jpg?${Date.now()}`,
+                      }}
+                    />
                   </Pressable>
                   <Text style={AppDrawerScreenStyles.name}>{fullname}</Text>
                   <Text
@@ -225,7 +218,6 @@ const AppDrawer = ({navigation}: any) => {
         name="Home"
         component={HomeScreen}
         options={{
-          // headerShown: false,
           title: 'Home',
           drawerIcon: () => (
             <University
@@ -242,7 +234,6 @@ const AppDrawer = ({navigation}: any) => {
           name="Trip"
           component={TripsScreen}
           options={{
-            // drawerItemStyle: {display: 'none'},
             title: 'Trips',
             drawerIcon: () => (
               <Route
@@ -255,7 +246,7 @@ const AppDrawer = ({navigation}: any) => {
         />
       ) : null}
 
-      {role == 1 ? (
+      {role != 3 ? (
         <Drawer.Screen
           name="Payments"
           component={PaymentsScreen}

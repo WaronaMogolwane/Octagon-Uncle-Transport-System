@@ -12,7 +12,12 @@ import {
   TripCardStyles,
   TripTransporterCardStyles,
 } from '../../Stylesheets/GlobalStyles';
-import {ArrowLeft, ArrowRight} from 'lucide-react-native';
+import {
+  ArrowLeft,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react-native';
 import {Swipeable} from 'react-native-gesture-handler';
 
 type tripCardProps = {
@@ -164,7 +169,7 @@ export const TripCardParent = (props: tripCardProps) => {
 
 export const TripCardParentComplete = (props: tripCardProps) => {
   const iconSize = 40;
-  const iconStrokeWidth = 2;
+  const iconStrokeWidth = 1.2;
 
   const tripStatus = () => {
     if (props.tripStatus == 0) {
@@ -215,7 +220,7 @@ export const TripCardParentComplete = (props: tripCardProps) => {
   };
 
   const arrowRight = (
-    <ArrowRight
+    <ChevronRight
       size={iconSize}
       strokeWidth={iconStrokeWidth}
       color={'#3ba2a9'}
@@ -223,7 +228,7 @@ export const TripCardParentComplete = (props: tripCardProps) => {
   );
 
   const arrowLeft = (
-    <ArrowLeft
+    <ChevronLeft
       size={iconSize}
       strokeWidth={iconStrokeWidth}
       color={'#c26b71'}

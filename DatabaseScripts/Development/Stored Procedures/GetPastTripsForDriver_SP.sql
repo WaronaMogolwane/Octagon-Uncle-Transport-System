@@ -18,8 +18,12 @@ FROM
         INNER JOIN
     Passenger ON Passenger.PassengerId = Trip.PassengerId
 WHERE
-    Trip.DriverId = _DriverId
-    AND Trip.Date < current_date()
-    OR Trip.IsCompleted = '1';
+    (Trip.DriverId = _DriverId
+    AND Trip.Date < current_date())
+    OR
+    ( Trip.DriverId = _DriverId
+    AND
+    Trip.IsCompleted = '1'
+    );
 
 END

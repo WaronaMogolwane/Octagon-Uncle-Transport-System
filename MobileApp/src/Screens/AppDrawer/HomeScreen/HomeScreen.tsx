@@ -257,16 +257,30 @@ const HomeScreen = ({navigation}: any) => {
   };
 
   const GetPassengers = async () => {
-    try {
-      const result = await GetActivePassengerForBusiness(businessId);
-      if (result.length != 0) {
-        setPassengerCount(result.length.toString());
-      } else {
+    if (role == 1) {
+      try {
+        const result = await GetActivePassengerForBusiness(businessId);
+        if (result.length != 0) {
+          setPassengerCount(result.length.toString());
+        } else {
+          setPassengerCount('0');
+        }
+      } catch (error) {
+        console.error('Error fetching passengers:', error);
         setPassengerCount('0');
       }
-    } catch (error) {
-      console.error('Error fetching passengers:', error);
-      setPassengerCount('0');
+    } else if (role == 2) {
+      try {
+        const result = await GetAllActivePassengerForParent(userId);
+        if (result.length != 0) {
+          setPassengerCount(result.length.toString());
+        } else {
+          setPassengerCount('0');
+        }
+      } catch (error) {
+        console.error('Error fetching passengers:', error);
+        setPassengerCount('0');
+      }
     }
   };
 

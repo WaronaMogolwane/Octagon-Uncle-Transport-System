@@ -29,6 +29,7 @@ import {
 } from '@gluestack-ui/themed';
 import {MoveDown} from 'lucide-react-native';
 import GroupedFlatList from '../../../Components/GroupedFlatList';
+import COLORS from '../../../Const/colors';
 
 const TripTransporterScreen = ({route, navigation}: any) => {
   const Tab = createMaterialTopTabNavigator();
@@ -58,27 +59,35 @@ const TripTransporterScreen = ({route, navigation}: any) => {
   const onRefreshPastTrips = React.useCallback(() => {
     setRefreshingPastTrips(true);
 
-    setTimeout(() => {
-      GetPastTrips().catch(() => {
+    const refreshData = async () => {
+      try {
+        await Promise.all([GetPastTrips(), GetUpcomingTrips()]);
+      } catch (error) {
+        console.error('Error refreshing trips:', error);
+      } finally {
         setRefreshingPastTrips(false);
-      });
-      GetUpcomingTrips().catch(() => {
         setRefreshingUpcomingTrips(false);
-      });
-    }, 2000);
+      }
+    };
+
+    setTimeout(refreshData, 2000);
   }, []);
 
   const onRefreshUpcomingTrips = React.useCallback(() => {
     setRefreshingUpcomingTrips(true);
 
-    setTimeout(() => {
-      GetUpcomingTrips().catch(() => {
+    const refreshData = async () => {
+      try {
+        await Promise.all([GetUpcomingTrips(), GetPastTrips()]);
+      } catch (error) {
+        console.error('Error refreshing trips:', error);
+      } finally {
         setRefreshingUpcomingTrips(false);
-      });
-      GetPastTrips().catch(() => {
         setRefreshingPastTrips(false);
-      });
-    }, 2000);
+      }
+    };
+
+    setTimeout(refreshData, 2000);
   }, []);
 
   useEffect(() => {
@@ -175,18 +184,16 @@ const TripTransporterScreen = ({route, navigation}: any) => {
   //Empty flatlist text is defined
   const EmtpyFlatListText = () => {
     return (
-      <View>
-        <Text style={TripTransporterCardStyles.emptyFlatListText}>
-          You currently have no trips.
-        </Text>
-      </View>
+      <Text style={TripTransporterCardStyles.emptyFlatListText}>
+        You currently have no trips.
+      </Text>
     );
   };
 
   const GetUpcomingTrips = async () => {
     return await GetUpcomingTripsForTransporter(userId, vehicleId).then(
       trip => {
-        if (trip[0] == '') {
+        if (trip.length === 0) {
           setShowNoFutureTripText(true);
           setUpcomingTripList([]);
           setRefreshingUpcomingTrips(false);
@@ -202,7 +209,7 @@ const TripTransporterScreen = ({route, navigation}: any) => {
   //Gets all past Trips for all roles
   const GetPastTrips = async () => {
     return await GetPastTripsForTransporter(userId, vehicleId).then(trip => {
-      if (trip[0] == '') {
+      if (trip.length === 0) {
         setShowNoPastTripText(true);
         setPastTripList([]);
         setRefreshingPastTrips(false);
@@ -234,8 +241,23 @@ const TripTransporterScreen = ({route, navigation}: any) => {
   }
   //Contains Past Flatlist for all roles
   function SecondRoute() {
-    return <GroupedFlatList pastTrips={PastTripList} role={role} />;
+    return (
+      <View style={ThemeStyles.container}>
+        {showNoPastTripText ? EmtpyFlatListText() : null}
+        <GroupedFlatList
+          pastTrips={PastTripList}
+          role={role}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshingPastTrips}
+              onRefresh={onRefreshPastTrips}
+            />
+          }
+        />
+      </View>
+    );
   }
+
   return (
     <NavigationContainer independent={true}>
       {TripDestinationModal()}

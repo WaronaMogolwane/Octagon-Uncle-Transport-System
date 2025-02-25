@@ -123,14 +123,15 @@ const ManagePassengerScreen = ({navigation}: any) => {
     {id: 2, reasonString: 'Other'},
   ];
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
-
-    setTimeout(() => {
-      GetPassengers();
-    }, 2000);
-
-    setRefreshing(false);
+    try {
+      await GetPassengers();
+    } catch (error) {
+      console.error('Error refreshing passengers:', error);
+    } finally {
+      setRefreshing(false);
+    }
   }, []);
 
   useEffect(() => {

@@ -342,7 +342,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />
-        <ModalContent>
+        <ModalContent style={{backgroundColor: '#ffffff'}}>
           <ModalHeader>
             <Heading size="lg">Create Passenger</Heading>
             <ModalCloseButton>

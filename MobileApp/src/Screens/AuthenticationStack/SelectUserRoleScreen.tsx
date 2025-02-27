@@ -1,54 +1,26 @@
 import {GestureResponderEvent, View} from 'react-native';
-import React, {useContext, useState} from 'react';
-import {AuthContext} from '../../Services/AuthenticationService';
+import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {
   SelectUserRoleScreenStyles,
   ThemeStyles,
 } from '../../Stylesheets/GlobalStyles';
-import {SignInForm} from '../../Components/Forms/SignInForm';
 import {
   useToast,
   Toast,
   ToastTitle,
-  ButtonText,
-  CloseIcon,
-  Heading,
-  Icon,
-  Input,
-  InputField,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Button,
-  Text,
-  Modal,
   VStack,
   ToastDescription,
 } from '@gluestack-ui/themed';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
-import {
-  CustomButton1,
-  CustomButton2,
-  CustomButton3,
-} from '../../Components/Buttons';
 import {SelectUserRoleForm} from '../../Components/Forms/SelectUserRoleForm';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
 import {UserVerifyEmail} from '../../Controllers/AuthenticationController';
-import {UserInvitation} from '../../Models/UserInvitation';
-import {useStorageState} from '../../Services/StorageStateService';
 
 const SelectUserRoleScreen = ({navigation}: any) => {
-  const ref = React.useRef(null);
   const [showModal, setShowModal] = useState(false);
-  const [userRole, setuserRole] = useState(0);
   const toast = useToast();
-
-  const [selectedRole, setSelectedRole] = useState(0);
 
   const registerSchema = yup.object().shape({
     selectedUserRole: yup
@@ -149,7 +121,7 @@ const SelectUserRoleScreen = ({navigation}: any) => {
           otpOnBlur={formik.handleBlur('otp')}
           otpValue={formik.values?.otp}
           ShowModal={showModal}
-          ToEmailAddress={''}
+          ToEmailAddress={'the email address provided.'}
           VerifyOtpButtonOnPress={() => {
             EmailVerification();
           }}

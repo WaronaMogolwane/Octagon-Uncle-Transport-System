@@ -12,20 +12,20 @@ import {
   GetVehicles,
 } from '../../../Controllers/VehicleController';
 import {GetUser} from '../../../Controllers/UserController';
-import {StartTrip} from '../../../Services/TripServices';
 import {
   GetDailytTripsDriver,
   GetDailytTripsParent,
   GetDailytTripsTransporter,
 } from '../../../Controllers/TripController';
 import {GetUserProfileImage} from '../../../Controllers/UserDetailController';
-import {
-  RestoreImageViaAsyncStorage,
-  SaveImageViaAsyncStorage,
-} from '../../../Services/ImageStorageService';
+import {SaveImageViaAsyncStorage} from '../../../Services/ImageStorageService';
 import SmallHomeScreenCard from '../../../Components/Cards/SmallHomeScreenCard';
 import {FormatBalance} from '../../../Utilities/CurrencyFormat';
-import {GetBalanceByBusinessId} from '../../../Controllers/PaymentsController';
+import {
+  GetBalanceByBusinessId,
+  GetDeclinedPaymentsSummary,
+  GetPaymentsSummaryForThisMonth,
+} from '../../../Controllers/PaymentsController';
 import {IVehicle} from '../../../Props/VehicleProps';
 import {HomeScreenStyles, ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 import StatRowCard from '../../../Components/Cards/StatRowCard';
@@ -50,6 +50,17 @@ const HomeScreen = ({navigation}: any) => {
   const [availableBalance, setAvailableBalance] = useState('0');
   const [showPieChartText, setShowPieChartText] = useState(false);
 
+  const [expectedPaymentsSummary, setExpectedPaymentsSummary] = useState({
+    Amount: '',
+    CurrentPeriod: '',
+    NumberOfPayments: '',
+  });
+  const [declinedPaymentsSummary, setDeclinedPaymentsSummary] = useState({
+    Amount: '',
+    CurrentPeriod: '',
+    NumberOfPayments: '',
+  });
+
   const [vehicle, setVehicle] = useState<IVehicle>({
     Make: 'undefined',
     Model: 'undefined',
@@ -70,7 +81,7 @@ const HomeScreen = ({navigation}: any) => {
   const pieChartData = [
     {
       id: 1,
-      value: 50,
+      value: 1,
       color: COLORS.customGreen,
       textColor: COLORS.customBlack,
       textSize: 14,
@@ -80,7 +91,7 @@ const HomeScreen = ({navigation}: any) => {
     },
     {
       id: 2,
-      value: 80,
+      value: Number(expectedPaymentsSummary.NumberOfPayments) || 0,
       color: COLORS.customYellow,
       textColor: COLORS.customBlack,
       textSize: 14,
@@ -90,7 +101,7 @@ const HomeScreen = ({navigation}: any) => {
     },
     {
       id: 3,
-      value: 90,
+      value: Number(declinedPaymentsSummary.NumberOfPayments) || 0,
       color: COLORS.customRed,
       textColor: COLORS.customBlack,
       textSize: 14,
@@ -104,6 +115,8 @@ const HomeScreen = ({navigation}: any) => {
     GetUserName();
 
     if (role == 1) {
+      GetPaymentsForThisMonth();
+      GetDeclinedPaymentSummary();
       GetPassengers();
       GetVehicleCount();
       GetAvailableBalance(auth.GetBusinessId());
@@ -121,6 +134,40 @@ const HomeScreen = ({navigation}: any) => {
   useEffect(() => {
     GetProfileImage();
   }, []);
+
+  const GetPaymentsForThisMonth = async () => {
+    return await GetPaymentsSummaryForThisMonth(
+      businessId,
+      (error: any, result: any) => {
+        if (error) {
+          console.error(error.response.data);
+        } else {
+          const expectedPayments: any = result;
+          expectedPayments.Amount = FormatBalance(
+            expectedPayments.Amount || '0',
+          );
+          setExpectedPaymentsSummary(expectedPayments);
+        }
+      },
+    );
+  };
+
+  const GetDeclinedPaymentSummary = async () => {
+    return await GetDeclinedPaymentsSummary(
+      businessId,
+      (error: any, result: any) => {
+        if (error) {
+          console.error(error.response.data);
+        } else {
+          const declinedPayments: any = result;
+          declinedPayments.Amount = FormatBalance(
+            declinedPayments.Amount || '0',
+          );
+          setDeclinedPaymentsSummary(declinedPayments);
+        }
+      },
+    );
+  };
 
   const GetProfileImage = async () => {
     const downloadDest = `${RNFS.DocumentDirectoryPath}/profile_image.jpg`;

@@ -749,83 +749,89 @@ const TripsScreen = ({navigation}: any) => {
   function SecondRoute() {
     if (role == 2) {
       return (
-        <FlatList
-          style={GroupedFlatListStyles.container}
-          ListHeaderComponent={
-            <>
-              {/* Display current date records at the top */}
-              {currentDateRecords.length > 0 && (
-                <View style={GroupedFlatListStyles.container}>
-                  <Text style={GroupedFlatListStyles.currentDateHeader}>
-                    Today ({currentDate.replace(/-/g, '/')})
-                  </Text>
-                  {showNoPastTripText ? EmtpyFlatListText() : null}
-                  <FlatList
-                    data={currentDateRecords}
-                    keyExtractor={item => item.tripId}
-                    renderItem={renderItem}
-                    extraData
-                  />
-                </View>
-              )}
-            </>
-          }
-          data={[]} // Empty data array because we're rendering everything manually
-          renderItem={() => null} // No need to render items here
-          extraData
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshingPastTrips}
-              onRefresh={onRefreshPastTrips}
-            />
-          }
-          ListFooterComponent={
-            <View style={GroupedFlatListStyles.container}>
-              {/* Render grouped data */}
-              {renderGroupedData()}
-            </View>
-          }
-        />
+        <View style={ThemeStyles.container}>
+          {showNoPastTripText ? EmtpyFlatListText() : null}
+          <FlatList
+            style={GroupedFlatListStyles.container}
+            ListHeaderComponent={
+              <>
+                {/* Display current date records at the top */}
+                {currentDateRecords.length > 0 && (
+                  <View style={GroupedFlatListStyles.container}>
+                    <Text style={GroupedFlatListStyles.currentDateHeader}>
+                      Today ({currentDate.replace(/-/g, '/')})
+                    </Text>
+                    {showNoPastTripText ? EmtpyFlatListText() : null}
+                    <FlatList
+                      data={currentDateRecords}
+                      keyExtractor={item => item.tripId}
+                      renderItem={renderItem}
+                      extraData
+                    />
+                  </View>
+                )}
+              </>
+            }
+            data={[]} // Empty data array because we're rendering everything manually
+            renderItem={() => null} // No need to render items here
+            extraData
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshingPastTrips}
+                onRefresh={onRefreshPastTrips}
+              />
+            }
+            ListFooterComponent={
+              <View style={GroupedFlatListStyles.container}>
+                {/* Render grouped data */}
+                {renderGroupedData()}
+              </View>
+            }
+          />
+        </View>
       );
     } else if (role == 3) {
       return (
-        <FlatList
-          style={GroupedFlatListStyles.container}
-          ListHeaderComponent={
-            <>
-              {/* Display current date records at the top */}
-              {currentDateRecords.length > 0 && (
-                <View style={GroupedFlatListStyles.container}>
-                  <Text style={GroupedFlatListStyles.currentDateHeader}>
-                    Today ({currentDate.replace(/-/g, '/')})
-                  </Text>
-                  {showNoPastTripText ? EmtpyFlatListText() : null}
-                  <FlatList
-                    data={currentDateRecords}
-                    keyExtractor={item => item.tripId}
-                    renderItem={renderItem}
-                    extraData
-                  />
-                </View>
-              )}
-            </>
-          }
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshingPastTrips}
-              onRefresh={onRefreshPastTrips}
-            />
-          }
-          extraData
-          data={[]} // Empty data array because we're rendering everything manually
-          renderItem={() => null} // No need to render items here
-          ListFooterComponent={
-            <View style={GroupedFlatListStyles.container}>
-              {/* Render grouped data */}
-              {renderGroupedData()}
-            </View>
-          }
-        />
+        <View style={ThemeStyles.container}>
+          {showNoPastTripText ? EmtpyFlatListText() : null}{' '}
+          <FlatList
+            style={GroupedFlatListStyles.container}
+            ListHeaderComponent={
+              <>
+                {/* Display current date records at the top */}
+                {currentDateRecords.length > 0 && (
+                  <View style={GroupedFlatListStyles.container}>
+                    <Text style={GroupedFlatListStyles.currentDateHeader}>
+                      Today ({currentDate.replace(/-/g, '/')})
+                    </Text>
+                    {showNoPastTripText ? EmtpyFlatListText() : null}
+                    <FlatList
+                      data={currentDateRecords}
+                      keyExtractor={item => item.tripId}
+                      renderItem={renderItem}
+                      extraData
+                    />
+                  </View>
+                )}
+              </>
+            }
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshingPastTrips}
+                onRefresh={onRefreshPastTrips}
+              />
+            }
+            extraData
+            data={[]} // Empty data array because we're rendering everything manually
+            renderItem={() => null} // No need to render items here
+            ListFooterComponent={
+              <View style={GroupedFlatListStyles.container}>
+                {/* Render grouped data */}
+                {renderGroupedData()}
+              </View>
+            }
+          />
+        </View>
       );
     }
   }

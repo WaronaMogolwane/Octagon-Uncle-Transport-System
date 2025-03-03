@@ -148,7 +148,6 @@ export const AssignPassengerScreenStyles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 8,
     paddingHorizontal: 8,
-    marginHorizontal: 20,
     marginBottom: 30,
   },
   icon: {

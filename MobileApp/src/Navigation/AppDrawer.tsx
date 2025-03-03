@@ -116,11 +116,15 @@ const AppDrawer = ({navigation}: any) => {
                       defaultSource={require('../Images/default_avatar_image.jpg')}
                       style={AppDrawerScreenStyles.avatar}
                       alt="Profile Photo"
-                      source={{
-                        uri: `file://${
-                          RNFS.DocumentDirectoryPath
-                        }/profile_image.jpg?${Date.now()}`,
-                      }}
+                      source={
+                        profileImageExists
+                          ? {
+                              uri: `file://${
+                                RNFS.DocumentDirectoryPath
+                              }/profile_image.jpg?${Date.now()}`,
+                            }
+                          : require('../Images/default_avatar_image.jpg')
+                      }
                     />
                   </Pressable>
                   <Text style={AppDrawerScreenStyles.name}>{fullname}</Text>

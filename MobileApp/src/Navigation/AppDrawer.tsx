@@ -16,6 +16,7 @@ import EditBusinessDetailsScreen from '../Screens/AppDrawer/Profile/EditBusiness
 import EditUserDetailsScreen from '../Screens/AppDrawer/Profile/EditUserDetailsScreen';
 import {Auth} from '../Classes/Auth';
 import {AuthContext} from '../Services/AuthenticationService';
+import ForgotPasswordScreen from '../Screens/AuthenticationStack/ForgotPasswordScreen';
 import {
   ArrowLeft,
   AlignLeft,
@@ -153,7 +154,8 @@ const AppDrawer = ({navigation}: any) => {
             if (
               title == 'User Account' ||
               title == 'Edit Personal Details' ||
-              title == 'Business Information'
+              title == 'Business Information' ||
+              title == 'Forgot Password'
             ) {
               return <ArrowLeft size={25} strokeWidth={2} color={'black'} />;
             } else if (title == 'Assign Passenger') {
@@ -187,6 +189,8 @@ const AppDrawer = ({navigation}: any) => {
                       role != 1
                         ? navigation.toggleDrawer()
                         : navigation.navigate('Manage Trip');
+                    } else if (title == 'Forgot Password') {
+                      navigation.navigate('Edit User Account');
                     } else {
                       navigation.toggleDrawer();
                     }
@@ -343,6 +347,14 @@ const AppDrawer = ({navigation}: any) => {
               color={iconColor}
             />
           ),
+        }}
+      />
+      <Drawer.Screen
+        name="Forgot Password"
+        component={ForgotPasswordScreen}
+        options={{
+          title: 'Forgot Password',
+          drawerItemStyle: {display: 'none'},
         }}
       />
       <Drawer.Screen

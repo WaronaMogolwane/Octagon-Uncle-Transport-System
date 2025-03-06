@@ -793,7 +793,7 @@ const TripsScreen = ({navigation}: any) => {
     } else if (role == 3) {
       return (
         <View style={ThemeStyles.container}>
-          {showNoPastTripText ? EmtpyFlatListText() : null}{' '}
+          {showNoPastTripText ? EmtpyFlatListText() : null}
           <FlatList
             style={GroupedFlatListStyles.container}
             ListHeaderComponent={

@@ -48,10 +48,8 @@ const ForgotPasswordScreen = ({route, navigation}: any) => {
   const [showModal, setShowModal] = useState(false);
   const [userId, setUserId] = useState('');
 
+  const userRole = route.params?.userRole;
   const toast = useToast();
-
-  // const phoneRegExp: RegExp =
-  //   /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/;
 
   const passwordExp: RegExp =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
@@ -118,8 +116,12 @@ const ForgotPasswordScreen = ({route, navigation}: any) => {
     RestorUserPassword(userId, formik.values.confirmPassword).then(
       (response: any) => {
         if (response[1] == 200) {
-          ShowSuccessToast('Password');
-          navigation.navigate('Sign In');
+          if (userRole == '1' || userRole == '2' || userRole == '3') {
+            navigation.navigate('Edit User Account');
+          } else {
+            ShowSuccessToast('Password');
+            navigation.navigate('Sign In');
+          }
         } else {
           ShowFaliureToast('Password');
         }

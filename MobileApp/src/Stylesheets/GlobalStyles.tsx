@@ -399,7 +399,8 @@ export const EditUserAccountScreenStyles = StyleSheet.create({
     marginTop: 10,
   },
   changeAvatarButtonText: {
-    color: '#1E90FF',
+    color: COLORS.customBlue,
+    // color: '#1E90FF',
     fontSize: 15,
     marginBottom: 25,
   },

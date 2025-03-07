@@ -76,7 +76,7 @@ const HomeScreen = ({navigation}: any) => {
   const businessId = auth.GetBusinessId();
 
   const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
 
   const pieChartData = [
     {
@@ -334,6 +334,7 @@ const HomeScreen = ({navigation}: any) => {
   const GetVehicleInfomation = async () => {
     GetDriverVehicle(userId).then(result => {
       if (result != undefined) {
+        console.log(result);
         setVehicle(result[0]);
       } else {
         //it failed.

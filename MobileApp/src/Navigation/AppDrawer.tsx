@@ -39,12 +39,15 @@ import {getHeaderTitle} from '@react-navigation/elements';
 import TripTransporterScreen from '../Screens/AppDrawer/Trips/TripTransporterScreen';
 import {AppDrawerScreenStyles} from '../Stylesheets/GlobalStyles';
 import RNFS from 'react-native-fs';
+import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
 
 const AppDrawer = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const [fullname, setFullname] = useState('');
   const [profileImageExists, setProfileImageExists] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [profileImage, setProfileImage] = useState('');
 
   const role: number = Number(auth.GetUserRole());
   // const role: number = 1;
@@ -85,7 +88,12 @@ const AppDrawer = ({navigation}: any) => {
       try {
         const filePath = `${RNFS.DocumentDirectoryPath}/profile_image.jpg`;
         const exists = await RNFS.exists(filePath);
-        setProfileImageExists(exists);
+
+        if (exists) {
+          setProfileImageExists(exists);
+        } else {
+          setProfileImageExists(false);
+        }
       } catch (error) {
         console.error('Error checking profile image:', error);
         setProfileImageExists(false); // Fallback to default image on error
@@ -93,7 +101,7 @@ const AppDrawer = ({navigation}: any) => {
     };
 
     checkImage();
-  }, []);
+  }, [Date.now()]);
 
   return (
     <Drawer.Navigator
@@ -114,7 +122,6 @@ const AppDrawer = ({navigation}: any) => {
                     onPress={() => navigation.navigate('Profile')}
                     style={({pressed}) => [{opacity: pressed ? 0.7 : 1}]}>
                     <Image
-                      defaultSource={require('../Images/default_avatar_image.jpg')}
                       style={AppDrawerScreenStyles.avatar}
                       alt="Profile Photo"
                       source={
@@ -124,7 +131,7 @@ const AppDrawer = ({navigation}: any) => {
                                 RNFS.DocumentDirectoryPath
                               }/profile_image.jpg?${Date.now()}`,
                             }
-                          : require('../Images/default_avatar_image.jpg')
+                          : require(`../Images/default_avatar_image.jpg`)
                       }
                     />
                   </Pressable>

@@ -80,8 +80,6 @@ const EditUserAccountScreen = ({navigation}: any) => {
     useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
-  const [IsLoading, setIsLoading] = useState(false);
-  const [refresh, setRefresh] = useState(false);
 
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
@@ -92,6 +90,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
     /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[-\#\$\.\%\&\*\?\!\_\,\+\=\@])(?=.*[a-zA-Z]).{8,16}$/;
 
   const userId = auth.GetUserId();
+  const role = auth.GetUserRole();
 
   const ref = React.useRef(null);
   const toast = useToast();
@@ -373,7 +372,8 @@ const EditUserAccountScreen = ({navigation}: any) => {
               />
               <Text
                 onPress={() => {
-                  navigation.navigate('Forgot Password');
+                  navigation.navigate('Forgot Password', {userRole: role});
+                  setShowChangePassword(false);
                 }}
                 style={EditUserAccountScreenStyles.changeAvatarButtonText}>
                 Forgot password?
@@ -713,7 +713,11 @@ const EditUserAccountScreen = ({navigation}: any) => {
           style={EditUserAccountScreenStyles.avatar}
           source={
             profileImage !== ''
-              ? {uri: profileImage}
+              ? {
+                  uri: `file://${
+                    RNFS.DocumentDirectoryPath
+                  }/profile_image.jpg?${Date.now()}`,
+                }
               : require('../../../Images/default_avatar_image.jpg')
           }
         />

@@ -334,7 +334,6 @@ const HomeScreen = ({navigation}: any) => {
   const GetVehicleInfomation = async () => {
     GetDriverVehicle(userId).then(result => {
       if (result != undefined) {
-        console.log(result);
         setVehicle(result[0]);
       } else {
         //it failed.

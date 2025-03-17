@@ -91,31 +91,48 @@
 * **System Monitoring:** Monitor system performance and logs.
 ## Troubleshooting
 
-**Android Studio**
+### Android Studio
 
-Installers
+<ins> Installers </ins>  
 ChromeOS: [android-studio-2022.3.1.1-cros.deb (865.1 MB)](https://redirector.gvt1.com/edgedl/android/studio/install/2022.3.1.1/android-studio-2022.3.1.1-cros.deb).  
 Mac (Apple Silicon): [android-studio-2022.3.1.1-mac_arm.dmg (1.2 GB)](https://redirector.gvt1.com/edgedl/android/studio/install/2022.3.1.1/android-studio-2022.3.1.1-mac_arm.dmg).  
 Mac (Intel): [android-studio-2022.3.1.1-mac.dmg (1.2 GB)](https://redirector.gvt1.com/edgedl/android/studio/install/2022.3.1.1/android-studio-2022.3.1.1-mac.dmg).  
 Windows [(64-bit): android-studio-2022.3.1.1-windows.exe (1.1 GB)](https://redirector.gvt1.com/edgedl/android/studio/install/2022.3.1.1/android-studio-2022.3.1.1-windows.exe).
 
-Zip files
+<ins> Zip files </ins>  
 Linux: [android-studio-2022.3.1.1-linux.tar.gz (1.1 GB)](android-studio-2022.3.1.1-linux.tar.gz).  
 Mac (Apple Silicon): [android-studio-2022.3.1.1-mac_arm.zip (1.2 GB)](https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2022.3.1.1/android-studio-2022.3.1.1-mac_arm.zip).  
 Mac (Intel): [android-studio-2022.3.1.1-mac.zip (1.2 GB)](https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2022.3.1.1/android-studio-2022.3.1.1-mac.zip).  
 Windows (64-bit): [android-studio-2022.3.1.1-windows.zip (1.1 GB)](https://redirector.gvt1.com/edgedl/android/studio/ide-zips/2022.3.1.1/android-studio-2022.3.1.1-windows.zip).
 
+  
+### Known Issues
+  
 
-**React Native Reanimated**
+<ins> **SDK versions**  </ins>
+  
 
-**React Native VisionCamera**
+<ins> **JDK Versions**  </ins>
+  
 
-**Known Errors**
+<ins> **Gradle Versions**  </ins>
+
+Android Gradle Plugin 8.0.2  
+Gradle version 8.0.2
+  
+
+<ins> **React Native Reanimated** </ins>
+  
+
+<ins> **React Native VisionCamera** </ins>
+
+  
 ## License
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
 [Specify your license, e.g., MIT, Apache 2.0, etc.]
+
 
 ## Contact
 

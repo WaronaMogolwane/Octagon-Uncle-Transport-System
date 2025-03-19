@@ -722,7 +722,7 @@ const PaymentsScreen = ({navigation, route}: any) => {
           <View style={{}}>
             <MonthlyPaymentDetailsCard
               Amount={FormatBalance(
-                monthlyPaymentsSummary.Amount.toString() || '0',
+                monthlyPaymentsSummary?.Amount?.toString() || '0',
               )}
               NextPaymentDate={monthlyPaymentsSummary.NextPaymentDate}
               PaymentFailed={monthlyPaymentsSummary.PaymentFailed}

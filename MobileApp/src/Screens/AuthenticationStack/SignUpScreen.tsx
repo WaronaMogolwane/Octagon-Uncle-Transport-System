@@ -20,6 +20,8 @@ import {
   useToast,
 } from '@gluestack-ui/themed';
 import {AuthContext} from '../../Services/AuthenticationService';
+import {AxiosError} from 'axios';
+import uuid from 'react-native-uuid';
 
 const SignUpScreen = ({route, navigation}: any) => {
   const {userRole, businessId, userId} = route.params;
@@ -73,7 +75,15 @@ const SignUpScreen = ({route, navigation}: any) => {
             }
           });
         } else {
-          await SignUpNewUser();
+          await GetInvitation(
+            formik.values.email,
+            (error: any, result: any) => {
+              if (error) {
+              } else {
+                SignUpNewUser(result[0].UserId);
+              }
+            },
+          );
         }
       }
     },
@@ -115,49 +125,54 @@ const SignUpScreen = ({route, navigation}: any) => {
       formik.values.email,
       (error: any, result: any) => {
         if (error) {
-          console.warn(error);
+          console.warn(error.response?.data);
         } else {
           ShowToast();
           setIsEmailVerified(true);
           setShowModal(false);
-          SignUpNewUser();
+          SignUpNewUser(uuid.v4());
         }
       },
     );
   };
-  const SignUpNewUser: any = async () => {
+  const SignUpNewUser = async (userId: string) => {
+    const newUserId: any = userId;
+    const newUser: User = {
+      userId: newUserId,
+      email: formik.values.email,
+      password: formik.values.password,
+      businessId: businessId,
+      userRole: userRole,
+    };
+    await signUp(newUser, (error: any, result: any) => {
+      if (error) {
+        console.error(error);
+      } else {
+        ShowToast();
+        navigation.navigate({
+          name: 'Personal Details',
+          params: {sessionId: result.headers.sessionid},
+          merge: true,
+        });
+      }
+    });
+  };
+  const GetInvitation = async (
+    email: string,
+    callback: (error: any, result: any) => void,
+  ) => {
     await GetUserInvitation(
-      formik.values.email,
+      email,
       userRole,
-      async (error: any, result: any) => {
+      async (error: AxiosError, result: any) => {
         if (error) {
+          callback(error, null);
         } else {
-          const newUserId: any = result[0].UserId;
-          const newUser: User = {
-            userId: newUserId,
-            email: formik.values.email,
-            password: formik.values.password,
-            businessId: businessId,
-            userRole: userRole,
-          };
-
-          await signUp(newUser, (error: any, result: any) => {
-            if (error) {
-              console.error(error);
-            } else {
-              ShowToast();
-              navigation.navigate({
-                name: 'Personal Details',
-                params: {sessionId: result.headers.sessionid},
-                merge: true,
-              });
-            }
-          });
+          callback(null, result);
         }
       },
     );
   };
-
   return (
     <SafeAreaView style={ThemeStyles.container}>
       <View style={SignUpScreenStyles.container}>

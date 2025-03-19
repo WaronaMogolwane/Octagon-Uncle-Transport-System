@@ -14,7 +14,6 @@ import BusinessDetailsScreen from '../Screens/AuthenticationStack/BusinessDetail
 import ProfileScreen from '../Screens/AppDrawer/Profile/ProfileScreen';
 import EditBusinessDetailsScreen from '../Screens/AppDrawer/Profile/EditBusinessDetailsScreen';
 import EditUserDetailsScreen from '../Screens/AppDrawer/Profile/EditUserDetailsScreen';
-
 import {Auth} from '../Classes/Auth';
 import {AuthContext} from '../Services/AuthenticationService';
 import {
@@ -35,17 +34,16 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {GetUser} from '../Controllers/UserController';
 import {ScrollView} from 'react-native-gesture-handler';
-import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
 import {getHeaderTitle} from '@react-navigation/elements';
 import TripTransporterScreen from '../Screens/AppDrawer/Trips/TripTransporterScreen';
 import {AppDrawerScreenStyles} from '../Stylesheets/GlobalStyles';
+import RNFS from 'react-native-fs';
 
 const AppDrawer = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const [fullname, setFullname] = useState('');
-  const [profileImage, setProfileImage] = useState('');
-  const [isReloading, setIsReloading] = useState(false);
+  const [profileImageExists, setProfileImageExists] = useState(false);
 
   const role: number = Number(auth.GetUserRole());
   // const role: number = 1;
@@ -57,11 +55,6 @@ const AppDrawer = ({navigation}: any) => {
   const iconSize = 20;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';
-
-  const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
-
-  const date = new Date();
 
   const RoleLabel = (role: number) => {
     if (role == 1) {
@@ -87,14 +80,19 @@ const AppDrawer = ({navigation}: any) => {
   }, []);
 
   useEffect(() => {
-    RestoreImageViaAsyncStorage().then((result: any) => {
-      if (result == '' || result == null) {
-        setProfileImage(result);
-      } else {
-        setProfileImage(result);
+    const checkImage = async () => {
+      try {
+        const filePath = `${RNFS.DocumentDirectoryPath}/profile_image.jpg`;
+        const exists = await RNFS.exists(filePath);
+        setProfileImageExists(exists);
+      } catch (error) {
+        console.error('Error checking profile image:', error);
+        setProfileImageExists(false); // Fallback to default image on error
       }
-    });
-  }, [fullname, isReloading]);
+    };
+
+    checkImage();
+  }, []);
 
   return (
     <Drawer.Navigator
@@ -112,24 +110,17 @@ const AppDrawer = ({navigation}: any) => {
                 </View>
                 <View style={AppDrawerScreenStyles.avatarContainer}>
                   <Pressable
-                    onPress={() => {
-                      navigation.navigate('Profile');
-                    }}>
+                    onPress={() => navigation.navigate('Profile')}
+                    style={({pressed}) => [{opacity: pressed ? 0.7 : 1}]}>
                     <Image
-                      alt="profile photo"
-                      source={
-                        profileImage == ''
-                          ? require('../Images/default_avatar_image.jpg')
-                          : {
-                              uri:
-                                storageUrl +
-                                profileImage +
-                                '?xc=' +
-                                date.getTime() +
-                                date.getDate(),
-                            }
-                      }
+                      defaultSource={require('../Images/default_avatar_image.jpg')}
                       style={AppDrawerScreenStyles.avatar}
+                      alt="Profile Photo"
+                      source={{
+                        uri: `file://${
+                          RNFS.DocumentDirectoryPath
+                        }/profile_image.jpg?${Date.now()}`,
+                      }}
                     />
                   </Pressable>
                   <Text style={AppDrawerScreenStyles.name}>{fullname}</Text>
@@ -227,7 +218,6 @@ const AppDrawer = ({navigation}: any) => {
         name="Home"
         component={HomeScreen}
         options={{
-          // headerShown: false,
           title: 'Home',
           drawerIcon: () => (
             <University
@@ -244,7 +234,6 @@ const AppDrawer = ({navigation}: any) => {
           name="Trip"
           component={TripsScreen}
           options={{
-            // drawerItemStyle: {display: 'none'},
             title: 'Trips',
             drawerIcon: () => (
               <Route
@@ -257,7 +246,7 @@ const AppDrawer = ({navigation}: any) => {
         />
       ) : null}
 
-      {role == 1 ? (
+      {role != 3 ? (
         <Drawer.Screen
           name="Payments"
           component={PaymentsScreen}

@@ -941,8 +941,7 @@ export const TripTransporterCardStyles = StyleSheet.create({
   passengerName: {fontWeight: '500', fontSize: 16, color: COLORS.customBlack},
   pickupDate: {fontWeight: '400', fontSize: 14, color: COLORS.customBlue},
   timeContainer: {
-    justifyContent: 'center',
-    flexDirection: 'row',
+    justifyContent: 'flex-start',
   },
   tripStatusText: {fontWeight: '400', fontSize: 14},
   modalText: {
@@ -1279,7 +1278,7 @@ export const TripCardStyles = StyleSheet.create({
   passengerName: {fontWeight: '500', fontSize: 16, color: COLORS.customBlack},
   pickupTime: {fontWeight: '400', fontSize: 14, color: COLORS.customBlue},
   dropOffTime: {fontWeight: '400', fontSize: 14, color: COLORS.customBlue},
-  driverName: {fontWeight: '400', fontSize: 16, color: COLORS.customBlue},
+  driverName: {fontWeight: '400', fontSize: 14, color: COLORS.customBlue},
   timeContainer: {
     justifyContent: 'flex-start',
   },

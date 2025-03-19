@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
-import {Dimensions, FlatList, ImageBackground, StyleSheet} from 'react-native';
+import {FlatList} from 'react-native';
 import {Text, Image, View, SafeAreaView} from '@gluestack-ui/themed';
 import {
   GetActivePassengerForBusiness,
@@ -12,15 +12,12 @@ import {
   GetVehicles,
 } from '../../../Controllers/VehicleController';
 import {GetUser} from '../../../Controllers/UserController';
-import {CheckTrip, StartTrip} from '../../../Services/TripServices';
+import {StartTrip} from '../../../Services/TripServices';
 import {
   GetDailytTripsDriver,
   GetDailytTripsParent,
   GetDailytTripsTransporter,
-  GetUpcomingTripsForClient,
-  GetUpcomingTripsForDriver,
 } from '../../../Controllers/TripController';
-import filter from 'lodash.filter';
 import {GetUserProfileImage} from '../../../Controllers/UserDetailController';
 import {
   RestoreImageViaAsyncStorage,
@@ -35,6 +32,7 @@ import StatRowCard from '../../../Components/Cards/StatRowCard';
 import {PassengerListHomeScreenCard} from '../../../Components/Cards/PassengerListHomeScreenCard';
 import COLORS from '../../../Const/colors';
 import {PieChart} from 'react-native-gifted-charts/dist/PieChart';
+import RNFS from 'react-native-fs';
 
 const HomeScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
@@ -50,8 +48,6 @@ const HomeScreen = ({navigation}: any) => {
   const [activeTripsCount, setActiveTripsCount] = useState(0);
   const [completedTripsCount, setCompleteTripsCount] = useState(0);
   const [availableBalance, setAvailableBalance] = useState('0');
-
-  const [isStarted, setIsStarted] = useState(true);
   const [showPieChartText, setShowPieChartText] = useState(false);
 
   const [vehicle, setVehicle] = useState<IVehicle>({
@@ -69,7 +65,7 @@ const HomeScreen = ({navigation}: any) => {
   const businessId = auth.GetBusinessId();
 
   const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const pieChartData = [
     {
@@ -122,35 +118,41 @@ const HomeScreen = ({navigation}: any) => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (role == 3) {
-  //     CheckTrip().then((result: any) => {
-  //       setIsStarted(result);
-  //     });
-  //   }
-  // }, []);
-
   useEffect(() => {
-    const fetchProfileImage = async () => {
-      const result = await RestoreImageViaAsyncStorage();
-      if (!result) {
-        const response = await GetUserProfileImage(userId);
-        if (response[1] === 200) {
-          await SaveImageViaAsyncStorage(response[0]);
-        }
-      }
-    };
-    fetchProfileImage();
+    GetProfileImage();
   }, []);
 
-  const onStartButtonPress = () => {
-    StartTrip().then((result: any) => {
-      if (result == true) {
-        navigation.navigate('Trip');
-        setIsStarted(true);
+  const GetProfileImage = async () => {
+    const downloadDest = `${RNFS.DocumentDirectoryPath}/profile_image.jpg`;
+
+    try {
+      // Check if file already exists
+      const fileExists = await RNFS.exists(downloadDest);
+
+      // If file exists, do nothing
+      if (fileExists) {
+        return;
       } else {
+        GetUserProfileImage(userId).then(async (result: any) => {
+          if (result[1] == 200) {
+            // Download and save the new image
+            const downloadResponse = await RNFS.downloadFile({
+              fromUrl: storageUrl + result[0],
+              toFile: downloadDest,
+            }).promise;
+
+            if (downloadResponse.statusCode === 200) {
+              // console.log('Image saved successfully:', downloadDest);
+              SaveImageViaAsyncStorage(`file://${downloadDest}`);
+            } else {
+              // console.log('Failed to save image:', downloadResponse.statusCode);
+            }
+          }
+        });
       }
-    });
+    } catch (err) {
+      // console.log('Error saving image:', err);
+    }
   };
 
   const GetDailyBusinessTrips = async () => {
@@ -255,16 +257,30 @@ const HomeScreen = ({navigation}: any) => {
   };
 
   const GetPassengers = async () => {
-    try {
-      const result = await GetActivePassengerForBusiness(businessId);
-      if (result.length != 0) {
-        setPassengerCount(result.length.toString());
-      } else {
+    if (role == 1) {
+      try {
+        const result = await GetActivePassengerForBusiness(businessId);
+        if (result.length != 0) {
+          setPassengerCount(result.length.toString());
+        } else {
+          setPassengerCount('0');
+        }
+      } catch (error) {
+        console.error('Error fetching passengers:', error);
         setPassengerCount('0');
       }
-    } catch (error) {
-      console.error('Error fetching passengers:', error);
-      setPassengerCount('0');
+    } else if (role == 2) {
+      try {
+        const result = await GetAllActivePassengerForParent(userId);
+        if (result.length != 0) {
+          setPassengerCount(result.length.toString());
+        } else {
+          setPassengerCount('0');
+        }
+      } catch (error) {
+        console.error('Error fetching passengers:', error);
+        setPassengerCount('0');
+      }
     }
   };
 
@@ -402,9 +418,6 @@ const HomeScreen = ({navigation}: any) => {
           </View>
         </View>
         <View style={{height: '20%'}}>
-          {/* <Text style={HomeScreenStyles.titleText}>
-            Good morning, {userName}!
-          </Text> */}
           <View
             style={{
               flexDirection: 'row',
@@ -462,11 +475,6 @@ const HomeScreen = ({navigation}: any) => {
               completedTripsCount ? completedTripsCount.toString() : '0'
             }
           />
-          {/* <StatRowCard
-            primaryText={'Total'}
-            secondaryText={'Trips'}
-            tetiaryText={tripCount ? tripCount.toString() : '0'}
-          /> */}
         </View>
       </SafeAreaView>
     );
@@ -487,9 +495,6 @@ const HomeScreen = ({navigation}: any) => {
           </Text>
         </View>
         <View style={{height: '25%'}}>
-          {/* <Text style={HomeScreenStyles.titleText}>
-            Good morning, {userName}!
-          </Text> */}
           <View
             style={{
               flexDirection: 'row',

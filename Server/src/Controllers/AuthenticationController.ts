@@ -149,8 +149,6 @@ export const UserLogin = async (req: Request, res: Response, next: NextFunction)
     email: req.body.email,
     password: req.body.password,
   };
-  console.log("Hello");
-  Logger.Log("Hello");
   await GetUserByEmailPassword(userLogin, (error, result) => {
     if (error) {
       const err: Error = new Error(error.message)

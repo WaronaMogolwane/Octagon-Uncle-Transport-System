@@ -332,13 +332,29 @@ const HomeScreen = ({navigation}: any) => {
   };
 
   const GetVehicleInfomation = async () => {
-    GetDriverVehicle(userId).then(result => {
-      if (result != undefined) {
+    try {
+      const result = await GetDriverVehicle(userId);
+      if (result && Array.isArray(result) && result.length > 0) {
         setVehicle(result[0]);
       } else {
-        //it failed.
+        setVehicle({
+          Make: 'Not available',
+          Model: 'Not available',
+          FrontImageUrl: 'Not available',
+          Colour: 'Not available',
+          LicenseNumber: 'Not available',
+        });
       }
-    });
+    } catch (error) {
+      console.error('Error fetching vehicle information:', error);
+      setVehicle({
+        Make: 'Not available',
+        Model: 'Not available',
+        FrontImageUrl: 'Not available',
+        Colour: 'Not available',
+        LicenseNumber: 'Not available',
+      });
+    }
   };
 
   const GetActivePasengers = async () => {

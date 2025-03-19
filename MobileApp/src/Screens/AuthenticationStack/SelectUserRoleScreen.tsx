@@ -1,4 +1,4 @@
-import {GestureResponderEvent, View} from 'react-native';
+import {ActivityIndicator, GestureResponderEvent, View} from 'react-native';
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {
@@ -20,6 +20,8 @@ import {UserVerifyEmail} from '../../Controllers/AuthenticationController';
 
 const SelectUserRoleScreen = ({navigation}: any) => {
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const toast = useToast();
 
   const registerSchema = yup.object().shape({
@@ -58,6 +60,8 @@ const SelectUserRoleScreen = ({navigation}: any) => {
   };
 
   const EmailVerification = async () => {
+    setIsLoading(true);
+
     await UserVerifyEmail(
       formik.values.otp,
       Number(formik.values.selectedUserRole),
@@ -65,6 +69,7 @@ const SelectUserRoleScreen = ({navigation}: any) => {
         if (formik.isValid) {
           if (error) {
             console.log(error);
+            setIsLoading(false);
           } else if (result) {
             setShowModal(false);
             ShowToast();
@@ -72,7 +77,10 @@ const SelectUserRoleScreen = ({navigation}: any) => {
               formik.values.selectedUserRole,
               result.Data.BusinessId,
             );
+            setIsLoading(false);
           }
+        } else {
+          setIsLoading(false);
         }
       },
     );
@@ -98,6 +106,22 @@ const SelectUserRoleScreen = ({navigation}: any) => {
   };
   return (
     <SafeAreaView style={ThemeStyles.container}>
+      {isLoading ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" />
+        </View>
+      ) : null}
       <View style={SelectUserRoleScreenStyles.container}>
         <SelectUserRoleForm
           userRoleSelectValue={formik.values?.selectedUserRole.toString()}

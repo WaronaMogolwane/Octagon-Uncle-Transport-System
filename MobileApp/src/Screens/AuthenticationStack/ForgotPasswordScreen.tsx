@@ -1,4 +1,4 @@
-import {GestureResponderEvent, View} from 'react-native';
+import {ActivityIndicator, GestureResponderEvent, View} from 'react-native';
 import React, {useContext, useState} from 'react';
 import {CustomFormControlInput} from '../../Components/CustomFormInput';
 import {CustomButton1} from '../../Components/Buttons';
@@ -46,6 +46,8 @@ const ForgotPasswordScreen = ({route, navigation}: any) => {
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [isEmailVerified, setIsEmailVerified] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [userId, setUserId] = useState('');
 
   const userRole = route.params?.userRole;
@@ -118,12 +120,15 @@ const ForgotPasswordScreen = ({route, navigation}: any) => {
         if (response[1] == 200) {
           if (userRole == '1' || userRole == '2' || userRole == '3') {
             navigation.navigate('Edit User Account');
+            setIsLoading(false);
           } else {
             ShowSuccessToast('Password');
             navigation.navigate('Sign In');
+            setIsLoading(false);
           }
         } else {
           ShowFaliureToast('Password');
+          setIsLoading(false);
         }
       },
     );
@@ -132,13 +137,13 @@ const ForgotPasswordScreen = ({route, navigation}: any) => {
   const CheckEmailAddress = () => {
     CheckDuplicateEmail(formik.values?.email.toLowerCase()).then(
       (result: any) => {
-        console.log(result[0].result[0]);
-
         if (result[0].result[0] == false) {
           SendOtp();
           setUserId(result[0].result[1][0][0].UserId);
+          setIsLoading(false);
         } else {
           ShowNoEmailToast();
+          setIsLoading(false);
         }
       },
     );
@@ -152,9 +157,11 @@ const ForgotPasswordScreen = ({route, navigation}: any) => {
         if (error) {
           console.warn(error);
           ShowWrongOTPToast();
+          setIsLoading(false);
         } else {
           setIsEmailVerified(true);
           setShowModal(false);
+          setIsLoading(false);
         }
       },
     );
@@ -164,9 +171,11 @@ const ForgotPasswordScreen = ({route, navigation}: any) => {
     await emailOtp(formik.values.email, (error: any, result: any) => {
       if (error) {
         console.error(error);
+        setIsLoading(false);
       } else {
         console.log(result.data);
         setShowModal(true);
+        setIsLoading(false);
       }
     });
   };
@@ -216,8 +225,10 @@ const ForgotPasswordScreen = ({route, navigation}: any) => {
 
     onSubmit: (values, {resetForm}) => {
       if (isEmailVerified) {
+        setIsLoading(true);
         UpdatePassword();
       } else {
+        setIsLoading(true);
         CheckEmailAddress();
       }
     },
@@ -225,6 +236,22 @@ const ForgotPasswordScreen = ({route, navigation}: any) => {
 
   return (
     <SafeAreaView style={ThemeStyles.container}>
+      {isLoading ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" />
+        </View>
+      ) : null}
       {isEmailVerified ? (
         <View style={ForgotPasswordScreenStyles.container}>
           <SetPasswordForm

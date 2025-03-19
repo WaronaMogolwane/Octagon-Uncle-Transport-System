@@ -2,7 +2,7 @@ import {useContext, useState} from 'react';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {View, GestureResponderEvent} from 'react-native';
+import {View, GestureResponderEvent, ActivityIndicator} from 'react-native';
 import {SignUpForm} from '../../Components/Forms/SignUpForm';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
 import {SignUpScreenStyles, ThemeStyles} from '../../Stylesheets/GlobalStyles';
@@ -26,6 +26,8 @@ const SignUpScreen = ({route, navigation}: any) => {
   const toast = useToast();
 
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [role, setRole] = useState('');
 
   const phoneRegExp: RegExp =
@@ -60,17 +62,21 @@ const SignUpScreen = ({route, navigation}: any) => {
     initialValues: registerInitialValues,
     validationSchema: registerSchema,
     onSubmit: async (values, {resetForm}) => {
+      setIsLoading(true);
       if (formik.isValid) {
         if (userRole == 1 && !isEmailVerified) {
           await emailOtp(formik.values.email, (error: any, result: any) => {
             if (error) {
               console.error(error);
+              setIsLoading(false);
             } else {
               setShowModal(true);
+              setIsLoading(false);
             }
           });
         } else {
           await SignUpNewUser();
+          setIsLoading(false);
         }
       }
     },
@@ -147,6 +153,22 @@ const SignUpScreen = ({route, navigation}: any) => {
   return (
     <SafeAreaView style={ThemeStyles.container}>
       <View style={SignUpScreenStyles.container}>
+        {isLoading ? (
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#ffffff75',
+              zIndex: 100,
+            }}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : null}
         <SignUpForm
           emailIsInvalid={!!formik.errors.email}
           emailOnChangeText={formik.handleChange('email')}

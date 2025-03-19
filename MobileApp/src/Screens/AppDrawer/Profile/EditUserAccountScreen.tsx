@@ -59,6 +59,7 @@ import {
   EditUserAccountScreenStyles,
   ThemeStyles,
 } from '../../../Stylesheets/GlobalStyles';
+import {truncate} from 'fs/promises';
 
 const EditUserAccountScreen = ({navigation}: any) => {
   const {session, emailOtp, verifyOtp}: any = useContext(AuthContext);
@@ -149,20 +150,25 @@ const EditUserAccountScreen = ({navigation}: any) => {
   };
 
   const UpdateEmail = async () => {
+    setIsUpdating(false);
+
     await UpdateUserEmail(userId, emailFormik.values.email, name).then(
       (response: any) => {
         if (response[1] == 200) {
           ShowSuccessToast('Email');
           passwordFormik.resetForm();
           setRefreshData(!refreshData);
+          setIsUpdating(false);
         } else {
           ShowFaliureToast('Email');
+          setIsUpdating(false);
         }
       },
     );
   };
 
   const ChangePassword = async () => {
+    setIsUpdating(true);
     UpdateUserPassword(
       userId,
       passwordFormik.values.confirmPassword,
@@ -171,13 +177,16 @@ const EditUserAccountScreen = ({navigation}: any) => {
       if (response[1] == 200) {
         ShowSuccessToast('Password');
         setShowChangePassword(false);
+        setIsUpdating(false);
         passwordFormik.resetForm();
       } else if (
         response[2] == 'AxiosError: Request failed with status code 499'
       ) {
         ShowWrongPasswordToast();
+        setIsUpdating(false);
       } else {
         ShowFaliureToast('Password');
+        setIsUpdating(false);
       }
     });
   };
@@ -641,19 +650,23 @@ const EditUserAccountScreen = ({navigation}: any) => {
 
     onSubmit: async (values, {resetForm}) => {
       if (emailFormik.isValid) {
+        setIsUpdating(true);
         if (!isEmailVerified) {
           await emailOtp(
             emailFormik.values.email,
             (error: any, result: any) => {
               if (error) {
                 console.error(error);
+                setIsUpdating(false);
               } else {
                 setShowEmailVerificationModal(true);
+                setIsUpdating(false);
               }
             },
           );
         } else {
           //await SignUpNewUser();
+          setIsUpdating(false);
         }
       }
     },

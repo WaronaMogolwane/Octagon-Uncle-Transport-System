@@ -130,12 +130,12 @@ const SignUpScreen = ({route, navigation}: any) => {
           ShowToast();
           setIsEmailVerified(true);
           setShowModal(false);
-          SignUpNewUser(uuid.v4());
+          SignUpNewUser();
         }
       },
     );
   };
-  const SignUpNewUser = async (userId: string) => {
+  const SignUpNewUser = async (userId?: string) => {
     const newUserId: any = userId;
     const newUser: User = {
       userId: newUserId,

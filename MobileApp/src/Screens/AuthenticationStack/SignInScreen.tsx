@@ -44,8 +44,9 @@ const SignInScreen = ({navigation}: any) => {
         (error: AxiosError, result: any) => {
           if (formik.isValid) {
             if (error) {
-              // setIsLoading(false);
+              setIsLoading(false);
               console.error(error.response!.data);
+              console.info('error', error);
             } else if (result) {
               resetForm();
               // setIsLoading(false);

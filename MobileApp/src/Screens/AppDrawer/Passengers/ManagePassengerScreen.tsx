@@ -55,6 +55,7 @@ import {Auth} from '../../../Classes/Auth';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import filter from 'lodash.filter';
 import {CustomButton1} from '../../../Components/Buttons';
+import COLORS from '../../../Const/colors';
 
 const ManagePassengerScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -123,14 +124,15 @@ const ManagePassengerScreen = ({navigation}: any) => {
     {id: 2, reasonString: 'Other'},
   ];
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
-
-    setTimeout(() => {
-      GetPassengers();
-    }, 2000);
-
-    setRefreshing(false);
+    try {
+      await GetPassengers();
+    } catch (error) {
+      console.error('Error refreshing passengers:', error);
+    } finally {
+      setRefreshing(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -341,7 +343,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />
-        <ModalContent>
+        <ModalContent style={{backgroundColor: '#ffffff'}}>
           <ModalHeader>
             <Heading size="lg">Create Passenger</Heading>
             <ModalCloseButton>
@@ -664,8 +666,8 @@ const ManagePassengerScreen = ({navigation}: any) => {
               <Icon as={CloseIcon} />
             </ModalCloseButton>
           </ModalHeader>
-          <ModalBody>
-            <View style={{marginBottom: 30}}>
+          <ModalBody style={{marginBottom: 30, height: '75%'}}>
+            <ScrollView>
               <AddPassengerForm
                 firstNameIsInvalid={!!updateFormik.errors.firstname}
                 firstNameOnChangeText={updateFormik.handleChange('firstname')}
@@ -733,7 +735,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                   ) => void
                 }
               />
-            </View>
+            </ScrollView>
           </ModalBody>
         </ModalContent>
       </Modal>

@@ -41,7 +41,9 @@ const VerifyEmailModal = (props: VerifyOtpModalProps) => {
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
-            <Text>Enter the OTP sent to {props.ToEmailAddress}</Text>
+            <Text style={{marginBottom: 15}}>
+              Enter the OTP sent to {props.ToEmailAddress}
+            </Text>
             <CustomFormControlInputNumber
               labelText="OTP"
               placeHolder="Enter the code here"

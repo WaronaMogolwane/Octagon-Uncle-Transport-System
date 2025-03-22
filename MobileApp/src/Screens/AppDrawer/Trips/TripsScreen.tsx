@@ -124,38 +124,28 @@ const TripsScreen = ({navigation}: any) => {
   const iconSize = 40;
   const iconStrokeWidth = 2;
 
-  // let currentDate = new Date()
-  //   .toLocaleDateString('en-ZA', {
-  //     year: 'numeric',
-  //     month: '2-digit',
-  //     day: '2-digit',
-  //   })
-  //   .replace(/\//g, '-');
-
-  const onRefreshPastTrips = React.useCallback(() => {
+  const onRefreshPastTrips = React.useCallback(async () => {
     setRefreshingPastTrips(true);
-
-    setTimeout(() => {
-      GetPastTrips().catch((error: any) => {
-        setRefreshingPastTrips(false);
-      });
-      GetUpcomingTrips().catch((error: any) => {
-        setRefreshingUpcomingTrips(false);
-      });
-    }, 2000);
+    try {
+      await Promise.all([GetPastTrips(), GetUpcomingTrips()]);
+    } catch (error) {
+      console.error('Error refreshing trips:', error);
+    } finally {
+      setRefreshingPastTrips(false);
+      setRefreshingUpcomingTrips(false);
+    }
   }, []);
 
-  const onRefreshUpcomingTrips = React.useCallback(() => {
+  const onRefreshUpcomingTrips = React.useCallback(async () => {
     setRefreshingUpcomingTrips(true);
-
-    setTimeout(() => {
-      GetUpcomingTrips().catch((error: any) => {
-        setRefreshingUpcomingTrips(false);
-      });
-      GetPastTrips().catch((error: any) => {
-        setRefreshingPastTrips(false);
-      });
-    }, 2000);
+    try {
+      await Promise.all([GetUpcomingTrips(), GetPastTrips()]);
+    } catch (error) {
+      console.error('Error refreshing trips:', error);
+    } finally {
+      setRefreshingUpcomingTrips(false);
+      setRefreshingPastTrips(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -539,24 +529,22 @@ const TripsScreen = ({navigation}: any) => {
           setShowNoFutureTripText(true);
           setRefreshingUpcomingTrips(false);
         } else {
+          setShowNoFutureTripText(false);
           setUpcomingTripList(trip);
           setRefreshingUpcomingTrips(false);
-          setShowNoFutureTripText(false);
         }
       });
     } else if (role == 3) {
       return await GetUpcomingTripsForDriver(userId).then(trip => {
         if (trip.length == 0) {
-          setUpcomingTripList([]);
           setShowNoFutureTripText(true);
+          setUpcomingTripList([]);
           setRefreshingUpcomingTrips(false);
-
           setIsLoading(false);
         } else {
           setUpcomingTripList(trip);
-          setRefreshingUpcomingTrips(false);
           setShowNoFutureTripText(false);
-
+          setRefreshingUpcomingTrips(false);
           setIsLoading(false);
         }
       });
@@ -761,83 +749,89 @@ const TripsScreen = ({navigation}: any) => {
   function SecondRoute() {
     if (role == 2) {
       return (
-        <FlatList
-          style={GroupedFlatListStyles.container}
-          ListHeaderComponent={
-            <>
-              {/* Display current date records at the top */}
-              {currentDateRecords.length > 0 && (
-                <View style={GroupedFlatListStyles.container}>
-                  <Text style={GroupedFlatListStyles.currentDateHeader}>
-                    Today ({currentDate.replace(/-/g, '/')})
-                  </Text>
-                  {showNoPastTripText ? EmtpyFlatListText() : null}
-                  <FlatList
-                    data={currentDateRecords}
-                    keyExtractor={item => item.tripId}
-                    renderItem={renderItem}
-                    extraData
-                  />
-                </View>
-              )}
-            </>
-          }
-          data={[]} // Empty data array because we're rendering everything manually
-          renderItem={() => null} // No need to render items here
-          extraData
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshingPastTrips}
-              onRefresh={onRefreshPastTrips}
-            />
-          }
-          ListFooterComponent={
-            <View style={GroupedFlatListStyles.container}>
-              {/* Render grouped data */}
-              {renderGroupedData()}
-            </View>
-          }
-        />
+        <View style={ThemeStyles.container}>
+          {showNoPastTripText ? EmtpyFlatListText() : null}
+          <FlatList
+            style={GroupedFlatListStyles.container}
+            ListHeaderComponent={
+              <>
+                {/* Display current date records at the top */}
+                {currentDateRecords.length > 0 && (
+                  <View style={GroupedFlatListStyles.container}>
+                    <Text style={GroupedFlatListStyles.currentDateHeader}>
+                      Today ({currentDate.replace(/-/g, '/')})
+                    </Text>
+                    {showNoPastTripText ? EmtpyFlatListText() : null}
+                    <FlatList
+                      data={currentDateRecords}
+                      keyExtractor={item => item.tripId}
+                      renderItem={renderItem}
+                      extraData
+                    />
+                  </View>
+                )}
+              </>
+            }
+            data={[]} // Empty data array because we're rendering everything manually
+            renderItem={() => null} // No need to render items here
+            extraData
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshingPastTrips}
+                onRefresh={onRefreshPastTrips}
+              />
+            }
+            ListFooterComponent={
+              <View style={GroupedFlatListStyles.container}>
+                {/* Render grouped data */}
+                {renderGroupedData()}
+              </View>
+            }
+          />
+        </View>
       );
     } else if (role == 3) {
       return (
-        <FlatList
-          style={GroupedFlatListStyles.container}
-          ListHeaderComponent={
-            <>
-              {/* Display current date records at the top */}
-              {currentDateRecords.length > 0 && (
-                <View style={GroupedFlatListStyles.container}>
-                  <Text style={GroupedFlatListStyles.currentDateHeader}>
-                    Today ({currentDate.replace(/-/g, '/')})
-                  </Text>
-                  {showNoPastTripText ? EmtpyFlatListText() : null}
-                  <FlatList
-                    data={currentDateRecords}
-                    keyExtractor={item => item.tripId}
-                    renderItem={renderItem}
-                    extraData
-                  />
-                </View>
-              )}
-            </>
-          }
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshingPastTrips}
-              onRefresh={onRefreshPastTrips}
-            />
-          }
-          extraData
-          data={[]} // Empty data array because we're rendering everything manually
-          renderItem={() => null} // No need to render items here
-          ListFooterComponent={
-            <View style={GroupedFlatListStyles.container}>
-              {/* Render grouped data */}
-              {renderGroupedData()}
-            </View>
-          }
-        />
+        <View style={ThemeStyles.container}>
+          {showNoPastTripText ? EmtpyFlatListText() : null}
+          <FlatList
+            style={GroupedFlatListStyles.container}
+            ListHeaderComponent={
+              <>
+                {/* Display current date records at the top */}
+                {currentDateRecords.length > 0 && (
+                  <View style={GroupedFlatListStyles.container}>
+                    <Text style={GroupedFlatListStyles.currentDateHeader}>
+                      Today ({currentDate.replace(/-/g, '/')})
+                    </Text>
+                    {showNoPastTripText ? EmtpyFlatListText() : null}
+                    <FlatList
+                      data={currentDateRecords}
+                      keyExtractor={item => item.tripId}
+                      renderItem={renderItem}
+                      extraData
+                    />
+                  </View>
+                )}
+              </>
+            }
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshingPastTrips}
+                onRefresh={onRefreshPastTrips}
+              />
+            }
+            extraData
+            data={[]} // Empty data array because we're rendering everything manually
+            renderItem={() => null} // No need to render items here
+            ListFooterComponent={
+              <View style={GroupedFlatListStyles.container}>
+                {/* Render grouped data */}
+                {renderGroupedData()}
+              </View>
+            }
+          />
+        </View>
       );
     }
   }

@@ -21,7 +21,7 @@ import {
   InsertNewUser,
   InsertOtp,
 } from "../Models/AuthenticationModel";
-import { CreateOtp, IsOtpVaid } from "../Models/OtpModel";
+import { CreateOtp, IsOtpValid } from "../Models/OtpModel";
 import { Email } from "../Classes/Email";
 import { UserCredentials } from "../Classes/UserCredentials";
 import { CreateOtpEmailHtml, SendEmail } from "../Models/EmailModel";
@@ -118,7 +118,7 @@ export const VerifyOtp = async (req: Request, res: Response, next: NextFunction)
     } else {
       if (result[0][0]) {
         let otpExpireDate = new Date(result[0][0].OtpExpireDate);
-        if (IsOtpVaid(otpExpireDate)) {
+        if (IsOtpValid(otpExpireDate)) {
           await UpdateOtpToUsed(email, otp, (error, result) => {
             if (error) {
               errorResponse = {

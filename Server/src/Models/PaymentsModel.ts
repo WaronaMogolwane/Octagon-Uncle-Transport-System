@@ -5,6 +5,7 @@ import { Refund } from "../Classes/Refund";
 import { Transaction } from "../Classes/Transaction";
 import { DbPool } from "../Services/DatabaseService";
 import { BankTransfer, Transfer } from "../Classes/Transfer";
+import { PaymentSchedule } from "../Classes/PaymentSchedule";
 
 export const InsertCardAuthorisation = async (
     cardAuthorisation: CardAuthorisation,
@@ -188,6 +189,30 @@ export const InsertPendingCharges = async (
         }
     );
 };
+export const InsertPaymentSchedule = async (
+    newPaymentSchedule: PaymentSchedule,
+    callback: (error: any, result: any) => void
+) => {
+    DbPool.query(
+        {
+            sql: "CALL InsertNewPaymentSchedule(?,?,?,?);",
+            timeout: 40000,
+            values: [
+                newPaymentSchedule.UserId,
+                newPaymentSchedule.Amount,
+                newPaymentSchedule.CardAuthorisationId,
+                newPaymentSchedule.PaymentDay
+            ],
+        },
+        function (error, results, fields) {
+            if (error) {
+                callback(error, null);
+            } else {
+                callback(null, results);
+            }
+        }
+    );
+};
 export const InsertNewBulkCharge = async (
     newBulkChargeReponse: BulkChargeReponse,
     callback: (error: any, result: any) => void
@@ -216,7 +241,6 @@ export const InsertNewBulkCharge = async (
         }
     );
 };
-
 export const GetAvailableBalanceByBusinessId = async (
     businessId: string,
     callback: (error: any, result: any) => void
@@ -343,7 +367,6 @@ export const GetCardAuthorizationsByUserId = async (
         }
     );
 };
-
 export const GetMonthlyPaymentDetailsByUserId = async (
     userId: string,
     callback: (error: any, result: any) => void
@@ -365,4 +388,3 @@ export const GetMonthlyPaymentDetailsByUserId = async (
         }
     );
 };
-

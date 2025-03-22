@@ -6,6 +6,7 @@ import {
   ForgotPassword,
   SetPassword,
   VerifyUserInvitation,
+  GetUserInvitationByEmail as GetUserInvitationByEmailAnduSerRole,
 } from '../Services/AuthenticationService';
 
 export const UserSignUp = async (
@@ -20,7 +21,6 @@ export const UserSignUp = async (
     }
   });
 };
-
 export const UserSignIn = async (userEmail: string, userPassword: string) => {
   await LoginWithEmailPassword(userEmail, userPassword, (error, result) => {
     if (error) {
@@ -35,6 +35,23 @@ export const UserForgotPassword = async (userEmail: string) => {
 };
 export const UserSetPassword = async (userPassword: string) => {
   return await SetPassword(userPassword);
+};
+export const GetUserInvitation = async (
+  email: string,
+  userRole: number,
+  callback: (error: any, result: any) => void,
+) => {
+  await GetUserInvitationByEmailAnduSerRole(
+    email,
+    userRole,
+    (error, result) => {
+      if (error) {
+        callback(error, null);
+      } else {
+        callback(null, result.data);
+      }
+    },
+  );
 };
 export const UserVerifyEmail = async (
   invitationCode: string,

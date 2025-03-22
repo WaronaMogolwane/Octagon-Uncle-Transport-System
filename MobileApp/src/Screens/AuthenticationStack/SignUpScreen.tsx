@@ -6,7 +6,10 @@ import {View, GestureResponderEvent, ActivityIndicator} from 'react-native';
 import {SignUpForm} from '../../Components/Forms/SignUpForm';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
 import {SignUpScreenStyles, ThemeStyles} from '../../Stylesheets/GlobalStyles';
-import {UserSignUp} from '../../Controllers/AuthenticationController';
+import {
+  GetUserInvitation,
+  UserSignUp,
+} from '../../Controllers/AuthenticationController';
 import {User} from '../../Models/UserModel';
 import {useStorageState} from '../../Services/StorageStateService';
 import {
@@ -17,9 +20,11 @@ import {
   useToast,
 } from '@gluestack-ui/themed';
 import {AuthContext} from '../../Services/AuthenticationService';
+import {AxiosError} from 'axios';
+import uuid from 'react-native-uuid';
 
 const SignUpScreen = ({route, navigation}: any) => {
-  const {userRole, businessId} = route.params;
+  const {userRole, businessId, userId} = route.params;
   const [showModal, setShowModal] = useState(false);
   const {signIn, session, signUp, emailOtp, verifyOtp}: any =
     useContext(AuthContext);
@@ -75,7 +80,15 @@ const SignUpScreen = ({route, navigation}: any) => {
             }
           });
         } else {
-          await SignUpNewUser();
+          await GetInvitation(
+            formik.values.email,
+            (error: any, result: any) => {
+              if (error) {
+              } else {
+                SignUpNewUser(result[0].UserId);
+              }
+            },
+          );
           setIsLoading(false);
         }
       }
@@ -118,24 +131,25 @@ const SignUpScreen = ({route, navigation}: any) => {
       formik.values.email,
       (error: any, result: any) => {
         if (error) {
-          console.warn(error);
+          console.warn(error.response?.data);
         } else {
           ShowToast();
           setIsEmailVerified(true);
           setShowModal(false);
-          SignUpNewUser();
+          SignUpNewUser(uuid.v4());
         }
       },
     );
   };
-  const SignUpNewUser: any = async () => {
+  const SignUpNewUser = async (userId: string) => {
+    const newUserId: any = userId;
     const newUser: User = {
+      userId: newUserId,
       email: formik.values.email,
       password: formik.values.password,
       businessId: businessId,
       userRole: userRole,
     };
-
     await signUp(newUser, (error: any, result: any) => {
       if (error) {
         console.error(error);
@@ -149,7 +163,22 @@ const SignUpScreen = ({route, navigation}: any) => {
       }
     });
   };
-
+  const GetInvitation = async (
+    email: string,
+    callback: (error: any, result: any) => void,
+  ) => {
+    await GetUserInvitation(
+      email,
+      userRole,
+      async (error: AxiosError, result: any) => {
+        if (error) {
+          callback(error, null);
+        } else {
+          callback(null, result);
+        }
+      },
+    );
+  };
   return (
     <SafeAreaView style={ThemeStyles.container}>
       <View style={SignUpScreenStyles.container}>

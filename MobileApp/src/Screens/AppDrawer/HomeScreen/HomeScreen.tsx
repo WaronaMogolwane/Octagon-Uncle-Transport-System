@@ -635,7 +635,7 @@ const HomeScreen = ({navigation}: any) => {
           <View style={HomeScreenStyles.vehicleContainer}>
             <Image
               source={{
-                uri: storageUrl + vehicle.FrontImageUrl,
+                uri: storageUrl + vehicle?.FrontImageUrl,
               }}
               alt="Vehicle front picture."
               style={HomeScreenStyles.vehicleImage}
@@ -644,25 +644,25 @@ const HomeScreen = ({navigation}: any) => {
               <View style={HomeScreenStyles.itemContainer}>
                 <Text style={HomeScreenStyles.itemPrimaryText}>Make: </Text>
                 <Text style={HomeScreenStyles.itemSecondaryText}>
-                  {vehicle.Make}
+                  {vehicle?.Make}
                 </Text>
               </View>
               <View style={HomeScreenStyles.itemContainer}>
                 <Text style={HomeScreenStyles.itemPrimaryText}>Model: </Text>
                 <Text style={HomeScreenStyles.itemSecondaryText}>
-                  {vehicle.Model}
+                  {vehicle?.Model}
                 </Text>
               </View>
               <View style={HomeScreenStyles.itemContainer}>
                 <Text style={HomeScreenStyles.itemPrimaryText}>Color: </Text>
                 <Text style={HomeScreenStyles.itemSecondaryText}>
-                  {vehicle.Colour}
+                  {vehicle?.Colour}
                 </Text>
               </View>
               <View style={HomeScreenStyles.itemContainer}>
                 <Text style={HomeScreenStyles.itemPrimaryText}>License: </Text>
                 <Text style={HomeScreenStyles.itemSecondaryText}>
-                  {vehicle.LicenseNumber}
+                  {vehicle?.LicenseNumber}
                 </Text>
               </View>
             </View>

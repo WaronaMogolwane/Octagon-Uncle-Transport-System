@@ -1,42 +1,45 @@
-import winston, { format } from 'winston';
-import ErrorHandler from '../Middleware/ErrorHandler';
+import winston, { format } from "winston";
+import fs from "fs";
 
+// Ensure the Logs directory exists
+const logDirectory = "./Logs";
+if (!fs.existsSync(logDirectory)) {
+    fs.mkdirSync(logDirectory, { recursive: true });
+}
+
+// Common log format
+const logFormat = format.combine(
+    format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+    format.printf(({ level, message, timestamp, stack }) => {
+        return `${timestamp} [${level}]: ${stack || message}`;
+    })
+);
+
+// Winston Logger instance
 const WinstonLogger = winston.createLogger({
-    format: winston.format.combine(
-        winston.format.timestamp({
-            format: 'YYYY-MM-DD HH:mm:ss',
-        }),
-        winston.format.printf(({ level, message, timestamp }) => {
-            return `${timestamp} [${level}]: ${message}`;
-        })),
+    level: process.env.NODE_ENV === "production" ? "error" : "debug", // Adjust log level dynamically
+    format: logFormat,
     transports: [
-        //
-        // - Write all logs with importance level of `error` or less to `error.log`
-        // - Write all logs with importance level of `info` or less to `combined.log`
-        //
         new winston.transports.File({
-            filename: './Logs/error.log',
-            level: 'error',
-            format: winston.format.printf(({ level, message, timestamp }) => {
-                return `${timestamp} [${level}]: ${message}`;
-            })
+            filename: `${logDirectory}/error.log`,
+            level: "error",
         }),
         new winston.transports.File({
-            filename: './Logs/combined.log',
-            format: winston.format.printf(({ level, message, timestamp }) => {
-                return `${timestamp} [${level}]: ${message}`;
-            })
+            filename: `${logDirectory}/combined.log`,
         }),
     ],
 });
 
-//
-// If we're not in production then log to the `console` with the format:
-// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-//
-if (process.env.NODE_ENV !== 'production') {
-    WinstonLogger.add(new winston.transports.Console({
-        format: winston.format.colorize({ all: true, level: true }),
-    }));
+// Add console logging for non-production environments
+if (process.env.NODE_ENV !== "production") {
+    WinstonLogger.add(
+        new winston.transports.Console({
+            format: format.combine(
+                format.colorize({ all: true }),
+                logFormat
+            ),
+        })
+    );
 }
+
 export default WinstonLogger;

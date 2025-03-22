@@ -1,4 +1,3 @@
-import { error } from "console";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 import { Vehicle } from "../Classes/Vehicle";
 import {
@@ -11,220 +10,141 @@ import {
   InsertNewDriverVehicleLink,
   InsertNewVehicle,
 } from "../Models/VehicleModel";
-import { GetUploadUrl, UploadFile } from "../Services/BlobStorageService";
+import { UploadFile } from "../Services/BlobStorageService";
 
+// Helper function for centralized error handling
+const handleError = (error: any, next: any, status: number, message: string): void => {
+  console.error(message, error);
+  next(new ErrorResponse(status, error.message || message, error.stack));
+};
+
+// Helper function for success responses
+const sendSuccess = (res: any, message: string, result: any = null) => {
+  res.status(200).json({ message, result });
+};
+
+// Link a driver to a vehicle
 export const LinkedDriverToVehicle = async (req: any, res: any, next: any) => {
-  const driverId: string = req.body.DriverId;
-  const vehicleId: number = req.body.VehicleId;
-  const vehicleLicenseNumber: string = req.body.VehicleLicenseNumber;
-  await InsertNewDriverVehicleLink(
-    driverId,
-    vehicleId,
-    vehicleLicenseNumber,
-    async (error, result) => {
-      if (error) {
-        next(new ErrorResponse(501, error.message));
-      } else {
-        res.status(200).json({
-          VehicleAdded: true,
-          result: result,
-        });
-      }
-    }
-  );
+  try {
+    const { DriverId: driverId, VehicleId: vehicleId } = req.body;
+    const result = await InsertNewDriverVehicleLink(driverId, vehicleId);
+    sendSuccess(res, "Driver linked to vehicle successfully", result);
+  } catch (error) {
+    handleError(error, next, 501, "Failed to link driver to vehicle");
+  }
 };
+
+// Add a new vehicle and upload images
 export const AddNewVehicle = async (req: any, res: any, next: any) => {
-  let newVehicle: Vehicle = {
-    FrontImage: req.body.FrontImage,
-    RearImage: req.body.RearImage,
-    LicenseNumber: req.body.LicenseNumber,
-    Make: req.body.Make,
-    Model: req.body.Model,
-    Colour: req.body.Colour,
-    EngineNumber: req.body.EngineNumber,
-    RegistrationNumber: req.body.RegistrationNumber,
-    Vin: req.body.Vin,
-    BusinessId: req.body.BusinessId,
-    Description: req.body.Description,
-    DateCreated: Date.now().toString(),
-  };
-  const filePath = `User-Files/${newVehicle.BusinessId}/Vehicles/${newVehicle.LicenseNumber}/`;
-  const frontImageName = filePath + "Front-Image.jpeg";
-  const rearImageName = filePath + "Rear-Image.jpeg";
+  try {
+    const newVehicle: Vehicle = {
+      FrontImage: req.body.FrontImage,
+      RearImage: req.body.RearImage,
+      LicenseNumber: req.body.LicenseNumber,
+      Make: req.body.Make,
+      Model: req.body.Model,
+      Colour: req.body.Colour,
+      EngineNumber: req.body.EngineNumber,
+      RegistrationNumber: req.body.RegistrationNumber,
+      Vin: req.body.Vin,
+      BusinessId: req.body.BusinessId,
+      Description: req.body.Description,
+      DateCreated: Date.now().toString(),
+    };
 
-  await UploadFile(
-    newVehicle.RearImage,
-    rearImageName,
-    req.body.FileType,
-    async (error, result) => {
-      if (error) {
-        next(new ErrorResponse(501, error.response.data));
-      } else {
-        newVehicle.FrontImage = frontImageName;
-        newVehicle.RearImage = rearImageName;
-        await InsertNewVehicle(newVehicle, async (error, result) => {
-          if (error) {
-            next(new ErrorResponse(501, error.message));
-          } else {
-            res.status(200).json({
-              VehicleAdded: true,
-              result: result,
-            });
-          }
-        });
-      }
-    }
-  );
+    const filePath = `User-Files/${newVehicle.BusinessId}/Vehicles/${newVehicle.LicenseNumber}/`;
+    const frontImageName = `${filePath}Front-Image.jpeg`;
+    const rearImageName = `${filePath}Rear-Image.jpeg`;
+
+    // Upload rear image first
+    await UploadFile(newVehicle.RearImage, rearImageName, req.body.FileType);
+    newVehicle.FrontImage = frontImageName;
+    newVehicle.RearImage = rearImageName;
+
+    // Save vehicle record
+    const result = await InsertNewVehicle(newVehicle);
+    sendSuccess(res, "Vehicle added successfully", result);
+  } catch (error) {
+    handleError(error, next, 501, "Failed to add new vehicle");
+  }
 };
+
+// Check if a vehicle exists
 export const CheckIfVehicleExists = async (req: any, res: any, next: any) => {
-  const businessId: string = req.query.BusinessId;
-  const licenseNumber: string = req.query.LicenseNumber;
-  GetVehicleByLicenseNumberAndBusinessId(
-    businessId,
-    licenseNumber,
-    async (error: any, result: any) => {
-      if (error) {
-        next(new ErrorResponse(error, "400"));
-      } else {
-        if (result[0][0]) {
-          if (!result[0][0].IsActive) {
-            //Vehicle exists but is not active
-            res.status(200).send({
-              VehicleExists: true,
-              IsActive: false,
-            });
-          } else {
-            //Vehicle exists and is active
-            res.status(200).send({
-              VehicleExists: true,
-              IsActive: true,
-            });
-          }
-        } else {
-          //Vehicle does not exist
-          res.status(200).send({
-            VehicleExists: false,
-            IsActive: false,
-          });
-        }
-      }
-    }
-  );
-};
-export const GetVehicle = async (req: any, res: any, next: any) => {
-  const newVehicle: Vehicle = {
-    FrontImage: req.body.FrontImage,
-    RearImage: req.body.RearImage,
-    LicenseNumber: req.body.LicenseNumber,
-    Make: req.body.Make,
-    Model: req.body.Model,
-    Colour: req.body.Colour,
-    EngineNumber: req.body.EngineNumber,
-    RegistrationNumber: req.body.RegistrationNumber,
-    Vin: req.body.Vin,
-    BusinessId: req.body.BusinessId,
-    Description: req.body.Description,
-    DateCreated: Date.now().toString(),
-  };
+  try {
+    const { BusinessId: businessId, LicenseNumber: licenseNumber } = req.query;
+    const result = await GetVehicleByLicenseNumberAndBusinessId(businessId, licenseNumber);
 
-  await InsertNewVehicle(newVehicle, async (error, result) => {
-    if (error) {
-      next(new ErrorResponse(501, error.message));
-    } /* else if (result.rowCount == 0) {
-        let err: any = {
-          status: 405,
-          message: "Record not found",
-        };
-        next(err);
-      } */ else {
-      next();
+    if (result[0]?.[0]) {
+      const isActive = result[0][0].IsActive;
+      res.status(200).send({ VehicleExists: true, IsActive: isActive });
+    } else {
+      res.status(200).send({ VehicleExists: false, IsActive: false });
     }
-  });
+  } catch (error) {
+    handleError(error, next, 400, "Failed to check if vehicle exists");
+  }
 };
+
+// Retrieve vehicles and drivers
 export const GetVehicleAndDriver = async (req: any, res: any, next: any) => {
-  let businessId = req.query.BusinessId;
-
-  await GetVehicleAndDriverByBusiness(businessId, async (error, result) => {
-    if (error) {
-      next(new ErrorResponse(501, error.message));
-    } /* else if (result.rowCount == 0) {
-        let err: any = {
-          status: 405,
-          message: "Record not found",
-        };
-        next(err);
-      } */ else {
-      res.status(200).json({
-        RecordRetrieved: true,
-        result: result[0],
-      });
-    }
-  });
+  try {
+    const businessId = req.query.BusinessId;
+    const result = await GetVehicleAndDriverByBusiness(businessId);
+    sendSuccess(res, "Vehicle and driver records retrieved successfully", result[0]);
+  } catch (error) {
+    handleError(error, next, 501, "Failed to retrieve vehicle and driver records");
+  }
 };
-export const DeleteDriverVehicleLink = async (
-  req: any,
-  res: any,
-  next: any
-) => {
-  let driverId: string = req.body.DriverId;
-  await DeleteDriverVehicleLinkByDriverId(driverId, (error, result) => {
-    if (error) {
-      const err: Error = new Error(error.message)
-      next(new ErrorResponse(400, err.message, err.stack));
 
-    } else {
-      res.status(200).send(result);
-    }
-  });
+// Delete driver-vehicle link
+export const DeleteDriverVehicleLink = async (req: any, res: any, next: any) => {
+  try {
+    const driverId = req.body.DriverId;
+    const result = await DeleteDriverVehicleLinkByDriverId(driverId);
+    sendSuccess(res, "Driver-vehicle link deleted successfully", result);
+  } catch (error) {
+    handleError(error, next, 400, "Failed to delete driver-vehicle link");
+  }
 };
+
+// Delete a vehicle
 export const DeleteVehicle = async (req: any, res: any, next: any) => {
-  let driverId: string = req.body.DriverId;
-  let vehicleId: number = req.body.VehicleId;
-  await DeleteVehicleByDriverIdAndVehicleId(
-    driverId,
-    vehicleId,
-    (error, result) => {
-      if (error) {
-        const err: Error = new Error(error.message)
-        next(new ErrorResponse(400, err.message, err.stack));
-
-      } else {
-        res.status(200).send(result);
-      }
-    }
-  );
+  try {
+    const { DriverId: driverId, VehicleId: vehicleId } = req.body;
+    const result = await DeleteVehicleByDriverIdAndVehicleId(driverId, vehicleId);
+    sendSuccess(res, "Vehicle deleted successfully", result);
+  } catch (error) {
+    handleError(error, next, 400, "Failed to delete vehicle");
+  }
 };
+
+// Fetch all vehicles for a business
 export const GetVehicles = async (req: any, res: any, next: any) => {
-  let businessId = req.query.businessId;
-  await GetVehiclesByBusinessId(businessId, (error, result) => {
-    if (error) {
-      const err: Error = new Error(error.message)
-      next(new ErrorResponse(400, err.message, err.stack));
-
+  try {
+    const businessId = req.query.businessId;
+    const result = await GetVehiclesByBusinessId(businessId);
+    if (result[0]) {
+      sendSuccess(res, "Vehicles retrieved successfully", result[0]);
     } else {
-      if (result[0]) {
-        res.status(200).send(result[0]);
-      } else {
-        res.status(400).send(new ErrorResponse(400, "No vehicles found."));
-      }
+      res.status(400).send(new ErrorResponse(400, "No vehicles found."));
     }
-  });
+  } catch (error) {
+    handleError(error, next, 400, "Failed to retrieve vehicles");
+  }
 };
+
+// Fetch vehicles linked to a driver
 export const GetDriverVehicle = async (req: any, res: any, next: any) => {
-  let driverId = req.query.DriverId;
-
-  await GetVehiclesByDriverId(driverId, (error, result) => {
-
-    if (error) {
-      const err: Error = new Error(error.message)
-      next(new ErrorResponse(400, err.message, err.stack));
-
+  try {
+    const driverId = req.query.DriverId;
+    const result = await GetVehiclesByDriverId(driverId);
+    if (result[0]) {
+      sendSuccess(res, "Driver's vehicles retrieved successfully", result[0]);
     } else {
-      if (result[0]) {
-        res.status(200).send(result[0]);
-      } else {
-        res.status(400).send(new ErrorResponse(400, "No vehicles found."));
-      }
+      res.status(400).send(new ErrorResponse(400, "No vehicles found."));
     }
-  });
+  } catch (error) {
+    handleError(error, next, 400, "Failed to retrieve driver's vehicles");
+  }
 };

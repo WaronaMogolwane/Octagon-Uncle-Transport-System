@@ -1,33 +1,39 @@
-import { ErrorRequestHandler } from "express";
+import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import { isHttpError } from "http-errors";
-import WinstonLogger from "../Utilities/WinstonLogger"; import { platform } from 'node:process';
-import WindowsLogger from "../Utilities/WindowsLogger";
+import { ErrorResponse } from "../Classes/ErrorResponse";
 import { CustomLogger } from "../Classes/CustomLogger";
-const Logger: CustomLogger = new CustomLogger();
+
+const Logger = new CustomLogger();
+
 const ErrorHandler: ErrorRequestHandler = (
   error: any,
-  req: any,
-  res: any,
-  next: any
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-  let statusCode: number = 500;
-  let errorMessage: string = "An unknown error occured";
-  let stackTrace: string = "";
+  let statusCode = 500;
+  let errorMessage = "An unknown error occurred";
+  let stackTrace = "";
+
   if (isHttpError(error) || error) {
-    statusCode = error.status ? error.status : statusCode;
-    errorMessage = error.message ? error.message : errorMessage;
-    stackTrace = error.stack ? error.stack : stackTrace;
+    statusCode = error.status || statusCode;
+    errorMessage = error.message || errorMessage;
+    stackTrace = error.stack || stackTrace;
   }
-  Logger.Error(JSON.stringify({
-    message: errorMessage,
-    stack: stackTrace
-  }))
-  res.status(statusCode).json(
-    {
+
+  Logger.Error(
+    JSON.stringify({
       message: errorMessage,
-      stack: stackTrace
-    }
+      stack: stackTrace,
+    })
   );
+
+  const isProduction = process.env.NODE_ENV === "production";
+
+  res.status(statusCode).json({
+    message: errorMessage,
+    ...(isProduction ? {} : { stack: stackTrace }), // Only include stack trace in development
+  });
 };
 
 export default ErrorHandler;

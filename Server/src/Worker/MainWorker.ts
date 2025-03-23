@@ -1,3 +1,4 @@
+import { AutomaticWithdrawalJob } from './../Jobs/WithdrawalJob';
 import { CustomLogger } from "../Classes/CustomLogger";
 import { PendingChargesJob } from "../Jobs/PendingChargesJob";
 import { BulkChargeJob } from "../Jobs/RecurringPaymentsJobs";
@@ -14,6 +15,7 @@ export class MainWorker {
         try {
             BulkChargeJob();
             PendingChargesJob();
+            AutomaticWithdrawalJob();
             TripsSchedulerJob();
             Logger.Log("Main worker has started.");
         } catch (error) {

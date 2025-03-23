@@ -1,11 +1,14 @@
+import { response } from 'express';
 import schedule from "node-schedule";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { CustomLogger } from "../Classes/CustomLogger";
 import { BulkBankTransfer } from "../Classes/Transfer";
 import { ErrorResponse } from "../Classes/ErrorResponse";
+import { error } from "console";
+import { InitiateBulkTransfer } from '../Services/PaystackService';
 
-const PAYSTACK_API_URL = process.env.OUTS_PAYSTACK_API_URL!;
-const PAYSTACK_SECRET_KEY = process.env.OUTS_PAYSTACK_TEST_PUBLIC_KEY!;
+const PAYSTACK_API_URL = process.env.OUTS_PAYSTACK_API_URL;
+const PAYSTACK_SECRET_KEY = process.env.OUTS_PAYSTACK_TEST_PUBLIC_KEY;
 const Logger: CustomLogger = new CustomLogger();
 
 // Validate environment variables
@@ -54,7 +57,9 @@ const RunBulkTransfer = async (): Promise<void> => {
         }
 
         Logger.Log("Withdrawal Worker: Initiating bulk transfer...");
-        await InitiateBulkTransfer(bulkTransfers);
+        await InitiateBulkTransfer(bulkTransfers, (response: any) => {
+            Logger.Log(`Withdrawal Worker: Bulk transfer successful: ${JSON.stringify(response.data)}`);
+        });
     } catch (error: any) {
         Logger.Error(`Withdrawal Worker: Automatic withdrawal job failed: ${error.message}`);
     }
@@ -66,7 +71,7 @@ const RunBulkTransfer = async (): Promise<void> => {
 const GetBulkTransfersForToday = async (): Promise<BulkBankTransfer> => {
     try {
         return {
-            currency: "NGN",
+            currency: "ZAR",
             source: "balance",
             transfers: [
                 {
@@ -91,26 +96,3 @@ const GetBulkTransfersForToday = async (): Promise<BulkBankTransfer> => {
     }
 };
 
-/**
- * Initiates the bulk transfer process via Paystack's API.
- */
-const InitiateBulkTransfer = async (bulkTransfer: BulkBankTransfer): Promise<void> => {
-    const config: AxiosRequestConfig = {
-        method: "post",
-        url: `${PAYSTACK_API_URL}/transfer/bulk`,
-        headers: {
-            Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-            "Content-Type": "application/json",
-        },
-        data: bulkTransfer,
-    };
-
-    try {
-        const response: AxiosResponse = await axios.request(config);
-        Logger.Log(`Withdrawal Worker: Bulk transfer successful: ${JSON.stringify(response.data)}`);
-    } catch (error: any) {
-        const errorData = error?.response?.data || "Unknown error";
-        Logger.Error(`Withdrawal Worker: Bulk transfer failed: ${JSON.stringify(errorData)}`);
-        throw new ErrorResponse(500, "Bulk transfer failed", errorData);
-    }
-};

@@ -129,10 +129,10 @@ export const InitiateTransfer = async (
     makePaystackRequest(config, callback);
 };
 
-export const InitiateBulkTransfer = async (
-    newBulkTransfer: BulkBankTransfer,
-    callback: (error: any, result: any) => void
-): Promise<void> => {
+/**
+ * Initiates the bulk transfer process via Paystack's API.
+ */
+export const InitiateBulkTransfer = async (bulkTransfer: BulkBankTransfer, callback: (response: any) => void): Promise<void> => {
     const config: AxiosRequestConfig = {
         method: "post",
         url: stringFormat(payStackApiUrl, "/transfer/bulk"),
@@ -140,10 +140,18 @@ export const InitiateBulkTransfer = async (
             Authorization: `Bearer ${payStackPublicKey}`,
             "Content-Type": "application/json",
         },
-        data: newBulkTransfer,
+        data: bulkTransfer,
     };
-    makePaystackRequest(config, callback);
+
+    try {
+        const response: AxiosResponse = await axios.request(config);
+        callback(response);
+    } catch (error: any) {
+        const errorData = error?.response?.data || "Unknown error";
+        throw new ErrorResponse(500, "Bulk transfer failed", errorData);
+    }
 };
+
 export const HandleWebhookEvent = async (
     req: Request,
     res: Response,

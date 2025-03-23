@@ -178,7 +178,6 @@ const HomeScreen = ({navigation}: any) => {
 
       // If file exists, do nothing
       if (fileExists) {
-        console.log('File already exists:', downloadDest); // Do nothing
         return;
       } else {
         GetUserProfileImage(userId).then(async (result: any) => {
@@ -200,7 +199,6 @@ const HomeScreen = ({navigation}: any) => {
       }
     } catch (err) {
       // console.log('Error checking file existence:', err);
-      // console.log('Error saving image:', err);
     }
   };
 

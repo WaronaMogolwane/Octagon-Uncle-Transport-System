@@ -76,7 +76,7 @@ const HomeScreen = ({navigation}: any) => {
   const businessId = auth.GetBusinessId();
 
   const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const pieChartData = [
     {
@@ -198,7 +198,7 @@ const HomeScreen = ({navigation}: any) => {
         });
       }
     } catch (err) {
-      // console.log('Error saving image:', err);
+      // console.log('Error checking file existence:', err);
     }
   };
 

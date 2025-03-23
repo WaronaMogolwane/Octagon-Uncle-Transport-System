@@ -1,95 +1,105 @@
 import dotenv from "dotenv";
-import B2 from "backblaze-b2";
-import { Buffer } from "buffer"; // Import buffer explicitly
-import crypto from "crypto"; // Use Node.js crypto for SHA-1 hashing
-import fetch from "node-fetch"; // For making HTTP requests
-
 dotenv.config();
+import B2 from 'backblaze-b2';
+// Include fs module
+var fs = require('node:fs');
+import { response } from 'express';
+import { buffer } from 'stream/consumers';
+const bucketId = process.env.OUTS_BACKBLAZE_BUCKET_ID;
+// All functions on the b2 instance return the response from the B2 API in the success callback
+// i.e. b2.foo(...).then((b2JsonResponse) => {})
 
-// Extract configuration values
-const bucketId = process.env.OUTS_BACKBLAZE_BUCKET_ID!;
-const applicationKeyId = process.env.OUTS_BACKBLAZE_APP_ID!;
-const applicationKey = process.env.OUTS_BACKLAZE_APP_KEY!;
-
-// Initialize Backblaze B2 instance
+// create B2 object instance
 const b2 = new B2({
-    applicationKeyId,
-    applicationKey,
+    applicationKeyId: process.env.OUTS_BACKBLAZE_APP_ID, // or accountId: 'accountId'
+    applicationKey: process.env.OUTS_BACKLAZE_APP_KEY  // or masterApplicationKeycheck dns
 });
 
-/**
- * Utility function for error handling
- * @param {string} context - Description of the error context
- * @param {any} error - Error object or message
- */
-const handleError = (context: string, error: any): void => {
-    console.error(`${context}:`, error.message || error);
-    throw error;
-};
-
-/**
- * Retrieves an authorized upload URL from the Backblaze B2 service.
- * @returns {Promise<{ uploadUrl: string, authorizationToken: string }>}
- */
-export async function GetUploadUrl(): Promise<{ uploadUrl: string; authorizationToken: string }> {
-    try {
-        await b2.authorize();
-        const response = await b2.getUploadUrl({ bucketId });
-        return response.data;
-    } catch (error) {
-        handleError("Error fetching upload URL", error);
+// common arguments - you can use these in any of the functions below
+const common_args = {
+    // axios request level config, see https://github.com/axios/axios#request-config
+    axios: {
+        timeout: 30000 // (example)
+    },
+    axiosOverride: {
+        /* Don't use me unless you know what you're doing! */
     }
 }
-
-/**
- * Authorizes Backblaze B2 storage and retrieves storage details.
- * @returns {Promise<any>}
- */
-export async function GetStorageAuth(): Promise<any> {
-    try {
-        const response = await b2.authorize();
-        return response.data;
-    } catch (error) {
-        handleError("Error authorizing B2 storage", error);
-    }
+export async function GetUploadUrl(callback: (data: any) => void) {
+    // get upload url
+    await b2.authorize()
+    b2.getUploadUrl({
+        bucketId: bucketId
+    })
+        .then((response: any) => {
+            let data: any = response.data;
+            callback(data);
+        })
+        .catch((error: any) => {
+            console.error(error)
+        })
 }
-
+async function GetStorageAuth(callback: (data: any) => void) {
+    await b2.authorize()
+        .then((response: any) => {
+            let data: any = response.data;
+            callback(data);
+        })
+        .catch((error: any) => {
+            console.error(error)
+        })
+}
 /**
- * Uploads a base64 string representation of a file to Backblaze B2.
- * @param {string} file - Base64 string of the file.
- * @param {string} fileName - Name of the file to upload.
- * @param {string} fileType - MIME type of the file (optional).
- * @returns {Promise<any>}
+ * Uploads a base64 string representation of a file.
+ * @param {string} file: string
+ * @param {string} fileName: string
+ * @param {string} fileType: string
+ * @param {any} error:any
+ * @param {any} result:any
+ * @returns {any}
  */
-export async function UploadFile(file: string, fileName: string, fileType: string = "b2/x-auto"): Promise<any> {
-    try {
-        const { uploadUrl, authorizationToken } = await GetUploadUrl();
+export async function UploadFile(file: string, fileName: string, fileType: string, callback: (error: any, result: any) => {}): Promise<any> {
+    await GetUploadUrl(async (data) => {
+        let fileContent = Buffer.from(file.replace(/^data:image\/\w+;base64,/, ""), 'base64')
+        // Create a SHA-1 hash of the content as a hex string
+        const hashBuffer = await crypto.subtle.digest('SHA-1', fileContent);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("");
 
-        // Convert base64 to binary buffer
-        const fileContent = Buffer.from(file.replace(/^data:image\/\w+;base64,/, ""), "base64");
+        // Upload the file content with the filename, hash and auth token
 
-        // Generate SHA-1 hash for the file content
-        const hash = crypto.createHash("sha1").update(fileContent).digest("hex");
-
-        // Upload the file using Fetch API
-        const response = await fetch(uploadUrl, {
+        const response = await fetch(data.uploadUrl, {
             method: "POST",
-            headers: {
-                "Content-Type": fileType,
-                Authorization: authorizationToken,
-                "X-Bz-File-Name": encodeURIComponent(fileName),
-                "X-Bz-Content-Sha1": hash,
-            },
+            mode: "cors",
             body: fileContent,
-        });
-
-        if (!response.ok) {
-            const errorBody = await response.text();
-            throw new Error(`Error uploading file: ${response.status} - ${errorBody}`);
-        }
-
-        return await response.json();
-    } catch (error) {
-        handleError("Error uploading file", error);
-    }
+            headers: {
+                "Content-Type": "b2/x-auto",
+                "Authorization": data.authorizationToken,
+                "X-Bz-File-Name": fileName,
+                "X-Bz-Content-Sha1": hashHex,
+            },
+        })
+            .then(successResponse => {
+                successResponse.json()
+                    .then(uploadReponse => {
+                        callback(null, uploadReponse);
+                    });
+            })
+            .catch(error => {
+                let msg: string, detail: any;
+                // Report on the outcome
+                if (error.status >= 200 && error.status < 300) {
+                    msg = `${error.status} response from B2 API. Success!`;
+                    callback(error.body, null);
+                } else if (error.status >= 400) {
+                    msg = `${error.status} error from B2 API.`;
+                    callback(error.body, null);
+                } else {
+                    msg = `Unknown error.`;
+                    callback(error.body, null);
+                }
+            })
+    })
 }

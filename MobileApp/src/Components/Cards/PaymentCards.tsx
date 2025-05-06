@@ -109,24 +109,13 @@ export const MonthlyPaymentDetailsCard = (
       }>
       <HStack>
         <VStack>
-          <Text style={{fontWeight: 'bold', fontSize: 15}}>
-            Next Payment Date
+          <Text style={{fontWeight: 'bold', fontSize: 16}}>
+            {props.NextPaymentDate}
           </Text>
-          <Text style={{fontSize: 18}}>{props.NextPaymentDate}</Text>
-          <Text style={{fontWeight: 'bold', fontSize: 15}}>Amount</Text>
-          <Text style={{fontSize: 18}}>{props.Amount}</Text>
+          <Text style={{fontSize: 16}}>Next payment</Text>
         </VStack>
         <VStack style={{marginLeft: 'auto', alignSelf: 'center'}}>
-          <Badge
-            variant="solid"
-            size="lg"
-            action={props.PaymentFailed ? 'error' : 'success'}
-            style={{marginBottom: 16, padding: 4}}>
-            <BadgeText>{props.PaymentFailed ? 'Unpaid' : 'Paid'}</BadgeText>
-          </Badge>
-          {props.PaymentFailed ? (
-            <CustomButton1 title="Pay Now" onPress={props.HandlePayNowPress} />
-          ) : null}
+          <Text style={{fontSize: 16}}>{props.Amount}</Text>
         </VStack>
       </HStack>
     </Card>

@@ -73,10 +73,13 @@ const TransporterPaymentsScreen = ({
       style: 'currency',
       currency: 'ZAR',
     });
-    const newBalance = Number(balance.slice(0, -2) + '.' + balance.slice(-2));
+    let newBalance = Number(
+      balance.substring(0, balance.length - 2) +
+        '.' +
+        balance.substring(balance.length - 2),
+    );
     return formatter.format(newBalance);
   };
-
   const ShowToast = (isSuccess: boolean, title: string, message: string) => {
     toast.show({
       placement: 'top',

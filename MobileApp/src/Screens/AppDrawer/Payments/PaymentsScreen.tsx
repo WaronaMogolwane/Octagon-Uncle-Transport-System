@@ -89,7 +89,7 @@ const PaymentsScreen = ({navigation, route}: {navigation: any; route: any}) => {
   const {session}: any = useContext(AuthContext);
 
   const [auth] = useState(() => new Auth(session)); // Avoid unnecessary state updates
-  const [userRole, setUserRole] = useState<string>('');
+  const [userRole, setUserRole] = useState('');
   useEffect(() => {
     setUserRole(auth.GetUserRole());
   }, [reference]);

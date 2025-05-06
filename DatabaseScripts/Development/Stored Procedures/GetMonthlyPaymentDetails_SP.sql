@@ -1,4 +1,4 @@
-CREATE DEFINER=`sqladmin`@`156.155.26.176` PROCEDURE `GetMonthlyPaymentDetails`(
+CREATE DEFINER=`sqladmin`@`%` PROCEDURE `GetMonthlyPaymentDetails`(
   IN _UserId VARCHAR(50)
 )
 BEGIN 
@@ -37,12 +37,12 @@ SET
       1
   );
   SET 
-  @NextPaymentDate =  DATE_FORMAT(DATE_ADD(@LastPaymentDate, INTERVAL 1 MONTH
+  @NextPaymentDate =  DATE_FORMAT(DATE_ADD(IFNULL(@LastPaymentDate, "1000-01-01"), INTERVAL 1 MONTH
   ), CONCAT('%Y-%m-', @PaymentDay));
 SET 
   @PaymentFailed = false;
 IF (
-  MONTH(@LastPaymentDate) = MONTH(
+  MONTH(IFNULL(@LastPaymentDate, "1000-01-01")) = MONTH(
     CURDATE()
   )
 ) THEN 
@@ -74,7 +74,7 @@ SET
   END IF;
 
 SELECT 
-    @Amount AS Amount,
+    CONCAT(@Amount) AS Amount,
     @NextPaymentDate AS NextPaymentDate,
     @PaymentFailed AS PaymentFailed;
 END IF;

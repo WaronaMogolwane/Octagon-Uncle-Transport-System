@@ -49,7 +49,7 @@ IF (
 SET 
   @PaymentFailed = false;
 SELECT 
-    @Amount AS Amount,
+    CONCAT(@Amount) AS Amount,
     @NextPaymentDate AS NextPaymentDate,
     @PaymentFailed AS PaymentFailed
 FROM

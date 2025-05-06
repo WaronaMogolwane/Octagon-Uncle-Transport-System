@@ -31,3 +31,30 @@ export class Transaction {
         this.transactionType = transactionType;
     }
 }
+export interface PaystackTransactionData {
+    id: number;
+    metadata: {
+        user_id?: string;
+        charge_type?: string;
+    };
+    amount: number;
+    currency: string;
+    status: string;
+    reference: string;
+    created_at: string;
+    paid_at: string | null;
+    // Add other relevant fields from Paystack API as needed
+}
+
+export interface PaystackListTransactionsResponse {
+    status: boolean;
+    message: string;
+    data: PaystackTransactionData[];
+    meta: {
+        total: number;
+        perPage: number;
+        page: number;
+        pageCount: number;
+        totalFiltered: number;
+    };
+}

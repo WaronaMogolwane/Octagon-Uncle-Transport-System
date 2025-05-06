@@ -14,6 +14,7 @@ import {
 import { RefundWebhookEvent, TransactionWebhookEvent } from "../Classes/WebhookEvent";
 import { CreateNewRefund, UpdateTransfer, CreateNewCardAuthorisation, CreateNewTransaction } from "../Controllers/PaymentsController";
 import dotenv from "dotenv";
+import { PaystackListTransactionsResponse } from "../Classes/Transaction";
 dotenv.config();
 const payStackPublicKey: string = process.env.OUTS_PAYSTACK_TEST_PUBLIC_KEY!;
 const payStackApiUrl: string = process.env.OUTS_PAYSTACK_API_URL!;
@@ -273,3 +274,26 @@ async function HandleSuccessfulCharge(
         });
     }, 100);
 }
+export const FetchPaystackTransactions = async (fromDate: string, toDate: string, page: number = 1, perPage: number = 100): Promise<PaystackListTransactionsResponse | null> => {
+
+    try {
+        const response: AxiosResponse = await axios.get(
+            'https://api.paystack.co/transaction',
+            {
+                headers: {
+                    Authorization: `Bearer ${payStackPublicKey}`,
+                },
+                params: {
+                    from: fromDate,
+                    to: toDate,
+                    perPage: perPage,
+                    page: page,
+                },
+            }
+        );
+        return response.data;
+    } catch (error: any) {
+        console.error(`Error fetching transactions from Paystack (page ${page}): ${error.message}`);
+        return null;
+    }
+};

@@ -388,3 +388,28 @@ export const GetMonthlyPaymentDetailsByUserId = async (
         }
     );
 };
+export const InsertSuccessfulTransaction = async (transaction: Transaction): Promise<OkPacket | QueryError | undefined> => {
+    return new Promise((resolve, reject) => {
+        DbPool.query<OkPacket>(
+            'CALL InsertSuccessfulTransaction(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [
+                transaction.transactionId,
+                transaction.userId,
+                transaction.amount,
+                transaction.currency,
+                transaction.status,
+                transaction.reference,
+                transaction.dateCreated,
+                transaction.datePaid,
+                transaction.transactionType,
+            ],
+            (error, results) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                resolve(results[0] as OkPacket);
+            }
+        );
+    });
+};

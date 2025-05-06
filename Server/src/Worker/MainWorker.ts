@@ -3,6 +3,7 @@ import { CustomLogger } from "../Classes/CustomLogger";
 import { PendingChargesJob } from "../Jobs/PendingChargesJob";
 import { BulkChargeJob } from "../Jobs/RecurringPaymentsJobs";
 import { TripsSchedulerJob } from "../Jobs/Trips";
+import { FetchAndSaveSuccessfulTransactionsJob } from '../Jobs/SuccessfulTransactionsJob';
 
 const NODE_ENV = process.env.NODE_ENV || "development"; // Default to "development" if not specified
 const Logger = new CustomLogger();
@@ -16,6 +17,7 @@ export class MainWorker {
             BulkChargeJob();
             PendingChargesJob();
             AutomaticWithdrawalJob();
+            FetchAndSaveSuccessfulTransactionsJob()
             TripsSchedulerJob();
             Logger.Log("Main worker has started.");
         } catch (error) {

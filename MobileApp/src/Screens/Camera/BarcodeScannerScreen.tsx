@@ -1,51 +1,48 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
-import {CustomButton1} from '../../Components/Buttons';
-import {AuthContext} from '../../Services/AuthenticationService';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {Auth} from '../../Classes/Auth';
-import {setGlobalState} from '../../State';
+import React, {useContext, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
 import {
   Camera,
   useCameraDevice,
   useCameraDevices,
-  useCameraPermission,
   useCodeScanner,
 } from 'react-native-vision-camera';
-import {StyleSheet, View} from 'react-native';
-import {Box, Heading, Text} from '@gluestack-ui/themed';
-import {BarcodeScannerProps} from '../../Props/CameraProps';
+import {Heading, Text} from '@gluestack-ui/themed';
+import {AuthContext} from '../../Services/AuthenticationService';
+import {Auth} from '../../Classes/Auth';
 import {Vehicle} from '../../Models/VehicleModel';
-import {NavigationProp} from '@react-navigation/native';
 
 const BarcodeScanner = ({navigation, route}: any) => {
+  const context = useContext(AuthContext);
+
+  // Provide a fallback object in case context is null
+  const session = context?.session || ''; // Default to an empty string if session is null
+  const [auth] = useState(new Auth(session));
+
   const [codeIsScanned, setCodeIsScanned] = useState(false);
-  const [vehicleDetails, setVehicleDetails] = useState();
   const [cameraIsActive, setCameraIsActive] = useState(true);
-  const {session}: any = useContext(AuthContext);
-  const [auth, setAuth] = useState(new Auth(session));
+
   const codeScanner = useCodeScanner({
     codeTypes: ['codabar', 'pdf-417'],
     onCodeScanned: codes => {
-      if (!codeIsScanned) {
-        let vehicleInfo: any = codes[0].value?.split('%');
+      if (!codeIsScanned && codes.length > 0) {
+        const vehicleInfo = codes[0].value?.split('%') || [];
         const newVehicle: Vehicle = {
-          LicenseNumber: vehicleInfo[6],
-          RegistrationNumber: vehicleInfo[7],
-          Make: vehicleInfo[9],
-          Model: vehicleInfo[10],
-          Description: vehicleInfo[8].split(' / ')[0],
-          Colour: vehicleInfo[11].split(' / ')[0],
-          Vin: vehicleInfo[12],
-          EngineNumber: vehicleInfo[13],
+          LicenseNumber: vehicleInfo[6] || '',
+          RegistrationNumber: vehicleInfo[7] || '',
+          Make: vehicleInfo[9] || '',
+          Model: vehicleInfo[10] || '',
+          Description: vehicleInfo[8]?.split(' / ')[0] || '',
+          Colour: vehicleInfo[11]?.split(' / ')[0] || '',
+          Vin: vehicleInfo[12] || '',
+          EngineNumber: vehicleInfo[13] || '',
           DateCreated: Date.now().toString(),
           BusinessId: auth.GetBusinessId(),
         };
+        setCodeIsScanned(true); // Prevent further scans
         setCameraIsActive(false);
-        navigation.navigate({
-          name: 'Manage Vehicles',
-          params: {NewVehicle: newVehicle, IsReScan: route.params.IsReScan},
-          merge: true,
+        navigation.navigate('Manage Vehicles', {
+          NewVehicle: newVehicle,
+          IsReScan: route.params.IsReScan,
         });
       }
     },
@@ -54,35 +51,19 @@ const BarcodeScanner = ({navigation, route}: any) => {
   const devices = useCameraDevices();
   const cameraDevice = useCameraDevice('back');
 
-  if (cameraDevice == null) return <Text>No Camera</Text>;
+  if (!cameraDevice) return <Text style={styles.errorText}>No Camera</Text>;
+
   return (
-    <View
-      style={
-        (StyleSheet.absoluteFill,
-        {
-          alignItems: 'center',
-          alignContent: 'center',
-          alignSelf: 'center',
-          zIndex: 2,
-          height: '100%',
-          backgroundColor: 'white',
-          position: 'absolute',
-          width: '100%',
-          display: 'flex',
-        })
-      }>
-      <View
-        style={{marginVertical: 'auto', width: '100%', position: 'relative'}}>
+    <View style={styles.container}>
+      <View style={styles.cameraContainer}>
         <Camera
-          style={{zIndex: 3, height: '90%'}}
+          style={styles.camera}
           device={cameraDevice}
           isActive={cameraIsActive}
           codeScanner={codeScanner}
         />
-        <Heading style={{zIndex: 4, width: '100%', textAlign: 'center'}}>
-          Scan your license disk
-        </Heading>
-        <Text style={{width: '100%', textAlign: 'center'}}>
+        <Heading style={styles.heading}>Scan your license disk</Heading>
+        <Text style={styles.instructionText}>
           Please ensure the barcode is visible.
         </Text>
       </View>
@@ -91,3 +72,39 @@ const BarcodeScanner = ({navigation, route}: any) => {
 };
 
 export default BarcodeScanner;
+
+const styles = StyleSheet.create({
+  container: {
+    ...StyleSheet.absoluteFillObject,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    position: 'absolute',
+    display: 'flex',
+    zIndex: 2,
+  },
+  cameraContainer: {
+    marginVertical: 'auto',
+    width: '100%',
+    position: 'relative',
+  },
+  camera: {
+    zIndex: 3,
+    height: '90%',
+  },
+  heading: {
+    zIndex: 4,
+    width: '100%',
+    textAlign: 'center',
+  },
+  instructionText: {
+    width: '100%',
+    textAlign: 'center',
+  },
+  errorText: {
+    textAlign: 'center',
+    marginTop: 50,
+    color: 'red',
+    fontSize: 16,
+  },
+});

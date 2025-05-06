@@ -1,12 +1,13 @@
-import {View, Text, ActivityIndicator} from 'react-native';
 import React, {useContext} from 'react';
+import {View, Text, ActivityIndicator} from 'react-native';
 import {LinkingOptions, NavigationContainer} from '@react-navigation/native';
 import AuthenticationStack from './AuthenticationStack';
 import AppDrawer from './AppDrawer';
+import AppNavigationStack from './AppNavigationStack';
 import {AuthContext} from '../Services/AuthenticationService';
 import {ThemeStyles} from '../Stylesheets/GlobalStyles';
-import AppNavigationStack from './AppNavigationStack';
-const linking: any = {
+
+const linking: LinkingOptions<ReactNavigation.RootParamList> = {
   prefixes: ['octagonunclemobileapp://', 'http://outs.majorxp.co.za'],
   config: {
     screens: {
@@ -15,8 +16,8 @@ const linking: any = {
           Payments: {
             path: 'payments',
             parse: {
-              trxref: (trxref: any) => `${trxref}`,
-              reference: (reference: any) => `${reference}`,
+              trxref: (trxref: string) => `${trxref}`,
+              reference: (reference: string) => `${reference}`,
             },
           },
         },
@@ -24,6 +25,7 @@ const linking: any = {
     },
   },
 };
+
 const AppNav = () => {
   const {session, isLoading}: any = useContext(AuthContext);
 

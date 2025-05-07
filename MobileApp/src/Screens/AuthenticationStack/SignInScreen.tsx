@@ -1,4 +1,9 @@
-import {ActivityIndicator, GestureResponderEvent, Text} from 'react-native';
+import {
+  ActivityIndicator,
+  GestureResponderEvent,
+  ScrollView,
+  Text,
+} from 'react-native';
 import React, {useContext, useState} from 'react';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -65,59 +70,61 @@ const SignInScreen = ({navigation}: any) => {
   };
   return (
     <SafeAreaView style={ThemeStyles.container}>
-      {isLoading ? (
-        <View
-          style={{
-            position: 'absolute',
-            left: 0,
-            right: 0,
-            top: 0,
-            bottom: 0,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: '#ffffff75',
-            zIndex: 100,
-          }}>
-          <ActivityIndicator size="large" />
+      <ScrollView>
+        {isLoading ? (
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#ffffff75',
+              zIndex: 100,
+            }}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : null}
+        <Image
+          source={require('../../Images/octagon_logo.jpg')}
+          resizeMode="contain"
+          alt="ocatagon uncle logo"
+          style={SignInScreenStyles.image}
+        />
+        <View style={SignInScreenStyles.container}>
+          {/* <Text style={SignInScreenStyles.loginText}>Sign In</Text> */}
+          <SignInForm
+            emailIsInvalid={!!formik.errors.email}
+            emailOnChangeText={formik.handleChange('email')}
+            emailErrorText={formik?.errors?.email}
+            emailOnBlur={formik.handleBlur('email')}
+            emailValue={formik.values?.email}
+            passwordIsInvalid={!!formik.errors.password}
+            passwordOnChangeText={formik.handleChange('password')}
+            passwordErrorText={formik?.errors?.password}
+            passwordOnBlur={formik.handleBlur('password')}
+            passwordValue={formik.values?.password}
+            signInButtonOnPress={
+              formik.handleSubmit as (
+                values:
+                  | GestureResponderEvent
+                  | React.FormEvent<HTMLFormElement>
+                  | undefined,
+              ) => void
+            }
+          />
+          <CustomButton3
+            onPress={GoToForgotPasswordPage}
+            title={'Forgot Password'}
+          />
+          <CustomButton3
+            onPress={GoToUserRoleSelectPage}
+            title={'New around here? Create an account'}
+          />
         </View>
-      ) : null}
-      <Image
-        source={require('../../Images/octagon_logo.jpg')}
-        resizeMode="contain"
-        alt="ocatagon uncle logo"
-        style={SignInScreenStyles.image}
-      />
-      <View style={SignInScreenStyles.container}>
-        {/* <Text style={SignInScreenStyles.loginText}>Sign In</Text> */}
-        <SignInForm
-          emailIsInvalid={!!formik.errors.email}
-          emailOnChangeText={formik.handleChange('email')}
-          emailErrorText={formik?.errors?.email}
-          emailOnBlur={formik.handleBlur('email')}
-          emailValue={formik.values?.email}
-          passwordIsInvalid={!!formik.errors.password}
-          passwordOnChangeText={formik.handleChange('password')}
-          passwordErrorText={formik?.errors?.password}
-          passwordOnBlur={formik.handleBlur('password')}
-          passwordValue={formik.values?.password}
-          signInButtonOnPress={
-            formik.handleSubmit as (
-              values:
-                | GestureResponderEvent
-                | React.FormEvent<HTMLFormElement>
-                | undefined,
-            ) => void
-          }
-        />
-        <CustomButton3
-          onPress={GoToForgotPasswordPage}
-          title={'Forgot Password'}
-        />
-        <CustomButton3
-          onPress={GoToUserRoleSelectPage}
-          title={'New around here? Create an account'}
-        />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

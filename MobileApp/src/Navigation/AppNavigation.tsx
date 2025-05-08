@@ -8,7 +8,7 @@ import {AuthContext} from '../Services/AuthenticationService';
 import {ThemeStyles} from '../Stylesheets/GlobalStyles';
 
 const linking: LinkingOptions<ReactNavigation.RootParamList> = {
-  prefixes: ['octagonunclemobileapp://', 'http://outs.majorxp.co.za'],
+  prefixes: ['octagonunclemobileapp://', 'https://app.octagonuncle.com'],
   config: {
     screens: {
       AppDrawer: {

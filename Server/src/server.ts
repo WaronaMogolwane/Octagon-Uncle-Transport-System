@@ -1,20 +1,26 @@
+import { Logger } from './server';
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
 import { firebase } from "./firebase";
 import ErrorHandler from "./Middleware/ErrorHandler";
-import WinstonLogger from "./Utilities/WinstonLogger";
 import { MainWorker } from "./Worker/MainWorker";
-import { CustomLogger } from "./Classes/CustomLogger";
 import { RegisterRoutes } from "./Routes/Routes";
+import { CreateLogger } from './Utilities/WinstonLogger';
+import { CustomLogger } from "./Classes/CustomLogger";
+
 
 // Initialize dotenv configuration
 dotenv.config();
 
-const Logger: CustomLogger = new CustomLogger();
+
+// Create the server-specific logger instance 
+const serverLogger = CreateLogger('Octagon Uncle Server', 'server');
+const Logger = new CustomLogger(serverLogger); // Pass the server-specific logger instance to CustomLogger
+
 const NODE_ENV = process.env.NODE_ENV || "production"; // Default to "production" if NODE_ENV is undefined
-const PORT = NODE_ENV === "development" ? process.env.OUTS_SERVER_PORT : process.env.PORT;
+const PORT = NODE_ENV === "development" ? process.env.OUTS_SERVER_PORT : process.env.OUTS_SERVER_PORT;
 
 const app = express();
 
@@ -37,3 +43,5 @@ if (NODE_ENV === "development") {
   const mainWorker = new MainWorker();
   mainWorker.StartJobs();
 }
+
+export { Logger }

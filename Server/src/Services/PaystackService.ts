@@ -12,14 +12,14 @@ import {
     TransferWebHookEvent
 } from "../Classes/Transfer";
 import { RefundWebhookEvent, TransactionWebhookEvent } from "../Classes/WebhookEvent";
-import { CreateNewRefund, UpdateTransfer, CreateNewCardAuthorisation, CreateNewTransaction } from "../Controllers/PaymentsController";
+import { CreateNewRefund, UpdateTransfer, CreateNewCardAuthorisation, CreateSuccessfulTransaction } from "../Controllers/PaymentsController";
 import dotenv from "dotenv";
 import { PaystackListTransactionsResponse } from "../Classes/Transaction";
 dotenv.config();
 const payStackPublicKey: string = process.env.OUTS_PAYSTACK_TEST_PUBLIC_KEY!;
 const payStackApiUrl: string = process.env.OUTS_PAYSTACK_API_URL!;
 
-const makePaystackRequest = async (
+const MakePaystackRequest = async (
     config: AxiosRequestConfig,
     callback: (error: any, result: any) => void
 ): Promise<void> => {
@@ -45,7 +45,7 @@ export const CreateNewPaystackCustomer = async (
         },
         data: customer,
     };
-    makePaystackRequest(config, callback);
+    MakePaystackRequest(config, callback);
 };
 
 export const CreateNewPaystackRefund = async (
@@ -61,7 +61,7 @@ export const CreateNewPaystackRefund = async (
         },
         data: newRefund,
     };
-    makePaystackRequest(config, callback);
+    MakePaystackRequest(config, callback);
 };
 export const CreatePaystackTransactionLink = async (
     req: Request,
@@ -77,7 +77,7 @@ export const CreatePaystackTransactionLink = async (
         },
         data: req.body,
     };
-    makePaystackRequest(config, callback);
+    MakePaystackRequest(config, callback);
 };
 
 export const ChargeAuthorization = async (
@@ -94,7 +94,7 @@ export const ChargeAuthorization = async (
         },
         data: req.body,
     };
-    makePaystackRequest(config, callback);
+    MakePaystackRequest(config, callback);
 };
 
 export const CreateTransferRecipient = async (
@@ -110,14 +110,13 @@ export const CreateTransferRecipient = async (
         },
         data: transferRecipient,
     };
-    makePaystackRequest(config, callback);
+    MakePaystackRequest(config, callback);
 };
 
 export const InitiateTransfer = async (
     newTransfer: BankTransfer,
     callback: (error: any, result: any) => void
 ): Promise<void> => {
-    console.log(payStackApiUrl)
     const config: AxiosRequestConfig = {
         method: "post",
         url: stringFormat(payStackApiUrl, "/transfer"),
@@ -127,13 +126,15 @@ export const InitiateTransfer = async (
         },
         data: newTransfer,
     };
-    makePaystackRequest(config, callback);
+    MakePaystackRequest(config, callback);
 };
 
 /**
  * Initiates the bulk transfer process via Paystack's API.
  */
-export const InitiateBulkTransfer = async (bulkTransfer: BulkBankTransfer, callback: (response: any) => void): Promise<void> => {
+export const InitiateBulkTransfer = async (
+    bulkTransfer: any
+): Promise<void> => {
     const config: AxiosRequestConfig = {
         method: "post",
         url: stringFormat(payStackApiUrl, "/transfer/bulk"),
@@ -146,13 +147,26 @@ export const InitiateBulkTransfer = async (bulkTransfer: BulkBankTransfer, callb
 
     try {
         const response: AxiosResponse = await axios.request(config);
-        callback(response);
+        //  No callback.  Return the response, or handle it here.
+        return response.data; //  Or return the whole response if needed.
     } catch (error: any) {
-        const errorData = error?.response?.data || "Unknown error";
-        throw new ErrorResponse(500, "Bulk transfer failed", errorData);
+        let errorMessage = "Bulk transfer failed";
+        let errorData: any;
+
+        if (error.response) {
+            errorMessage += `: ${error.response.status} - ${error.response.data.message || 'No message from Paystack'}`;
+            errorData = error.response.data;
+        } else if (error.request) {
+            errorMessage += ": No response received from Paystack";
+            errorData = { request: error.request };
+        } else {
+            errorMessage += `: ${error.message}`;
+            errorData = { error: error };
+        }
+        //  Throw the error, so the caller can handle it.
+        throw new ErrorResponse(500, errorMessage, errorData);
     }
 };
-
 export const HandleWebhookEvent = async (
     req: Request,
     res: Response,
@@ -248,8 +262,10 @@ async function HandleSuccessfulCharge(
         webHookEvent.data.amount === 100 &&
         webHookEvent.data.metadata.charge_type === "Card Authorization"
     ) {
-        CreateNewCardAuthorisation(webHookEvent, (error, result) => {
-            if (error && error.message.includes("ER_DUP_ENTRY")) {
+        CreateNewCardAuthorisation(webHookEvent, (error: ErrorResponse, result) => {
+            const errMessage: string = error?.message || "Error creating card authorization";
+            if (error && errMessage
+                .includes("ER_DUP_ENTRY")) {
                 authorizationExists = true;
             } else if (error) {
                 next(new ErrorResponse(400, error.message, error.stack));
@@ -258,7 +274,7 @@ async function HandleSuccessfulCharge(
     }
 
     setTimeout(() => {
-        CreateNewTransaction(webHookEvent, req, res, (error, result) => {
+        CreateSuccessfulTransaction(webHookEvent, req, res, (error, result) => {
             if (error && error.code === "ER_DUP_ENTRY") {
                 if (!authorizationExists) {
                     res.status(200).json({ message: "Transaction already exists." });

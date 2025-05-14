@@ -4,8 +4,8 @@ import { CardAuthorisation } from "../Classes/CardAuthorisation";
 import { Refund } from "../Classes/Refund";
 import { Transaction } from "../Classes/Transaction";
 import { DbPool } from "../Services/DatabaseService";
-import { BankTransfer, Transfer } from "../Classes/Transfer";
 import { PaymentSchedule } from "../Classes/PaymentSchedule";
+import { Transfer } from "../Classes/Transfer";
 
 export const InsertCardAuthorisation = async (
     cardAuthorisation: CardAuthorisation,
@@ -36,13 +36,13 @@ export const InsertCardAuthorisation = async (
         }
     );
 };
-export const InsertNewTransaction = async (
+export const InsertSuccessfulTransaction = async (
     transaction: Transaction,
     callback: (error: QueryError, result: any) => void
 ) => {
     DbPool.query(
         {
-            sql: "CALL InsertNewTransaction(?,?,?,?,?,?,?,?);",
+            sql: "CALL InsertSuccessfulTransaction(?,?,?,?,?,?,?,?);",
             timeout: 40000,
             values: [
                 transaction.userId,
@@ -98,7 +98,6 @@ export const InsertNewRefund = async (
     refund: Refund,
     callback: (error: any, result: any) => void
 ) => {
-    console.log(refund.transactionReference)
     DbPool.query(
         {
             sql: "CALL InsertNewRefund(?,?,?,?,?,?);",
@@ -388,10 +387,10 @@ export const GetMonthlyPaymentDetailsByUserId = async (
         }
     );
 };
-export const InsertSuccessfulTransaction = async (transaction: Transaction): Promise<OkPacket | QueryError | undefined> => {
+export const InsertTransaction = async (transaction: Transaction): Promise<OkPacket | QueryError | undefined> => {
     return new Promise((resolve, reject) => {
         DbPool.query<OkPacket>(
-            'CALL InsertSuccessfulTransaction(?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            'CALL InsertNewTransaction(?, ?, ?, ?, ?, ?, ?, ?, ?)',
             [
                 transaction.transactionId,
                 transaction.userId,
@@ -411,5 +410,38 @@ export const InsertSuccessfulTransaction = async (transaction: Transaction): Pro
                 resolve(results[0] as OkPacket);
             }
         );
+    });
+};
+export const UpdateTransferStatusAndDate = async (
+    transferCode: string,
+    status: string,
+    datePaid: Date | null,
+    dateUpdated: Date,
+    paystackId?: string | null
+): Promise<OkPacket | QueryError | undefined> => {
+    return new Promise((resolve, reject) => {
+        DbPool.query<OkPacket>(
+            'CALL UpdateTransferStatusAndDate(?, ?, ?, ?, ?)',
+            [transferCode, status, datePaid, dateUpdated, paystackId],
+            (error, results) => {
+                if (error) {
+                    reject(error);
+                    return;
+                }
+                resolve(results[0] as OkPacket);
+            }
+        );
+    });
+};
+
+export const FetchBulkWithdrawalsForProcessing = async (): Promise<Transfer[]> => {
+    return new Promise((resolve, reject) => {
+        DbPool.query<RowDataPacket[]>('CALL GetBulkWithdrawalsForProcessing()', (error, results) => {
+            if (error) {
+                reject(error);
+                return;
+            }
+            resolve(results[0] as Transfer[]);
+        });
     });
 };

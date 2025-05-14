@@ -1,20 +1,11 @@
-import { response } from 'express';
 import schedule from "node-schedule";
-import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { CustomLogger } from "../Classes/CustomLogger";
-import { BulkBankTransfer } from "../Classes/Transfer";
 import { ErrorResponse } from "../Classes/ErrorResponse";
-import { error } from "console";
-import { InitiateBulkTransfer } from '../Services/PaystackService';
+import { FetchBulkWithdrawalsForProcessing } from "../Models/PaymentsModel";
+import { InitiateBulkTransfer } from "../Services/PaystackService";
+import { BulkTransferRequest } from "../Classes/Transfer";
+import { Logger } from "../Worker/MainWorker";
 
-const PAYSTACK_API_URL = process.env.OUTS_PAYSTACK_API_URL;
-const PAYSTACK_SECRET_KEY = process.env.OUTS_PAYSTACK_TEST_PUBLIC_KEY;
-const Logger: CustomLogger = new CustomLogger();
-
-// Validate environment variables
-if (!PAYSTACK_API_URL || !PAYSTACK_SECRET_KEY) {
-    throw new Error("Missing required environment variables for Paystack API.");
-}
 
 /**
  * Schedules jobs for automatic bulk transfers.
@@ -50,49 +41,52 @@ const RunBulkTransfer = async (): Promise<void> => {
     Logger.Log("Withdrawal Worker: Starting automatic bulk withdrawal process...");
 
     try {
-        const bulkTransfers = await GetBulkTransfersForToday();
-        if (!bulkTransfers.transfers || bulkTransfers.transfers.length === 0) {
+        const bulkWithdrawals = await GetBulkTransfersForToday();
+        if (!bulkWithdrawals || bulkWithdrawals.transfers.length === 0) {
             Logger.Log("Withdrawal Worker: No bulk transfers to process today.");
             return;
         }
 
         Logger.Log("Withdrawal Worker: Initiating bulk transfer...");
-        await InitiateBulkTransfer(bulkTransfers, (response: any) => {
-            Logger.Log(`Withdrawal Worker: Bulk transfer successful: ${JSON.stringify(response.data)}`);
-        });
+        await InitiateBulkTransfer(bulkWithdrawals);
+        Logger.Log("Withdrawal Worker: Bulk transfer initiated.");
+        // Consider adding logic to update transfer statuses in your database here, after successful initiation
+
     } catch (error: any) {
         Logger.Error(`Withdrawal Worker: Automatic withdrawal job failed: ${error.message}`);
     }
 };
 
 /**
- * Fetches bulk transfers for today.
+ * Fetches bulk transfers for today from the database.
+ * Uses the stored procedure GetBulkWithdrawalsForProcessing.
  */
-const GetBulkTransfersForToday = async (): Promise<BulkBankTransfer> => {
+const GetBulkTransfersForToday = async (): Promise<BulkTransferRequest> => {
     try {
+        const pendingWithdrawals = await FetchBulkWithdrawalsForProcessing(); // Calls the model function
+        if (!pendingWithdrawals || pendingWithdrawals.length === 0) {
+            return {
+                currency: "ZAR", // Use your default currency
+                source: "balance", // Use your default source
+                transfers: [],
+            };
+        }
+
+        // Map the Transfer objects (from the database) to the format expected by Paystack
+        const transfers = pendingWithdrawals.map((withdrawal) => ({
+            recipient: withdrawal.recipientCode, // Make sure this matches your Transfer class
+            amount: withdrawal.amount * 100, // Convert to kobo/cents
+            reason: withdrawal.reason,
+            reference: withdrawal.reference,
+        }));
+
         return {
-            currency: "ZAR",
-            source: "balance",
-            transfers: [
-                {
-                    recipient: "RCP_12345",
-                    amount: 50000,
-                    reason: "Payment for services",
-                    source: "balance",
-                    reference: "PAY_001",
-                },
-                {
-                    recipient: "RCP_67890",
-                    amount: 250000,
-                    reason: "Salary payout",
-                    source: "balance",
-                    reference: "PAY_002",
-                },
-            ],
+            currency: "ZAR", // Use your default currency.
+            source: "balance", // Use your default source.
+            transfers: transfers,
         };
     } catch (error: any) {
         Logger.Error(`Withdrawal Worker: Failed to fetch bulk transfers: ${error.message}`);
         throw new ErrorResponse(500, "Failed to fetch bulk transfers", error);
     }
 };
-

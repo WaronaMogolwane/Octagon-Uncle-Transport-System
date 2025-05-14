@@ -30,7 +30,6 @@ import { ErrorResponse } from "../Classes/ErrorResponse";
 import { CustomLogger } from "../Classes/CustomLogger";
 import { NextFunction, Request, Response } from "express";
 let errorResponse: ErrorResponse;
-const Logger: CustomLogger = new CustomLogger();
 export const CheckIfUserExists = async (req: any, res: any, next: any) => {
   if (await GetUserByEmail(req.body.userDetails.Email)) {
     res.status(400).send("User account already exists");

@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import mysql from "mysql2";
 import mysql2 from "mysql2/promise";
-import WinstonLogger from "../Utilities/WinstonLogger";
+import { Logger } from "../server";
 const host = process.env.OUTS_DATABASE_HOST;
 const dbUser = process.env.OUTS_DATABASE_USER;
 const dbPassword = process.env.OUTS_DATABASE_PASSWORD;
@@ -50,7 +50,7 @@ function AddNewUser(user) {
   return AddNewUserPromise;
 }
 export const SaveUserOtp = async (otp: string, req, res) => {
-  WinstonLogger.info(otp);
+  Logger.Log(otp);
   let UserRegistration;
   try {
     var user = await GetUserByEmail(req.body.userDetails.Email);
@@ -71,7 +71,7 @@ export const SaveUserOtp = async (otp: string, req, res) => {
         ON DUPLICATE KEY UPDATE OTP = '${req.body.otp}', DateCreated = CURRENT_TIMESTAMP(), OTPExpireDate = ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0")`,
     function (error) {
       if (error) {
-        WinstonLogger.info(error);
+        Logger.Log(error.toString());
       } else {
         res.status(201);
         res.send(
@@ -110,10 +110,10 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`,
     function (error) {
       if (error) {
-        WinstonLogger.info(error.message);
+        Logger.Log(error.message);
         return;
       } else {
-        WinstonLogger.info("Database successfully initialised");
+        Logger.Log("Database successfully initialised");
       }
     }
   );
@@ -127,10 +127,10 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`,
     function (error) {
       if (error) {
-        WinstonLogger.info(error.message);
+        Logger.Log(error.message);
         return;
       } else {
-        WinstonLogger.info("Database successfully initialised");
+        Logger.Log("Database successfully initialised");
       }
     }
   );
@@ -146,7 +146,7 @@ module.exports = {
 // function dbConnect() {
 //   pool.execute((error) => {
 //     if (error) {
-//       logger.info(error);
+//       Logger.Log(error);
 //       return;
 //     }
 //   });

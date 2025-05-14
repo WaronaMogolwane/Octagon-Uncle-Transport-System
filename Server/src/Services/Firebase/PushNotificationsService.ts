@@ -1,6 +1,6 @@
 import admin from "firebase-admin";
 import { PushNotificationObj } from "../../Classes/PushNotification";
-import WinstonLogger from "../../Utilities/WinstonLogger";
+import { Logger } from "../../server";
 
 /**
  * Validates push notification object.
@@ -23,7 +23,7 @@ export const sendNotif = async (pushNotification: PushNotificationObj) => {
     try {
         validatePushNotification(pushNotification);
 
-        WinstonLogger.info("Preparing to send individual notification:", pushNotification);
+        Logger.Log("Preparing to send individual notification: " + pushNotification);
 
         const message = {
             notification: {
@@ -48,9 +48,9 @@ export const sendNotif = async (pushNotification: PushNotificationObj) => {
         };
 
         const response = await admin.messaging().send(message);
-        WinstonLogger.info("Successfully sent individual notification:", response);
+        Logger.Log("Successfully sent individual notification: " + response);
     } catch (error) {
-        WinstonLogger.error("Error sending individual notification:", error);
+        Logger.Error("Error sending individual notification: " + error);
         throw error;
     }
 };
@@ -63,7 +63,7 @@ export const sendNotifToAll = async (pushNotification: PushNotificationObj) => {
     try {
         validatePushNotification(pushNotification);
 
-        WinstonLogger.info("Preparing to send topic notification:", pushNotification);
+        Logger.Log("Preparing to send topic notification: " + pushNotification);
 
         const message = {
             data: {
@@ -75,9 +75,9 @@ export const sendNotifToAll = async (pushNotification: PushNotificationObj) => {
         };
 
         const response = await admin.messaging().sendToTopic("General", message);
-        WinstonLogger.info("Successfully sent topic notification:", response);
+        Logger.Log("Successfully sent topic notification: " + response);
     } catch (error) {
-        WinstonLogger.error("Error sending topic notification:", error);
+        Logger.Error("Error sending topic notification: S" + error);
         throw error;
     }
 };

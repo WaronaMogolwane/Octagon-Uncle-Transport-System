@@ -8,9 +8,9 @@ import {
 import { BulkChargeReponse } from "../Classes/BulkCharge";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 import { OkPacket } from "mysql2";
+import { Logger } from "../server";
 
 const HALF_TWELVE_NIGHT: string = "30 0 * * *"; // Cron expression for 00:30 daily
-const Logger: CustomLogger = new CustomLogger();
 
 /**
  * Schedules a job to create pending charges daily at 00:30.

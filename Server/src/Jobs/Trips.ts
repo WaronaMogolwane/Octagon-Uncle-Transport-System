@@ -5,7 +5,7 @@ import {
 } from "../Models/PassengerScheduleModel";
 import { AutoInsertTrip } from "../Models/TripModel";
 import { TruncatePassengerDriverVehicleLinking } from "../Models/PassengerDriverVehicleLinkingModel";
-import WinstonLogger from "../Utilities/WinstonLogger";
+import { Logger } from "../Worker/MainWorker";
 
 export const TripsSchedulerJob = () => {
   const AddPassengerDriverLinkingSchedule = schedule.scheduleJob(
@@ -16,19 +16,19 @@ export const TripsSchedulerJob = () => {
 
       AutoInsertPassengerSchedule(day, (error, result) => {
         if (error) {
-          WinstonLogger.error(
+          Logger.Error(
             "Error inserting passengers into PDVL table: " + error
           );
         } else if (result) {
-          WinstonLogger.info(
+          Logger.Log(
             "Passengers inserted into PDVL table successfully"
           );
-          WinstonLogger.info(
+          Logger.Log(
             "This job was supposed to run at 1205 but actually ran at " +
-              new Date()
+            new Date()
           );
         } else {
-          WinstonLogger.warn(
+          Logger.Warn(
             "AutoInsertPassengerSchedule returned no error and no result"
           );
         }
@@ -39,12 +39,12 @@ export const TripsSchedulerJob = () => {
   const AddTripSchedule = schedule.scheduleJob("10 0 * * *", function () {
     AutoInsertTrip((error, result) => {
       if (error) {
-        WinstonLogger.error("Error inserting trips into table: " + error);
+        Logger.Error("Error inserting trips into table: " + error);
       } else if (result) {
-        WinstonLogger.info("Trips successfully added to table");
-        WinstonLogger.info(
+        Logger.Log("Trips successfully added to table");
+        Logger.Log(
           "This job was supposed to run at 1210 but actually ran at " +
-            new Date()
+          new Date()
         );
       }
     });
@@ -55,12 +55,12 @@ export const TripsSchedulerJob = () => {
     function () {
       TruncatePassengerDriverVehicleLinking((error, result) => {
         if (error) {
-          WinstonLogger.error("Error truncating PDVL table: " + error);
+          Logger.Error("Error truncating PDVL table: " + error);
         } else if (result) {
-          WinstonLogger.info("PDVL table truncated");
-          WinstonLogger.info(
+          Logger.Log("PDVL table truncated");
+          Logger.Log(
             "This job was supposed to run at 1201 but actually ran at " +
-              new Date()
+            new Date()
           );
         }
       });
@@ -71,10 +71,10 @@ export const TripsSchedulerJob = () => {
     function () {
       TruncateTempPassengerSchedule((error, result) => {
         if (result) {
-          WinstonLogger.info("TempPassengerTable table truncated");
-          WinstonLogger.info(
+          Logger.Log("TempPassengerTable table truncated");
+          Logger.Log(
             "This job was supposed to run at 1159 but actually ran at " +
-              new Date()
+            new Date()
           );
         }
       });

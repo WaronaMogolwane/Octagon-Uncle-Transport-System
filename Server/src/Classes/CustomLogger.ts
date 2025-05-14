@@ -1,48 +1,44 @@
 import { platform } from "node:process";
-import WindowsLogger from "../Utilities/WindowsLogger";
-import WinstonLogger from "../Utilities/WinstonLogger";
+import winston from "winston";
 
 export class CustomLogger {
-    /**
-     * Logs a message with a specified level.
-     * @param {string} level - The log level (e.g., 'info', 'error', 'warn').
-     * @param {string} message - The message to log.
-     */
-    private logMessage(level: string, message: string): void {
-        // Log with Winston
-        WinstonLogger[level](message);
+    // Hold a specific logger instance for this CustomLogger instance (lowercase variable name)
+    private loggerInstance: winston.Logger;
 
-        // Log with WindowsLogger if platform is win32
-        if (platform === "win32" && WindowsLogger) {
-            if (WindowsLogger[level]) {
-                WindowsLogger[level](message);
-            } else {
-                console.warn(`Unsupported log level '${level}' for WindowsLogger.`);
-            }
+    /**
+     * @param {winston.Logger} logger - The specific Winston logger instance to use (lowercase parameter name).
+     */
+    constructor(logger: winston.Logger) {
+        this.loggerInstance = logger;
+    }
+
+    // Method name starts with a capital letter
+    // Updated to accept additional arguments/metadata
+    private LogMessage(level: string, message: string, ...meta: any[]): void {
+        // Log using the instance passed to this CustomLogger
+        if (this.loggerInstance[level]) {
+            // Pass the message and all additional arguments to the Winston logger method
+            this.loggerInstance[level](message, ...meta);
+        } else {
+            // If level is unsupported, log a warning using info level
+            // Still pass the original message and metadata with the warning
+            console.warn(`Unsupported log level '${level}' for logger.`);
+            this.loggerInstance.info(`Unsupported log level '${level}': ${message}`, ...meta);
         }
     }
 
-    /**
-     * Logs an informational message.
-     * @param {string} message - The message to log.
-     */
-    Log(message: string): void {
-        this.logMessage("info", message);
+    // Updated to accept additional arguments/metadata
+    Log(message: string, ...meta: any[]): void {
+        this.LogMessage("info", message, ...meta);
     }
 
-    /**
-     * Logs an error message.
-     * @param {string} message - The error message to log.
-     */
-    Error(message: string): void {
-        this.logMessage("error", message);
+    // Updated to accept additional arguments/metadata
+    Error(message: string, ...meta: any[]): void { // Accepts message string and any number of additional args
+        this.LogMessage("error", message, ...meta);
     }
 
-    /**
-     * Logs a warning message.
-     * @param {string} message - The warning message to log.
-     */
-    Warn(message: string): void {
-        this.logMessage("warn", message);
+    // Updated to accept additional arguments/metadata
+    Warn(message: string, ...meta: any[]): void {
+        this.LogMessage("warn", message, ...meta);
     }
 }

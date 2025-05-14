@@ -5,9 +5,9 @@ import {
     GetAllBulkChargesForCurrentDay,
 } from "../Controllers/PaymentsController";
 import { BulkChargeReponse } from "../Classes/BulkCharge";
+import { Logger } from "../Worker/MainWorker";
 
 const TWELVE_NOON: string = "0 12 * * *"; // Cron schedule for 12:00 PM daily
-const Logger: CustomLogger = new CustomLogger();
 
 /**
  * Schedules a job to handle recurring bulk charges daily.

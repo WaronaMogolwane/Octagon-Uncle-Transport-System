@@ -86,14 +86,30 @@ export class BulkBankTransfer {
 }
 
 export class Transfer {
-    transferCode: string;
+    transferCode?: string;
     amount: number; // In kobo
     currency: string;
     status: string; // e.g., 'pending', 'success', 'failed'
     reference: string;
+    recipientCode: string;
     reason?: string;
     dateCreated: Date;
     dateUpdated: Date;
     transactionType: string;
     paystackId?: number;
+}
+// interfaces/PaystackInterfaces.ts
+export interface BulkTransferItem {
+    recipient: string; // Recipient code
+    amount: number; // In kobo/cents
+    reason: string;
+    currency?: string; // Optional if the main currency is set
+    reference?: string; // Optional transfer reference
+    source?: string; // Optional if the main source is set
+}
+
+export interface BulkTransferRequest {
+    currency: string;
+    source: string;
+    transfers: BulkTransferItem[];
 }

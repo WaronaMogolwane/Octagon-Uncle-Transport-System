@@ -103,7 +103,7 @@ const TransporterPaymentsScreen = ({
       const result = await GetBalanceByBusinessId(businessId);
       setAvailableBalance(FormatBalance(result.Balance || '0'));
     } catch (error: any) {
-      console.error(error.response?.data);
+      throw new Error(error.response?.data);
     }
   };
 
@@ -116,7 +116,7 @@ const TransporterPaymentsScreen = ({
       };
       setExpectedPaymentsSummary(formatted);
     } catch (error: any) {
-      console.error(error.response?.data);
+      throw new Error(error.response?.data);
     }
   };
 
@@ -129,7 +129,7 @@ const TransporterPaymentsScreen = ({
       };
       setDeclinedPaymentsSummary(formatted);
     } catch (error: any) {
-      console.error(error.response?.data);
+      throw new Error(error.response?.data);
     }
   };
 
@@ -176,7 +176,7 @@ const TransporterPaymentsScreen = ({
         setShowModal(true);
       }
     } catch (error: any) {
-      console.error(error);
+      throw new Error(error);
     }
   };
 

@@ -69,7 +69,7 @@ export const GetPassengerDriverVehicleLinkingFromDB = async (
       result = pDVLData;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
       errorMessege = error;
     });
 

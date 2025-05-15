@@ -25,7 +25,7 @@ export const AddUserDetailsToDB = async (userDetail: UserDetail) => {
       data = response.data;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return statusCode;
@@ -63,7 +63,7 @@ export const GetUserDetailsFromDB = async (userId: string) => {
       statusCode = response.status;
     })
     .catch(error => {
-      console.error(error);
+      throw new Error(error);
       res = error;
     });
 
@@ -87,7 +87,7 @@ export const GetUserProfileImageFromDB = async (userId: string) => {
       statusCode = response.status;
     })
     .catch(error => {
-      console.error(error);
+      throw new Error(error);
       res = error;
     });
 
@@ -119,7 +119,7 @@ export const UpdateUserDetailsInDB = async (userDetails: UserDetail) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return [data, statusCode];
@@ -147,8 +147,8 @@ export const UpdateProfileImageUrlInDB = async (
       data = response.data;
       statusCode = response.status;
     })
-    .catch((error: AxiosError) => {
-      console.log(error);
+    .catch((error: any) => {
+      throw new Error(error);
     });
 
   return [data, statusCode];
@@ -171,8 +171,8 @@ export const DeleteProfileImageUrlInDB = async (userId: string) => {
       data = response.data;
       statusCode = response.status;
     })
-    .catch((error: AxiosError) => {
-      console.log(error);
+    .catch((error: any) => {
+      throw new Error(error);
     });
 
   return [data, statusCode];

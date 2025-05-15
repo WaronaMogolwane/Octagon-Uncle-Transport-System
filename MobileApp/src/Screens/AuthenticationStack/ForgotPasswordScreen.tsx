@@ -161,7 +161,7 @@ const ForgotPasswordScreen = ({route, navigation}: any) => {
   const SendOtp = async () => {
     await emailOtp(formik.values.email, (error: any, result: any) => {
       if (error) {
-        console.error(error);
+        throw new Error(error);
       } else {
         console.log(result.data);
         setShowModal(true);

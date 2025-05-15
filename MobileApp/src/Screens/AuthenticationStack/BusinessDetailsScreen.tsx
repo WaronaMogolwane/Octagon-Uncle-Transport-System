@@ -127,7 +127,9 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
           });
         }
       })
-      .catch(error => console.error(error));
+      .catch(error => {
+        throw new Error(error);
+      });
   };
 
   const SuccessToast = () => {
@@ -193,7 +195,7 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
         }
       })
       .catch((error: any) => {
-        console.log(error);
+        throw new Error(error);
       });
   };
 

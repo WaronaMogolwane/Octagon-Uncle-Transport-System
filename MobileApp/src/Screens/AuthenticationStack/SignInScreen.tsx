@@ -37,19 +37,15 @@ const SignInScreen = ({navigation}: any) => {
 
     onSubmit: async (values, {resetForm}) => {
       console.log(values);
-      await signIn(
-        values.email,
-        values.password,
-        (error: AxiosError, result: any) => {
-          if (formik.isValid) {
-            if (error) {
-              console.error(error.response!.data);
-            } else if (result) {
-              resetForm();
-            }
+      await signIn(values.email, values.password, (error: any, result: any) => {
+        if (formik.isValid) {
+          if (error) {
+            throw new Error(error.response!.data);
+          } else if (result) {
+            resetForm();
           }
-        },
-      );
+        }
+      });
     },
   });
 

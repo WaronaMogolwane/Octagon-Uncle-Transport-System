@@ -26,7 +26,7 @@ export async function setStorageItemAsync(key: string, value: string | null) {
         AsyncStorage.setItem(key, value);
       }
     } catch (e) {
-      console.error('Local storage is unavailable:', e);
+      throw new Error('Local storage is unavailable: ' + e);
     }
   } else {
     if (value == null) {
@@ -48,7 +48,7 @@ export function useStorageState(key: string): UseStateHook<string> {
         setState(value);
       })
       .catch(error => {
-        console.log(error);
+        throw new Error(error);
       });
   };
 
@@ -75,7 +75,7 @@ export const SaveTokens = async (accessToken: string, refreshToken: string) => {
     await EncryptedStorage.setItem('refreshToken', refreshToken);
     console.log('Tokens saved securely!');
   } catch (error) {
-    console.error('Error saving tokens:', error);
+    throw new Error('Error saving tokens: ' + error);
   }
 };
 export const FetchAccessToken = async () => {
@@ -87,7 +87,7 @@ export const FetchAccessToken = async () => {
     console.log('Access token not found.');
     return null;
   } catch (error) {
-    console.error('Error retrieving access token:', error);
+    throw new Error('Error retrieving access token: ' + error);
     return null;
   }
 };

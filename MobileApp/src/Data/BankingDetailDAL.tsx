@@ -22,7 +22,7 @@ export const AddBankingDetailToDB = async (bankingDetail: BankingDetail) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
   return statusCode;
 };
@@ -41,7 +41,7 @@ export const GetBankingDetailFromDB = async (businessId: string) => {
       data = response.data;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return [data, statusCode];
@@ -71,8 +71,8 @@ export const UpdateBankingDetailToDB = async (bankingDetail: BankingDetail) => {
       statusCode = response.status;
       data = response.data;
     })
-    .catch((error: AxiosError) => {
-      console.log(error);
+    .catch((error: any) => {
+      throw new Error(error);
     });
 
   return [data, statusCode];
@@ -106,7 +106,7 @@ export const UpdateBankingDetailToDB = async (bankingDetail: BankingDetail) => {
 //         res = businessDetail;
 //       })
 //       .catch((error: any) => {
-//         console.log(error);
+//         throw new Error(error);
 //         res = error;
 //       });
 //     console.log(res);
@@ -140,7 +140,7 @@ export const UpdateBankingDetailToDB = async (bankingDetail: BankingDetail) => {
 //         res = businessDetail;
 //       })
 //       .catch((error: any) => {
-//         console.log(error);
+//         throw new Error(error);
 //         res = error;
 //       });
 
@@ -176,7 +176,7 @@ export const UpdateBankingDetailToDB = async (bankingDetail: BankingDetail) => {
 //         statusCode = response.status;
 //       })
 //       .catch((error: any) => {
-//         console.log(error);
+//         throw new Error(error);
 //       });
 
 //     return [data, statusCode];
@@ -269,7 +269,7 @@ export const GetBankListFromDB = async () => {
       result = bankData;
     })
     .catch(error => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return result;
@@ -309,7 +309,7 @@ export const ValidateAccountInDB = async (accountDetails: any) => {
       result = JSON.stringify(res);
     })
     .catch(error => {
-      console.log(error);
+      throw new Error(error);
     });
   return result;
 };

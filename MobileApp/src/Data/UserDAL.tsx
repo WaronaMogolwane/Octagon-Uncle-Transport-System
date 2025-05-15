@@ -22,7 +22,7 @@ export const GetUserFromDB = async (userId: string) => {
       res = user;
     })
     .catch((error: AxiosError) => {
-      console.error(error);
+      throw new Error(error.stack);
       res = error;
     });
   return res;
@@ -44,7 +44,7 @@ export const GetUserActiveStatusFromDB = async (userId: string) => {
       res = result;
     })
     .catch((error: AxiosError) => {
-      console.error(error);
+      throw new Error(error.stack);
       errorCode = error;
     });
   return [res, errorCode];
@@ -72,7 +72,7 @@ export const UpdateUserEmailInDB = async (
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.error(error);
+      throw new Error(error);
       errorMessage = error;
     });
 
@@ -95,7 +95,7 @@ export const CheckDuplicateEmailFromDB = async (email: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
       errorMessage = error;
     });
 
@@ -124,7 +124,7 @@ export const UpdateUserPasswordInDB = async (
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
       errorMessage = error;
     });
 
@@ -151,7 +151,7 @@ export const RestoreUserPasswordInDB = async (
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
       errorMessage = error;
     });
 

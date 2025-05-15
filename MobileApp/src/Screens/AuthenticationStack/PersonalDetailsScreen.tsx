@@ -89,7 +89,9 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
           });
         }
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        throw new Error(error);
+      });
   };
 
   const userDetailSchema = yup.object().shape({

@@ -118,7 +118,7 @@ export function SessionProvider(props: any, navigation: any) {
 
                 callback(null, result);
               } catch (storageError) {
-                console.error('Error saving tokens:', storageError);
+                throw new Error('Error saving tokens: ' + storageError);
                 callback(storageError, null);
               }
             }
@@ -414,7 +414,7 @@ export const RefreshAccessToken = async (): Promise<string | null> => {
   try {
     const refreshToken = await EncryptedStorage.getItem('refreshToken');
     if (!refreshToken) {
-      console.error('No refresh token found.');
+      throw new Error('No refresh token found.');
       return null;
     }
 
@@ -428,7 +428,7 @@ export const RefreshAccessToken = async (): Promise<string | null> => {
 
     return accessToken; // Return the new access token
   } catch (error) {
-    console.error('Error refreshing access token:', error);
+    throw new Error('Error refreshing access token: ' + error);
     return null; // Return null if there's an error
   }
 };

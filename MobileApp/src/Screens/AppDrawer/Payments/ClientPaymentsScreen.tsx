@@ -156,7 +156,7 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
       }
     });
     // .catch((error: any) => {
-    //   console.error(error);
+    //   throw new Error(error);
     // });
   };
 
@@ -223,7 +223,7 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
       const formattedAmount: string = formatter.format(newBalance);
       return formattedAmount;
     } catch (error: any) {
-      console.error(error);
+      throw new Error(error);
     }
   };
   const GetPaymentMethods = async () => {
@@ -231,7 +231,7 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
       const result = await GetUserCardAuthorizations(auth.GetUserId());
       setCardAuthorizationList(result);
     } catch (error: any) {
-      console.error(error.message);
+      throw new Error(error.message);
     }
   };
 
@@ -247,7 +247,7 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
 
       setMonthlyPaymentsSummary(formatted);
     } catch (error: any) {
-      console.error(error.message);
+      throw new Error(error.message);
     }
   };
 
@@ -268,7 +268,7 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
       const result = await PayAmount(authorizationCharge);
       console.log(result);
     } catch (error: any) {
-      console.error(error.message);
+      throw new Error(error.message);
     }
   };
   const AddPaymentMethod = async () => {
@@ -305,7 +305,7 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
         // Alert.alert(`Don't know how to open this URL: ${authorizationUrl}`);
       }
     } catch (error: any) {
-      console.error(error.message);
+      throw new Error(error.message);
     }
   };
   const NavigateToScreen = (screenName: string) => {

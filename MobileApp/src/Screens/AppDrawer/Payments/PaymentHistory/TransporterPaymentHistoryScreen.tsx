@@ -52,7 +52,7 @@ const TransporterPaymentHistoryScreen = () => {
       setPaymentsList(result);
       return result; // Return the result if needed
     } catch (error: any) {
-      console.error(error.response?.data || error.message);
+      throw new Error(error.response?.data || error.message);
       throw error; // Throw the error to allow further handling if required
     }
   };
@@ -60,8 +60,8 @@ const TransporterPaymentHistoryScreen = () => {
   const RefreshData = () => {
     try {
       onRefreshPayments();
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      throw new Error(error);
     }
   };
   const handleSearch = (query: string) => {

@@ -29,7 +29,7 @@ const CameraScreen = ({navigation, route}: {navigation: any; route: any}) => {
 
         OpenCamera(); // Opens camera for additional action
       } catch (error) {
-        console.error('Error taking picture:', error);
+        throw new Error('Error taking picture: ' + error);
       }
     }
   };
@@ -42,7 +42,9 @@ const CameraScreen = ({navigation, route}: {navigation: any; route: any}) => {
       height: 400,
     })
       .then(image => console.log(image))
-      .catch(error => console.error('Error cropping photo:', error));
+      .catch(error => {
+        throw new Error('Error cropping photo: ' + error);
+      });
   };
 
   const OpenCamera = () => {
@@ -52,7 +54,9 @@ const CameraScreen = ({navigation, route}: {navigation: any; route: any}) => {
       cropping: true,
     })
       .then(image => console.log(image))
-      .catch(error => console.error('Error opening camera:', error));
+      .catch(error => {
+        throw new Error('Error opening camera: ' + error);
+      });
   };
 
   useEffect(() => {
@@ -62,7 +66,7 @@ const CameraScreen = ({navigation, route}: {navigation: any; route: any}) => {
         setCameraPermission(cameraPermissionStatus);
         console.log('Camera Permission:', cameraPermissionStatus);
       } catch (error) {
-        console.error('Error requesting camera permission:', error);
+        throw new Error('Error requesting camera permission: ' + error);
       }
     };
 

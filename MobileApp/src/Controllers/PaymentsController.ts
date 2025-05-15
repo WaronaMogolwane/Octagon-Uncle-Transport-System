@@ -25,7 +25,7 @@ export const CreatePaymentSchedule = async (newPaymentSchedule: PaymentSchedule)
     }
 };
 
-export const GetBalanceByBusinessId = async (businessId: string): Promise<any> => {
+export const GetBalanceByBusinessId = async (businessId: string, callback?: (error: any, result: any) => void): Promise<any> => {
     try {
         const result = await GetAvailableBalanceByBusinessId(businessId);
         return result;

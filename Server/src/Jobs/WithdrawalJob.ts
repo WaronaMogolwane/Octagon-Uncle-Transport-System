@@ -1,10 +1,9 @@
 import schedule from "node-schedule";
-import { CustomLogger } from "../Classes/CustomLogger";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 import { FetchBulkWithdrawalsForProcessing } from "../Models/PaymentsModel";
 import { InitiateBulkTransfer } from "../Services/PaystackService";
 import { BulkTransferRequest } from "../Classes/Transfer";
-import { Logger } from "../Worker/MainWorker";
+import { WorkerLogger } from "../Worker/MainWorker";
 
 
 /**
@@ -13,23 +12,23 @@ import { Logger } from "../Worker/MainWorker";
 export const AutomaticWithdrawalJob = (): void => {
     // Weekday jobs
     schedule.scheduleJob("0 15 * * 1-5", async () => {
-        Logger.Log("Withdrawal Worker: Running weekday job at 15:00...");
+        WorkerLogger.Log("Withdrawal Worker: Running weekday job at 15:00...");
         await RunBulkTransfer();
     });
 
     schedule.scheduleJob("0 23 * * 1-5", async () => {
-        Logger.Log("Withdrawal Worker: Running weekday job at 23:00...");
+        WorkerLogger.Log("Withdrawal Worker: Running weekday job at 23:00...");
         await RunBulkTransfer();
     });
 
     // Weekend jobs
     schedule.scheduleJob("0 9 * * 6,0", async () => {
-        Logger.Log("Withdrawal Worker: Running weekend job at 9:00...");
+        WorkerLogger.Log("Withdrawal Worker: Running weekend job at 9:00...");
         await RunBulkTransfer();
     });
 
     schedule.scheduleJob("0 23 * * 6,0", async () => {
-        Logger.Log("Withdrawal Worker: Running weekend job at 23:00...");
+        WorkerLogger.Log("Withdrawal Worker: Running weekend job at 23:00...");
         await RunBulkTransfer();
     });
 };
@@ -38,22 +37,22 @@ export const AutomaticWithdrawalJob = (): void => {
  * Runs the bulk transfer process.
  */
 const RunBulkTransfer = async (): Promise<void> => {
-    Logger.Log("Withdrawal Worker: Starting automatic bulk withdrawal process...");
+    WorkerLogger.Log("Withdrawal Worker: Starting automatic bulk withdrawal process...");
 
     try {
         const bulkWithdrawals = await GetBulkTransfersForToday();
         if (!bulkWithdrawals || bulkWithdrawals.transfers.length === 0) {
-            Logger.Log("Withdrawal Worker: No bulk transfers to process today.");
+            WorkerLogger.Log("Withdrawal Worker: No bulk transfers to process today.");
             return;
         }
 
-        Logger.Log("Withdrawal Worker: Initiating bulk transfer...");
+        WorkerLogger.Log("Withdrawal Worker: Initiating bulk transfer...");
         await InitiateBulkTransfer(bulkWithdrawals);
-        Logger.Log("Withdrawal Worker: Bulk transfer initiated.");
+        WorkerLogger.Log("Withdrawal Worker: Bulk transfer initiated.");
         // Consider adding logic to update transfer statuses in your database here, after successful initiation
 
     } catch (error: any) {
-        Logger.Error(`Withdrawal Worker: Automatic withdrawal job failed: ${error.message}`);
+        WorkerLogger.Error(`Withdrawal Worker: Automatic withdrawal job failed: ${error.message}`);
     }
 };
 
@@ -86,7 +85,7 @@ const GetBulkTransfersForToday = async (): Promise<BulkTransferRequest> => {
             transfers: transfers,
         };
     } catch (error: any) {
-        Logger.Error(`Withdrawal Worker: Failed to fetch bulk transfers: ${error.message}`);
+        WorkerLogger.Error(`Withdrawal Worker: Failed to fetch bulk transfers: ${error.message}`);
         throw new ErrorResponse(500, "Failed to fetch bulk transfers", error);
     }
 };

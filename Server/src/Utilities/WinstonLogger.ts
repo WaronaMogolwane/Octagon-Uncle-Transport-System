@@ -1,9 +1,12 @@
+// In your WinstonLogger.ts file
+
 import winston, { format } from "winston";
 import fs from "fs";
-const EventLogTransport = require('winston-winlog4').default;
+// Remove this import as we are removing the transport:
+// const EventLogTransport = require('winston-winlog4').default;
 
 // Ensure the Logs directory exists
-const logDirectory = "./Logs";
+const logDirectory = "./Logs"; // Adjust path as needed
 if (!fs.existsSync(logDirectory)) {
     fs.mkdirSync(logDirectory, { recursive: true });
 }
@@ -11,47 +14,39 @@ if (!fs.existsSync(logDirectory)) {
 // Common log format
 const logFormat = format.combine(
     format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
-    // *** Updated printf format - excludes stack from main message string ***
     format.printf((info) => {
         const { level, message, timestamp } = info;
-        // Optionally include metadata (excluding stack) in the formatted message for console/file
         const meta = info[Symbol.for('splat')] ? info[Symbol.for('splat')][0] : null;
         const metaWithoutStack = { ...meta };
-        delete metaWithoutStack.stack; // Don't include stack in the formatted message string
+        delete metaWithoutStack.stack;
 
         let logMessage = `${timestamp} [${level}]: ${message}`;
 
         if (Object.keys(metaWithoutStack).length > 0) {
-            logMessage += ` ${JSON.stringify(metaWithoutStack)}`; // Append other metadata as JSON string
+            logMessage += ` ${JSON.stringify(metaWithoutStack)}`;
         }
 
-        // The original 'stack' property is still available in the 'info' object for transports
-        // The goal is that winston-winlog4 uses info.message for the main EV message
-        // and info[Symbol.for('splat')] for the EV details.
-
-        return logMessage; // Return the formatted string for console/file
+        return logMessage;
     })
 );
 
 /**
- * Creates a configured Winston logger instance with specific settings.
- * @param {string} sourceName - The source name for the Windows Event Log transport.
+ * Creates a configured Winston logger instance with specific settings (File and Console transports).
+ * *** This version EXCLUDES the winston-winlog4 transport. ***
  * @param {string} [logFilePrefix='combined'] - Prefix for log filenames (e.g., 'server', 'worker').
  * @returns {winston.Logger} A configured Winston logger instance.
  */
-// Function name starts with a capital letter
-export const CreateLogger = (sourceName: string, logFilePrefix: string = 'combined'): winston.Logger => {
-    // Variable names start with a lowercase letter
+export const CreateLogger = (logFilePrefix: string = 'combined'): winston.Logger => {
     const logger = winston.createLogger({
-        level: process.env.NODE_ENV === "production" ? "info" : "debug", // Overall log level
+        level: process.env.NODE_ENV === "production" ? "info" : "debug",
         format: logFormat,
         transports: [
             new winston.transports.File({
-                filename: `${logDirectory}/${logFilePrefix}_error.log`, // Use prefix for error file
+                filename: `${logDirectory}/${logFilePrefix}_error.log`,
                 level: "error",
             }),
             new winston.transports.File({
-                filename: `${logDirectory}/${logFilePrefix}_combined.log`, // Use prefix for combined file
+                filename: `${logDirectory}/${logFilePrefix}_combined.log`,
                 level: process.env.NODE_ENV === "production" ? "info" : "debug",
             }),
             new winston.transports.Console({
@@ -61,17 +56,13 @@ export const CreateLogger = (sourceName: string, logFilePrefix: string = 'combin
                 ),
                 level: process.env.NODE_ENV === "production" ? "info" : "debug",
             }),
-            // Configure the winston-winlog4 transport with the passed sourceName
-            new EventLogTransport({
-                level: process.env.NODE_ENV === "production" ? "info" : "debug",
-                source: sourceName, // Use the passed sourceName
-                eventLog: 'Application'
-            })
+            // *** REMOVE the winston-winlog4 transport from here ***
+            // new EventLogTransport({ level: process.env.NODE_ENV === "production" ? "info" : "debug", source: sourceName, eventLog: 'Application' })
         ],
     });
 
     return logger;
 };
 
-// You would no longer export a default instance here
+// Remove the default export if you no longer need it
 // export default WinstonLogger;

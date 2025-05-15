@@ -19,8 +19,7 @@ import { AxiosResponse } from 'axios';
 import { OkPacket, QueryError } from 'mysql2';
 import { TransferResponse } from '../Classes/BankTransferResponse';
 import { PaymentSchedule } from '../Classes/PaymentSchedule';
-import { Logger } from '../server';
-import WindowsLogger from '../Utilities/WindowsLogger';
+import { ServerLogger } from '../server';
 const bulkChargeSize: number = 1000;
 
 export const CreateNewCustomer = async (req: Request, res: Response, next: NextFunction) => {
@@ -95,8 +94,7 @@ export const CreateTransactionLink = async (req: Request, res: Response, next: N
     await CreatePaystackTransactionLink(req, res, (error: any, response: any) => {
         if (error) {
             const err: Error = new Error(error.message)
-            Logger.Error(err.message + err.stack);
-            WindowsLogger.error(err.message + err.stack, 400);
+            ServerLogger.Error(err.message + err.stack);
             next(new ErrorResponse(400, err.message, err.stack));
         }
         else {

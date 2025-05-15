@@ -3,7 +3,7 @@
 import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
 import { isHttpError } from "http-errors";
 import { ErrorResponse } from "../Classes/ErrorResponse";
-import { Logger } from "../server"; // Assuming this is the correct import for your server's logger
+import { ServerLogger } from "../server"; // Assuming this is the correct import for your server's logger
 
 const ErrorHandler: ErrorRequestHandler = (
   error: any,
@@ -32,7 +32,7 @@ const ErrorHandler: ErrorRequestHandler = (
   // *** Wrap the Logger.Error call in a setTimeout ***
   setTimeout(() => {
     try {
-      Logger.Error(errorMessage, { // Pass the main error message string
+      ServerLogger.Error(errorMessage, { // Pass the main error message string
         stack: stackTrace, // Pass stack trace as metadata
         statusCode: statusCode, // Pass status code as metadata
         path: req.path, // Pass request path as metadata

@@ -8,7 +8,7 @@ import {
 import { BulkChargeReponse } from "../Classes/BulkCharge";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 import { OkPacket } from "mysql2";
-import { Logger } from "../server";
+import { WorkerLogger } from "../Worker/MainWorker";
 
 const HALF_TWELVE_NIGHT: string = "30 0 * * *"; // Cron expression for 00:30 daily
 
@@ -17,18 +17,18 @@ const HALF_TWELVE_NIGHT: string = "30 0 * * *"; // Cron expression for 00:30 dai
  */
 export const PendingChargesJob = (): void => {
     schedule.scheduleJob(HALF_TWELVE_NIGHT, async () => {
-        Logger.Log("Pending Charges Worker: Checking if recurring charges are pending for today...");
+        WorkerLogger.Log("Pending Charges Worker: Checking if recurring charges are pending for today...");
 
         try {
             const hasPendingCharges = await AreRecurringChargesPendingToday();
             if (!hasPendingCharges) {
-                Logger.Log("Pending Charges Worker: No pending charges found. Creating pending charges...");
+                WorkerLogger.Log("Pending Charges Worker: No pending charges found. Creating pending charges...");
                 await CreatePendingChargesAsync();
             } else {
-                Logger.Log("Pending Charges Worker: Pending recurring charges already exist today. Skipping creation.");
+                WorkerLogger.Log("Pending Charges Worker: Pending recurring charges already exist today. Skipping creation.");
             }
         } catch (error: any) {
-            Logger.Error(`Pending Charges Worker: Error checking or creating pending charges: ${error.message}`);
+            WorkerLogger.Error(`Pending Charges Worker: Error checking or creating pending charges: ${error.message}`);
         }
     });
 };
@@ -41,10 +41,10 @@ const AreRecurringChargesPendingToday = async (): Promise<boolean> => {
     return new Promise((resolve, reject) => {
         CheckIfRecurringChargesPendingToday((error: any, result: any) => {
             if (error) {
-                Logger.Error(`Pending Charges Worker: Error checking for pending charges: ${error.message}`);
+                WorkerLogger.Error(`Pending Charges Worker: Error checking for pending charges: ${error.message}`);
                 reject(error);
             } else {
-                Logger.Log(`Pending Charges Worker: Found ${result > 0 ? result : "no"} pending charges.`);
+                WorkerLogger.Log(`Pending Charges Worker: Found ${result > 0 ? result : "no"} pending charges.`);
                 resolve(result > 0);
             }
         });
@@ -60,13 +60,13 @@ const CreatePendingChargesAsync = async (): Promise<void> => {
         CreatePendingCharges((error: any, result: OkPacket) => {
             if (error) {
                 const err = new Error(error.message);
-                Logger.Error(`Pending Charges Worker: ${new ErrorResponse(400, err.message, err.stack).toString()}`);
+                WorkerLogger.Error(`Pending Charges Worker: ${new ErrorResponse(400, err.message, err.stack).toString()}`);
                 reject(err);
             } else {
                 if (result.affectedRows === 0) {
-                    Logger.Log("Pending Charges Worker: No new pending charges were created.");
+                    WorkerLogger.Log("Pending Charges Worker: No new pending charges were created.");
                 } else {
-                    Logger.Log("Pending Charges Worker: Pending charges successfully created.");
+                    WorkerLogger.Log("Pending Charges Worker: Pending charges successfully created.");
                 }
                 resolve();
             }

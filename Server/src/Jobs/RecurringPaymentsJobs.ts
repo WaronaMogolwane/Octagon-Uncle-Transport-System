@@ -5,7 +5,7 @@ import {
     GetAllBulkChargesForCurrentDay,
 } from "../Controllers/PaymentsController";
 import { BulkChargeReponse } from "../Classes/BulkCharge";
-import { Logger } from "../Worker/MainWorker";
+import { WorkerLogger } from "../Worker/MainWorker";
 
 const TWELVE_NOON: string = "0 12 * * *"; // Cron schedule for 12:00 PM daily
 
@@ -14,24 +14,24 @@ const TWELVE_NOON: string = "0 12 * * *"; // Cron schedule for 12:00 PM daily
  */
 export const BulkChargeJob = (): void => {
     schedule.scheduleJob(TWELVE_NOON, async () => {
-        Logger.Log("Bulk Charge Worker: Checking if recurring payment has been charged today...");
+        WorkerLogger.Log("Bulk Charge Worker: Checking if recurring payment has been charged today...");
 
         try {
             const isChargedToday = await IsRecurringPaymentChargedToday();
             if (!isChargedToday) {
-                Logger.Log("Bulk Charge Worker: Starting bulk charge authorization process...");
+                WorkerLogger.Log("Bulk Charge Worker: Starting bulk charge authorization process...");
                 await BulkChargeAuthorizations((error: any, result: BulkChargeReponse) => {
                     if (error) {
-                        Logger.Error(`Bulk Charge Worker: Bulk charge authorization error: ${JSON.stringify(error)}`);
+                        WorkerLogger.Error(`Bulk Charge Worker: Bulk charge authorization error: ${JSON.stringify(error)}`);
                     } else {
-                        Logger.Log(`Bulk Charge Worker: Bulk charge authorization success: ${JSON.stringify(result)}`);
+                        WorkerLogger.Log(`Bulk Charge Worker: Bulk charge authorization success: ${JSON.stringify(result)}`);
                     }
                 });
             } else {
-                Logger.Log("Bulk Charge Worker: Recurring payment already charged today. Skipping bulk charge.");
+                WorkerLogger.Log("Bulk Charge Worker: Recurring payment already charged today. Skipping bulk charge.");
             }
         } catch (error: any) {
-            Logger.Error(`Bulk Charge Worker: Error checking recurring payment status: ${error.message}`);
+            WorkerLogger.Error(`Bulk Charge Worker: Error checking recurring payment status: ${error.message}`);
         }
     });
 };

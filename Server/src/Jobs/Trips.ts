@@ -5,7 +5,7 @@ import {
 } from "../Models/PassengerScheduleModel";
 import { AutoInsertTrip } from "../Models/TripModel";
 import { TruncatePassengerDriverVehicleLinking } from "../Models/PassengerDriverVehicleLinkingModel";
-import { Logger } from "../Worker/MainWorker";
+import { WorkerLogger } from "../Worker/MainWorker";
 
 export const TripsSchedulerJob = () => {
   const AddPassengerDriverLinkingSchedule = schedule.scheduleJob(
@@ -16,19 +16,19 @@ export const TripsSchedulerJob = () => {
 
       AutoInsertPassengerSchedule(day, (error, result) => {
         if (error) {
-          Logger.Error(
+          WorkerLogger.Error(
             "Error inserting passengers into PDVL table: " + error
           );
         } else if (result) {
-          Logger.Log(
+          WorkerLogger.Log(
             "Passengers inserted into PDVL table successfully"
           );
-          Logger.Log(
+          WorkerLogger.Log(
             "This job was supposed to run at 1205 but actually ran at " +
             new Date()
           );
         } else {
-          Logger.Warn(
+          WorkerLogger.Warn(
             "AutoInsertPassengerSchedule returned no error and no result"
           );
         }
@@ -39,10 +39,10 @@ export const TripsSchedulerJob = () => {
   const AddTripSchedule = schedule.scheduleJob("10 0 * * *", function () {
     AutoInsertTrip((error, result) => {
       if (error) {
-        Logger.Error("Error inserting trips into table: " + error);
+        WorkerLogger.Error("Error inserting trips into table: " + error);
       } else if (result) {
-        Logger.Log("Trips successfully added to table");
-        Logger.Log(
+        WorkerLogger.Log("Trips successfully added to table");
+        WorkerLogger.Log(
           "This job was supposed to run at 1210 but actually ran at " +
           new Date()
         );
@@ -55,10 +55,10 @@ export const TripsSchedulerJob = () => {
     function () {
       TruncatePassengerDriverVehicleLinking((error, result) => {
         if (error) {
-          Logger.Error("Error truncating PDVL table: " + error);
+          WorkerLogger.Error("Error truncating PDVL table: " + error);
         } else if (result) {
-          Logger.Log("PDVL table truncated");
-          Logger.Log(
+          WorkerLogger.Log("PDVL table truncated");
+          WorkerLogger.Log(
             "This job was supposed to run at 1201 but actually ran at " +
             new Date()
           );
@@ -71,8 +71,8 @@ export const TripsSchedulerJob = () => {
     function () {
       TruncateTempPassengerSchedule((error, result) => {
         if (result) {
-          Logger.Log("TempPassengerTable table truncated");
-          Logger.Log(
+          WorkerLogger.Log("TempPassengerTable table truncated");
+          WorkerLogger.Log(
             "This job was supposed to run at 1159 but actually ran at " +
             new Date()
           );

@@ -3,14 +3,14 @@ import { CustomLogger } from "../Classes/CustomLogger";
 import { PaystackListTransactionsResponse, PaystackTransactionData, Transaction } from "../Classes/Transaction";
 import { InsertSuccessfulTransaction, InsertTransaction } from "../Models/PaymentsModel";
 import { FetchPaystackTransactions } from "../Services/PaystackService";
-import { Logger } from "../Worker/MainWorker";
+import { WorkerLogger } from "../Worker/MainWorker";
 
 const ONE_MORNING: string = "*/15 * * * *"; // Cron schedule for Every 15 minutes
 
 
 export const FetchAndSaveTransactionsJob = (): void => {
     schedule.scheduleJob(ONE_MORNING, async () => {
-        Logger.Log('Running Fetch All Transactions Job...');
+        WorkerLogger.Log('Running Fetch All Transactions Job...');
 
         const thirtyDaysAgo: Date = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -54,10 +54,10 @@ export const FetchAndSaveTransactionsJob = (): void => {
                                     savedTransactions++;
                                 })
                                 .catch((error: any) => {
-                                    Logger.Error(`Error saving transaction ${transactionData.reference}: ${error.message}`);
+                                    WorkerLogger.Error(`Error saving transaction ${transactionData.reference}: ${error.message}`);
                                 });
                         } catch (error: any) {
-                            Logger.Error(`Error processing transaction ${transactionData.reference}: ${error.message}`);
+                            WorkerLogger.Error(`Error processing transaction ${transactionData.reference}: ${error.message}`);
                         }
                     }
 
@@ -69,19 +69,19 @@ export const FetchAndSaveTransactionsJob = (): void => {
                 } else {
                     shouldContinue = false;
                     if (paystackResponse && !paystackResponse.status) {
-                        Logger.Error(`Error fetching transactions from Paystack (page ${page}): ${paystackResponse.message}`);
+                        WorkerLogger.Error(`Error fetching transactions from Paystack (page ${page}): ${paystackResponse.message}`);
                     } else if (!paystackResponse) {
-                        Logger.Error(`Failed to fetch transactions from Paystack (page ${page}). PaystackResponse was null/undefined.`);
+                        WorkerLogger.Error(`Failed to fetch transactions from Paystack (page ${page}). PaystackResponse was null/undefined.`);
                     } else {
-                        Logger.Log(`No transactions returned from Paystack for page ${page}.`);
+                        WorkerLogger.Log(`No transactions returned from Paystack for page ${page}.`);
                     }
                 }
             } catch (error: any) {
-                Logger.Error(`An error occurred in FetchAndSaveSuccessfulTransactionsJob: ${error.message}`);
+                WorkerLogger.Error(`An error occurred in FetchAndSaveSuccessfulTransactionsJob: ${error.message}`);
                 shouldContinue = false;
             }
         }
 
-        Logger.Log(`Fetch Transactions Job completed. Total Transactions Processed: ${totalTransactions}, Saved: ${savedTransactions}`);
+        WorkerLogger.Log(`Fetch Transactions Job completed. Total Transactions Processed: ${totalTransactions}, Saved: ${savedTransactions}`);
     });
 };

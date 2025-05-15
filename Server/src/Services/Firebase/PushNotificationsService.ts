@@ -1,6 +1,6 @@
 import admin from "firebase-admin";
 import { PushNotificationObj } from "../../Classes/PushNotification";
-import { Logger } from "../../server";
+import { ServerLogger } from "../../server";
 
 /**
  * Validates push notification object.
@@ -23,7 +23,7 @@ export const sendNotif = async (pushNotification: PushNotificationObj) => {
     try {
         validatePushNotification(pushNotification);
 
-        Logger.Log("Preparing to send individual notification: " + pushNotification);
+        ServerLogger.Log("Preparing to send individual notification: " + pushNotification);
 
         const message = {
             notification: {
@@ -48,9 +48,9 @@ export const sendNotif = async (pushNotification: PushNotificationObj) => {
         };
 
         const response = await admin.messaging().send(message);
-        Logger.Log("Successfully sent individual notification: " + response);
+        ServerLogger.Log("Successfully sent individual notification: " + response);
     } catch (error) {
-        Logger.Error("Error sending individual notification: " + error);
+        ServerLogger.Error("Error sending individual notification: " + error);
         throw error;
     }
 };
@@ -63,7 +63,7 @@ export const sendNotifToAll = async (pushNotification: PushNotificationObj) => {
     try {
         validatePushNotification(pushNotification);
 
-        Logger.Log("Preparing to send topic notification: " + pushNotification);
+        ServerLogger.Log("Preparing to send topic notification: " + pushNotification);
 
         const message = {
             data: {
@@ -75,9 +75,9 @@ export const sendNotifToAll = async (pushNotification: PushNotificationObj) => {
         };
 
         const response = await admin.messaging().sendToTopic("General", message);
-        Logger.Log("Successfully sent topic notification: " + response);
+        ServerLogger.Log("Successfully sent topic notification: " + response);
     } catch (error) {
-        Logger.Error("Error sending topic notification: S" + error);
+        ServerLogger.Error("Error sending topic notification: S" + error);
         throw error;
     }
 };

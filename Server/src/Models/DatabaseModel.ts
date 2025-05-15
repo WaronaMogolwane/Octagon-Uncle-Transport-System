@@ -50,7 +50,7 @@ function AddNewUser(user) {
   return AddNewUserPromise;
 }
 export const SaveUserOtp = async (otp: string, req, res) => {
-  Logger.Log(otp);
+  ServerLogger.Log(otp);
   let UserRegistration;
   try {
     var user = await GetUserByEmail(req.body.userDetails.Email);
@@ -71,7 +71,7 @@ export const SaveUserOtp = async (otp: string, req, res) => {
         ON DUPLICATE KEY UPDATE OTP = '${req.body.otp}', DateCreated = CURRENT_TIMESTAMP(), OTPExpireDate = ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0")`,
     function (error) {
       if (error) {
-        Logger.Log(error.toString());
+        ServerLogger.Log(error.toString());
       } else {
         res.status(201);
         res.send(
@@ -110,10 +110,10 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`,
     function (error) {
       if (error) {
-        Logger.Log(error.message);
+        ServerLogger.Log(error.message);
         return;
       } else {
-        Logger.Log("Database successfully initialised");
+        ServerLogger.Log("Database successfully initialised");
       }
     }
   );
@@ -127,10 +127,10 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`,
     function (error) {
       if (error) {
-        Logger.Log(error.message);
+        ServerLogger.Log(error.message);
         return;
       } else {
-        Logger.Log("Database successfully initialised");
+        ServerLogger.Log("Database successfully initialised");
       }
     }
   );
@@ -146,7 +146,7 @@ module.exports = {
 // function dbConnect() {
 //   pool.execute((error) => {
 //     if (error) {
-//       Logger.Log(error);
+//       ServerLogger.Log(error);
 //       return;
 //     }
 //   });

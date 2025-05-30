@@ -4,6 +4,7 @@ import {ActivityIndicator, Linking, Modal, StyleSheet} from 'react-native';
 import {
   FlatList,
   Heading,
+  HStack,
   Text,
   Toast,
   ToastTitle,
@@ -44,6 +45,8 @@ import {
 } from '../../../Controllers/BankingDetailController';
 import {BankingDetail} from '../../../Models/BankingDetail';
 import * as yup from 'yup';
+import {ArrowRight, CreditCard} from 'lucide-react-native';
+import COLORS from '../../../Const/colors';
 
 type Props = {
   navigation: any;
@@ -59,7 +62,7 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
   setUserRole,
 }) => {
   const {trxref, reference} = route.params || {};
-  const {session}: any = useContext(AuthContext);
+  let {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const [refreshingPayments, setRefreshingPayments] = useState(false);
   const onRefreshPayments = React.useCallback(() => {
@@ -81,6 +84,7 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
   const [paystackBankCode, setPaystackBankCode] = useState('');
   const [paystackBankId, setPaystackBankId] = useState('');
   const [cardAuthorizationList, setCardAuthorizationList] = useState([]);
+  const [paymentAmount, setPaymentAmount] = useState('0');
   const [monthlyPaymentsSummary, setMonthlyPaymentsSummary] =
     useState<MonthlyPaymentDetailsCardProps>({
       Amount: '0',
@@ -240,6 +244,7 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
       const result: MonthlyPaymentDetailsCardProps =
         await GetMonthlyPaymentDetails(auth.GetUserId());
       console.log(result);
+      setPaymentAmount(result.Amount);
       const formatted = {
         ...result,
         Amount: FormatBalance(result.Amount! || '0')!,
@@ -252,14 +257,15 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
   };
 
   const PayNow = async (amount: string) => {
+    const cardAuth: any = cardAuthorizationList[0];
     const authorizationCharge: AuthorizationCharge = {
-      email: 'mogolwanew@gmail.com',
+      email: auth.GetEmail(),
       amount: amount,
-      authorization_code: 'AUTH_efz5240h2i',
+      authorization_code: cardAuth.AuthorizationCode,
       reference: `MCA-${uuid.v4()}`,
       metadata: {
         user_id: auth.GetUserId(),
-        transporter_user_id: '856f9966-968c-478a-92ed-d95a52ac0225',
+        transporter_user_id: auth.GetBusinessId(),
         charge_type: 'Manual Card Authorization',
       },
     };
@@ -399,46 +405,78 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
   }, [reference]);
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: '#e8f0f3'}}>
+    <SafeAreaView style={{flex: 1, backgroundColor: '#ffffff'}}>
       <View style={{flex: 1}}>
         <MonthlyPaymentDetailsCard
+          styles={{
+            paddingHorizontal: 16,
+            marginTop: 16,
+          }}
           Amount={monthlyPaymentsSummary?.Amount}
           NextPaymentDate={monthlyPaymentsSummary.NextPaymentDate}
           PaymentFailed={monthlyPaymentsSummary.PaymentFailed}
-          HandlePayNowPress={() => PayNow(monthlyPaymentsSummary.Amount)}
         />
-
-        <View>
-          <Heading style={{marginBottom: 8}}>Payment Methods</Heading>
+        <View style={{paddingHorizontal: 16, paddingTop: 16}}>
+          <HStack>
+            <View>
+              <Heading size="md">Status</Heading>
+              <Text style={{fontSize: 14, color: 'gray'}}>
+                {monthlyPaymentsSummary.PaymentFailed
+                  ? 'Payment failed'
+                  : 'Payment succesful'}
+              </Text>
+            </View>
+            <View style={{marginLeft: 'auto'}}>
+              <CustomButton1
+                textColor={COLORS.white}
+                size="sm"
+                title="Pay now"
+                action="negative"
+                onPress={() => {
+                  isLoading = true;
+                  PayNow(paymentAmount);
+                }}
+              />
+            </View>
+          </HStack>
+        </View>
+        <View style={{paddingHorizontal: 16, paddingTop: 16}}>
+          <Heading size="md" style={{marginBottom: 12}}>
+            Payment Methods
+          </Heading>
           <FlatList
             data={cardAuthorizationList}
             renderItem={({item}: any) => (
               <PaymentMethodCard
                 MaskedCardNumber={item.MaskedCardNumber}
-                CardType={item.CardType}
+                CardType={item.CardType.trim()}
                 IsActive={Boolean(Number(item.IsActive))}
+                IsExpiringSoon={true}
               />
             )}
             keyExtractor={(item: any) => item.CardAuthorisationId}
+            ItemSeparatorComponent={() => <View style={{height: 8}} />}
+            contentContainerStyle={{paddingBottom: 16}}
           />
-
-          <CustomButton1
-            size="sm"
-            title="Add Payment Method"
+          <CustomButton2
+            size="md"
+            title="Add payment method"
             onPress={AddPaymentMethod}
+            buttonIcon={ArrowRight}
+            leftButtonIcon={CreditCard}
+            styles={{borderWidth: 0, paddingLeft: 0}}
+            textColor="#525252"
+            color="#525252"
+            buttonIcontyles={{marginLeft: 'auto'}}
           />
-
-          <CustomButton3
-            size="sm"
-            title="View All Transactions"
+          <CustomButton1
+            size="md"
+            title="View all transactions"
+            styles={{backgroundColor: '#e8eef2'}}
+            textColor="#000000"
             onPress={() => NavigateToScreen('TransporterPaymentHistory')}
           />
-
-          <CustomButton2
-            size="sm"
-            title="Switch User Role"
-            onPress={SwitchUserRole}
-          />
+          <CustomButton2 title="Switch User Role" onPress={SwitchUserRole} />
         </View>
       </View>
 
@@ -462,49 +500,4 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
 function BusinessDetailHelper(values: any) {
   throw new Error('Function not implemented.');
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  form: {
-    width: '80%',
-  },
-  input: {
-    backgroundColor: '#fff',
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 10,
-    fontSize: 18,
-  },
-  button: {
-    marginTop: 20,
-    backgroundColor: '#1E90FF',
-    borderRadius: 5,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
-  avatarContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  avatar: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-  },
-  changeAvatarButton: {
-    marginTop: 10,
-  },
-  changeAvatarButtonText: {
-    marginTop: 10,
-    color: '#1E90FF',
-    fontSize: 16,
-  },
-});
 export default ClinetsPaymentsScreen;

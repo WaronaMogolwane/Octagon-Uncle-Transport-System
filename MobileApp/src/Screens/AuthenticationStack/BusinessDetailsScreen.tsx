@@ -35,6 +35,9 @@ import BankingDetailModal from '../../Components/Modals/BankingDetailModal';
 
 const BusinessDetailsScreen = ({navigation, route}: any) => {
   const {sessionId} = route.params;
+  // const sessionId =
+  //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOiIzZTc0YWUxZC0zYTMxLTRkZTMtYTdmYS0yOGZhMGFhOWYxY2YiLCJVc2VyUm9sZSI6IjEiLCJFbWFpbCI6Ik5ld2VtYWlsQGdtYWlsLmNvbSIsIkJ1c2luZXNzSWQiOiIzZTc0YWUxZC0zYTMxLTRkZTMtYTdmYS0yOGZhMGFhOWYxY2YiLCJEYXRlQ3JlYXRlZCI6IjUvNy8yMDI1LCAyOjU3OjAzIFBNIiwiaWF0IjoxNzQ2NjIyNjIzfQ.xCK5i8kmzikSuu0KMKvnsg57gtsz7iBG3E9OrbU1G3M';
+
   const {session, isLoading, SetSession}: any = useContext(AuthContext);
   const [[tokenIsLoading, authToken], setAuthToken] =
     useStorageState('authToken');
@@ -43,19 +46,62 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
 
   const toast = useToast();
 
-  const [showModal, setShowModal] = useState(false);
-  const [isFocus, setIsFocus] = useState(false);
+  const [showModal, setShowModal] = useState(true);
+  const [isBankNameFocus, setIsBankNameFocus] = useState(false);
+  const [isAccountTypeFocus, setIsAccountTypeFocus] = useState(false);
+  const [isDocumentTypeFocus, setIsDocumentTypeFocus] = useState(false);
   const [bankName, setBankName] = useState('');
   const [paystackBankCode, setPaystackBankCode] = useState('');
   const [paystackBankId, setPaystackBankId] = useState('');
+  const [accountType, setAccountType] = useState('');
+  const [documentType, setDocumentType] = useState('');
 
   const [IsLoading, setIsLoading] = useState(false);
 
   const [bankList, setBankList] = useState(['']);
 
+  const accountTypeList = [
+    {label: 'Business', value: 'business'},
+    {label: 'Personal', value: 'personal'},
+  ];
+
+  const fullDocumentTypeList = [
+    {label: 'Identity Number', value: 'identityNumber'},
+    {label: 'Passport Number', value: 'passportNumber'},
+    {
+      label: 'Business Registration Number',
+      value: 'businessRegistrationNumber',
+    },
+  ];
+
+  // Filter documentTypeList based on accountType
+  const documentTypeList =
+    accountType === 'business'
+      ? fullDocumentTypeList.filter(
+          item => item.value === 'businessRegistrationNumber',
+        )
+      : fullDocumentTypeList.filter(
+          item => item.value !== 'businessRegistrationNumber',
+        );
+
   useEffect(() => {
     BankList();
   }, []);
+
+  useEffect(() => {
+    // Reset documentType if it’s no longer valid based on accountType
+    if (
+      accountType === 'business' &&
+      documentType !== 'businessRegistrationNumber'
+    ) {
+      setDocumentType('');
+    } else if (
+      accountType === 'personal' &&
+      documentType === 'businessRegistrationNumber'
+    ) {
+      setDocumentType('');
+    }
+  }, [accountType]);
 
   const businessId = auth.GetBusinessId();
 
@@ -64,7 +110,6 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
       if (result.length != 0) {
         setBankList(result);
       } else {
-        //somthing went wrong
         toast.show({
           placement: 'top',
           render: ({id}) => {
@@ -105,9 +150,7 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
           setShowModal(true);
           setIsLoading(false);
         } else {
-          //On faluire this code runs
           setIsLoading(false);
-
           toast.show({
             placement: 'top',
             render: ({id}) => {
@@ -117,7 +160,7 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
                   <VStack space="xs">
                     <ToastTitle>Something went wrong</ToastTitle>
                     <ToastDescription>
-                      Please check your internt and try again. If the problem
+                      Please check your internet and try again. If the problem
                       persists contact support.
                     </ToastDescription>
                   </VStack>
@@ -155,7 +198,7 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
           <Toast nativeID={toastId} action="error" variant="outline">
             <VStack space="xs">
               <ToastTitle>
-                Details were not save successfully. Please try again.
+                Details were not saved successfully. Please try again.
               </ToastTitle>
             </VStack>
           </Toast>
@@ -174,26 +217,31 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
       businessId,
       paystackBankId,
       paystackBankCode,
+      accountType,
+      documentType,
+      values.documentNumber.trim(),
+      '',
       '',
     );
 
     await AddBankingDetail(bankingDetail)
       .then((response: any) => {
-        if (response == 200) {
-          //On success this code runs
-          formik.resetForm();
-          setShowModal(false);
-          setIsLoading(false);
-          SuccessToast();
-          SetSession(authToken!);
-          formik.resetForm();
-        } else {
-          setIsLoading(false);
-          FaliureToast();
-        }
+        // if (response == 200) {
+        //   setShowModal(false);
+        //   setIsLoading(false);
+        //   SuccessToast();
+        //   SetSession(authToken!);
+        //   bankingFormik.resetForm();
+        //   formik.resetForm();
+        // } else {
+        //   setIsLoading(false);
+        //   FaliureToast();
+        // }
       })
       .catch((error: any) => {
         console.log(error);
+        setIsLoading(false);
+        FaliureToast();
       });
   };
 
@@ -223,14 +271,19 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
       .max(20, 'Account number too long!')
       .required('is required')
       .oneOf([yup.ref('accountNumber')], 'Account number must match'),
+    documentNumber: yup
+      .string()
+      .min(2, 'Document number too short')
+      .max(50, 'Document number too long')
+      .required('is required'),
   });
 
   const bankingDetailInitialValues = {
-    bankName: '',
     branchNumber: '',
     accountName: '',
     accountNumber: '',
     comfirmAccountNumber: '',
+    documentNumber: '',
   };
 
   const businessDetailSchema = yup.object().shape({
@@ -290,7 +343,6 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
   const bankingFormik = useFormik({
     initialValues: bankingDetailInitialValues,
     validationSchema: bankingDetailSchema,
-
     onSubmit: (values, {resetForm}) => {
       SubmitBankingDetail(values);
     },
@@ -299,7 +351,6 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
   const formik = useFormik({
     initialValues: businessDetailsInitialValues,
     validationSchema: businessDetailSchema,
-
     onSubmit: (values, {resetForm}) => {
       BusinessDetailHelper(values);
     },
@@ -328,8 +379,15 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
 
         <BankingDetailModal
           ShowModal={showModal}
-          DropdownIsFocus={isFocus}
+          DropdownIsFocus={isBankNameFocus}
+          DropdownIsFocusAccount={isAccountTypeFocus}
+          DropdownIsFocusDocument={isDocumentTypeFocus}
           BankList={bankList}
+          AccountTypeList={accountTypeList}
+          DocumentTypeList={documentTypeList}
+          SelectedBankName={bankName}
+          SelectedAccountType={accountType}
+          SelectedDocumentType={documentType}
           BranchNumberIsInvalid={!!bankingFormik.errors.branchNumber}
           BranchNumberErrorText={bankingFormik?.errors?.branchNumber}
           BranchNumberValue={bankingFormik.values?.branchNumber}
@@ -360,24 +418,40 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
           ComfirmAccountNumberOnBlur={bankingFormik.handleBlur(
             'comfirmAccountNumber',
           )}
-          OnFocusBankingDetailDropdown={() => setIsFocus(true)}
-          OnBlurBankingDetailDropdown={() => setIsFocus(false)}
+          DocumentNumberIsInvalid={!!bankingFormik.errors.documentNumber}
+          DocumentNumberErrorText={bankingFormik?.errors?.documentNumber}
+          DocumentNumberValue={bankingFormik.values?.documentNumber}
+          DocumentNumberOnChangeText={bankingFormik.handleChange(
+            'documentNumber',
+          )}
+          DocumentNumberOnBlur={bankingFormik.handleBlur('documentNumber')}
+          OnFocusBankingDetailDropdown={() => setIsBankNameFocus(true)}
+          OnBlurBankingDetailDropdown={() => setIsBankNameFocus(false)}
           OnChangeBankingDetailDropdown={(item: any) => {
             setBankName(item.name);
             setPaystackBankId(item.id);
             setPaystackBankCode(item.code);
-            setIsFocus(false);
+            setIsBankNameFocus(false);
+          }}
+          OnFocusAccountTypeDropdown={() => setIsAccountTypeFocus(true)}
+          OnBlurAccountTypeDropdown={() => setIsAccountTypeFocus(false)}
+          OnChangeAccountTypeDropdown={(item: any) => {
+            setIsAccountTypeFocus(false);
+            setAccountType(item.value);
+          }}
+          OnFocusDocumentTypeDropdown={() => setIsDocumentTypeFocus(true)}
+          OnBlurDocumentTypeDropdown={() => setIsDocumentTypeFocus(false)}
+          OnChangeDocumentTypeDropdown={(item: any) => {
+            setIsDocumentTypeFocus(false);
+            setDocumentType(item.value);
           }}
           CloseBankingDetailModalButtonOnPress={() => {
             setShowModal(false);
             formik.resetForm();
           }}
           HandleSubmit={() => {
-            if (bankName != '') {
-              bankingFormik.handleSubmit();
-            } else {
-              setIsFocus(true);
-
+            if (bankName === '') {
+              setIsBankNameFocus(true);
               toast.show({
                 placement: 'top',
                 render: ({id}) => {
@@ -394,6 +468,48 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
                   );
                 },
               });
+            } else if (accountType === '') {
+              setIsAccountTypeFocus(true);
+              toast.show({
+                placement: 'top',
+                render: ({id}) => {
+                  const toastId = 'toast-' + id;
+                  return (
+                    <Toast
+                      nativeID={toastId}
+                      action="attention"
+                      variant="outline">
+                      <VStack space="xs">
+                        <ToastTitle>
+                          Please select an account type to proceed
+                        </ToastTitle>
+                      </VStack>
+                    </Toast>
+                  );
+                },
+              });
+            } else if (documentType === '') {
+              setIsDocumentTypeFocus(true);
+              toast.show({
+                placement: 'top',
+                render: ({id}) => {
+                  const toastId = 'toast-' + id;
+                  return (
+                    <Toast
+                      nativeID={toastId}
+                      action="attention"
+                      variant="outline">
+                      <VStack space="xs">
+                        <ToastTitle>
+                          Please select a document type to proceed
+                        </ToastTitle>
+                      </VStack>
+                    </Toast>
+                  );
+                },
+              });
+            } else {
+              bankingFormik.handleSubmit();
             }
           }}
         />

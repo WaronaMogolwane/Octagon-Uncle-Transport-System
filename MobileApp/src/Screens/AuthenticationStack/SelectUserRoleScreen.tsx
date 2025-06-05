@@ -1,54 +1,28 @@
-import {GestureResponderEvent, View} from 'react-native';
-import React, {useContext, useState} from 'react';
-import {AuthContext} from '../../Services/AuthenticationService';
+import {ActivityIndicator, GestureResponderEvent, View} from 'react-native';
+import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {
   SelectUserRoleScreenStyles,
   ThemeStyles,
 } from '../../Stylesheets/GlobalStyles';
-import {SignInForm} from '../../Components/Forms/SignInForm';
 import {
   useToast,
   Toast,
   ToastTitle,
-  ButtonText,
-  CloseIcon,
-  Heading,
-  Icon,
-  Input,
-  InputField,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  Button,
-  Text,
-  Modal,
   VStack,
   ToastDescription,
 } from '@gluestack-ui/themed';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
-import {
-  CustomButton1,
-  CustomButton2,
-  CustomButton3,
-} from '../../Components/Buttons';
 import {SelectUserRoleForm} from '../../Components/Forms/SelectUserRoleForm';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
 import {UserVerifyEmail} from '../../Controllers/AuthenticationController';
-import {UserInvitation} from '../../Models/UserInvitation';
-import {useStorageState} from '../../Services/StorageStateService';
 
 const SelectUserRoleScreen = ({navigation}: any) => {
-  const ref = React.useRef(null);
   const [showModal, setShowModal] = useState(false);
-  const [userRole, setuserRole] = useState(0);
-  const toast = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [selectedRole, setSelectedRole] = useState(0);
+  const toast = useToast();
 
   const registerSchema = yup.object().shape({
     selectedUserRole: yup
@@ -87,18 +61,24 @@ const SelectUserRoleScreen = ({navigation}: any) => {
   };
 
   const EmailVerification = async () => {
+    setIsLoading(true);
+
     await UserVerifyEmail(
       formik.values.otp,
       Number(formik.values.selectedUserRole),
       (error: any, result: any) => {
         if (formik.isValid) {
           if (error) {
+            setIsLoading(false);
             throw new Error(error);
           } else if (result) {
             setShowModal(false);
             ShowToast();
             GoToSignUpPage(formik.values.selectedUserRole, result.Data);
+            setIsLoading(false);
           }
+        } else {
+          setIsLoading(false);
         }
       },
     );
@@ -124,6 +104,22 @@ const SelectUserRoleScreen = ({navigation}: any) => {
   };
   return (
     <SafeAreaView style={ThemeStyles.container}>
+      {isLoading ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" />
+        </View>
+      ) : null}
       <View style={SelectUserRoleScreenStyles.container}>
         <SelectUserRoleForm
           userRoleSelectValue={formik.values?.selectedUserRole.toString()}
@@ -147,7 +143,7 @@ const SelectUserRoleScreen = ({navigation}: any) => {
           otpOnBlur={formik.handleBlur('otp')}
           otpValue={formik.values?.otp}
           ShowModal={showModal}
-          ToEmailAddress={''}
+          ToEmailAddress={'the email address provided.'}
           VerifyOtpButtonOnPress={() => {
             EmailVerification();
           }}

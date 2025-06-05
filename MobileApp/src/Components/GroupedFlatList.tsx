@@ -31,9 +31,14 @@ type GroupedData = {
 type GroupedFlatListProps = {
   pastTrips: Record[];
   role: string;
+  refreshControl?: React.ReactElement;
 };
 
-const GroupedFlatList: React.FC<GroupedFlatListProps> = ({pastTrips, role}) => {
+const GroupedFlatList: React.FC<GroupedFlatListProps> = ({
+  pastTrips,
+  role,
+  refreshControl,
+}) => {
   const [expandedGroups, setExpandedGroups] = useState<{
     [key: string]: boolean;
   }>({});
@@ -175,35 +180,7 @@ const GroupedFlatList: React.FC<GroupedFlatListProps> = ({pastTrips, role}) => {
           tripStatus={Number(item.tripStatus)}
           dropOffTime={item.dropOffTime}
           leg={item.leg}
-          handleUndo={() => {
-            // if (itemData.tripStatus == 0) {
-            //   if (currentDate == itemData.pickUpDate.toString()) {
-            //     UndoTripEnd(itemData.tripId).then(() => {
-            //       setIsLoading(true);
-            //       GetUpcomingTrips();
-            //       GetPastTrips();
-            //     });
-            //   } else {
-            //     WarningToast();
-            //   }
-            // } else if (itemData.tripStatus == 1) {
-            //   if (currentDate == itemData.pickUpDate.toString()) {
-            //     UndoTripEnd(itemData.tripId).then(() => {
-            //       setIsLoading(true);
-            //       GetUpcomingTrips();
-            //       GetPastTrips();
-            //     });
-            //   } else {
-            //     WarningToast();
-            //   }
-            // } else if (itemData.tripStatus == 3) {
-            //   UndoTripDropOffTime(itemData.tripId).then(() => {
-            //     setIsLoading(true);
-            //     GetUpcomingTrips();
-            //     GetPastTrips();
-            //   });
-            // }
-          }}
+          handleUndo={() => {}}
         />
       );
     }
@@ -253,6 +230,7 @@ const GroupedFlatList: React.FC<GroupedFlatListProps> = ({pastTrips, role}) => {
   return (
     <FlatList
       style={GroupedFlatListStyles.container}
+      refreshControl={refreshControl}
       ListHeaderComponent={
         <>
           {/* Display current date records at the top */}
@@ -263,7 +241,7 @@ const GroupedFlatList: React.FC<GroupedFlatListProps> = ({pastTrips, role}) => {
               </Text>
               <FlatList
                 data={currentDateRecords}
-                keyExtractor={item => item.tripId}
+                keyExtractor={(item: Record) => item.tripId}
                 renderItem={renderItem}
               />
             </View>

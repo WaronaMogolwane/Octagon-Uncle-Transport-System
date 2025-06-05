@@ -1,8 +1,7 @@
 import React, {useContext} from 'react';
-import {View, Text, ActivityIndicator} from 'react-native';
+import {View, ActivityIndicator} from 'react-native';
 import {LinkingOptions, NavigationContainer} from '@react-navigation/native';
 import AuthenticationStack from './AuthenticationStack';
-import AppDrawer from './AppDrawer';
 import AppNavigationStack from './AppNavigationStack';
 import {AuthContext} from '../Services/AuthenticationService';
 import {ThemeStyles} from '../Stylesheets/GlobalStyles';

@@ -33,6 +33,7 @@ import {
   ThemeStyles,
 } from '../../../Stylesheets/GlobalStyles';
 import {CustomButton1} from '../../../Components/Buttons';
+import {GetUserProfileImage} from '../../../Controllers/UserDetailController';
 
 const EditBusinessDetailsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -63,8 +64,12 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
   }, [businessDetail]);
 
   useEffect(() => {
-    RestoreImageViaAsyncStorage().then((result: any) => {
-      setProfileImage(result);
+    GetUserProfileImage(businessId).then((result: any) => {
+      if (result[1] == 200) {
+        setProfileImage(result[0]);
+      } else {
+        setProfileImage(''); //default image
+      }
     });
   }, []);
 

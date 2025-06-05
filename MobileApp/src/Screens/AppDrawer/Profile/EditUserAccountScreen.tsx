@@ -59,6 +59,7 @@ import {
   EditUserAccountScreenStyles,
   ThemeStyles,
 } from '../../../Stylesheets/GlobalStyles';
+import {truncate} from 'fs/promises';
 
 const EditUserAccountScreen = ({navigation}: any) => {
   const {session, emailOtp, verifyOtp}: any = useContext(AuthContext);
@@ -80,8 +81,6 @@ const EditUserAccountScreen = ({navigation}: any) => {
     useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [refreshData, setRefreshData] = useState(false);
-  const [IsLoading, setIsLoading] = useState(false);
-  const [refresh, setRefresh] = useState(false);
 
   const [isEmailVerified, setIsEmailVerified] = useState(false);
 
@@ -92,6 +91,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
     /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[-\#\$\.\%\&\*\?\!\_\,\+\=\@])(?=.*[a-zA-Z]).{8,16}$/;
 
   const userId = auth.GetUserId();
+  const role = auth.GetUserRole();
 
   const ref = React.useRef(null);
   const toast = useToast();
@@ -150,20 +150,25 @@ const EditUserAccountScreen = ({navigation}: any) => {
   };
 
   const UpdateEmail = async () => {
+    setIsUpdating(false);
+
     await UpdateUserEmail(userId, emailFormik.values.email, name).then(
       (response: any) => {
         if (response[1] == 200) {
           ShowSuccessToast('Email');
           passwordFormik.resetForm();
           setRefreshData(!refreshData);
+          setIsUpdating(false);
         } else {
           ShowFaliureToast('Email');
+          setIsUpdating(false);
         }
       },
     );
   };
 
   const ChangePassword = async () => {
+    setIsUpdating(true);
     UpdateUserPassword(
       userId,
       passwordFormik.values.confirmPassword,
@@ -172,13 +177,16 @@ const EditUserAccountScreen = ({navigation}: any) => {
       if (response[1] == 200) {
         ShowSuccessToast('Password');
         setShowChangePassword(false);
+        setIsUpdating(false);
         passwordFormik.resetForm();
       } else if (
         response[2] == 'AxiosError: Request failed with status code 499'
       ) {
         ShowWrongPasswordToast();
+        setIsUpdating(false);
       } else {
         ShowFaliureToast('Password');
+        setIsUpdating(false);
       }
     });
   };
@@ -373,7 +381,8 @@ const EditUserAccountScreen = ({navigation}: any) => {
               />
               <Text
                 onPress={() => {
-                  navigation.navigate('Forgot Password');
+                  navigation.navigate('Forgot Password', {userRole: role});
+                  setShowChangePassword(false);
                 }}
                 style={EditUserAccountScreenStyles.changeAvatarButtonText}>
                 Forgot password?
@@ -641,19 +650,23 @@ const EditUserAccountScreen = ({navigation}: any) => {
 
     onSubmit: async (values, {resetForm}) => {
       if (emailFormik.isValid) {
+        setIsUpdating(true);
         if (!isEmailVerified) {
           await emailOtp(
             emailFormik.values.email,
             (error: any, result: any) => {
               if (error) {
                 throw new Error(error);
+                setIsUpdating(false);
               } else {
                 setShowEmailVerificationModal(true);
+                setIsUpdating(false);
               }
             },
           );
         } else {
           //await SignUpNewUser();
+          setIsUpdating(false);
         }
       }
     },
@@ -713,7 +726,11 @@ const EditUserAccountScreen = ({navigation}: any) => {
           style={EditUserAccountScreenStyles.avatar}
           source={
             profileImage !== ''
-              ? {uri: profileImage}
+              ? {
+                  uri: `file://${
+                    RNFS.DocumentDirectoryPath
+                  }/profile_image.jpg?${Date.now()}`,
+                }
               : require('../../../Images/default_avatar_image.jpg')
           }
         />

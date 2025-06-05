@@ -1,5 +1,5 @@
-import {GestureResponderEvent, Text} from 'react-native';
-import React, {useContext} from 'react';
+import {ActivityIndicator, GestureResponderEvent, Text} from 'react-native';
+import React, {useContext, useState} from 'react';
 import {AuthContext} from '../../Services/AuthenticationService';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {SignInScreenStyles, ThemeStyles} from '../../Stylesheets/GlobalStyles';
@@ -13,6 +13,7 @@ import {Image, View} from '@gluestack-ui/themed';
 const SignInScreen = ({navigation}: any) => {
   const {signIn, session}: any = useContext(AuthContext);
   const ref = React.useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const registerSchema = yup.object().shape({
     email: yup.string().email('Invalid email').required('Email is required'),
@@ -36,6 +37,23 @@ const SignInScreen = ({navigation}: any) => {
     validationSchema: registerSchema,
 
     onSubmit: async (values, {resetForm}) => {
+      setIsLoading(true);
+      await signIn(
+        values.email,
+        values.password,
+        (error: AxiosError, result: any) => {
+          if (formik.isValid) {
+            if (error) {
+              setIsLoading(false);
+              console.error(error.response!.data);
+              console.info('error', error);
+            } else if (result) {
+              resetForm();
+              // setIsLoading(false);
+            }
+          }
+        },
+      );
       console.log(values);
       await signIn(values.email, values.password, (error: any, result: any) => {
         if (formik.isValid) {
@@ -57,6 +75,22 @@ const SignInScreen = ({navigation}: any) => {
   };
   return (
     <SafeAreaView style={ThemeStyles.container}>
+      {isLoading ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" />
+        </View>
+      ) : null}
       <Image
         source={require('../../Images/octagon_logo.jpg')}
         resizeMode="contain"

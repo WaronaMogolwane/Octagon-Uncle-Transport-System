@@ -16,10 +16,10 @@ export const AutomaticWithdrawalJob = (): void => {
         await RunBulkTransfer();
     });
 
-    schedule.scheduleJob("0 23 * * 1-5", async () => {
-        WorkerLogger.Log("Withdrawal Worker: Running weekday job at 23:00...");
-        await RunBulkTransfer();
-    });
+    // schedule.scheduleJob("0 23 * * 1-5", async () => {
+    //     WorkerLogger.Log("Withdrawal Worker: Running weekday job at 23:00...");
+    //     await RunBulkTransfer();
+    // });
 
     // Weekend jobs
     schedule.scheduleJob("0 9 * * 6,0", async () => {
@@ -27,10 +27,10 @@ export const AutomaticWithdrawalJob = (): void => {
         await RunBulkTransfer();
     });
 
-    schedule.scheduleJob("0 23 * * 6,0", async () => {
-        WorkerLogger.Log("Withdrawal Worker: Running weekend job at 23:00...");
-        await RunBulkTransfer();
-    });
+    // schedule.scheduleJob("0 23 * * 6,0", async () => {
+    //     WorkerLogger.Log("Withdrawal Worker: Running weekend job at 23:00...");
+    //     await RunBulkTransfer();
+    // });
 };
 
 /**

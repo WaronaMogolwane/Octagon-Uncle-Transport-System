@@ -195,6 +195,8 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
         }
       })
       .catch((error: any) => {
+        setIsLoading(false);
+        FaliureToast();
         throw new Error(error);
       });
   };

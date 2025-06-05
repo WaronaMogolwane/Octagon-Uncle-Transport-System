@@ -29,6 +29,11 @@ Sentry.init({
 });
 function App(): JSX.Element {
   //const [cameraPermission, setCameraPermission] = useState<any>();
+import NetworkProvider from './src/Services/NetworkContext';
+import {SafeAreaView} from 'react-native-safe-area-context';
+
+const App: React.FC = () => {
+  const [isReady, setIsReady] = useState<boolean>(false);
   const [pushNotificationsPermission, setPushNotificationsPermission] =
     useState<any>();
 
@@ -54,5 +59,8 @@ function App(): JSX.Element {
       </GluestackUIProvider>
     </SessionProvider>
   );
+};
+
+export default memo(App);
 }
 export default Sentry.wrap(App);

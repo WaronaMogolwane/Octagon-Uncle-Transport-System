@@ -4,10 +4,8 @@ import {
   GetBankingDetailByBankingId,
   InsertBankingDetail,
   UpdateBankingDetail,
-  VerifyAccountNumberInPaystack,
 } from "../Models/BankingDetailModel";
 import { ErrorResponse } from "../Classes/ErrorResponse";
-import { AccountInformation } from "../Classes/AccountInformation";
 
 export const AddBankingDetail = async (req: any, res: any, next: any) => {
   let bankingDetail = new BankingDetail(
@@ -19,14 +17,8 @@ export const AddBankingDetail = async (req: any, res: any, next: any) => {
     req.body.bankingDetail.BusinessId,
     req.body.bankingDetail.PaystackBankId,
     req.body.bankingDetail.PaystackBankCode,
-    req.body.bankingDetail.AccountType,
-    req.body.bankingDetail.DocumentType,
-    req.body.bankingDetail.DocumentNumber,
     randomUUID()
   );
-
-  console.log(bankingDetail);
-
   await InsertBankingDetail(bankingDetail, (error, result) => {
     if (error) {
       const err: Error = new Error(error.message);
@@ -78,9 +70,6 @@ export const ModifyBankingDetail = async (req: any, res: any, next: any) => {
     req.body.bankingDetail.BusinessId,
     req.body.bankingDetail.PaystackBankId,
     req.body.bankingDetail.PaystackBankCode,
-    req.body.bankingDetail.AccountType,
-    req.body.bankingDetail.DocumentType,
-    req.body.bankingDetail.DocumentNumber,
     req.body.bankingDetail.RecipientCode
   );
 
@@ -103,34 +92,10 @@ export const ModifyBankingDetail = async (req: any, res: any, next: any) => {
   });
 };
 
-export const VerifyAccountNumber = async (req: any, res: any, next: any) => {
-  let accountInfomation = new AccountInformation(
-    req.query.BankCode,
-    req.query.CountryCode,
-    req.query.AccountNumber,
-    req.query.AccountName,
-    req.query.AccountType,
-    req.query.DocumentType,
-    req.query.DocumentNumber
-  );
-
-  console.log(accountInfomation);
-
-  await VerifyAccountNumberInPaystack(accountInfomation, (error, result) => {
-    if (error) {
-      const err: Error = new Error(error.message);
-      next(new ErrorResponse(400, err.message, err.stack));
-      // } else if (result.affectedRows == 0) {
-      //   let err: any = {
-      //     status: 499,
-      //     message: "Something went wrong",
-      //   };
-      //   next(err);
-    } else {
-      res.status(200).json({
-        AccountVerified: true,
-        result: result,
-      });
-    }
-  });
-};
+// if (error) {
+//   const err: Error = new Error(error.message)
+//   next(new ErrorResponse(400, err.message, err.stack));
+// }
+// else {
+//   res.status(200).json({ message: "Transfer recipient successfully created." })
+// }

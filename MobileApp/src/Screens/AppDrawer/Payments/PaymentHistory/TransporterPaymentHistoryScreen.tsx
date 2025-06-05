@@ -13,18 +13,18 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import {AuthContext} from '../../../Services/AuthenticationService';
-import {Auth} from '../../../Classes/Auth';
-import {Vehicle} from '../../../Models/VehicleModel';
-import {PaymentHistoryCard} from '../../../Components/Cards/PaymentHistoryCards';
+import {AuthContext} from '../../../../Services/AuthenticationService';
+import {Auth} from '../../../../Classes/Auth';
+import {Vehicle} from '../../../../Models/VehicleModel';
+import {PaymentHistoryCard} from '../../../../Components/Cards/PaymentHistoryCards';
 import filter from 'lodash.filter';
-import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
+import {ThemeStyles} from '../../../../Stylesheets/GlobalStyles';
 import {
   GetBusinessPayments,
   PayAmount,
-} from '../../../Controllers/PaymentsController';
-import {FormatBalance} from '../../../Utilities/CurrencyFormat';
-import {AuthorizationCharge} from '../../../Models/PaymentsModel';
+} from '../../../../Controllers/PaymentsController';
+import {FormatBalance} from '../../../../Utilities/CurrencyFormat';
+import {AuthorizationCharge} from '../../../../Models/PaymentsModel';
 const {v4: uuidv4} = require('uuid');
 import uuid from 'react-native-uuid';
 const TransporterPaymentHistoryScreen = () => {
@@ -47,20 +47,21 @@ const TransporterPaymentHistoryScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const GetAllBusinessPayments = async (businessId: string) => {
-    return await GetBusinessPayments(businessId, (error: any, result: any) => {
-      if (error) {
-        console.error(error.response.data);
-      } else {
-        setPaymentsList(result);
-      }
-    });
+    try {
+      const result = await GetBusinessPayments(businessId); // Assuming GetBusinessPayments returns a promise
+      setPaymentsList(result);
+      return result; // Return the result if needed
+    } catch (error: any) {
+      throw new Error(error.response?.data || error.message);
+      throw error; // Throw the error to allow further handling if required
+    }
   };
 
   const RefreshData = () => {
     try {
       onRefreshPayments();
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      throw new Error(error);
     }
   };
   const handleSearch = (query: string) => {

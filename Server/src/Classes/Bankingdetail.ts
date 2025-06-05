@@ -7,9 +7,6 @@ export class BankingDetail {
   businessId: string;
   paystackBankId: string;
   paystackBankCode: string;
-  accountType: string;
-  documentType: string;
-  documentNumber: string;
   recipientCode: string;
   constructor(
     bankingDetailId: string,
@@ -20,9 +17,6 @@ export class BankingDetail {
     businessId: string,
     paystackBankId: string,
     paystackBankCode: string,
-    accountType: string,
-    documentType: string,
-    documentNumber: string,
     recipientCode: string
   ) {
     this.bankingDetailId = bankingDetailId;
@@ -33,9 +27,6 @@ export class BankingDetail {
     this.businessId = businessId;
     this.paystackBankId = paystackBankId;
     this.paystackBankCode = paystackBankCode;
-    this.accountType = accountType;
-    this.documentType = documentType;
-    this.documentNumber = documentNumber;
     this.recipientCode = recipientCode;
   }
 }

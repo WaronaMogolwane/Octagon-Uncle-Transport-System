@@ -16,9 +16,12 @@ import {
   GetInvitationByEmailAndRole
 
 } from "../Controllers/AuthenticationController";
-import { CreateJWT } from '../Middleware/Auth';
+import { CreateJWT, RefreshAccessToken } from '../Middleware/Auth';
 import { GetUserInvitation } from '../Models/AuthenticationModel';
 const router = Router();
+
+router.post("/refresh-token", RefreshAccessToken, async (req, res) => {
+});
 
 router.post("/register-user", RegisterUser, CreateJWT, async (req, res, next) => {
 });

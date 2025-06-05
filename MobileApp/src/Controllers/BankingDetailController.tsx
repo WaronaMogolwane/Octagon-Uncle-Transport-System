@@ -3,7 +3,7 @@ import {
   GetBankingDetailFromDB,
   GetBankListFromDB,
   UpdateBankingDetailToDB as UpdateBankingDetailInDB,
-  VerifyBankAccountInServer,
+  ValidateAccountInDB,
 } from '../Data/BankingDetailDAL';
 import {BankingDetail} from '../Models/BankingDetail';
 
@@ -23,6 +23,6 @@ export const GetBanksList = async () => {
   return await GetBankListFromDB();
 };
 
-export const ValidateAccount = async (bankingDetail: BankingDetail) => {
-  return await VerifyBankAccountInServer(bankingDetail);
+export const ValidateAccount = async (accountDetails: any) => {
+  return await ValidateAccountInDB(accountDetails);
 };

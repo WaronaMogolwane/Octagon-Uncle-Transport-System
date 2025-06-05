@@ -72,7 +72,7 @@ export default function EditUserDetailsScreen({navigation}: any) {
         }
       })
       .catch((error: any) => {
-        console.error(error);
+        throw new Error(error);
         setIsLoading(false);
       });
   };
@@ -113,7 +113,9 @@ export default function EditUserDetailsScreen({navigation}: any) {
           setIsLoading(false);
         }
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        throw new Error(error);
+      });
   };
 
   const SuccessToast = () => {

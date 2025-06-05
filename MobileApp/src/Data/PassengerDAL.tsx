@@ -27,7 +27,7 @@ export const AddPassengerToDB = async (passenger: Passenger) => {
       //data = response.data;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   [];
@@ -291,7 +291,7 @@ export const GetParentPassengersFromDB = async (parentId: string) => {
       result = tripData;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
       result = error;
     });
 
@@ -313,7 +313,7 @@ export const DeletePassengerFromDB = async (passengerId: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return [data, statusCode];
@@ -341,7 +341,7 @@ export const DeletePassengerRequestFromDB = async (
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return [data, statusCode];
@@ -373,7 +373,7 @@ export const UpdatePassengerInDB = async (passenger: Passenger) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return [data, statusCode];
@@ -394,7 +394,7 @@ export const UpdateIsAssignedInDB = async (passengerId: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return [data, statusCode];

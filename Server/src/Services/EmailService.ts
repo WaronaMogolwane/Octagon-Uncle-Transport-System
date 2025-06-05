@@ -1,18 +1,22 @@
 import dotenv from "dotenv";
-dotenv.config();
 import nodemailer from "nodemailer";
-const host = process.env.OUTS_SMTP_HOST;
-const port = process.env.OUTS_SMTP_PORT;
-const emailUser = process.env.OUTS_SMTP_EMAIL_USER;
-const emailPassword = process.env.OUTS_SMTP_EMAIL_PASSWORD;
 
-// create reusable transporter object using the default SMTP transport
+dotenv.config();
+
+const {
+    OUTS_SMTP_HOST: host,
+    OUTS_SMTP_PORT: port,
+    OUTS_SMTP_EMAIL_USER: emailUser,
+    OUTS_SMTP_EMAIL_PASSWORD: emailPassword,
+} = process.env;
+
+// Create a reusable transporter object using the default SMTP transport
 export const mailTransporter = nodemailer.createTransport({
-    host: host,
-    port: port,
-    secure: true, // true for 465, false for other ports
+    host,
+    port: Number(port), // Ensure the port is explicitly cast to a number
+    secure: Number(port) === 465, // Use secure mode for port 465
     auth: {
-        user: emailUser, // generated ethereal user
-        pass: emailPassword, // generated ethereal password
+        user: emailUser,
+        pass: emailPassword,
     },
 });

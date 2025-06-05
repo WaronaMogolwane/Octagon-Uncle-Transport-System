@@ -7,7 +7,7 @@ export const RestoreImageViaAsyncStorage = async () => {
     return value ?? '';
   } catch (e) {
     // error reading value
-    console.error(
+    throw new Error(
       'There was an error retrieving the image path via async: ' + e,
     );
     return '';
@@ -20,7 +20,9 @@ export const SaveImageViaAsyncStorage = async (imageUri: string) => {
       await AsyncStorage.setItem('profileImage', imageUri);
     } catch (e) {
       // saving error
-      console.error('There was an error saving the image path via async: ' + e);
+      throw new Error(
+        'There was an error saving the image path via async: ' + e,
+      );
     }
   } else {
     console.log('Image path is empty');
@@ -33,7 +35,9 @@ export const ClearImageViaAsyncStorage = async () => {
     console.log('Image path cleared successfully');
   } catch (e) {
     // remove error
-    console.error('There was an error clearing the image path via async: ' + e);
+    throw new Error(
+      'There was an error clearing the image path via async: ' + e,
+    );
   }
 };
 

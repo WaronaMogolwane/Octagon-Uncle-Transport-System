@@ -3,6 +3,7 @@ import {
   AddBankingDetail,
   GetBankingDetail,
   ModifyBankingDetail,
+  VerifyAccountNumber,
 } from "../Controllers/BankingDetailController";
 
 const router = Router();
@@ -22,6 +23,12 @@ router.patch(
 router.get(
   "/get-banking-detail",
   GetBankingDetail,
+  async (req, res, next) => {}
+);
+
+router.get(
+  "/verify-account-number",
+  VerifyAccountNumber,
   async (req, res, next) => {}
 );
 

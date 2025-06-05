@@ -1,9 +1,9 @@
-import { RemovePassengerDriverLinkingFromDB } from './../Data/PassengerDriverVehicleLinkingDAL';
-import { ChangeEvent } from 'react';
-import { GestureResponderEvent } from 'react-native';
-import { RemoveVehicleAlertProps } from './RemoveDriverAlertProps';
-import { RemoveClientAlertProps } from './RemoveClientAlertProps';
-import { RemoveDriverAlertProps } from './RemoveVehicleAlertProps';
+import {RemovePassengerDriverLinkingFromDB} from './../Data/PassengerDriverVehicleLinkingDAL';
+import {ChangeEvent} from 'react';
+import {GestureResponderEvent} from 'react-native';
+import {RemoveVehicleAlertProps} from './RemoveDriverAlertProps';
+import {RemoveClientAlertProps} from './RemoveClientAlertProps';
+import {RemoveDriverAlertProps} from './RemoveVehicleAlertProps';
 
 export type VerifyOtpModalProps = {
   ShowModal: boolean;
@@ -133,7 +133,11 @@ export type ClientDetailsModalProps = {
 export type BankingDetailDetailModalProps = {
   ShowModal: boolean;
   DropdownIsFocus: boolean;
+  DropdownIsFocusAccount: boolean;
+  DropdownIsFocusDocument: boolean;
   BankList: any[];
+  AccountTypeList: any[];
+  DocumentTypeList: any[];
   BranchNumberIsInvalid: boolean;
   BranchNumberErrorText: string | undefined;
   BranchNumberValue: string | undefined;
@@ -154,9 +158,23 @@ export type BankingDetailDetailModalProps = {
   ComfirmAccountNumberValue: string | undefined;
   ComfirmAccountNumberOnChangeText: (e: string | ChangeEvent<any>) => void;
   ComfirmAccountNumberOnBlur: (e: any) => void;
+  DocumentNumberIsInvalid: boolean;
+  DocumentNumberErrorText: string | undefined;
+  DocumentNumberValue: string | undefined;
+  DocumentNumberOnChangeText: (e: string | ChangeEvent<any>) => void;
+  DocumentNumberOnBlur: (e: any) => void;
+  SelectedBankName: string;
+  SelectedAccountType: string;
+  SelectedDocumentType: string;
   OnFocusBankingDetailDropdown: () => void;
   OnBlurBankingDetailDropdown: () => void;
   OnChangeBankingDetailDropdown: (e: any) => void;
+  OnFocusAccountTypeDropdown: () => void;
+  OnBlurAccountTypeDropdown: () => void;
+  OnChangeAccountTypeDropdown: (e: any) => void;
+  OnFocusDocumentTypeDropdown: () => void;
+  OnBlurDocumentTypeDropdown: () => void;
+  OnChangeDocumentTypeDropdown: (e: any) => void;
   CloseBankingDetailModalButtonOnPress: () => void;
   HandleSubmit: (
     values:

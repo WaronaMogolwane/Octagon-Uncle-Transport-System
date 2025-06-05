@@ -44,8 +44,8 @@ export const PendingDriverscreen = () => {
     setTimeout(() => {
       try {
         GetPendingDrivers(auth.GetBusinessId());
-      } catch (error) {
-        console.error(error);
+      } catch (error: any) {
+        throw new Error(error);
       }
     }, 2000);
     setRefreshingPendingDrivers(false);
@@ -54,7 +54,7 @@ export const PendingDriverscreen = () => {
     await DeleteUserInvitation(invitationId, 3, (error: any) => {
       if (error) {
         setRefreshingPendingDrivers(false);
-        console.error(error.response.data);
+        throw new Error(error.response.data);
       } else {
         GetPendingDrivers(auth.GetBusinessId());
         setRefreshingPendingDrivers(false);
@@ -68,7 +68,7 @@ export const PendingDriverscreen = () => {
       '3',
       (error: any, result: any) => {
         if (error) {
-          console.error(error.response.data);
+          throw new Error(error.response.data);
         } else {
           setPendingDriversList(result.data);
         }

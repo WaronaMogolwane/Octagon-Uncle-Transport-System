@@ -24,7 +24,7 @@ export const AddBusinessDetailToDB = async (businessDetail: BusinessDetail) => {
       //data = response.data;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   [];
@@ -62,7 +62,7 @@ export const GetBusinessDetailFromDB = async (businessId: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
       res = error;
     });
 
@@ -94,7 +94,7 @@ export const GetBusinessDetailForParentFromDB = async (businessId: string) => {
       res = businessDetail;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
       res = error;
     });
 
@@ -130,7 +130,7 @@ export const UpdateBusinessDetailInDB = async (
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return [data, statusCode];

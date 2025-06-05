@@ -292,7 +292,7 @@ const HomeScreen = ({navigation}: any) => {
   const GetVehicleCount = async () => {
     await GetVehicles(businessId, (error: any, result: any) => {
       if (error) {
-        console.error(error.response.data);
+        throw new Error(error.response.data);
       } else {
         if (result.data.length != 0) {
           setVehicleCount(result.data.length);
@@ -313,7 +313,7 @@ const HomeScreen = ({navigation}: any) => {
           setPassengerCount('0');
         }
       } catch (error) {
-        console.error('Error fetching passengers:', error);
+        throw new Error('Error fetching passengers: ' + error);
         setPassengerCount('0');
       }
     } else if (role == 2) {
@@ -325,7 +325,7 @@ const HomeScreen = ({navigation}: any) => {
           setPassengerCount('0');
         }
       } catch (error) {
-        console.error('Error fetching passengers:', error);
+        throw new Error('Error fetching passengers: ' + error);
         setPassengerCount('0');
       }
     }
@@ -374,7 +374,7 @@ const HomeScreen = ({navigation}: any) => {
         setUserName(result.firstName);
       })
       .catch((error: any) => {
-        console.log(error);
+        throw new Error(error);
       });
   };
 
@@ -383,7 +383,7 @@ const HomeScreen = ({navigation}: any) => {
       businessId,
       (error: any, result: any) => {
         if (error) {
-          console.error(error.response.data);
+          throw new Error(error.response.data);
         } else {
           setAvailableBalance(FormatBalance(result.Balance || '0'));
         }

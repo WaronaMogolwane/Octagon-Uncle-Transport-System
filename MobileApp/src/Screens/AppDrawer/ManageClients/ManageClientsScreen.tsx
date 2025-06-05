@@ -117,7 +117,7 @@ const ManageClientsScreen = ({navigation}: any) => {
           userInvitation,
           async (error: any, result: any) => {
             if (error) {
-              console.error(error.response.data);
+              throw new Error(error.response.data);
             } else {
               const userId: string = result.data.userId;
               let paymentSchedule: PaymentSchedule = new PaymentSchedule(

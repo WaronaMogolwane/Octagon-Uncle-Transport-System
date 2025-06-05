@@ -1,29 +1,29 @@
 export class TransferWebHookEvent {
     event: string;
-    data: Data;
+    data: TransferData;
 }
 
-export class Data {
-    amount: number;
+export class TransferData {
+    amount: number; // In kobo (smallest unit of the currency)
     currency: string;
     domain: string;
-    failures: null;
+    failures?: any[];
     id: number;
     integration: Integration;
-    reason: string;
+    reason?: string;
     reference: string;
     source: string;
-    source_details: null;
+    source_details?: any;
     status: string;
-    titan_code: null;
+    titan_code?: string;
     transfer_code: string;
-    transferred_at: null;
+    transferred_at?: string | null;
     recipient: Recipient;
     session: Session;
-    createdAt: Date;
-    updatedAt: Date;
-    created_at: Date;
-    update_at: Date;
+    createdAt: string;
+    updatedAt: string;
+    created_at?: string;
+    update_at?: string;
 }
 
 export class Integration {
@@ -35,62 +35,81 @@ export class Integration {
 export class Recipient {
     active: boolean;
     currency: string;
-    description: string;
+    description?: string;
     domain: string;
-    email: null;
+    email?: string | null;
     id: number;
     integration: number;
-    metadata: null;
+    metadata?: any;
     name: string;
     recipient_code: string;
-    type: string;
+    type: string; // e.g., 'nuban'
     is_deleted: boolean;
-    details: Details;
-    created_at: Date;
-    updated_at: Date;
+    details: AccountDetails;
+    created_at: string;
+    updated_at: string;
 }
 
-export class Details {
+export class AccountDetails {
     account_number: string;
-    account_name: null;
+    account_name?: string | null;
     bank_code: string;
     bank_name: string;
 }
 
 export class Session {
-    provider: null;
-    id: null;
+    provider?: string | null;
+    id?: string | null;
 }
+
 export class TransferRecipient {
-    type: string;
-    description: string;
+    type: string; // e.g., 'nuban'
+    description?: string;
     name: string;
     account_number: string;
-    bank_code: number;
+    bank_code: string;
     currency: string;
 }
+
 export class BankTransfer {
-    source: string;
-    reason: string;
+    source: string; // e.g., 'balance'
+    reason?: string;
     reference: string;
     amount: number;
     recipient: string;
 }
+
 export class BulkBankTransfer {
     currency: string;
-    source: string;
+    source: string; // e.g., 'balance'
     transfers: BankTransfer[];
 }
+
 export class Transfer {
-    transferCode: string;
-    amount: number;
+    transferCode?: string;
+    amount: number; // In kobo
     currency: string;
-    status: string;
+    status: string; // e.g., 'pending', 'success', 'failed'
     reference: string;
-    reason: string;
+    recipientCode: string;
+    reason?: string;
     dateCreated: Date;
     dateUpdated: Date;
     transactionType: string;
     paystackId?: number;
 }
+// interfaces/PaystackInterfaces.ts
+export interface BulkTransferItem {
+    recipient: string; // Recipient code
+    amount: number; // In kobo/cents
+    reason: string;
+    currency?: string; // Optional if the main currency is set
+    reference?: string; // Optional transfer reference
+    source?: string; // Optional if the main source is set
+}
 
+export interface BulkTransferRequest {
+    currency: string;
+    source: string;
+    transfers: BulkTransferItem[];
+}

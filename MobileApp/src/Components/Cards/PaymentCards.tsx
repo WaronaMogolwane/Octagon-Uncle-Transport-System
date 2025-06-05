@@ -17,6 +17,7 @@ import {
 } from '../../Props/PaymentCardProps';
 import {Icon} from 'lucide-react-native';
 import {cardCredit} from '@lucide/lab';
+import {PaymentIcon} from 'react-native-payment-icons';
 import {CustomButton1} from '../Buttons';
 String.prototype.format = function () {
   var args = arguments;
@@ -27,67 +28,89 @@ String.prototype.format = function () {
 
 export const PaymentCard = (props: PaymentCardProps) => {
   return (
-    <Button
-      size="sm"
-      action={props.PaymentsType == 'Expected' ? 'positive' : 'negative'}
-      style={{
-        borderRadius: 30,
-        elevation: 5,
-        width: '90%',
-        height: '20%',
-        marginBottom: 16,
-      }}>
-      <View style={{width: '100%'}}>
-        <Text style={{fontSize: 23, fontWeight: '400', color: 'white'}}>
-          {'{0} {1} Payments'.format(
-            props.NumberOfPayments,
-            props.PaymentsType,
-          )}
-        </Text>
-        <Text style={{fontSize: 23, fontWeight: '700', color: 'white'}}>
-          {props.Amount}
-        </Text>
-        <Text style={{fontSize: 18, fontWeight: '400', color: 'white'}}>
-          {props.CurrentPeriod}
-        </Text>
-      </View>
-    </Button>
+    <View
+      style={
+        (props.styles,
+        {
+          height: '20%',
+        })
+      }>
+      <HStack style={{justifyContent: 'space-between', alignItems: 'center'}}>
+        <View style={{width: '50%'}}>
+          <Text style={{fontSize: 23, fontWeight: '700'}}>{props.Amount}</Text>
+          <Text style={{fontSize: 17, color: 'gray'}}>
+            {'{0} {1} payments in {2}'.format(
+              props.NumberOfPayments,
+              props.PaymentsType,
+              props.CurrentPeriod,
+            )}
+          </Text>
+        </View>
+        <View style={{width: '50%'}}>
+          <CustomButton1
+            styles={{
+              backgroundColor: '#e8eef2',
+              width: '70%',
+              marginLeft: 'auto',
+            }}
+            textColor="#000000"
+            size="md"
+            title="View details"
+          />
+        </View>
+      </HStack>
+    </View>
   );
 };
 export const PaymentMethodCard = (props: PaymentMethodCardProps) => {
   return (
     <View>
       <View>
-        <HStack>
-          <Icon
-            iconNode={cardCredit}
-            size={24}
-            color={'black'}
-            style={{marginRight: 16, alignSelf: 'center'}}
-          />
-          <View style={{width: '90%'}}>
-            <Divider />
-            <HStack>
-              <Text style={{paddingVertical: 8, fontSize: 17}}>
-                {props.CardType + props.MaskedCardNumber}
-              </Text>
-              <Badge
-                action={props.IsActive ? 'success' : 'muted'}
-                variant="outline"
-                size="sm"
+        <HStack style={{alignItems: 'center'}}>
+          <View style={{width: '100%'}}>
+            <HStack
+              style={{
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingVertical: 4,
+              }}>
+              <PaymentIcon
+                type={props.CardType}
                 style={{
-                  borderRadius: 16,
-                  marginLeft: 'auto',
+                  width: 32,
                   marginRight: 16,
-                  height: '80%',
                   alignSelf: 'center',
-                }}>
-                <BadgeText>
-                  {props.IsActive ? 'Active' : 'Deactivated'}
-                </BadgeText>
-              </Badge>
+                }}
+              />
+
+              <VStack style={{marginRight: 'auto'}}>
+                <Text style={{fontSize: 16, fontWeight: '700'}}>
+                  {props.CardType.charAt(0).toUpperCase() +
+                    props.CardType.slice(1)}{' '}
+                  {props.MaskedCardNumber}
+                </Text>
+
+                <Text style={{fontSize: 14, color: 'gray'}}>
+                  {props.IsExpiringSoon ? 'Expiring soon' : 'Verified'}
+                </Text>
+              </VStack>
+              {props.IsActive ? (
+                <Badge
+                  action={props.IsActive ? 'success' : 'muted'}
+                  variant="outline"
+                  size="sm"
+                  style={{
+                    borderRadius: 16,
+                    marginLeft: 'auto',
+                    height: '80%',
+                    alignSelf: 'center',
+                  }}>
+                  <BadgeText>
+                    {props.IsActive ? 'Active' : 'Deactivated'}
+                  </BadgeText>
+                </Badge>
+              ) : null}
             </HStack>
-            <Divider />
           </View>
         </HStack>
       </View>
@@ -98,37 +121,18 @@ export const MonthlyPaymentDetailsCard = (
   props: MonthlyPaymentDetailsCardProps,
 ) => {
   return (
-    <Card
-      style={
-        (props.styles,
-        {
-          borderRadius: 5,
-          paddingHorizontal: '5%',
-          marginBottom: 8,
-        })
-      }>
+    <View style={props.styles}>
       <HStack>
         <VStack>
-          <Text style={{fontWeight: 'bold', fontSize: 15}}>
-            Next Payment Date
+          <Text style={{fontWeight: 'bold', fontSize: 18}}>
+            {props.NextPaymentDate}
           </Text>
-          <Text style={{fontSize: 18}}>{props.NextPaymentDate}</Text>
-          <Text style={{fontWeight: 'bold', fontSize: 15}}>Amount</Text>
-          <Text style={{fontSize: 18}}>{props.Amount}</Text>
+          <Text style={{fontSize: 14, color: 'gray'}}>Next payment</Text>
         </VStack>
         <VStack style={{marginLeft: 'auto', alignSelf: 'center'}}>
-          <Badge
-            variant="solid"
-            size="lg"
-            action={props.PaymentFailed ? 'error' : 'success'}
-            style={{marginBottom: 16, padding: 4}}>
-            <BadgeText>{props.PaymentFailed ? 'Unpaid' : 'Paid'}</BadgeText>
-          </Badge>
-          {props.PaymentFailed ? (
-            <CustomButton1 title="Pay Now" onPress={props.HandlePayNowPress} />
-          ) : null}
+          <Text style={{fontWeight: 'bold', fontSize: 18}}>{props.Amount}</Text>
         </VStack>
       </HStack>
-    </Card>
+    </View>
   );
 };

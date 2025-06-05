@@ -54,6 +54,16 @@ const SignInScreen = ({navigation}: any) => {
           }
         },
       );
+      console.log(values);
+      await signIn(values.email, values.password, (error: any, result: any) => {
+        if (formik.isValid) {
+          if (error) {
+            throw new Error(error.response!.data);
+          } else if (result) {
+            resetForm();
+          }
+        }
+      });
     },
   });
 

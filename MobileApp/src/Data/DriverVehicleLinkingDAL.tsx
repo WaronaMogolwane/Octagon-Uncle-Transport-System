@@ -18,7 +18,7 @@ export const GetDriverIdFromDB = async (vehicleId: string) => {
       result = res;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
       result = error;
     });
 

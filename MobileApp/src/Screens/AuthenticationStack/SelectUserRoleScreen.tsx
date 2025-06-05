@@ -69,8 +69,8 @@ const SelectUserRoleScreen = ({navigation}: any) => {
       (error: any, result: any) => {
         if (formik.isValid) {
           if (error) {
-            console.log(error);
             setIsLoading(false);
+            throw new Error(error);
           } else if (result) {
             setShowModal(false);
             ShowToast();

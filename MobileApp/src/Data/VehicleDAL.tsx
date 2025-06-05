@@ -94,7 +94,7 @@ export const GetVehicleAndDriverFromDB = async (businessId: string) => {
       result = vehicleData;
     })
     .catch((error: any) => {
-      console.error(error);
+      throw new Error(error);
       result = error;
     });
 
@@ -130,7 +130,7 @@ export const InsertNewVehicle = async (businessId: string) => {
       result = vehicleData;
     })
     .catch((error: any) => {
-      console.error(error);
+      throw new Error(error);
       result = error;
     });
 
@@ -172,7 +172,7 @@ export const DeleteDriverVehicleLinkByDriverId = async (
       callback(null, response);
     })
     .catch(error => {
-      console.error(error);
+      throw new Error(error);
 
       callback(error, null);
     });
@@ -193,7 +193,7 @@ export const DeleteVehicleByDriverIdAndVehicleId = async (
       callback(null, response);
     })
     .catch(error => {
-      console.error(error);
+      throw new Error(error);
 
       callback(error, null);
     });
@@ -247,8 +247,8 @@ export const GetVehicleByDriverId = async (driverId: string) => {
 
       res = result;
     })
-    .catch((error: AxiosError) => {
-      console.log(error);
+    .catch((error: any) => {
+      throw new Error(error);
       res = error;
     });
   return res;

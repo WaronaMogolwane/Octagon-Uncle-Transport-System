@@ -1,17 +1,8 @@
-import React, {useContext, useEffect, useState, useCallback} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
-import {FlatList, View} from 'react-native';
-import {
-  Text,
-  Image,
-  SafeAreaView,
-  useToast,
-  Toast,
-  ToastTitle,
-  ToastDescription,
-  VStack,
-} from '@gluestack-ui/themed';
+import {FlatList} from 'react-native';
+import {Text, Image, View, SafeAreaView} from '@gluestack-ui/themed';
 import {
   GetActivePassengerForBusiness,
   GetAllActivePassengerForParent,
@@ -42,24 +33,23 @@ import {PassengerListHomeScreenCard} from '../../../Components/Cards/PassengerLi
 import COLORS from '../../../Const/colors';
 import {PieChart} from 'react-native-gifted-charts/dist/PieChart';
 import RNFS from 'react-native-fs';
-import {useNetwork} from '../../../Services/NetworkContext';
 
 const HomeScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
-  const {isConnected, isLoading: networkLoading, checkNetwork} = useNetwork();
-  const toast = useToast();
   const [auth, setAuth] = useState(new Auth(session));
   const [passengerCount, setPassengerCount] = useState('0');
   const [vehicleCount, setVehicleCount] = useState('');
   const [userName, setUserName] = useState('');
   const [activePassengers, setActivePassengers] = useState([]);
   const [isActivePassenger, setIsActivePassenger] = useState(false);
+
   const [tripCount, setTripCount] = useState(0);
   const [missedTripsCount, setMissedTripsCount] = useState(0);
   const [activeTripsCount, setActiveTripsCount] = useState(0);
   const [completedTripsCount, setCompleteTripsCount] = useState(0);
   const [availableBalance, setAvailableBalance] = useState('0');
   const [showPieChartText, setShowPieChartText] = useState(false);
+
   const [expectedPaymentsSummary, setExpectedPaymentsSummary] = useState({
     Amount: '',
     CurrentPeriod: '',
@@ -70,6 +60,7 @@ const HomeScreen = ({navigation}: any) => {
     CurrentPeriod: '',
     NumberOfPayments: '',
   });
+
   const [vehicle, setVehicle] = useState<IVehicle>({
     Make: 'undefined',
     Model: 'undefined',
@@ -79,10 +70,13 @@ const HomeScreen = ({navigation}: any) => {
   });
 
   const role: number = Number(auth.GetUserRole());
+  // const role: number = 2;
+
   const userId = auth.GetUserId();
   const businessId = auth.GetBusinessId();
+
   const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
 
   const pieChartData = [
     {
@@ -117,185 +111,242 @@ const HomeScreen = ({navigation}: any) => {
     },
   ];
 
-  const showErrorToast = useCallback(() => {
-    toast.show({
-      placement: 'top',
-      render: ({id}) => (
-        <Toast nativeID={`toast-${id}`} action="error" variant="solid">
-          <VStack space="xs">
-            <ToastTitle>Something went wrong</ToastTitle>
-            <ToastDescription>Please try again later.</ToastDescription>
-          </VStack>
-        </Toast>
-      ),
-    });
-  }, [toast]);
+  useEffect(() => {
+    GetUserName();
 
-  const showOfflineToast = useCallback(() => {
-    toast.show({
-      placement: 'top',
-      render: ({id}) => (
-        <Toast nativeID={`toast-${id}`} action="error" variant="solid">
-          <VStack space="xs">
-            <ToastTitle>Offline</ToastTitle>
-            <ToastDescription>
-              No internet connection. Please try again when online.
-            </ToastDescription>
-          </VStack>
-        </Toast>
-      ),
-    });
-  }, [toast]);
+    if (role == 1) {
+      GetPaymentsForThisMonth();
+      GetDeclinedPaymentSummary();
+      GetPassengers();
+      GetVehicleCount();
+      GetAvailableBalance(auth.GetBusinessId());
+      GetDailyBusinessTrips();
+    } else if (role == 2) {
+      GetDailyParentTrips();
+      GetPassengers();
+      GetActivePasengers();
+    } else if (role == 3) {
+      GetVehicleInfomation();
+      GetDailyDriverTrips();
+    }
+  }, []);
 
-  // Utility to wrap API calls with network check
-  const withNetworkCheck = useCallback(
-    async (apiCall: () => Promise<void>, functionName: string) => {
-      if (networkLoading) {
-        console.log(`Skipping ${functionName}: Network state loading`);
-        return;
-      }
-      if (!(await checkNetwork())) {
-        console.log(`Skipping ${functionName}: Device offline`);
-        showOfflineToast();
-        return;
-      }
-      try {
-        await apiCall();
-      } catch (error) {
-        console.error(`${functionName} failed:`, error);
-        showErrorToast();
-      }
-    },
-    [networkLoading, checkNetwork, showOfflineToast, showErrorToast],
-  );
+  useEffect(() => {
+    GetProfileImage();
+  }, []);
 
-  const GetPaymentsForThisMonth = useCallback(async () => {
-    await GetPaymentsSummaryForThisMonth(
+  const GetPaymentsForThisMonth = async () => {
+    return await GetPaymentsSummaryForThisMonth(
       businessId,
       (error: any, result: any) => {
         if (error) {
-          throw new Error(error.response?.data || 'Unknown error');
+          console.error(error.response.data);
+        } else {
+          const expectedPayments: any = result;
+          expectedPayments.Amount = FormatBalance(
+            expectedPayments.Amount || '0',
+          );
+          setExpectedPaymentsSummary(expectedPayments);
         }
-        const expectedPayments: any = result;
-        expectedPayments.Amount = FormatBalance(expectedPayments.Amount || '0');
-        setExpectedPaymentsSummary(expectedPayments);
       },
     );
-  }, [businessId]);
+  };
 
-  const GetDeclinedPaymentSummary = useCallback(async () => {
-    await GetDeclinedPaymentsSummary(businessId, (error: any, result: any) => {
-      if (error) {
-        throw new Error(error.response?.data || 'Unknown error');
-      }
-      const declinedPayments: any = result;
-      declinedPayments.Amount = FormatBalance(declinedPayments.Amount || '0');
-      setDeclinedPaymentsSummary(declinedPayments);
-    });
-  }, [businessId]);
+  const GetDeclinedPaymentSummary = async () => {
+    return await GetDeclinedPaymentsSummary(
+      businessId,
+      (error: any, result: any) => {
+        if (error) {
+          console.error(error.response.data);
+        } else {
+          const declinedPayments: any = result;
+          declinedPayments.Amount = FormatBalance(
+            declinedPayments.Amount || '0',
+          );
+          setDeclinedPaymentsSummary(declinedPayments);
+        }
+      },
+    );
+  };
 
-  const GetProfileImage = useCallback(async () => {
+  const GetProfileImage = async () => {
     const downloadDest = `${RNFS.DocumentDirectoryPath}/profile_image.jpg`;
-    const fileExists = await RNFS.exists(downloadDest);
-    if (fileExists) {
-      return;
-    }
-    const [imageUrl, status] = await GetUserProfileImage(userId);
-    if (status === 200 && imageUrl) {
-      const downloadResponse = await RNFS.downloadFile({
-        fromUrl: storageUrl + '/' + imageUrl,
-        toFile: downloadDest,
-      }).promise;
-      if (downloadResponse.statusCode === 200) {
-        await SaveImageViaAsyncStorage(`file://${downloadDest}`);
+
+    try {
+      // Check if file already exists
+      const fileExists = await RNFS.exists(downloadDest);
+
+      // If file exists, do nothing
+      if (fileExists) {
+        return;
       } else {
-        console.warn(
-          'Failed to download profile image:',
-          downloadResponse.statusCode,
-        );
+        GetUserProfileImage(userId).then(async (result: any) => {
+          if (result[1] == 200) {
+            // Download and save the new image
+            const downloadResponse = await RNFS.downloadFile({
+              fromUrl: storageUrl + result[0],
+              toFile: downloadDest,
+            }).promise;
+
+            if (downloadResponse.statusCode === 200) {
+              // console.log('Image saved successfully:', downloadDest);
+              SaveImageViaAsyncStorage(`file://${downloadDest}`);
+            } else {
+              // console.log('Failed to save image:', downloadResponse.statusCode);
+            }
+          }
+        });
       }
+    } catch (err) {
+      // console.log('Error checking file existence:', err);
     }
-  }, [userId, storageUrl]);
+  };
 
-  const GetDailyBusinessTrips = useCallback(async () => {
+  const GetDailyBusinessTrips = async () => {
     setTripCount(0);
     setMissedTripsCount(0);
     setActiveTripsCount(0);
     setCompleteTripsCount(0);
-    const result = await GetDailytTripsTransporter(businessId);
-    if (result?.length) {
-      setTripCount(result.length);
-      result.forEach((item: any) => {
-        if (item.tripStatus == 1) setMissedTripsCount(prev => prev + 1);
-        if (item.tripStatus == 2) setActiveTripsCount(prev => prev + 1);
-        if (item.tripStatus == 3) setCompleteTripsCount(prev => prev + 1);
-      });
-    } else {
-      setTripCount(0);
-    }
-  }, [businessId]);
 
-  const GetDailyParentTrips = useCallback(async () => {
+    await GetDailytTripsTransporter(businessId).then((result: any) => {
+      if (result.length != 0) {
+        setTripCount(result.length);
+
+        result.forEach((item: any) => {
+          if (item.tripStatus == 1) {
+            setMissedTripsCount(prevCount => prevCount + 1);
+          }
+
+          if (item.tripStatus == 2) {
+            setActiveTripsCount(prevCount => prevCount + 1);
+          }
+
+          if (item.tripStatus == 3) {
+            setCompleteTripsCount(prevCount => prevCount + 1);
+          }
+        });
+      } else {
+        setTripCount(0);
+      }
+    });
+  };
+
+  const GetDailyParentTrips = async () => {
     setTripCount(0);
     setMissedTripsCount(0);
     setActiveTripsCount(0);
     setCompleteTripsCount(0);
-    const result = await GetDailytTripsParent(userId);
-    if (result?.length) {
-      setTripCount(result.length);
-      result.forEach((item: any) => {
-        if (item.tripStatus == 1) setMissedTripsCount(prev => prev + 1);
-        if (item.tripStatus == 2) setActiveTripsCount(prev => prev + 1);
-        if (item.tripStatus == 3) setCompleteTripsCount(prev => prev + 1);
-      });
-    } else {
-      setTripCount(0);
-    }
-  }, [userId]);
 
-  const GetDailyDriverTrips = useCallback(async () => {
+    await GetDailytTripsParent(userId).then((result: any) => {
+      if (result.length != 0) {
+        setTripCount(result.length);
+
+        result.forEach((item: any) => {
+          if (item.tripStatus == 1) {
+            setMissedTripsCount(prevCount => prevCount + 1);
+          }
+
+          if (item.tripStatus == 2) {
+            setActiveTripsCount(prevCount => prevCount + 1);
+          }
+
+          if (item.tripStatus == 3) {
+            setCompleteTripsCount(prevCount => prevCount + 1);
+          }
+        });
+      } else {
+        setTripCount(0);
+      }
+    });
+  };
+
+  const GetDailyDriverTrips = async () => {
     setTripCount(0);
     setMissedTripsCount(0);
     setActiveTripsCount(0);
     setCompleteTripsCount(0);
-    const result = await GetDailytTripsDriver(userId);
-    if (result?.length) {
-      setTripCount(result.length);
-      result.forEach((item: any) => {
-        if (item.tripStatus == 1) setMissedTripsCount(prev => prev + 1);
-        if (item.tripStatus == 2) setActiveTripsCount(prev => prev + 1);
-        if (item.tripStatus == 3 && item.isCompleted == 1)
-          setCompleteTripsCount(prev => prev + 1);
-      });
-    } else {
-      setTripCount(0);
-    }
-  }, [userId]);
 
-  const GetVehicleCount = useCallback(async () => {
+    await GetDailytTripsDriver(userId).then((result: any) => {
+      if (result.length != 0) {
+        setTripCount(result.length);
+
+        result.forEach((item: any) => {
+          if (item.tripStatus == 1) {
+            setMissedTripsCount(prevCount => prevCount + 1);
+          }
+
+          if (item.tripStatus == 2) {
+            setActiveTripsCount(prevCount => prevCount + 1);
+          }
+
+          if (item.tripStatus == 3 && item.isCompleted == 1) {
+            setCompleteTripsCount(prevCount => prevCount + 1);
+          }
+        });
+      } else {
+        setTripCount(0);
+      }
+    });
+  };
+
+  const GetVehicleCount = async () => {
     await GetVehicles(businessId, (error: any, result: any) => {
       if (error) {
-        throw new Error(error.response?.data || 'Unknown error');
+        throw new Error(error.response.data);
+      } else {
+        if (result.data.length != 0) {
+          setVehicleCount(result.data.length);
+        } else {
+          setVehicleCount('0');
+        }
       }
-      setVehicleCount(result.data?.length?.toString() || '0');
     });
-  }, [businessId]);
+  };
 
-  const GetPassengers = useCallback(async () => {
-    let result;
-    if (role === 1) {
-      result = await GetActivePassengerForBusiness(businessId);
-    } else if (role === 2) {
-      result = await GetAllActivePassengerForParent(userId);
+  const GetPassengers = async () => {
+    if (role == 1) {
+      try {
+        const result = await GetActivePassengerForBusiness(businessId);
+        if (result.length != 0) {
+          setPassengerCount(result.length.toString());
+        } else {
+          setPassengerCount('0');
+        }
+      } catch (error) {
+        throw new Error('Error fetching passengers: ' + error);
+        setPassengerCount('0');
+      }
+    } else if (role == 2) {
+      try {
+        const result = await GetAllActivePassengerForParent(userId);
+        if (result.length != 0) {
+          setPassengerCount(result.length.toString());
+        } else {
+          setPassengerCount('0');
+        }
+      } catch (error) {
+        throw new Error('Error fetching passengers: ' + error);
+        setPassengerCount('0');
+      }
     }
-    setPassengerCount(result?.length?.toString() || '0');
-  }, [role, businessId, userId]);
+  };
 
-  const GetVehicleInfomation = useCallback(async () => {
-    const result = await GetDriverVehicle(userId);
-    if (result?.length) {
-      setVehicle(result[0]);
-    } else {
+  const GetVehicleInfomation = async () => {
+    try {
+      const result = await GetDriverVehicle(userId);
+      if (result && Array.isArray(result) && result.length > 0) {
+        setVehicle(result[0]);
+      } else {
+        setVehicle({
+          Make: 'Not available',
+          Model: 'Not available',
+          FrontImageUrl: 'Not available',
+          Colour: 'Not available',
+          LicenseNumber: 'Not available',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching vehicle information:', error);
       setVehicle({
         Make: 'Not available',
         Model: 'Not available',
@@ -304,83 +355,41 @@ const HomeScreen = ({navigation}: any) => {
         LicenseNumber: 'Not available',
       });
     }
-  }, [userId]);
+  };
 
-  const GetActivePasengers = useCallback(async () => {
-    const result = await GetAllActivePassengerForParent(userId);
-    if (result?.length && result[0] !== '') {
-      setIsActivePassenger(true);
-      setActivePassengers(result);
-    } else {
-      setIsActivePassenger(false);
-    }
-  }, [userId]);
-
-  const GetUserName = useCallback(async () => {
-    const result = await GetUser(userId);
-    setUserName(result.firstName);
-  }, [userId]);
-
-  const GetAvailableBalance = useCallback(async () => {
-    await GetBalanceByBusinessId(businessId, (error: any, result: any) => {
-      if (error) {
-        throw new Error(error.response?.data || 'Unknown error');
+  const GetActivePasengers = async () => {
+    await GetAllActivePassengerForParent(userId).then(result => {
+      if (result.length > 0 && result[0] !== '') {
+        setIsActivePassenger(true);
+        setActivePassengers(result);
+      } else {
+        setIsActivePassenger(false);
       }
-      setAvailableBalance(FormatBalance(result.Balance || '0'));
     });
-  }, [businessId]);
+  };
 
-  useEffect(() => {
-    if (networkLoading) {
-      console.log('Skipping initialization: Network state loading');
-      return;
-    }
-    if (!isConnected) {
-      console.log('Skipping initialization: Device offline');
-      showOfflineToast();
-      return;
-    }
-    const timer = setTimeout(() => {
-      withNetworkCheck(GetUserName, 'GetUserName');
-      if (role === 1) {
-        withNetworkCheck(GetPaymentsForThisMonth, 'GetPaymentsForThisMonth');
-        withNetworkCheck(
-          GetDeclinedPaymentSummary,
-          'GetDeclinedPaymentSummary',
-        );
-        withNetworkCheck(GetPassengers, 'GetPassengers');
-        withNetworkCheck(GetVehicleCount, 'GetVehicleCount');
-        withNetworkCheck(GetAvailableBalance, 'GetAvailableBalance');
-        withNetworkCheck(GetDailyBusinessTrips, 'GetDailyBusinessTrips');
-      } else if (role === 2) {
-        withNetworkCheck(GetDailyParentTrips, 'GetDailyParentTrips');
-        withNetworkCheck(GetPassengers, 'GetPassengers');
-        withNetworkCheck(GetActivePasengers, 'GetActivePasengers');
-      } else if (role === 3) {
-        withNetworkCheck(GetVehicleInfomation, 'GetVehicleInfomation');
-        withNetworkCheck(GetDailyDriverTrips, 'GetDailyDriverTrips');
-      }
-      withNetworkCheck(GetProfileImage, 'GetProfileImage');
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [
-    networkLoading,
-    isConnected,
-    role,
-    withNetworkCheck,
-    GetUserName,
-    GetPaymentsForThisMonth,
-    GetDeclinedPaymentSummary,
-    GetPassengers,
-    GetVehicleCount,
-    GetAvailableBalance,
-    GetDailyBusinessTrips,
-    GetDailyParentTrips,
-    GetActivePasengers,
-    GetVehicleInfomation,
-    GetDailyDriverTrips,
-    GetProfileImage,
-  ]);
+  const GetUserName = async () => {
+    await GetUser(userId)
+      .then((result: any) => {
+        setUserName(result.firstName);
+      })
+      .catch((error: any) => {
+        throw new Error(error);
+      });
+  };
+
+  const GetAvailableBalance = async (businessId: string) => {
+    return await GetBalanceByBusinessId(
+      businessId,
+      (error: any, result: any) => {
+        if (error) {
+          throw new Error(error.response.data);
+        } else {
+          setAvailableBalance(FormatBalance(result.Balance || '0'));
+        }
+      },
+    );
+  };
 
   const renderItemComponentPassengers = (itemData: any) => (
     <PassengerListHomeScreenCard
@@ -392,46 +401,58 @@ const HomeScreen = ({navigation}: any) => {
     />
   );
 
-  const EmtpyFlatListText = () => (
-    <View>
-      <Text style={HomeScreenStyles.emptyFlatListText}>
-        You have no active passengers
-      </Text>
-    </View>
-  );
+  const EmtpyFlatListText = () => {
+    return (
+      <View>
+        <Text style={HomeScreenStyles.emptyFlatListText}>
+          You have no active passengers
+        </Text>
+      </View>
+    );
+  };
 
   const getTimeOfDay = (): string => {
     const hour = new Date().getHours();
-    if (hour >= 6 && hour < 12) return 'Morning';
-    if (hour >= 12 && hour < 18) return 'Afternoon';
-    if (hour >= 18 && hour < 21) return 'Evening';
-    return 'Night';
+
+    if (hour >= 6 && hour < 12) {
+      return 'Morning';
+    } else if (hour >= 12 && hour < 18) {
+      return 'Afternoon';
+    } else if (hour >= 18 && hour < 21) {
+      return 'Evening';
+    } else {
+      return 'Night';
+    }
   };
 
-  const PieChartText = () => (
-    <View>
-      <Text style={HomeScreenStyles.piesChartTitle}>Payments</Text>
-    </View>
-  );
+  const PieChartText = () => {
+    return (
+      <View>
+        <Text style={HomeScreenStyles.piesChartTitle}>Payments</Text>
+      </View>
+    );
+  };
 
-  const renderLegend = (text: any, color: any) => (
-    <View style={{flexDirection: 'row', marginBottom: 12}}>
-      <View
-        style={{
-          height: 18,
-          width: 18,
-          marginRight: 10,
-          borderRadius: 4,
-          backgroundColor: color || 'white',
-        }}
-      />
-      <Text style={{color: COLORS.customBlack, fontSize: 16}}>
-        {text || ''}
-      </Text>
-    </View>
-  );
+  const renderLegend = (text: any, color: any) => {
+    return (
+      <View style={{flexDirection: 'row', marginBottom: 12}}>
+        <View
+          style={{
+            height: 18,
+            width: 18,
+            marginRight: 10,
+            borderRadius: 4,
+            backgroundColor: color || 'white',
+          }}
+        />
+        <Text style={{color: COLORS.customBlack, fontSize: 16}}>
+          {text || ''}
+        </Text>
+      </View>
+    );
+  };
 
-  if (role === 1) {
+  if (role == 1) {
     return (
       <SafeAreaView style={ThemeStyles.container}>
         <View style={HomeScreenStyles.chartContainer}>
@@ -443,12 +464,14 @@ const HomeScreen = ({navigation}: any) => {
             semiCircle
             data={pieChartData}
             radius={80}
-            innerRadius={75}
+            innerRadius={65}
             showValuesAsLabels
             showTextBackground
             centerLabelComponent={PieChartText}
             labelsPosition={'onBorder'}
-            onPress={() => setShowPieChartText(!showPieChartText)}
+            onPress={() => {
+              setShowPieChartText(!showPieChartText);
+            }}
             showText={showPieChartText}
           />
           <View style={HomeScreenStyles.legend}>
@@ -470,17 +493,21 @@ const HomeScreen = ({navigation}: any) => {
               secondaryText={'Balance'}
             />
             <SmallHomeScreenCard
-              primaryText={vehicleCount || '0'}
+              primaryText={vehicleCount ? vehicleCount.toString() : '0'}
               secondaryText={'Active vehicle'}
             />
           </View>
-          <View style={{flexDirection: 'row', justifyContent: 'space-evenly'}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-evenly',
+            }}>
             <SmallHomeScreenCard
               primaryText={passengerCount}
               secondaryText={'Active passengers'}
             />
             <SmallHomeScreenCard
-              primaryText={tripCount.toString()}
+              primaryText={tripCount ? tripCount.toString() : '0'}
               secondaryText={'Total trips'}
             />
           </View>
@@ -489,34 +516,37 @@ const HomeScreen = ({navigation}: any) => {
           <Text
             style={[
               HomeScreenStyles.titleText,
-              HomeScreenStyles.itemSecondaryText,
+              HomeScreenStyles.secondTitleText,
+              {marginTop: 85.5, marginBottom: 13.5},
             ]}>
             Today's stats
           </Text>
           <StatRowCard
             primaryText={'Missed'}
             secondaryText={'Trips'}
-            tetiaryText={missedTripsCount.toString()}
+            tetiaryText={missedTripsCount ? missedTripsCount.toString() : '0'}
           />
           <StatRowCard
             primaryText={'Active'}
             secondaryText={'Trips'}
-            tetiaryText={activeTripsCount.toString()}
+            tetiaryText={activeTripsCount ? activeTripsCount.toString() : '0'}
           />
           <StatRowCard
             primaryText={'Completed'}
             secondaryText={'Trips'}
-            tetiaryText={completedTripsCount.toString()}
+            tetiaryText={
+              completedTripsCount ? completedTripsCount.toString() : '0'
+            }
           />
         </View>
       </SafeAreaView>
     );
-  } else if (role === 2) {
+  } else if (role == 2) {
     return (
       <SafeAreaView style={ThemeStyles.container}>
         <View style={{height: '25%'}}>
           <Text style={HomeScreenStyles.primaryHeading}>Good</Text>
-          <Text style={[HomeScreenStyles.primaryHeading, {marginStart: 25}]}>
+          <Text style={[HomeScreenStyles.primaryHeading, {marginStart: 50}]}>
             {getTimeOfDay()}
           </Text>
           <Text
@@ -539,13 +569,14 @@ const HomeScreen = ({navigation}: any) => {
               secondaryText={'Balance due'}
             />
             <SmallHomeScreenCard
-              primaryText={passengerCount}
+              primaryText={passengerCount ? passengerCount.toString() : '0'}
               secondaryText={'All passengers'}
             />
           </View>
           <View style={HomeScreenStyles.flatList}>
-            {isActivePassenger ? null : <EmtpyFlatListText />}
+            {isActivePassenger ? null : EmtpyFlatListText()}
             <FlatList
+              extraData
               data={activePassengers}
               renderItem={({item}) => renderItemComponentPassengers(item)}
             />
@@ -555,40 +586,41 @@ const HomeScreen = ({navigation}: any) => {
           <Text
             style={[
               HomeScreenStyles.titleText,
-              HomeScreenStyles.itemSecondaryText,
-              {marginBottom: 15, marginTop: 20, color: COLORS.customBlack},
+              HomeScreenStyles.secondTitleText,
             ]}>
-            Daily Stats
+            Today's stats
           </Text>
           <StatRowCard
             primaryText={'Missed'}
             secondaryText={'Trips'}
-            tetiaryText={missedTripsCount.toString()}
+            tetiaryText={missedTripsCount ? missedTripsCount.toString() : '0'}
           />
           <StatRowCard
             primaryText={'Active'}
             secondaryText={'Trips'}
-            tetiaryText={activeTripsCount.toString()}
+            tetiaryText={activeTripsCount ? activeTripsCount.toString() : '0'}
           />
           <StatRowCard
             primaryText={'Completed'}
             secondaryText={'Trips'}
-            tetiaryText={completedTripsCount.toString()}
+            tetiaryText={
+              completedTripsCount ? completedTripsCount.toString() : '0'
+            }
           />
           <StatRowCard
             primaryText={'Total'}
             secondaryText={'Trips'}
-            tetiaryText={tripCount.toString()}
+            tetiaryText={tripCount ? tripCount.toString() : '0'}
           />
         </View>
       </SafeAreaView>
     );
-  } else {
+  } else if (role == 3) {
     return (
       <SafeAreaView style={ThemeStyles.container}>
         <View style={{height: '25%'}}>
           <Text style={HomeScreenStyles.primaryHeading}>Good</Text>
-          <Text style={[HomeScreenStyles.primaryHeading, {marginStart: 25}]}>
+          <Text style={[HomeScreenStyles.primaryHeading, {marginStart: 50}]}>
             {getTimeOfDay()}
           </Text>
           <Text
@@ -602,7 +634,9 @@ const HomeScreen = ({navigation}: any) => {
         <View style={{height: '25%'}}>
           <View style={HomeScreenStyles.vehicleContainer}>
             <Image
-              source={{uri: storageUrl + vehicle?.FrontImageUrl}}
+              source={{
+                uri: storageUrl + vehicle?.FrontImageUrl,
+              }}
               alt="Vehicle front picture."
               style={HomeScreenStyles.vehicleImage}
             />
@@ -638,30 +672,31 @@ const HomeScreen = ({navigation}: any) => {
           <Text
             style={[
               HomeScreenStyles.titleText,
-              HomeScreenStyles.itemSecondaryText,
-              {marginBottom: 15, marginTop: 10, color: COLORS.customBlack},
+              HomeScreenStyles.secondTitleText,
             ]}>
-            Daily Stats
+            Today's stats
           </Text>
           <StatRowCard
             primaryText={'Missed'}
             secondaryText={'Trips'}
-            tetiaryText={missedTripsCount.toString()}
+            tetiaryText={missedTripsCount ? missedTripsCount.toString() : '0'}
           />
           <StatRowCard
             primaryText={'Active'}
             secondaryText={'Trips'}
-            tetiaryText={activeTripsCount.toString()}
+            tetiaryText={activeTripsCount ? activeTripsCount.toString() : '0'}
           />
           <StatRowCard
             primaryText={'Completed'}
             secondaryText={'Trips'}
-            tetiaryText={completedTripsCount.toString()}
+            tetiaryText={
+              completedTripsCount ? completedTripsCount.toString() : '0'
+            }
           />
           <StatRowCard
             primaryText={'Total'}
             secondaryText={'Trips'}
-            tetiaryText={tripCount.toString()}
+            tetiaryText={tripCount ? tripCount.toString() : '0'}
           />
         </View>
       </SafeAreaView>

@@ -29,7 +29,7 @@ String.prototype.format = function () {
  * @param {string} ...args: any[]
  * @returns {string} formattedString: string
  */
-export function stringFormat(template: string, ...args: any[]) {
+export function stringFormat(template: string, ...args: any[]): string {
   return template.replace(/{(\d+)}/g, function (match, number) {
     return typeof args[number] != 'undefined'
       ? args[number]

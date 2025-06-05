@@ -1,38 +1,61 @@
 import cors from "cors";
 import dotenv from "dotenv";
-dotenv.config();
 import express from "express";
+import bodyParser from "body-parser";
 import { firebase } from "./firebase";
 import ErrorHandler from "./Middleware/ErrorHandler";
-import WinstonLogger from "./Utilities/WinstonLogger";
 import { MainWorker } from "./Worker/MainWorker";
-import { CustomLogger } from "./Classes/CustomLogger";
 import { RegisterRoutes } from "./Routes/Routes";
 
-const Logger: CustomLogger = new CustomLogger();
-const NODE_ENV = process.env.NODE_ENV;
-let PORT = (NODE_ENV === "development") ? process.env.OUTS_SERVER_PORT : process.env.PORT;
-const app = express();
-const fbp = firebase;
-let bodyParser = require("body-parser");
+// Import the FUNCTION to create Winston loggers (File/Console only)
+import { CreateLogger as CreateWinstonLogger } from './Utilities/WinstonLogger'; // Adjust path
 
-app.use(cors());
-app.use(bodyParser.json({ limit: "50mb" }));
-app.use(
-  bodyParser.urlencoded({
-    limit: "50mb",
-    extended: true,
-    parameterLimit: 50000,
-  })
-);
-app.use(ErrorHandler);
-app.listen(PORT, function () {
-  Logger.Log(`Octagon Uncle server is live on Port ${PORT}`);
+// Import the CustomLogger class (ensure this is the MODIFIED version that accepts eventLogger)
+import { CustomLogger } from "./Classes/CustomLogger"; // Adjust path
+
+// Import the logger instances from your WindowsLogger.ts file
+import { ServerEventLogger } from "./Utilities/WindowsLogger"; // Adjust path
+
+
+// Initialize dotenv configuration
+dotenv.config();
+
+const serverWinstonLogger = CreateWinstonLogger("Octagon Uncle Server");
+
+// Create CustomLogger Instances, Wrapping Winston AND Passing node-windows EventLoggers
+const ServerLogger = new CustomLogger(serverWinstonLogger, {
+  eventLogger: ServerEventLogger
 });
 
+// Application Setup
+const NODE_ENV = process.env.NODE_ENV || "production";
+const PORT = process.env.OUTS_SERVER_PORT;
+
+const app = express();
+
+// Middleware setup
+app.use(cors());
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }));
+
+// Register API Routes
 RegisterRoutes(app);
 
-if (NODE_ENV === 'development') {
-  const mainWorker: MainWorker = new MainWorker();
+// Error Handling Middleware
+app.use(ErrorHandler);
+
+
+// Start the Express Server
+app.listen(PORT, () => {
+  ServerLogger.Log(`Octagon Uncle server is live on Port ${PORT}`);
+});
+
+
+// Start Worker Jobs (Conditionally)
+if (NODE_ENV !== "development") {
+  const mainWorker = new MainWorker();
   mainWorker.StartJobs();
 }
+
+// Export the logger instances
+export { ServerLogger }

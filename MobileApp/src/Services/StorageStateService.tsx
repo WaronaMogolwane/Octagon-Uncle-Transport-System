@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {Platform} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 type UseStateHook<T> = [[boolean, T | null], (value: T | null) => void];
 
@@ -25,7 +26,7 @@ export async function setStorageItemAsync(key: string, value: string | null) {
         AsyncStorage.setItem(key, value);
       }
     } catch (e) {
-      console.error('Local storage is unavailable:', e);
+      throw new Error('Local storage is unavailable: ' + e);
     }
   } else {
     if (value == null) {
@@ -47,7 +48,7 @@ export function useStorageState(key: string): UseStateHook<string> {
         setState(value);
       })
       .catch(error => {
-        console.log(error);
+        throw new Error(error);
       });
   };
 
@@ -67,3 +68,26 @@ export function useStorageState(key: string): UseStateHook<string> {
 
   return [state, setValue];
 }
+
+export const SaveTokens = async (accessToken: string, refreshToken: string) => {
+  try {
+    await EncryptedStorage.setItem('accessToken', accessToken);
+    await EncryptedStorage.setItem('refreshToken', refreshToken);
+    console.log('Tokens saved securely!');
+  } catch (error) {
+    throw new Error('Error saving tokens: ' + error);
+  }
+};
+export const FetchAccessToken = async () => {
+  try {
+    const accessToken = await EncryptedStorage.getItem('accessToken');
+    if (accessToken) {
+      return accessToken;
+    }
+    console.log('Access token not found.');
+    return null;
+  } catch (error) {
+    throw new Error('Error retrieving access token: ' + error);
+    return null;
+  }
+};

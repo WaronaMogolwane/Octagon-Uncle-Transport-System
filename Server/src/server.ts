@@ -14,21 +14,17 @@ import { CreateLogger as CreateWinstonLogger } from './Utilities/WinstonLogger';
 import { CustomLogger } from "./Classes/CustomLogger"; // Adjust path
 
 // Import the logger instances from your WindowsLogger.ts file
-import { ServerEventLogger as ImportedServerEventLogger, WorkerEventLogger as ImportedWorkerEventLogger } from "./Utilities/WindowsLogger"; // Adjust path
+import { ServerEventLogger } from "./Utilities/WindowsLogger"; // Adjust path
 
 
 // Initialize dotenv configuration
 dotenv.config();
 
-
-// Create Winston Logger Instance for the SERVER (using Modified CreateLogger)
 const serverWinstonLogger = CreateWinstonLogger("Octagon Uncle Server");
 
 // Create CustomLogger Instances, Wrapping Winston AND Passing node-windows EventLoggers
-
-// Create the Server Logger instance (an instance of CustomLogger)
 const ServerLogger = new CustomLogger(serverWinstonLogger, {
-  eventLogger: ImportedServerEventLogger
+  eventLogger: ServerEventLogger
 });
 
 // Application Setup

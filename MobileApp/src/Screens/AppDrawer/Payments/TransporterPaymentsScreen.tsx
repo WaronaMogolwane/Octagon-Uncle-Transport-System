@@ -22,6 +22,7 @@ import {
   VStack,
   ToastTitle,
   Toast,
+  Heading,
 } from '@gluestack-ui/themed';
 import {PaymentCard} from '../../../Components/Cards/PaymentCards';
 import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
@@ -34,6 +35,7 @@ import {
 import {BankingDetail} from '../../../Models/BankingDetail';
 import * as yup from 'yup';
 import NotificationToast from '../../../Components/Toasts/NotificationToast';
+import {ArrowRight} from 'lucide-react-native';
 
 const TransporterPaymentsScreen = ({
   navigation,
@@ -250,47 +252,89 @@ const TransporterPaymentsScreen = ({
             onRefresh={RefreshPayments}
           />
         }>
-        {/* Available Balance Section */}
-        <View style={{padding: 16}}>
-          <Text style={{fontSize: 22, fontWeight: 'bold', marginBottom: 8}}>
-            Available Balance
-          </Text>
-          <Text style={{fontSize: 18}}>{availableBalance}</Text>
+        <View>
+          {/* Available Balance Section */}
+          <View
+            style={{
+              paddingHorizontal: 16,
+              marginTop: 16,
+              marginBottom: 32,
+            }}>
+            <Text style={{fontSize: 18, fontWeight: 'bold', marginBottom: 4}}>
+              Available Balance
+            </Text>
+            <Heading style={{fontSize: 40, paddingTop: 16}}>
+              {availableBalance}
+            </Heading>
+          </View>
+
+          {/* Payment Summary */}
+          <View
+            style={{
+              paddingHorizontal: 16,
+            }}>
+            <PaymentCard
+              PaymentsType="Expected"
+              NumberOfPayments={expectedPaymentsSummary.NumberOfPayments || '0'}
+              Amount={expectedPaymentsSummary.Amount}
+              CurrentPeriod={expectedPaymentsSummary.CurrentPeriod}
+            />
+          </View>
+          <View
+            style={{
+              paddingHorizontal: 16,
+            }}>
+            <PaymentCard
+              PaymentsType="Declined"
+              NumberOfPayments={declinedPaymentsSummary.NumberOfPayments || '0'}
+              Amount={declinedPaymentsSummary.Amount}
+              CurrentPeriod={declinedPaymentsSummary.CurrentPeriod}
+            />
+          </View>
+          <View
+            style={{
+              paddingHorizontal: 16,
+            }}>
+            {/* Action Buttons */}
+            <CustomButton2
+              size="md"
+              title="Payment History"
+              onPress={() => navigation.navigate('TransporterPaymentHistory')}
+              buttonIcon={ArrowRight}
+              styles={{borderWidth: 0, paddingLeft: 0}}
+              textColor="#525252"
+              color="#525252"
+              buttonIcontyles={{marginLeft: 'auto'}}
+            />
+
+            <CustomButton2
+              size="md"
+              title="Banking Details"
+              onPress={() => {
+                BankList();
+                GetBanking();
+              }}
+              buttonIcon={ArrowRight}
+              styles={{borderWidth: 0, paddingLeft: 0, marginBottom: 32}}
+              textColor="#525252"
+              color="#525252"
+              buttonIcontyles={{marginLeft: 'auto'}}
+            />
+            <CustomButton1
+              styles={{
+                backgroundColor: '#e8eef2',
+                width: '70%',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+              }}
+              textColor="#000000"
+              size="md"
+              title="Transfer to bank"
+            />
+
+            <CustomButton2 title="Switch User Role" onPress={SwitchUserRole} />
+          </View>
         </View>
-
-        {/* Payment Summary */}
-        <PaymentCard
-          PaymentsType="Expected"
-          NumberOfPayments={expectedPaymentsSummary.NumberOfPayments || '0'}
-          Amount={expectedPaymentsSummary.Amount}
-          CurrentPeriod={expectedPaymentsSummary.CurrentPeriod}
-        />
-        <PaymentCard
-          PaymentsType="Declined"
-          NumberOfPayments={declinedPaymentsSummary.NumberOfPayments || '0'}
-          Amount={declinedPaymentsSummary.Amount}
-          CurrentPeriod={declinedPaymentsSummary.CurrentPeriod}
-        />
-
-        {/* Action Buttons */}
-        <CustomButton3
-          title="Payment History"
-          onPress={() => navigation.navigate('TransporterPaymentHistory')}
-        />
-        <CustomButton3
-          title="Banking Details"
-          onPress={() => {
-            BankList();
-            GetBanking();
-          }}
-        />
-        <CustomButton1
-          title="WITHDRAW FUNDS"
-          action="positive"
-          size="sm"
-          styles={{alignSelf: 'center', marginTop: 16}}
-        />
-        <CustomButton2 title="Switch User Role" onPress={SwitchUserRole} />
       </ScrollView>
       <BankingDetailModal
         ShowModal={showModal}

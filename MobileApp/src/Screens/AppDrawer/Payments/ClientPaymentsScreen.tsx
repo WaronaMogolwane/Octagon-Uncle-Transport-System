@@ -19,10 +19,7 @@ import {
 } from '../../../Components/Buttons';
 import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 import {
-  GetBalanceByBusinessId,
-  GetDeclinedPaymentsSummary,
   GetMonthlyPaymentDetails,
-  GetPaymentsSummaryForThisMonth,
   GetUserCardAuthorizations,
   PayAmount,
   TokenizePaymentMethod,
@@ -37,14 +34,6 @@ import NotificationToast from '../../../Components/Toasts/NotificationToast';
 import {AuthorizationCharge} from '../../../Models/PaymentsModel';
 import {MonthlyPaymentDetailsCardProps} from '../../../Props/PaymentCardProps';
 import uuid from 'react-native-uuid';
-import {useFormik} from 'formik';
-import {
-  GetBankingDetail,
-  GetBanksList,
-  UpdateBankingDetail,
-} from '../../../Controllers/BankingDetailController';
-import {BankingDetail} from '../../../Models/BankingDetail';
-import * as yup from 'yup';
 import {ArrowRight, CreditCard} from 'lucide-react-native';
 import COLORS from '../../../Const/colors';
 
@@ -62,157 +51,57 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
   setUserRole,
 }) => {
   const {trxref, reference} = route.params || {};
-  let {session, isLoading}: any = useContext(AuthContext);
+  const {session}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const [refreshingPayments, setRefreshingPayments] = useState(false);
-  const onRefreshPayments = React.useCallback(() => {
-    setRefreshingPayments(true);
-    setTimeout(() => {
-      try {
-        GetPaymentValues();
-      } catch (error) {}
-    }, 2000);
-    setRefreshingPayments(false);
-  }, []);
-  const [bankingDetail, setBankingDetail] = useState<BankingDetail>();
-  const [IsLoading, setIsLoading] = useState(false);
 
-  const [bankList, setBankList] = useState(['']);
-  const [showModal, setShowModal] = useState(false);
-  const [isFocus, setIsFocus] = useState(false);
-  const [bankName, setBankName] = useState('');
-  const [paystackBankCode, setPaystackBankCode] = useState('');
-  const [paystackBankId, setPaystackBankId] = useState('');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false); // For Pay Now
+  const [isAddingPaymentMethod, setIsAddingPaymentMethod] = useState(false); // For Add Payment Method
+
   const [cardAuthorizationList, setCardAuthorizationList] = useState([]);
   const [paymentAmount, setPaymentAmount] = useState('0');
+  const [paymentSuccessful, setPaymentSuccessful] = useState(true);
   const [monthlyPaymentsSummary, setMonthlyPaymentsSummary] =
     useState<MonthlyPaymentDetailsCardProps>({
       Amount: '0',
       NextPaymentDate: '',
       PaymentFailed: false,
     });
-
   const toast = useToast();
   const businessId = auth.GetBusinessId();
+
   const SwitchUserRole = () => {
-    if (userRole == '1') {
+    if (userRole === '1') {
       setUserRole('2');
     } else {
       setUserRole('1');
     }
   };
-  const SuccessToast = () => {
+
+  const ShowToast = (isSuccess: boolean, title: string, message: string) => {
     toast.show({
       placement: 'top',
-      render: ({id}) => {
-        const toastId = 'toast-' + id;
-        return (
-          <Toast nativeID={toastId} action="success" variant="outline">
-            <VStack space="xs">
-              <ToastTitle>Details saved successfully </ToastTitle>
-            </VStack>
-          </Toast>
-        );
-      },
+      render: ({id}) => (
+        <NotificationToast
+          ToastId={`toast-${id}`}
+          Title={title}
+          IsSuccess={isSuccess}
+          Message={message}
+        />
+      ),
     });
   };
 
-  const FaliureToast = () => {
-    toast.show({
-      placement: 'top',
-      render: ({id}) => {
-        const toastId = 'toast-' + id;
-        return (
-          <Toast nativeID={toastId} action="error" variant="outline">
-            <VStack space="xs">
-              <ToastTitle>
-                Details were not save successfully.Please try again.
-              </ToastTitle>
-            </VStack>
-          </Toast>
-        );
+  // Made GetPaymentValues a useCallback to avoid re-creation if not needed, and for use Effect dependency
+  const GetPaymentValues = useCallback(async () => {
+    await Promise.all([GetPaymentMethods(), GetMonthlyPaymentsSummary()]).catch(
+      error => {
+        ShowToast(false, 'Error', 'Failed to load payment details.');
+        throw new Error('Error fetching payment values: \n' + error);
       },
-    });
-  };
-
-  const UpdateBankingDetails = async (values: any) => {
-    setShowModal(false);
-    setIsLoading(true);
-    let bankingDetail = new BankingDetail(
-      bankName,
-      values.branchNumber.trim(),
-      values.accountName.trim(),
-      values.accountNumber.trim(),
-      businessId,
-      paystackBankId,
-      paystackBankCode,
-      '',
     );
-    await UpdateBankingDetail(bankingDetail).then((response: any) => {
-      if (response[1] == 200) {
-        //On success this code runs
-        setIsLoading(false);
-        SuccessToast();
-      } else {
-        setIsLoading(false);
-        setShowModal(true);
-        FaliureToast();
-      }
-    });
-    // .catch((error: any) => {
-    //   throw new Error(error);
-    // });
-  };
+  }, []);
 
-  const bankingDetailSchema = yup.object().shape({
-    branchNumber: yup
-      .string()
-      .matches(
-        /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
-        'not valid',
-      )
-      .min(5, 'Branch number should be more than 5 digits')
-      .max(10, 'Branch number should not be more than 10 digits')
-      .required('is required'),
-    accountName: yup
-      .string()
-      .min(2, 'Account name too short!')
-      .max(100, 'Account name too long')
-      .required('is required'),
-    accountNumber: yup
-      .string()
-      .min(5, 'Account number too short')
-      .max(20, 'Account number too long!')
-      .required('is required'),
-    comfirmAccountNumber: yup
-      .string()
-      .min(5, 'Account number too short')
-      .max(20, 'Account number too long!')
-      .required('is required')
-      .oneOf([yup.ref('accountNumber')], 'Account number must match'),
-  });
-
-  const bankingDetailInitialValues = {
-    bankName: bankingDetail?.bankName,
-    branchNumber: bankingDetail?.branchNumber,
-    accountName: bankingDetail?.accountName,
-    accountNumber: bankingDetail?.accountNumber,
-    comfirmAccountNumber: bankingDetail?.accountNumber,
-  };
-
-  const bankingFormik = useFormik({
-    initialValues: bankingDetailInitialValues,
-    validationSchema: bankingDetailSchema,
-    enableReinitialize: true,
-
-    onSubmit: (values, {resetForm}) => {
-      UpdateBankingDetails(values);
-    },
-  });
-  const GetPaymentValues = () => {
-    GetPaymentMethods();
-    GetMonthlyPaymentsSummary();
-  };
   const FormatBalance = (balance: string) => {
     try {
       const formatter = new Intl.NumberFormat('en-ZA', {
@@ -227,15 +116,19 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
       const formattedAmount: string = formatter.format(newBalance);
       return formattedAmount;
     } catch (error: any) {
-      throw new Error(error);
+      ShowToast(false, 'Error', 'Failed to format balance.');
+      return `R ${parseFloat(balance || '0').toFixed(2)}`;
     }
   };
+
   const GetPaymentMethods = async () => {
     try {
       const result = await GetUserCardAuthorizations(auth.GetUserId());
       setCardAuthorizationList(result);
     } catch (error: any) {
-      throw new Error(error.message);
+      ShowToast(false, 'Error', 'Failed to load payment methods.');
+      setCardAuthorizationList([]);
+      throw new Error('Error getting payment methods: \n' + error.message);
     }
   };
 
@@ -243,20 +136,39 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
     try {
       const result: MonthlyPaymentDetailsCardProps =
         await GetMonthlyPaymentDetails(auth.GetUserId());
-      console.log(result);
       setPaymentAmount(result.Amount);
       const formatted = {
         ...result,
         Amount: FormatBalance(result.Amount! || '0')!,
       };
-
       setMonthlyPaymentsSummary(formatted);
+      setPaymentSuccessful(!Boolean(result.PaymentFailed));
     } catch (error: any) {
-      throw new Error(error.message);
+      ShowToast(false, 'Error', 'Failed to load monthly payments summary.');
+      setMonthlyPaymentsSummary({
+        Amount: 'R 0.00',
+        NextPaymentDate: '',
+        PaymentFailed: false,
+      });
+      throw new Error(
+        'Error getting monthly payments summary: \n' + error.message,
+      );
     }
   };
 
   const PayNow = async (amount: string) => {
+    setPaymentSuccessful(true);
+    if (!cardAuthorizationList || cardAuthorizationList.length === 0) {
+      ShowToast(
+        false,
+        'Payment Error',
+        'No payment method available. Please add a card.',
+      );
+      setPaymentSuccessful(false);
+      return;
+    }
+
+    setIsProcessingPayment(true);
     const cardAuth: any = cardAuthorizationList[0];
     const authorizationCharge: AuthorizationCharge = {
       email: auth.GetEmail(),
@@ -272,13 +184,44 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
 
     try {
       const result = await PayAmount(authorizationCharge);
-      console.log(result);
+      if (result && result.message === 'Authorization successfully charged.') {
+        setPaymentSuccessful(!Boolean(result.PaymentFailed));
+        ShowToast(
+          true,
+          'Payment Successful',
+          'Your payment has been processed successfully.',
+        );
+        setPaymentSuccessful(false);
+      } else {
+        setPaymentSuccessful(false);
+        ShowToast(
+          false,
+          'Payment Failed',
+          result?.message || 'An unknown error occurred during payment.',
+        );
+      }
     } catch (error: any) {
-      throw new Error(error.message);
+      setPaymentSuccessful(false);
+      ShowToast(
+        false,
+        'Payment Failed',
+        error.response?.data?.message ||
+          error.message ||
+          'Failed to process payment. Please try again.',
+      );
+      throw new Error(
+        'Error during PayNow: ' + error.response?.data || error.message,
+      );
+    } finally {
+      setTimeout(() => {
+        GetPaymentValues();
+        setIsProcessingPayment(false);
+      }, 500);
     }
   };
+
   const AddPaymentMethod = async () => {
-    if (cardAuthorizationList.length > 4) {
+    if (cardAuthorizationList.length >= 5) {
       ShowToast(
         false,
         'Maximum amount of payment methods reached',
@@ -287,6 +230,7 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
       return;
     }
 
+    setIsAddingPaymentMethod(true);
     const email: string = auth.GetEmail();
     const userId: string = auth.GetUserId();
     const businessId: string = auth.GetBusinessId();
@@ -301,146 +245,107 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
       );
       const authorizationUrl: string = result.data.authorization_url;
 
-      // Checking if the link is supported
       const supported = await Linking.canOpenURL(authorizationUrl);
 
       if (supported) {
         await Linking.openURL(authorizationUrl);
+        // Do NOT set setIsAddingPaymentMethod(false) here.
+        // It will be deactivated when the app returns via the deep link
+        // and onRefreshPayments/GetPaymentValues finishes.
       } else {
-        await Linking.openURL(authorizationUrl);
-        // Alert.alert(`Don't know how to open this URL: ${authorizationUrl}`);
+        await Linking.openURL(authorizationUrl); // Fallback if canOpenURL returns false for some reason
+        ShowToast(false, 'Error', 'Could not open payment authorization URL.');
+        setIsAddingPaymentMethod(false); // Stop loading if browser can't open
       }
     } catch (error: any) {
-      throw new Error(error.message);
+      ShowToast(
+        false,
+        'Error',
+        error.message || 'Failed to add payment method.',
+      );
+      setIsAddingPaymentMethod(false); // Stop loading if API call fails before opening browser
+      throw new Error('Error adding payment method: \n' + error.message);
     }
   };
+
   const NavigateToScreen = (screenName: string) => {
     navigation.navigate(screenName);
   };
-  const businessDetailSchema = yup.object().shape({
-    businessName: yup
-      .string()
-      .min(2, 'Business name too Short!')
-      .max(50, 'Business name too Long!')
-      .required(),
-    businessPhoneNumber: yup
-      .string()
-      .matches(
-        /(?=.*?\d)^\$?(([1-9]\d{0,2}(,\d{3})*)|\d+)?(\.\d{1,2})?$/,
-        'not valid',
-      )
-      .min(10, 'Business phone number should be 10 digits')
-      .max(10, 'Business phone number should be 10 digits')
-      .required(),
-    addressline1: yup
-      .string()
-      .min(2, 'Address too Short!')
-      .max(100, 'Address too Long!')
-      .required(),
-    addressline2: yup.string().min(2, 'Too Short!').max(100, 'Too Long!'),
-    suburb: yup
-      .string()
-      .min(2, 'Suburb too Short!')
-      .max(50, 'Suburb too  Long!')
-      .required(),
-    city: yup
-      .string()
-      .min(2, 'City too Short!')
-      .max(50, 'City too Long!')
-      .required(),
-    province: yup
-      .string()
-      .min(2, 'Province too Short!')
-      .max(50, 'Province too Long!')
-      .required(),
-    postalcode: yup
-      .string()
-      .min(4, 'Postal code too Short!')
-      .max(4, 'Postal code too Long!')
-      .required(),
-  });
 
-  const businessDetailsInitialValues = {
-    businessName: '',
-    businessPhoneNumber: '',
-    addressline1: '',
-    addressline2: '',
-    suburb: '',
-    city: '',
-    province: '',
-    postalcode: '',
-  };
+  // Callback for when app returns from deep link (e.g., after adding payment method)
+  const onRefreshPayments = React.useCallback(async () => {
+    setRefreshingPayments(true);
+    try {
+      await GetPaymentValues(); // This will fetch the updated card authorization list
+    } catch (error) {
+      throw new Error('Error during refresh payments: \n' + error);
+    } finally {
+      setRefreshingPayments(false);
+      setIsAddingPaymentMethod(false);
+      ShowToast(true, 'Card added', 'Your card has been added successfully.');
+    }
+  }, [GetPaymentValues]); // Dependency for useCallback
 
-  const formik = useFormik({
-    initialValues: businessDetailsInitialValues,
-    validationSchema: businessDetailSchema,
-
-    onSubmit: (values, {resetForm}) => {
-      BusinessDetailHelper(values);
-    },
-  });
-  const ShowToast = (isSuccess: boolean, title: string, message: string) => {
-    toast.show({
-      placement: 'top',
-      render: ({id}) => {
-        const toastId = 'toast-' + id;
-        return (
-          <NotificationToast
-            ToastId={toastId}
-            Title={title}
-            IsSuccess={isSuccess}
-            Message={message}
-          />
-        );
-      },
-    });
-  };
   useEffect(() => {
-    //setUserRole(auth.GetUserRole());
     setUserRole('2');
     GetPaymentValues();
-    Linking.addEventListener('url', event => {
+
+    const handleDeepLink = (event: {url: string}) => {
       onRefreshPayments();
-    });
-  }, [reference]);
+    };
+
+    Linking.addEventListener('url', handleDeepLink);
+
+    return () => {
+      // Clean up the event listener when the component unmounts
+      //Linking.removeEventListener('url', handleDeepLink);
+    };
+  }, [
+    reference,
+    onRefreshPayments,
+    setUserRole,
+    GetPaymentValues,
+    paymentSuccessful,
+  ]); // Added GetPaymentValues as a dependency
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: '#ffffff'}}>
       <View style={{flex: 1}}>
-        <MonthlyPaymentDetailsCard
-          styles={{
-            paddingHorizontal: 16,
-            marginTop: 16,
-          }}
-          Amount={monthlyPaymentsSummary?.Amount}
-          NextPaymentDate={monthlyPaymentsSummary.NextPaymentDate}
-          PaymentFailed={monthlyPaymentsSummary.PaymentFailed}
-        />
-        <View style={{paddingHorizontal: 16, paddingTop: 16}}>
+        <View style={{paddingHorizontal: 16, marginTop: 16, marginBottom: 16}}>
           <HStack>
             <View>
               <Heading size="md">Status</Heading>
               <Text style={{fontSize: 14, color: 'gray'}}>
                 {monthlyPaymentsSummary.PaymentFailed
                   ? 'Payment failed'
-                  : 'Payment succesful'}
+                  : 'Payment successful'}
               </Text>
             </View>
             <View style={{marginLeft: 'auto'}}>
               <CustomButton1
                 textColor={COLORS.white}
                 size="sm"
-                title="Pay now"
-                action="negative"
+                title={paymentSuccessful ? 'Paid' : 'Pay now'}
+                action={'positive'}
+                isDisabled={paymentSuccessful}
                 onPress={() => {
-                  isLoading = true;
                   PayNow(paymentAmount);
                 }}
               />
             </View>
           </HStack>
         </View>
-        <View style={{paddingHorizontal: 16, paddingTop: 16}}>
+        <MonthlyPaymentDetailsCard
+          styles={{
+            paddingHorizontal: 16,
+            marginBottom: 16,
+          }}
+          Amount={monthlyPaymentsSummary?.Amount}
+          NextPaymentDate={monthlyPaymentsSummary.NextPaymentDate}
+          PaymentFailed={monthlyPaymentsSummary.PaymentFailed}
+        />
+
+        <View style={{paddingHorizontal: 16, paddingTop: 16, marginBottom: 16}}>
           <Heading size="md" style={{marginBottom: 12}}>
             Payment Methods
           </Heading>
@@ -451,7 +356,7 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
                 MaskedCardNumber={item.MaskedCardNumber}
                 CardType={item.CardType.trim()}
                 IsActive={Boolean(Number(item.IsActive))}
-                IsExpiringSoon={true}
+                IsExpiringSoon={true} // You might want to calculate this dynamically
               />
             )}
             keyExtractor={(item: any) => item.CardAuthorisationId}
@@ -480,7 +385,10 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
         </View>
       </View>
 
-      <Modal transparent={true} animationType="fade" visible={false}>
+      <Modal
+        transparent={true}
+        animationType="fade"
+        visible={isProcessingPayment || isAddingPaymentMethod}>
         <View
           style={{
             flex: 1,
@@ -490,14 +398,14 @@ const ClinetsPaymentsScreen: React.FC<Props> = ({
           }}>
           <ActivityIndicator size="large" color="#00ff00" />
           <Text style={{marginTop: 10, color: '#fff', fontSize: 18}}>
-            Loading...
+            {isProcessingPayment
+              ? 'Processing payment...'
+              : 'Adding payment method...'}
           </Text>
         </View>
       </Modal>
     </SafeAreaView>
   );
 };
-function BusinessDetailHelper(values: any) {
-  throw new Error('Function not implemented.');
-}
+
 export default ClinetsPaymentsScreen;

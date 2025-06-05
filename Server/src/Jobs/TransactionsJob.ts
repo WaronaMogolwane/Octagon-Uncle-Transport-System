@@ -35,7 +35,7 @@ export const FetchAndSaveTransactionsJob = (): void => {
                         try {
                             // Paystack amount is in kobo, convert to Naira if necessary
                             const amount = transactionData.currency === 'ZAR'
-                                ? transactionData.amount / 100
+                                ? transactionData.amount
                                 : transactionData.amount;
 
                             const newTransaction: Transaction = new Transaction(

@@ -49,30 +49,30 @@ export const GetOtp = async (
     },
   );
 };
-export const GetUserByEmailPassword = async (
-  user: UserCredentials,
-  callback: (error: any, result: any) => void,
-) => {
-  DbPool.query(
-    {
-      sql: "CALL GetUserByEmailPassword(?,?)",
-      timeout: 40000,
-      values: [user.email, user.password],
-    },
-    (err: any, res: any) => {
-      if (err) {
-        callback(err, null);
+export const GetUserByEmailPassword = async (user: UserCredentials): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    DbPool.query(
+      {
+        sql: "CALL GetUserByEmailPassword(?, ?)",
+        timeout: 40000, // Optional timeout
+        values: [user.email, user.password], // Parameterized query for security
+      },
+      (err: any, res: any) => {
+        if (err) {
+          return reject(err); // Reject with the database error
+        }
+
+        if (!res || !res[0] || !res[0][0]) {
+          // Return a structured error if no user is found
+          const error = new ErrorResponse(404, "No user found.");
+          return reject(error);
+        }
+
+        // Resolve with the result if the user is found
+        resolve(res);
       }
-      if (!res[0][0]) {
-        let error: ErrorResponse = {
-          message: "No user found.",
-        };
-        callback(error, null);
-      } else {
-        callback(null, res);
-      }
-    },
-  );
+    );
+  });
 };
 export const InsertNewUser = async (
   user: User,

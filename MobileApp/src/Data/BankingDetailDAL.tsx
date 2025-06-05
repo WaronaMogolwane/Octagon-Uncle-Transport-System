@@ -25,7 +25,7 @@ export const AddBankingDetailToDB = async (bankingDetail: BankingDetail) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
   return statusCode;
 };
@@ -44,7 +44,7 @@ export const GetBankingDetailFromDB = async (businessId: string) => {
       data = response.data;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return [data, statusCode];
@@ -74,12 +74,155 @@ export const UpdateBankingDetailToDB = async (bankingDetail: BankingDetail) => {
       statusCode = response.status;
       data = response.data;
     })
-    .catch((error: AxiosError) => {
-      console.log(error);
+    .catch((error: any) => {
+      throw new Error(error);
     });
 
   return [data, statusCode];
 };
+
+//   export const GetBusinessDetailFromDB = async (businessId: string) => {
+//     let res: any;
+
+//     await axios
+//       .get(`${SERVER_HOST}:${SERVER_PORT}/business-detail/get-business-detail`, {
+//         params: {
+//           BusinessId: businessId,
+//         },
+//       })
+//       .then((response: any) => {
+//         let result = response.data.result;
+
+//         let businessDetail = new BusinessDetail(
+//           result[0].BusinessDetailId,
+//           result[0].BusinessName,
+//           result[0].BusinessPhoneNumber,
+//           result[0].AddressLine1,
+//           result[0].AddressLine2,
+//           result[0].Suburb,
+//           result[0].City,
+//           result[0].Province,
+//           result[0].PostalCode,
+//           result[0].BusinessId,
+//         );
+
+//         res = businessDetail;
+//       })
+//       .catch((error: any) => {
+//         throw new Error(error);
+//         res = error;
+//       });
+//     console.log(res);
+
+//     return res;
+//   };
+
+//   export const GetBusinessDetailForParentFromDB = async (businessId: string) => {
+//     let res: any;
+
+//     await axios
+//       .get(
+//         `${SERVER_HOST}:${SERVER_PORT}/business-detail/get-business-detail-for-parent`,
+//         {
+//           params: {
+//             BusinessId: businessId,
+//           },
+//         },
+//       )
+//       .then((response: any) => {
+//         let result = response.data.result;
+
+//         let businessDetail = {
+//           name: `${result[0].FirstName} ${result[0].LastName}`,
+//           businessName: result[0].BusinessName,
+//           businessPhoneNumber: result[0].BusinessPhoneNumber,
+//           email: result[0].Email,
+//           address: `${result[0].AddressLine1}`,
+//         };
+
+//         res = businessDetail;
+//       })
+//       .catch((error: any) => {
+//         throw new Error(error);
+//         res = error;
+//       });
+
+//     return res;
+//   };
+
+//   export const UpdateBusinessDetailInDB = async (
+//     businessDetail: BusinessDetail,
+//   ) => {
+//     let statusCode: any;
+//     let data: any;
+
+//     await axios
+//       .patch(
+//         `${SERVER_HOST}:${SERVER_PORT}/business-detail/update-business-detail`,
+//         {
+//           businessDetail: {
+//             BusinessDetailId: businessDetail.businessDetailId,
+//             BusinessName: businessDetail.businessName,
+//             BusinessPhoneNumber: businessDetail.businessPhoneNumber,
+//             AddressLine1: businessDetail.addressLine1,
+//             AddressLine2: businessDetail.addressLine2,
+//             Suburb: businessDetail.suburb,
+//             City: businessDetail.city,
+//             Province: businessDetail.province,
+//             PostalCode: businessDetail.postalCode,
+//             BusinessId: businessDetail.businessId,
+//           },
+//         },
+//       )
+//       .then((response: any) => {
+//         data = response.data;
+//         statusCode = response.status;
+//       })
+//       .catch((error: any) => {
+//         throw new Error(error);
+//       });
+
+//     return [data, statusCode];
+//   };
+
+// export const GetActivePassengerForBusinessFromDB = async (
+//   businessId: string,
+// ) => {
+//   let result: any;
+//   const tripData: {}[] = [];
+//   let passsengers = {};
+
+//   await axios
+//     .get(`${SERVER_HOST}:${SERVER_PORT}/passenger/get-business-passengers`, {
+//       params: {
+//         BusinessId: businessId,
+//       },
+//     })
+//     .then((response: any) => {
+//       let res = [...response.data.result];
+
+//       res.forEach(data => {
+//         passsengers = {
+//           passengerId: data.PassengerId,
+//           passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
+//           editedName: `${data.FirstName} ${data.LastName}`,
+//           age: data.Age,
+//           homeAddress: data.HomeAddress,
+//           destinationAddress: data.DestinationAddress,
+//           parentId: data.ParentId,
+//         };
+
+//         tripData.push(passsengers);
+//       });
+
+//       result = tripData;
+//     })
+//     .catch((error: any) => {
+//       result = error;
+//     });
+
+//   return result;
+// };
 
 export const GetBankListFromDB = async () => {
   let result: any;
@@ -129,7 +272,7 @@ export const GetBankListFromDB = async () => {
       result = bankData;
     })
     .catch(error => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return result;
@@ -159,8 +302,8 @@ export const VerifyBankAccountInServer = async (
       data = response.data;
       statusCode = response.status;
     })
-    .catch((error: any) => {
-      console.log(error);
+    .catch(error => {
+      throw new Error(error);
     });
 
   return [data, statusCode];

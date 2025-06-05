@@ -10,31 +10,14 @@ import {
 
 const router = Router();
 
-router.get("/get-user", GetUser, async (req, res, next) => {});
+// GET Routes
+router.get("/get-user", GetUser);
+router.get("/get-user-active-status", GetUserActiveStatus);
+router.get("/check-user-email", CheckUserEmail);
 
-router.get(
-  "/get-user-active-status",
-  GetUserActiveStatus,
-  async (req, res, next) => {}
-);
+// PATCH Routes
+router.patch("/update-user-email", UpdateUserEmail);
+router.patch("/update-user-password", UpdateUserPassword);
+router.patch("/restore-user-password", RestoreUserPassword);
 
-router.get("/check-user-email", CheckUserEmail, async (req, res, next) => {});
-
-router.patch(
-  "/update-user-email",
-  UpdateUserEmail,
-  async (req, res, next) => {}
-);
-
-router.patch(
-  "/update-user-password",
-  UpdateUserPassword,
-  async (req, res, next) => {}
-);
-
-router.patch(
-  "/restore-user-password",
-  RestoreUserPassword,
-  async (req, res, next) => {}
-);
 export default router;

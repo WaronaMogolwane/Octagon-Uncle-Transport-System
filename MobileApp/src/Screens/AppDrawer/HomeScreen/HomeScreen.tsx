@@ -275,21 +275,44 @@ const HomeScreen = ({navigation}: any) => {
   const GetVehicleCount = useCallback(async () => {
     await GetVehicles(businessId, (error: any, result: any) => {
       if (error) {
-        throw new Error(error.response?.data || 'Unknown error');
+        throw new Error(error.response.data);
+      } else {
+        if (result.data.length != 0) {
+          setVehicleCount(result.data.length);
+        } else {
+          setVehicleCount('0');
+        }
       }
-      setVehicleCount(result.data?.length?.toString() || '0');
     });
-  }, [businessId]);
+  };
 
-  const GetPassengers = useCallback(async () => {
-    let result;
-    if (role === 1) {
-      result = await GetActivePassengerForBusiness(businessId);
-    } else if (role === 2) {
-      result = await GetAllActivePassengerForParent(userId);
+  const GetPassengers = async () => {
+    if (role == 1) {
+      try {
+        const result = await GetActivePassengerForBusiness(businessId);
+        if (result.length != 0) {
+          setPassengerCount(result.length.toString());
+        } else {
+          setPassengerCount('0');
+        }
+      } catch (error) {
+        throw new Error('Error fetching passengers: ' + error);
+        setPassengerCount('0');
+      }
+    } else if (role == 2) {
+      try {
+        const result = await GetAllActivePassengerForParent(userId);
+        if (result.length != 0) {
+          setPassengerCount(result.length.toString());
+        } else {
+          setPassengerCount('0');
+        }
+      } catch (error) {
+        throw new Error('Error fetching passengers: ' + error);
+        setPassengerCount('0');
+      }
     }
-    setPassengerCount(result?.length?.toString() || '0');
-  }, [role, businessId, userId]);
+  };
 
   const GetVehicleInfomation = useCallback(async () => {
     const result = await GetDriverVehicle(userId);
@@ -316,71 +339,28 @@ const HomeScreen = ({navigation}: any) => {
     }
   }, [userId]);
 
-  const GetUserName = useCallback(async () => {
-    const result = await GetUser(userId);
-    setUserName(result.firstName);
-  }, [userId]);
+  const GetUserName = async () => {
+    await GetUser(userId)
+      .then((result: any) => {
+        setUserName(result.firstName);
+      })
+      .catch((error: any) => {
+        throw new Error(error);
+      });
+  };
 
-  const GetAvailableBalance = useCallback(async () => {
-    await GetBalanceByBusinessId(businessId, (error: any, result: any) => {
-      if (error) {
-        throw new Error(error.response?.data || 'Unknown error');
-      }
-      setAvailableBalance(FormatBalance(result.Balance || '0'));
-    });
-  }, [businessId]);
-
-  useEffect(() => {
-    if (networkLoading) {
-      console.log('Skipping initialization: Network state loading');
-      return;
-    }
-    if (!isConnected) {
-      console.log('Skipping initialization: Device offline');
-      showOfflineToast();
-      return;
-    }
-    const timer = setTimeout(() => {
-      withNetworkCheck(GetUserName, 'GetUserName');
-      if (role === 1) {
-        withNetworkCheck(GetPaymentsForThisMonth, 'GetPaymentsForThisMonth');
-        withNetworkCheck(
-          GetDeclinedPaymentSummary,
-          'GetDeclinedPaymentSummary',
-        );
-        withNetworkCheck(GetPassengers, 'GetPassengers');
-        withNetworkCheck(GetVehicleCount, 'GetVehicleCount');
-        withNetworkCheck(GetAvailableBalance, 'GetAvailableBalance');
-        withNetworkCheck(GetDailyBusinessTrips, 'GetDailyBusinessTrips');
-      } else if (role === 2) {
-        withNetworkCheck(GetDailyParentTrips, 'GetDailyParentTrips');
-        withNetworkCheck(GetPassengers, 'GetPassengers');
-        withNetworkCheck(GetActivePasengers, 'GetActivePasengers');
-      } else if (role === 3) {
-        withNetworkCheck(GetVehicleInfomation, 'GetVehicleInfomation');
-        withNetworkCheck(GetDailyDriverTrips, 'GetDailyDriverTrips');
-      }
-      withNetworkCheck(GetProfileImage, 'GetProfileImage');
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [
-    networkLoading,
-    isConnected,
-    role,
-    withNetworkCheck,
-    GetUserName,
-    GetPaymentsForThisMonth,
-    GetDeclinedPaymentSummary,
-    GetPassengers,
-    GetVehicleCount,
-    GetAvailableBalance,
-    GetDailyBusinessTrips,
-    GetDailyParentTrips,
-    GetActivePasengers,
-    GetVehicleInfomation,
-    GetDailyDriverTrips,
-    GetProfileImage,
-  ]);
+  const GetAvailableBalance = async (businessId: string) => {
+    return await GetBalanceByBusinessId(
+      businessId,
+      (error: any, result: any) => {
+        if (error) {
+          throw new Error(error.response.data);
+        } else {
+          setAvailableBalance(FormatBalance(result.Balance || '0'));
+        }
+      },
+    );
+  };
 
   const renderItemComponentPassengers = (itemData: any) => (
     <PassengerListHomeScreenCard

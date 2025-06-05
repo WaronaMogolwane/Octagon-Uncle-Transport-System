@@ -93,7 +93,7 @@ export const DriversScreen = () => {
         ) {
           DeleteUserByUserIdAndRole(currentDriver.UserId, '3', (error: any) => {
             if (error) {
-              console.error(error);
+              throw new Error(error);
               ShowRemoveDriverToast(false);
             } else {
               GetDrivers(auth.GetBusinessId());
@@ -111,7 +111,7 @@ export const DriversScreen = () => {
       businessId,
       (error: any, result: any) => {
         if (error) {
-          console.error(error);
+          throw new Error(error);
         } else {
           setDriversList(result.data);
         }

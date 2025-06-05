@@ -1,104 +1,115 @@
 import { SERVER_HOST, SERVER_PORT } from "@env";
 import axios from "axios";
-import { CardAuthorisation } from "../Models/PaymentsModel";
 import { PaymentSchedule } from "../Models/PaymentShedule";
 
+// Insert Payment Schedule
 export const InsertPaymentSchedule = async (
-    newPaymentSchedule: PaymentSchedule,
-    callback: (error: any, result: any) => void,
-) => {
-    await axios
-        .post(`${SERVER_HOST}:${SERVER_PORT}/payments/create-payment-schedule`, {
-            PaymentsScheduleId: newPaymentSchedule.PaymentsScheduleId,
-            UserId: newPaymentSchedule.UserId,
-            Amount: newPaymentSchedule.Amount,
-            CardAuthorisationId: newPaymentSchedule.CardAuthorisationId,
-            PaymentDay: newPaymentSchedule.PaymentDay,
-            DateCreated: newPaymentSchedule.DateCreated,
-        })
-        .then((response: any) => {
-            callback(null, response);
-        })
-        .catch((error: any) => {
-            callback(error, null);
-        });
+    newPaymentSchedule: PaymentSchedule
+): Promise<any> => {
+    try {
+        const response = await axios.post(
+            `${SERVER_HOST}:${SERVER_PORT}/payments/create-payment-schedule`,
+            {
+                PaymentsScheduleId: newPaymentSchedule.PaymentsScheduleId,
+                UserId: newPaymentSchedule.UserId,
+                Amount: newPaymentSchedule.Amount,
+                CardAuthorisationId: newPaymentSchedule.CardAuthorisationId,
+                PaymentDay: newPaymentSchedule.PaymentDay,
+                DateCreated: newPaymentSchedule.DateCreated,
+            }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || error;
+    }
 };
 
-export const GetAvailableBalanceByBusinessId = async (businessId: string, callback: (error: any, result: any) => void) => {
-    await axios
-        .get(
-            `${SERVER_HOST}:${SERVER_PORT}/payments/get-available-balance?businessId=${businessId}`
-        )
-        .then((response: any) => {
-            callback(null, response.data)
-        })
-        .catch((error: any) => {
-            console.error(error, null);
-        });
-
+// Get Available Balance by Business ID
+export const GetAvailableBalanceByBusinessId = async (
+    businessId: string
+): Promise<any> => {
+    try {
+        const response = await axios.get(
+            `${SERVER_HOST}:${SERVER_PORT}/payments/get-available-balance`,
+            { params: { businessId } }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || error;
+    }
 };
-export const GetUpcomingPaymentSummaryByBusinessId = async (businessId: string, callback: (error: any, result: any) => void) => {
-    await axios
-        .get(
-            `${SERVER_HOST}:${SERVER_PORT}/payments/get-upcoming-payments-summary?businessId=${businessId}`
-        )
-        .then((response: any) => {
-            callback(null, response.data)
-        })
-        .catch((error: any) => {
-            console.error(error, null);
-        });
 
+// Get Upcoming Payment Summary by Business ID
+export const GetUpcomingPaymentSummaryByBusinessId = async (
+    businessId: string
+): Promise<any> => {
+    try {
+        const response = await axios.get(
+            `${SERVER_HOST}:${SERVER_PORT}/payments/get-upcoming-payments-summary`,
+            { params: { businessId } }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || error;
+    }
 };
-export const GetPaymentsSummaryForThisMonthByBusinessId = async (businessId: string, callback: (error: any, result: any) => void) => {
-    await axios
-        .get(
-            `${SERVER_HOST}:${SERVER_PORT}/payments/get-payments-summary?businessId=${businessId}`
-        )
-        .then((response: any) => {
-            callback(null, response.data)
-        })
-        .catch((error: any) => {
-            console.error(error, null);
-        });
 
+// Get Payments Summary for This Month
+export const GetPaymentsSummaryForThisMonthByBusinessId = async (
+    businessId: string
+): Promise<any> => {
+    try {
+        const response = await axios.get(
+            `${SERVER_HOST}:${SERVER_PORT}/payments/get-payments-summary`,
+            { params: { businessId } }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || error;
+    }
 };
-export const GetDeclinedPaymentSummaryByBusinessId = async (businessId: string, callback: (error: any, result: any) => void) => {
-    await axios
-        .get(
-            `${SERVER_HOST}:${SERVER_PORT}/payments/get-declined-payments-summary?businessId=${businessId}`
-        )
-        .then((response: any) => {
-            callback(null, response.data)
-        })
-        .catch((error: any) => {
-            console.error(error, null);
-        });
 
+// Get Declined Payment Summary by Business ID
+export const GetDeclinedPaymentSummaryByBusinessId = async (
+    businessId: string
+): Promise<any> => {
+    try {
+        const response = await axios.get(
+            `${SERVER_HOST}:${SERVER_PORT}/payments/get-declined-payments-summary`,
+            { params: { businessId } }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || error;
+    }
 };
-export const GetPaymentsByBusinessId = async (businessId: string, callback: (error: any, result: any) => void) => {
-    await axios
-        .get(
-            `${SERVER_HOST}:${SERVER_PORT}/payments/get-business-payments?businessId=${businessId}`
-        )
-        .then((response: any) => {
-            callback(null, response.data)
-        })
-        .catch((error: any) => {
-            console.error(error, null);
-        });
 
+// Get Payments by Business ID
+export const GetPaymentsByBusinessId = async (
+    businessId: string
+): Promise<any> => {
+    try {
+        const response = await axios.get(
+            `${SERVER_HOST}:${SERVER_PORT}/payments/get-business-payments`,
+            { params: { businessId } }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || error;
+    }
 };
-export const GetCardAuthorizationsByUserId = async (userId: string, callback: (error: any, result: any) => void) => {
-    await axios
-        .get(
-            `${SERVER_HOST}:${SERVER_PORT}/payments/get-user-card-authorizations?userId=${userId}`
-        )
-        .then((response: any) => {
-            callback(null, response.data)
-        })
-        .catch((error: any) => {
-            console.error(error, null);
-        });
 
+// Get Card Authorizations by User ID
+export const GetCardAuthorizationsByUserId = async (
+    userId: string
+): Promise<any> => {
+    try {
+        const response = await axios.get(
+            `${SERVER_HOST}:${SERVER_PORT}/payments/get-user-card-authorizations`,
+            { params: { userId } }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || error;
+    }
 };

@@ -1,4 +1,3 @@
-import { Application } from "express";
 import authRoute from "../Routes/AuthenticationRoutes";
 import bankingDetailRoute from "../Routes/BankingDetailRoutes";
 import businessDetailRoute from "../Routes/BusinessDetailRoutes";
@@ -13,35 +12,18 @@ import userProfileRoute from "../Routes/UserDetailRoutes";
 import userRoute from "../Routes/UserRoutes";
 import vehicleRoute from "../Routes/VehicleRoutes";
 
-/**
- * Registers all application routes with the Express application.
- *
- * This function iterates through a predefined array of route definitions and
- * mounts each route handler to the Express application instance.  This
- * centralizes route registration, promoting modularity and maintainability.
- *
- * @param {Application} app The Express application instance to register routes with.
- * @returns {void}
- */
-export function RegisterRoutes(app: Application): void {
-    const routes = [
-        { path: "/auth", route: authRoute },
-        { path: "/user", route: userRoute },
-        { path: "/user-profile", route: userProfileRoute },
-        { path: "/passenger", route: passengerRoute },
-        { path: "/trip", route: tripRoute },
-        { path: "/vehicle", route: vehicleRoute },
-        { path: "/business-detail", route: businessDetailRoute },
-        { path: "/banking-detail", route: bankingDetailRoute },
-        { path: "/payments", route: paymentsRoute },
-        { path: "/push-notifications", route: pushNotificationsRoute },
-        { path: "/passenger-driver-vehicle-linking", route: passengerDriverVehicleLinkingRoute },
-        { path: "/passenger-schedule", route: passengerScheduleRoute },
-        { path: "/driver-vehicle-linking", route: driverVehicleLinkingRoute },
-    ];
-
-    // Dynamically register all routes
-    routes.forEach(({ path, route }) => {
-        app.use(path, route); // Mount the route handler at the specified path
-    });
+export function RegisterRoutes(app: any) {
+    app.use("/auth", authRoute);
+    app.use("/user", userRoute);
+    app.use("/user-profile", userProfileRoute);
+    app.use("/passenger", passengerRoute);
+    app.use("/trip", tripRoute);
+    app.use("/vehicle", vehicleRoute);
+    app.use("/business-detail", businessDetailRoute);
+    app.use("/banking-detail", bankingDetailRoute);
+    app.use("/payments", paymentsRoute);
+    app.use("/push-notifications", pushNotificationsRoute);
+    app.use("/passenger-driver-vehicle-linking", passengerDriverVehicleLinkingRoute);
+    app.use("/passenger-schedule", passengerScheduleRoute);
+    app.use("/driver-vehicle-linking", driverVehicleLinkingRoute);
 }

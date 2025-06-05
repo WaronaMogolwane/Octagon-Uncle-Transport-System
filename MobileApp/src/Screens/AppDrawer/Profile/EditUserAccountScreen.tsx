@@ -136,7 +136,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
       if (result[0].result[0] == true) {
         emailOtp(emailFormik.values.email.trim(), (error: any, result: any) => {
           if (error) {
-            throw new Error(error);
+            console.error(error);
           } else {
             ShowEmailSentToast();
             setShowEmailModal(false);
@@ -656,7 +656,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
             emailFormik.values.email,
             (error: any, result: any) => {
               if (error) {
-                throw new Error(error);
+                console.error(error);
                 setIsUpdating(false);
               } else {
                 setShowEmailVerificationModal(true);
@@ -683,7 +683,7 @@ const EditUserAccountScreen = ({navigation}: any) => {
             emailFormik.values.email,
             (error: any, result: any) => {
               if (error) {
-                throw new Error(error);
+                console.error(error);
               } else {
                 setShowEmailVerificationModal(true);
               }

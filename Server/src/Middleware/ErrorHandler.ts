@@ -1,48 +1,33 @@
-// In Middleware/ErrorHandler.ts
-
-import { Request, Response, NextFunction, ErrorRequestHandler } from "express";
+import { ErrorRequestHandler } from "express";
 import { isHttpError } from "http-errors";
-import { ErrorResponse } from "../Classes/ErrorResponse";
-import { ServerLogger } from "../server";
-
+import WinstonLogger from "../Utilities/WinstonLogger"; import { platform } from 'node:process';
+import WindowsLogger from "../Utilities/WindowsLogger";
+import { CustomLogger } from "../Classes/CustomLogger";
+const Logger: CustomLogger = new CustomLogger();
 const ErrorHandler: ErrorRequestHandler = (
   error: any,
-  req: Request,
-  res: Response,
-  next: NextFunction
+  req: any,
+  res: any,
+  next: any
 ) => {
-  let statusCode = 500;
-  let errorMessage = "An unknown error occurred";
-  let stackTrace = "";
-
+  let statusCode: number = 500;
+  let errorMessage: string = "An unknown error occured";
+  let stackTrace: string = "";
   if (isHttpError(error) || error) {
-    statusCode = error.status || statusCode;
-    errorMessage = error.message || errorMessage;
-    stackTrace = error.stack || stackTrace;
-    if (error.stack) {
-      stackTrace = error.stack;
-    }
+    statusCode = error.status ? error.status : statusCode;
+    errorMessage = error.message ? error.message : errorMessage;
+    stackTrace = error.stack ? error.stack : stackTrace;
   }
-  setTimeout(() => {
-    try {
-      ServerLogger.Error(errorMessage, {
-        stack: stackTrace,
-        statusCode: statusCode,
-        path: req.path,
-        method: req.method
-      });
-    } catch (logError) {
-      ServerLogger.Error(`Error occurred while trying to log error: ${logError}`);
-    }
-  }, 100);
-
-
-  const isProduction = process.env.NODE_ENV === "production";
-
-  res.status(statusCode).json({
+  Logger.Error(JSON.stringify({
     message: errorMessage,
-    ...(isProduction ? {} : { stack: stackTrace }), // Only include stack trace in development
-  });
+    stack: stackTrace
+  }))
+  res.status(statusCode).json(
+    {
+      message: errorMessage,
+      stack: stackTrace
+    }
+  );
 };
 
 export default ErrorHandler;

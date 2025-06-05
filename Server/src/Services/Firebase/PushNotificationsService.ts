@@ -1,37 +1,23 @@
+
+// sendNotif.js
 import admin from "firebase-admin";
 import { PushNotificationObj } from "../../Classes/PushNotification";
-import { ServerLogger } from "../../server";
+import { channel } from "diagnostics_channel";
+import WinstonLogger from "../../Utilities/WinstonLogger";
 
-/**
- * Validates push notification object.
- * @param pushNotification - The push notification object to validate.
- */
-const validatePushNotification = (pushNotification: PushNotificationObj) => {
-    if (!pushNotification.token && !pushNotification.channelId) {
-        throw new Error("Either token or channelId must be provided.");
-    }
-    if (!pushNotification.title || !pushNotification.body) {
-        throw new Error("Title and body are required for notifications.");
-    }
-};
 
-/**
- * Handles sending a single notification.
- * @param {PushNotificationObj} pushNotification
- */
 export const sendNotif = async (pushNotification: PushNotificationObj) => {
     try {
-        validatePushNotification(pushNotification);
-
-        ServerLogger.Log("Preparing to send individual notification: " + pushNotification);
-
+        if (!pushNotification.token || typeof pushNotification.token !== 'string') {
+            throw new Error('Invalid FCM token provided');
+        }
+        WinstonLogger.info(pushNotification)
         const message = {
             notification: {
                 title: pushNotification.title,
                 body: pushNotification.body,
-                image:
-                    pushNotification.image ||
-                    "https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/Resources/Images/Octagon+Icon+Logo.png",
+                image: "https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/Resources/Images/Octagon+Icon+Logo.png",
+
             },
             android: {
                 notification: {
@@ -42,42 +28,38 @@ export const sendNotif = async (pushNotification: PushNotificationObj) => {
                     body: pushNotification.body,
                     channelId: "General-Notifications",
                     image: pushNotification.image,
+
                 },
             },
-            token: pushNotification.token!,
+            token: pushNotification.token,
         };
-
         const response = await admin.messaging().send(message);
-        ServerLogger.Log("Successfully sent individual notification: " + response);
+        WinstonLogger.info("Successfully sent message:", response);
     } catch (error) {
-        ServerLogger.Error("Error sending individual notification: " + error);
+        console.error("Error sending message:", error.message);
         throw error;
     }
 };
-
-/**
- * Handles sending notifications to a topic.
- * @param {PushNotificationObj} pushNotification
- */
 export const sendNotifToAll = async (pushNotification: PushNotificationObj) => {
     try {
-        validatePushNotification(pushNotification);
-
-        ServerLogger.Log("Preparing to send topic notification: " + pushNotification);
-
+        // if (pushNotification.token || typeof pushNotification.token == 'string') {
+        //     throw new Error('Invalid FCM token provided');
+        // }
+        WinstonLogger.info(pushNotification)
         const message = {
             data: {
                 title: pushNotification.title,
                 body: pushNotification.body,
-                image: pushNotification.image || "",
-                channelId: pushNotification.channelId || "General-Notifications",
-            },
-        };
+                image: pushNotification.image,
+                channelId: pushNotification.channelId
 
-        const response = await admin.messaging().sendToTopic("General", message);
-        ServerLogger.Log("Successfully sent topic notification: " + response);
+            }
+        }
+
+        const response = await admin.messaging().sendToTopic("General", message)
+        WinstonLogger.info("Successfully sent message:", response);
     } catch (error) {
-        ServerLogger.Error("Error sending topic notification: S" + error);
+        console.error("Error sending message:", error.message);
         throw error;
     }
 };

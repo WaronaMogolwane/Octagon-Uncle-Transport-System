@@ -1,3 +1,4 @@
+import { AccountInformation } from "../Classes/AccountInformation";
 import { BankingDetail } from "../Classes/Bankingdetail";
 import { DbPool } from "../Services/DatabaseService";
 
@@ -78,4 +79,56 @@ export const GetBankingDetailByBankingId = async (
       }
     }
   );
+};
+
+export const VerifyAccountNumberInPaystack = async (
+  accountInformation: AccountInformation,
+  callback: (error, result) => void
+) => {
+  const https = require("https");
+
+  const params = JSON.stringify({
+    bank_code: accountInformation.bankCode,
+    country_code: accountInformation.countryCode,
+    account_number: accountInformation.accountNumber,
+    account_name: accountInformation.accountName,
+    account_type: accountInformation.accountType,
+    document_type: accountInformation.documentType,
+    document_number: accountInformation.documentNumber,
+  });
+
+  const options = {
+    hostname: "api.paystack.co",
+    port: 443,
+    path: "/bank/validate",
+    method: "POST",
+    headers: {
+      Authorization: "Bearer sk_test_0a80bea8d2e15741d6fd001d8b956fa0b4b45ab2",
+      "Content-Type": "application/json",
+    },
+  };
+
+  const req = https
+    .request(options, (res) => {
+      let data = "";
+
+      res.on("data", (chunk) => {
+        data += chunk;
+      });
+
+      res.on("end", () => {
+        try {
+          const parsedData = JSON.parse(data);
+          callback(null, parsedData);
+        } catch (error) {
+          callback(error, null);
+        }
+      });
+    })
+    .on("error", (error) => {
+      callback(error, null);
+    });
+
+  req.write(params);
+  req.end();
 };

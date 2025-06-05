@@ -1,5 +1,4 @@
-CREATE DEFINER=`sqladmin`@`%` PROCEDURE `InsertNewTransaction`(
-in _TransactionId varchar(100),
+CREATE DEFINER=`sqladmin`@`156.155.26.176` PROCEDURE `InsertNewTransaction`(
 in _UserId varchar(100),
 in _Amount INT,
 in _Currency VARCHAR(50),
@@ -12,7 +11,6 @@ in _TransactionType VARCHAR(50)
 BEGIN
 INSERT INTO `Transaction`
 (
-`TransactionId`,
 `UserId`,
 `Amount`,
 `Currency`,
@@ -22,8 +20,7 @@ INSERT INTO `Transaction`
 `DatePaid`,
 `TransactionType`)
 VALUES
-(_TransactionId,
-_UserId,
+(_UserId,
 _Amount,
 _Currency,
 _Status,

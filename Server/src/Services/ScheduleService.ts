@@ -5,7 +5,7 @@ import {
 } from "../Models/PassengerScheduleModel";
 import { AutoInsertTrip } from "../Models/TripModel";
 import { TruncatePassengerDriverVehicleLinking } from "../Models/PassengerDriverVehicleLinkingModel";
-import { Logger } from "../Worker/MainWorker";
+import WinstonLogger from "../Utilities/WinstonLogger";
 
 export const StartSchedule = () => {
   const AddPassengerDriverLinkingSchedule = schedule.scheduleJob(
@@ -16,8 +16,8 @@ export const StartSchedule = () => {
 
       AutoInsertPassengerSchedule(day, (error, result) => {
         if (result) {
-          Logger.Log("Passengers inserted into PDVL table succesfully");
-          Logger.Log(
+          WinstonLogger.info("Passengers inserted into PDVL table succesfully");
+          WinstonLogger.info(
             "This job was supposed to run at 1205 but actually ran at " +
             new Date()
           );
@@ -29,8 +29,8 @@ export const StartSchedule = () => {
   const AddTripSchedule = schedule.scheduleJob("10 0 * * *", function () {
     AutoInsertTrip((error, result) => {
       if (result) {
-        Logger.Log("Trips succesfully added to table");
-        Logger.Log(
+        WinstonLogger.info("Trips succesfully added to table");
+        WinstonLogger.info(
           "This job was supposed to run at 1210 but actually ran at " +
           new Date()
         );
@@ -43,8 +43,8 @@ export const StartSchedule = () => {
     function () {
       TruncatePassengerDriverVehicleLinking((error, result) => {
         if (result) {
-          Logger.Log("PDVL table truncated");
-          Logger.Log(
+          WinstonLogger.info("PDVL table truncated");
+          WinstonLogger.info(
             "This job was supposed to run at 1201 but actually ran at " +
             new Date()
           );
@@ -58,8 +58,8 @@ export const StartSchedule = () => {
     function () {
       TruncateTempPassengerSchedule((error, result) => {
         if (result) {
-          Logger.Log("TempPassengerTable table truncated");
-          Logger.Log(
+          WinstonLogger.info("TempPassengerTable table truncated");
+          WinstonLogger.info(
             "This job was supposed to run at 1159 but actually ran at " +
             new Date()
           );

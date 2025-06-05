@@ -3,8 +3,7 @@ import { GestureResponderEvent, StyleProp, ViewStyle } from "react-native";
 export type PaymentMethodCardProps = {
     MaskedCardNumber: string;
     IsActive: boolean;
-    CardType: "visa" | "mastercard" | "amex" | "discover" | "jcb" | "diners-club" | "unionpay" | "maestro" | "hiper" | "elo" | "mir" | "paypal";
-    IsExpiringSoon?: boolean;
+    CardType: string;
     HandlePress?: (
         values:
             | GestureResponderEvent
@@ -12,7 +11,6 @@ export type PaymentMethodCardProps = {
             | undefined,
     ) => void;
 };
-
 export type MonthlyPaymentDetailsCardProps = {
     Amount: string;
     PaymentFailed: boolean;
@@ -25,13 +23,11 @@ export type MonthlyPaymentDetailsCardProps = {
     ) => void;
     styles?: StyleProp<ViewStyle>;
 };
-
 export type PaymentCardProps = {
     NumberOfPayments: string;
     Amount: string;
     CurrentPeriod: string;
     PaymentsType: "Expected" | "Declined"
-    styles?: StyleProp<ViewStyle>;
     HandlePress?: (
         values:
             | GestureResponderEvent
@@ -39,7 +35,6 @@ export type PaymentCardProps = {
             | undefined,
     ) => void;
 };
-
 export type PaymentHistoryCardProps = {
     FirstName: string;
     LastName: string;

@@ -50,7 +50,7 @@ export const PendingClientsScreen = () => {
     await DeleteUserInvitation(invitationId, 2, (error: any) => {
       if (error) {
         setRefreshingPendingCliients(false);
-        throw new Error(error.response.data);
+        console.error(error.response.data);
       } else {
         GetPendingClients(auth.GetBusinessId());
         setRefreshingPendingCliients(false);
@@ -64,7 +64,7 @@ export const PendingClientsScreen = () => {
       '2',
       (error: any, result: any) => {
         if (error) {
-          throw new Error(error.response.data);
+          console.error(error.response.data);
         } else {
           setPendingClientsList(result.data);
         }

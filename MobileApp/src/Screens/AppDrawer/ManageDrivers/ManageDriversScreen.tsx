@@ -75,7 +75,7 @@ const ManageDriverscreen = ({navigation}: any) => {
           userInvitation,
           (error: any, result: any) => {
             if (error) {
-              throw new Error(error);
+              console.error(error);
             } else {
               setShowInvitationModal(false);
               setShowAlertDialog(true);

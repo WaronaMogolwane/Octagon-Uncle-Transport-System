@@ -136,7 +136,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
           vehicleRearImage,
           (error: any, result: any) => {
             if (error) {
-              throw new Error(error);
+              console.error(error);
               setIsLoading(false);
               ShowAddVehicleToast(false, 'Error', error);
               setShowNewVehicleDetailsModal(true);
@@ -180,7 +180,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
             parseInt(currentVehicle.VehicleId),
             (error: any, resut: any) => {
               if (error) {
-                throw new Error(error.response.data);
+                console.error(error.response.data);
                 ShowRemoveDriverToast(true);
               } else {
                 onRefreshVehicles();
@@ -198,7 +198,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
   const GetBusinessVehicles = async (businessId: string) => {
     return await GetVehicles(businessId, (error: any, result: any) => {
       if (error) {
-        throw new Error(error.response.data);
+        console.error(error.response.data);
       } else {
         setVehicleList(result.data);
       }
@@ -332,7 +332,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       businessId,
       (error: any, result: any) => {
         if (error) {
-          throw new Error(error);
+          console.error(error);
         } else {
           setDriversList(result.data);
         }
@@ -421,7 +421,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
         (error: any, result: any) => {
           if (error) {
             ShowAddVehicleToast(false, 'Update failed', error);
-            throw new Error(error.response.data);
+            console.error(error.response.data);
           } else {
             ShowAddVehicleToast(
               true,
@@ -439,7 +439,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
       if (error) {
         setIsLoading(false);
         ShowAddVehicleToast(false, 'Unlink failed', error);
-        throw new Error(error.response.data);
+        console.error(error.response.data);
       } else {
         setVehicleList([]);
         onRefreshVehicles();
@@ -468,7 +468,7 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
         route.params.NewVehicle.LicenseNumber,
         (error: any, result: any) => {
           if (error) {
-            throw new Error(error);
+            console.error(error);
           } else {
             let vehicleStatus: any = result.data;
             if (
@@ -568,8 +568,8 @@ const ManageVehiclesScreen = ({route, navigation}: any) => {
     // if (!VehicleList[0]) {
     try {
       onRefreshVehicles();
-    } catch (error: any) {
-      throw new Error(error);
+    } catch (error) {
+      console.error(error);
     }
     // }
   };

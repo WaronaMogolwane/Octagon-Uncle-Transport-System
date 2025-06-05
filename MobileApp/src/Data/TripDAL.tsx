@@ -20,7 +20,7 @@ export const AddTripToDB = async (trip: Trip) => {
       code = response.status;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
     });
 
   return [data, code];
@@ -42,7 +42,7 @@ export const GetTripFromDB = async (tripId: string) => {
       res = trip;
     })
     .catch(error => {
-      throw new Error(error);
+      console.log(error);
       res = error;
     });
   return res;
@@ -82,7 +82,7 @@ export const GetUpcomingTripsParentFromDB = async (parentId: string) => {
       result = tripData;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
       result = error;
     });
 
@@ -123,7 +123,7 @@ export const GetPastTripsParentFromDB = async (parentId: string) => {
       result = tripData;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
       result = error;
     });
 
@@ -204,7 +204,7 @@ export const GetPastTripsDriverFromDB = async (driverId: string) => {
       result = tripData;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
       result = error;
     });
 
@@ -252,7 +252,7 @@ export const GetUpcomingTripsTransporterFromDB = async (
       result = tripData;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
       result = error;
     });
 
@@ -297,7 +297,7 @@ export const GetPastTripsTransporterFromDB = async (
       result = tripData;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
       result = error;
     });
 
@@ -338,7 +338,7 @@ export const GetDailytTripsTransporterFromDB = async (businessId: string) => {
       result = tripData;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
       result = error;
     });
 
@@ -379,7 +379,7 @@ export const GetDailytTripsParentFromDB = async (parentId: string) => {
       result = tripData;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
       result = error;
     });
 
@@ -421,7 +421,7 @@ export const GetDailytTripsDriverFromDB = async (driverId: string) => {
       result = tripData;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
       result = error;
     });
 
@@ -452,7 +452,7 @@ export const UpdateTripInDB = async (trip: Trip) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
     });
 
   return [data, statusCode];
@@ -477,7 +477,7 @@ export const UpdatePassengerStatusInDB = async (
       statusCode = response.status;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
     });
 
   return [data, statusCode];
@@ -498,7 +498,7 @@ export const UpdateTripPickUpTimeInDB = async (tripId: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
     });
 
   return [data, statusCode];
@@ -519,7 +519,7 @@ export const UpdateTripDropOffTimeInDB = async (tripId: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
     });
 
   return [data, statusCode];
@@ -540,7 +540,7 @@ export const EndTripInDB = async (tripId: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
     });
 
   return [data, statusCode];
@@ -561,7 +561,7 @@ export const UndoTripDropOffTimeInDB = async (tripId: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
     });
 
   return [data, statusCode];
@@ -582,7 +582,7 @@ export const UndoTripPickUpTimeInDB = async (tripId: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
     });
 
   return [data, statusCode];
@@ -603,7 +603,7 @@ export const UndoTripEndInDB = async (tripId: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
     });
 
   return [data, statusCode];

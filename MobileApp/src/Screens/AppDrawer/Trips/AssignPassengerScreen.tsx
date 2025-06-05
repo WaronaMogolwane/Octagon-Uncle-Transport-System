@@ -135,8 +135,9 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         }
       })
       .catch(error => {
-        throw new Error(
-          'Error fetching passenger driver vehicle linking: ' + error,
+        console.error(
+          'Error fetching passenger driver vehicle linking:',
+          error,
         );
         setIsLoading(false);
         setIsEmptyFlatList(true);

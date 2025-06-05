@@ -5,7 +5,7 @@ import { Authorization, Data, RefundWebhookEvent, TransactionWebhookEvent } from
 import { NextFunction, Request, Response } from "express";
 import { Customer } from "../Classes/Customer";
 import { CreateNewPaystackCustomer, CreatePaystackTransactionLink } from "../Services/PaystackService";
-import { InsertCardAuthorisation, InsertNewRefund, InsertSuccessfulTransaction } from '../Models/PaymentsModel';
+import { InsertCardAuthorisation, InsertNewRefund, InsertNewTransaction } from '../Models/PaymentsModel';
 import { ErrorResponse } from '../Classes/ErrorResponse';
 import { stringFormat } from '../Extensions/StringExtensions';
 import { Transaction } from '../Classes/Transaction';
@@ -16,12 +16,13 @@ import { BulkCharge, BulkChargeReponse as BulkChargeResponse } from '../Classes/
 import { ifError } from 'assert';
 import { randomUUID } from 'crypto';
 import { AxiosResponse } from 'axios';
+import { CustomLogger } from '../Classes/CustomLogger';
 import { OkPacket, QueryError } from 'mysql2';
 import { TransferResponse } from '../Classes/BankTransferResponse';
 import { PaymentSchedule } from '../Classes/PaymentSchedule';
-import { ServerLogger } from '../server';
 const bulkChargeSize: number = 1000;
 
+const Logger: CustomLogger = new CustomLogger();
 export const CreateNewCustomer = async (req: Request, res: Response, next: NextFunction) => {
     let requestBody: any = req.body;
     let newCustomer: Customer = ({
@@ -94,7 +95,6 @@ export const CreateTransactionLink = async (req: Request, res: Response, next: N
     await CreatePaystackTransactionLink(req, res, (error: any, response: any) => {
         if (error) {
             const err: Error = new Error(error.message)
-            ServerLogger.Error(err.message + err.stack);
             next(new ErrorResponse(400, err.message, err.stack));
         }
         else {
@@ -154,7 +154,7 @@ export const CreateNewBulkCharge = async (req: Request, res: Response, next: Nex
         }
     })
 }
-export const CreateSuccessfulTransaction = async (webhookEvent: TransactionWebhookEvent, req: Request, res: Response, callback: (error: any, result: any) => void) => {
+export const CreateNewTransaction = async (webhookEvent: TransactionWebhookEvent, req: Request, res: Response, callback: (error: any, result: any) => void) => {
     const data: Data = webhookEvent.data;
     let newTransaction: Transaction = ({
         transactionId: data.id,
@@ -167,7 +167,7 @@ export const CreateSuccessfulTransaction = async (webhookEvent: TransactionWebho
         datePaid: new Date(data.paid_at),
         transactionType: webhookEvent.data.metadata.charge_type
     })
-    await InsertSuccessfulTransaction(newTransaction, (error: QueryError, result) => {
+    await InsertNewTransaction(newTransaction, (error: QueryError, result) => {
         if (error) {
             callback(error, null);
         }
@@ -215,7 +215,6 @@ export const CreateNewRefund = async (webHookEvent: RefundWebhookEvent, req: Req
 export const SaveNewTransfer = async (transferResponse: TransferResponse, callback: (error: any, result: any) => void) => {
     let newTransfer: Transfer = ({
         transferCode: transferResponse.data.transfer_code,
-        recipientCode: transferResponse.data.recipient,
         amount: transferResponse.data.amount,
         currency: transferResponse.data.currency,
         status: "Pending",
@@ -240,7 +239,6 @@ export const UpdateTransfer = async (webHookEvent: TransferWebHookEvent, req: Re
         transferCode: webHookEvent.data.transfer_code,
         amount: webHookEvent.data.amount,
         currency: webHookEvent.data.currency,
-        recipientCode: webHookEvent.data.recipient.recipient_code,
         status: webHookEvent.data.status,
         reference: webHookEvent.data.reference,
         reason: webHookEvent.data.reason,
@@ -274,7 +272,7 @@ export const CreateTransfer = async (req: Request, res: Response, next: NextFunc
             next(new ErrorResponse(400, err.message, err.stack));
         }
         else {
-            const transferResponse: TransferResponse = Object.assign(new TransferResponse(), result);
+            const transferResponse: TransferResponse = Object.assign(new TransferResponse(), result.data);
             if (transferResponse.status == false) {
                 const err: Error = new Error(transferResponse.toString())
                 next(new ErrorResponse(400, err.message, err.stack));

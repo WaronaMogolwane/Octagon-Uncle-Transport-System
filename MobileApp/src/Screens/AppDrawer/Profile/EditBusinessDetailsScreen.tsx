@@ -98,7 +98,7 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
           }
         })
         .catch((error: any) => {
-          throw new Error(error);
+          console.log(error);
           setIsLoading(false);
         });
     } else {
@@ -111,7 +111,7 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
           setAddress(result.address);
         })
         .catch((error: any) => {
-          throw new Error(error);
+          console.log(error);
           setIsLoading(false);
         });
       setIsLoading(false);
@@ -151,9 +151,7 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
           setIsLoading(false);
         }
       })
-      .catch(error => {
-        throw new Error(error);
-      });
+      .catch(error => console.log(error));
   };
 
   const SuccessToast = () => {

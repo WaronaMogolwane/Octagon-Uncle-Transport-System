@@ -72,8 +72,8 @@ const SignUpScreen = ({route, navigation}: any) => {
         if (userRole == 1 && !isEmailVerified) {
           await emailOtp(formik.values.email, (error: any, result: any) => {
             if (error) {
+              console.error(error);
               setIsLoading(false);
-              throw new Error(error);
             } else {
               setShowModal(true);
               setIsLoading(false);
@@ -118,7 +118,7 @@ const SignUpScreen = ({route, navigation}: any) => {
   const SendOtp = async () => {
     await emailOtp(formik.values.email, (error: any, result: any) => {
       if (error) {
-        throw new Error(error);
+        console.error(error);
       } else {
         console.log(result.data);
       }
@@ -136,12 +136,12 @@ const SignUpScreen = ({route, navigation}: any) => {
           ShowToast();
           setIsEmailVerified(true);
           setShowModal(false);
-          SignUpNewUser();
+          SignUpNewUser(uuid.v4());
         }
       },
     );
   };
-  const SignUpNewUser = async (userId?: string) => {
+  const SignUpNewUser = async (userId: string) => {
     const newUserId: any = userId;
     const newUser: User = {
       userId: newUserId,
@@ -152,7 +152,7 @@ const SignUpScreen = ({route, navigation}: any) => {
     };
     await signUp(newUser, (error: any, result: any) => {
       if (error) {
-        throw new Error(error);
+        console.error(error);
       } else {
         ShowToast();
         navigation.navigate({

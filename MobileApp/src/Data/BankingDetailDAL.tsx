@@ -16,13 +16,16 @@ export const AddBankingDetailToDB = async (bankingDetail: BankingDetail) => {
         PaystackBankId: bankingDetail.paystackBankId,
         PaystackBankCode: bankingDetail.paystackBankCode,
         RecipientCode: bankingDetail.recipientCode,
+        AccountType: bankingDetail.accountType,
+        DocumentType: bankingDetail.documentType,
+        DocumentNumber: bankingDetail.documentNumber,
       },
     })
     .then((response: any) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
     });
   return statusCode;
 };
@@ -41,7 +44,7 @@ export const GetBankingDetailFromDB = async (businessId: string) => {
       data = response.data;
     })
     .catch((error: any) => {
-      throw new Error(error);
+      console.log(error);
     });
 
   return [data, statusCode];
@@ -71,155 +74,12 @@ export const UpdateBankingDetailToDB = async (bankingDetail: BankingDetail) => {
       statusCode = response.status;
       data = response.data;
     })
-    .catch((error: any) => {
-      throw new Error(error);
+    .catch((error: AxiosError) => {
+      console.log(error);
     });
 
   return [data, statusCode];
 };
-
-//   export const GetBusinessDetailFromDB = async (businessId: string) => {
-//     let res: any;
-
-//     await axios
-//       .get(`${SERVER_HOST}:${SERVER_PORT}/business-detail/get-business-detail`, {
-//         params: {
-//           BusinessId: businessId,
-//         },
-//       })
-//       .then((response: any) => {
-//         let result = response.data.result;
-
-//         let businessDetail = new BusinessDetail(
-//           result[0].BusinessDetailId,
-//           result[0].BusinessName,
-//           result[0].BusinessPhoneNumber,
-//           result[0].AddressLine1,
-//           result[0].AddressLine2,
-//           result[0].Suburb,
-//           result[0].City,
-//           result[0].Province,
-//           result[0].PostalCode,
-//           result[0].BusinessId,
-//         );
-
-//         res = businessDetail;
-//       })
-//       .catch((error: any) => {
-//         throw new Error(error);
-//         res = error;
-//       });
-//     console.log(res);
-
-//     return res;
-//   };
-
-//   export const GetBusinessDetailForParentFromDB = async (businessId: string) => {
-//     let res: any;
-
-//     await axios
-//       .get(
-//         `${SERVER_HOST}:${SERVER_PORT}/business-detail/get-business-detail-for-parent`,
-//         {
-//           params: {
-//             BusinessId: businessId,
-//           },
-//         },
-//       )
-//       .then((response: any) => {
-//         let result = response.data.result;
-
-//         let businessDetail = {
-//           name: `${result[0].FirstName} ${result[0].LastName}`,
-//           businessName: result[0].BusinessName,
-//           businessPhoneNumber: result[0].BusinessPhoneNumber,
-//           email: result[0].Email,
-//           address: `${result[0].AddressLine1}`,
-//         };
-
-//         res = businessDetail;
-//       })
-//       .catch((error: any) => {
-//         throw new Error(error);
-//         res = error;
-//       });
-
-//     return res;
-//   };
-
-//   export const UpdateBusinessDetailInDB = async (
-//     businessDetail: BusinessDetail,
-//   ) => {
-//     let statusCode: any;
-//     let data: any;
-
-//     await axios
-//       .patch(
-//         `${SERVER_HOST}:${SERVER_PORT}/business-detail/update-business-detail`,
-//         {
-//           businessDetail: {
-//             BusinessDetailId: businessDetail.businessDetailId,
-//             BusinessName: businessDetail.businessName,
-//             BusinessPhoneNumber: businessDetail.businessPhoneNumber,
-//             AddressLine1: businessDetail.addressLine1,
-//             AddressLine2: businessDetail.addressLine2,
-//             Suburb: businessDetail.suburb,
-//             City: businessDetail.city,
-//             Province: businessDetail.province,
-//             PostalCode: businessDetail.postalCode,
-//             BusinessId: businessDetail.businessId,
-//           },
-//         },
-//       )
-//       .then((response: any) => {
-//         data = response.data;
-//         statusCode = response.status;
-//       })
-//       .catch((error: any) => {
-//         throw new Error(error);
-//       });
-
-//     return [data, statusCode];
-//   };
-
-// export const GetActivePassengerForBusinessFromDB = async (
-//   businessId: string,
-// ) => {
-//   let result: any;
-//   const tripData: {}[] = [];
-//   let passsengers = {};
-
-//   await axios
-//     .get(`${SERVER_HOST}:${SERVER_PORT}/passenger/get-business-passengers`, {
-//       params: {
-//         BusinessId: businessId,
-//       },
-//     })
-//     .then((response: any) => {
-//       let res = [...response.data.result];
-
-//       res.forEach(data => {
-//         passsengers = {
-//           passengerId: data.PassengerId,
-//           passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
-//           editedName: `${data.FirstName} ${data.LastName}`,
-//           age: data.Age,
-//           homeAddress: data.HomeAddress,
-//           destinationAddress: data.DestinationAddress,
-//           parentId: data.ParentId,
-//         };
-
-//         tripData.push(passsengers);
-//       });
-
-//       result = tripData;
-//     })
-//     .catch((error: any) => {
-//       result = error;
-//     });
-
-//   return result;
-// };
 
 export const GetBankListFromDB = async () => {
   let result: any;
@@ -269,47 +129,39 @@ export const GetBankListFromDB = async () => {
       result = bankData;
     })
     .catch(error => {
-      throw new Error(error);
+      console.log(error);
     });
 
   return result;
 };
 
-export const ValidateAccountInDB = async (accountDetails: any) => {
-  let result: any;
-
-  let data = JSON.stringify({
-    bank_code: accountDetails.bank_code,
-    country_code: accountDetails.country_code,
-    account_number: accountDetails.account_number,
-    account_name: accountDetails.account_name,
-    account_type: accountDetails.account_type,
-    document_type: accountDetails.document_type,
-    document_number: accountDetails.document_number,
-  });
-
-  let config = {
-    method: 'post',
-    maxBodyLength: Infinity,
-    url: 'https://api.paystack.co:443/bank/validate',
-    headers: {
-      Authorization: 'Bearer sk_test_15b32363d5ec93adf4cb35693b162ac7f87d4224',
-      'Content-Type': 'application/json',
-      Cookie:
-        '__cf_bm=uKNDRLKGjFMsbiS1F4.mM1iIVdgVB1r4oaulgB52bk8-1721108570-1.0.1.1-i9c1iJtg0yUmoOKS5xx0Q_.vntHWO87eCxlhWJrG_p1Ljav4UuSidWhDeo4spc7uC4tSLEI8pd1H4mfEWkaGjg; sails.sid=s%3AsYAJxuXxwglwNuJaFbox0wvPt8h8xFj2.ELrPbh6xcuiTp1X22%2FXs1K%2BhY5%2Bkofee%2BX%2BcVPMNU0w',
-    },
-    data: data,
-  };
+export const VerifyBankAccountInServer = async (
+  accountNumber: BankingDetail,
+) => {
+  let statusCode: any;
+  let data: any;
 
   await axios
-    .request(config)
-    .then(response => {
-      let res = response.data.data.verified;
-
-      result = JSON.stringify(res);
+    .get(
+      `${SERVER_HOST}:${SERVER_PORT}/business-detail/verify-account-number`,
+      {
+        params: {
+          AccountNumber: accountNumber.accountNumber,
+          AccountName: accountNumber.accountName,
+          BankCode: accountNumber.branchNumber,
+          CountryCode: accountNumber?.paystackBankCode,
+          DocumentType: accountNumber?.documentType,
+          DocumentNumber: accountNumber?.documentNumber,
+        },
+      },
+    )
+    .then((response: any) => {
+      data = response.data;
+      statusCode = response.status;
     })
-    .catch(error => {
-      throw new Error(error);
+    .catch((error: any) => {
+      console.log(error);
     });
-  return result;
+
+  return [data, statusCode];
 };

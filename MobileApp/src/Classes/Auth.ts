@@ -43,7 +43,7 @@ export class Auth {
     //         return auth
     //     }
     //     catch (error) {
-    //         throw new Error(error)
+    //         console.error(error)
     //         return null;
     //     }
     // }

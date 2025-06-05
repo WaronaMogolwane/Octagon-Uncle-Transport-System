@@ -13,12 +13,12 @@ export const StartTrip = async () => {
         isStarted = true;
       } catch (e) {
         // saving error
-        throw new Error('There was an error saving the trip via async: ' + e);
+        console.error('There was an error saving the trip via async: ' + e);
       }
     }
   } catch (e) {
     // error reading value
-    throw new Error(
+    console.error(
       'There was an retrieving the state of the trip via async: ' + e,
     );
   }
@@ -39,14 +39,14 @@ export const EndTrip = async () => {
         isStarted = false;
       } catch (e) {
         // saving error
-        throw new Error(
+        console.error(
           'There was an error saving the state of the trip via async: ' + e,
         );
       }
     }
   } catch (e) {
     // error reading value
-    throw new Error(
+    console.error(
       'There was an retrieving the state of the trip via async: ' + e,
     );
   }
@@ -64,7 +64,7 @@ export const CheckTrip = async () => {
     }
   } catch (e) {
     // error reading value
-    throw new Error('There was an retrieving the trip status via async: ' + e);
+    console.error('There was an retrieving the trip status via async: ' + e);
   }
 
   return isStarted;

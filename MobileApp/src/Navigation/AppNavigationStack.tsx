@@ -3,7 +3,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import AppDrawer from './AppDrawer';
 import BarcodeScanner from '../Screens/Camera/BarcodeScannerScreen';
 import CameraScreen from '../Screens/Camera/CameraScreen';
-import TransporterPaymentHistoryScreen from '../Screens/AppDrawer/Payments/PaymentHistory/TransporterPaymentHistoryScreen';
+import TransporterPaymentHistoryScreen from '../Screens/AppDrawer/Payments/TransporterPaymentHistoryScreen';
 
 const AppNavigationStack = () => {
   const Stack = createNativeStackNavigator();

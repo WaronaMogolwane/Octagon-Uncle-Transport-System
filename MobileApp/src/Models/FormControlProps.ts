@@ -1,6 +1,6 @@
-import { GestureResponderEvent } from 'react-native/Libraries/Types/CoreEventTypes';
-import React, { ChangeEvent, useEffect, useState } from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import {GestureResponderEvent} from 'react-native/Libraries/Types/CoreEventTypes';
+import React, {ChangeEvent, useEffect, useState} from 'react';
+import {StyleProp, ViewStyle} from 'react-native';
 
 export type InputProps = {
   isInvalid: boolean;
@@ -28,17 +28,16 @@ export type ButtonProps = {
   size?: 'xs' | 'sm' | 'md' | 'lg' | undefined;
   variant?: string;
   action?:
-  | 'default'
-  | 'negative'
-  | 'primary'
-  | 'secondary'
-  | 'positive'
-  | undefined;
+    | 'default'
+    | 'negative'
+    | 'primary'
+    | 'secondary'
+    | 'positive'
+    | undefined;
   isDisabled?: boolean;
   isFocusVisible?: boolean;
   buttonText?: string;
   buttonIcon?: any;
-  leftButtonIcon?: any;
   onPress?: (
     values:
       | GestureResponderEvent
@@ -46,9 +45,6 @@ export type ButtonProps = {
       | undefined,
   ) => void;
   styles?: StyleProp<ViewStyle>;
-  buttonIcontyles?: StyleProp<ViewStyle>;
-  color?: string;
-  textColor?: string;
 };
 
 export type SignInFormProps = {

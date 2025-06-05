@@ -75,7 +75,7 @@ const AppDrawer = ({navigation}: any) => {
         setFullname(result.firstName + ' ' + result.lastName);
       })
       .catch((error: any) => {
-        throw new Error(error);
+        console.log(error);
       });
   };
 
@@ -95,7 +95,7 @@ const AppDrawer = ({navigation}: any) => {
           setProfileImageExists(false);
         }
       } catch (error) {
-        throw new Error('Error checking profile image: ' + error);
+        console.error('Error checking profile image:', error);
         setProfileImageExists(false); // Fallback to default image on error
       }
     };

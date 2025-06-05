@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import mysql from "mysql2";
 import mysql2 from "mysql2/promise";
-import { ServerLogger } from "../server";
+import WinstonLogger from "../Utilities/WinstonLogger";
 const host = process.env.OUTS_DATABASE_HOST;
 const dbUser = process.env.OUTS_DATABASE_USER;
 const dbPassword = process.env.OUTS_DATABASE_PASSWORD;
@@ -50,7 +50,7 @@ function AddNewUser(user) {
   return AddNewUserPromise;
 }
 export const SaveUserOtp = async (otp: string, req, res) => {
-  ServerLogger.Log(otp);
+  WinstonLogger.info(otp);
   let UserRegistration;
   try {
     var user = await GetUserByEmail(req.body.userDetails.Email);
@@ -71,7 +71,7 @@ export const SaveUserOtp = async (otp: string, req, res) => {
         ON DUPLICATE KEY UPDATE OTP = '${req.body.otp}', DateCreated = CURRENT_TIMESTAMP(), OTPExpireDate = ADDTIME(CURRENT_TIMESTAMP(), "0:03:0.0")`,
     function (error) {
       if (error) {
-        ServerLogger.Log(error.toString());
+        WinstonLogger.info(error);
       } else {
         res.status(201);
         res.send(
@@ -110,10 +110,10 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )`,
     function (error) {
       if (error) {
-        ServerLogger.Log(error.message);
+        WinstonLogger.info(error.message);
         return;
       } else {
-        ServerLogger.Log("Database successfully initialised");
+        WinstonLogger.info("Database successfully initialised");
       }
     }
   );
@@ -127,10 +127,10 @@ DateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )`,
     function (error) {
       if (error) {
-        ServerLogger.Log(error.message);
+        WinstonLogger.info(error.message);
         return;
       } else {
-        ServerLogger.Log("Database successfully initialised");
+        WinstonLogger.info("Database successfully initialised");
       }
     }
   );
@@ -146,7 +146,7 @@ module.exports = {
 // function dbConnect() {
 //   pool.execute((error) => {
 //     if (error) {
-//       ServerLogger.Log(error);
+//       logger.info(error);
 //       return;
 //     }
 //   });

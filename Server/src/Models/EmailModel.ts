@@ -1,40 +1,23 @@
-import { Email } from '../Classes/Email';
-import { mailTransporter } from '../Services/EmailService';
+import { Email } from "../Classes/Email";
+import { mailTransporter } from "../Services/EmailService";
 
-
-/**
- * Sends an email using the provided email data.
- *
- * @param {Email} emailData - The data required to send the email.
- * @returns {Promise<string>} A Promise that resolves to "success" if the email is sent successfully,
- * or rejects with an error if sending fails.
- */
-export const SendEmail = async (emailData: Email): Promise<string> => {
+// async..await is not allowed in global scope, must use a wrapper
+export const SendEmail = async (emailData: Email) => {
+  const email = {
+    from: `"${emailData.fromName}" <${emailData.fromAddress}>`, // sender address
+    to: emailData.toAddress, // list of receivers
+    subject: emailData.subject, // Subject line
+    // text: `${email.Message}`, // plain text body
+    html: emailData.emailHtml, // html body
+  };
   try {
-    const email = {
-      from: `"<span class="math-inline">\{emailData\.fromName\}" <</span>{emailData.fromAddress}>`,
-      to: emailData.toAddress,
-      subject: emailData.subject,
-      html: emailData.emailHtml,
-    };
-
-
+    // send mail with defined transport object
     await mailTransporter.sendMail(email, null);
-    return 'success';
   } catch (error) {
     return Promise.reject(error);
   }
+  return Promise.resolve("success");
 };
-
-
-/**
- * Creates the HTML content for an OTP (One-Time Password) email.
- *
- * @param {string} firstName - The recipient's first name.
- * @param {string} emailMessage - The main message content of the email.
- * @param {string} otp - The One-Time Password to be included in the email.
- * @returns {string} The HTML string for the OTP email.
- */
 export const CreateOtpEmailHtml = (firstName: string, emailMessage: string, otp: string) => {
   return `
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">

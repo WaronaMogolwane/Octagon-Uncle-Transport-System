@@ -93,7 +93,7 @@ export const ClientsScreen = () => {
         ) {
           DeleteUserByUserIdAndRole(currentClient.UserId, '2', (error: any) => {
             if (error) {
-              throw new Error(error);
+              console.error(error);
               ShowRemoveClientToast(false);
             } else {
               GetClients(auth.GetBusinessId());
@@ -111,7 +111,7 @@ export const ClientsScreen = () => {
       businessId,
       (error: any, result: any) => {
         if (error) {
-          throw new Error(error.response.data);
+          console.error(error.response.data);
         } else {
           setClientsList(result.data);
         }

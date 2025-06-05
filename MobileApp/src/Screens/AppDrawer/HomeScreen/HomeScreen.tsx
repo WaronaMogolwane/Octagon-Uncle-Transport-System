@@ -136,37 +136,25 @@ const HomeScreen = ({navigation}: any) => {
   }, []);
 
   const GetPaymentsForThisMonth = async () => {
-    return await GetPaymentsSummaryForThisMonth(
-      businessId,
-      (error: any, result: any) => {
-        if (error) {
-          console.error(error.response.data);
-        } else {
-          const expectedPayments: any = result;
-          expectedPayments.Amount = FormatBalance(
-            expectedPayments.Amount || '0',
-          );
-          setExpectedPaymentsSummary(expectedPayments);
-        }
-      },
-    );
+    try {
+      const result = await GetPaymentsSummaryForThisMonth(businessId);
+      const expectedPayments: any = result;
+      expectedPayments.Amount = FormatBalance(expectedPayments.Amount || '0');
+      setExpectedPaymentsSummary(expectedPayments);
+    } catch (error: any) {
+      console.error(error?.response?.data || error);
+    }
   };
 
   const GetDeclinedPaymentSummary = async () => {
-    return await GetDeclinedPaymentsSummary(
-      businessId,
-      (error: any, result: any) => {
-        if (error) {
-          console.error(error.response.data);
-        } else {
-          const declinedPayments: any = result;
-          declinedPayments.Amount = FormatBalance(
-            declinedPayments.Amount || '0',
-          );
-          setDeclinedPaymentsSummary(declinedPayments);
-        }
-      },
-    );
+    try {
+      const result = await GetDeclinedPaymentsSummary(businessId);
+      const declinedPayments: any = result;
+      declinedPayments.Amount = FormatBalance(declinedPayments.Amount || '0');
+      setDeclinedPaymentsSummary(declinedPayments);
+    } catch (error: any) {
+      console.error(error?.response?.data || error);
+    }
   };
 
   const GetProfileImage = async () => {

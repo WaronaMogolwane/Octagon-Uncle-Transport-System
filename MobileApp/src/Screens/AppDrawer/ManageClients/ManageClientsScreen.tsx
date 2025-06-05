@@ -125,26 +125,21 @@ const ManageClientsScreen = ({navigation}: any) => {
                 paymentScheduleFormik.values.amount.toString(),
                 paymentScheduleFormik.values.paymentDay,
               );
-              await CreatePaymentSchedule(
-                paymentSchedule,
-                (error: any, result: any) => {
-                  if (error) {
-                  } else {
-                    setShowPaymentScheduleModal(false);
-                    setShowAlertDialog(true);
-                    paymentScheduleFormik.resetForm();
-                    GetClientsInvitation(
-                      auth.GetBusinessId(),
-                      '2',
-                      (error: any, result: any) => {
-                        if (error) {
-                        } else {
-                        }
-                      },
-                    );
-                  }
-                },
-              );
+              try {
+                await CreatePaymentSchedule(paymentSchedule);
+                setShowPaymentScheduleModal(false);
+                setShowAlertDialog(true);
+                paymentScheduleFormik.resetForm();
+                await GetClientsInvitation(
+                  auth.GetBusinessId(),
+                  '2',
+                  (error: any, result: any) => {
+                    // handle result or error if needed
+                  },
+                );
+              } catch (error: any) {
+                throw new Error(error.toString());
+              }
             }
           },
         );

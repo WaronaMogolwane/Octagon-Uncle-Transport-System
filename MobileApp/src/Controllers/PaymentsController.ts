@@ -15,7 +15,6 @@ import {
     InitializeTransaction,
 } from "../Services/PaymentsService";
 
-// Convert all callback-based functions to promise-based versions for simplicity
 export const CreatePaymentSchedule = async (newPaymentSchedule: PaymentSchedule): Promise<any> => {
     try {
         const result = await InsertPaymentSchedule(newPaymentSchedule);

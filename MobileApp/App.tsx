@@ -8,6 +8,7 @@ import {GluestackUIProvider} from '@gluestack-ui/themed';
 import {config} from '@gluestack-ui/config';
 import {Camera} from 'react-native-vision-camera';
 import * as Sentry from '@sentry/react-native'; // Correct Sentry import for React Native
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 Sentry.init({
   dsn: 'https://e5b90a0e97e12c4a3ded6972b0e831bb@o4509321995616256.ingest.de.sentry.io/4509322002235472',
@@ -29,6 +30,9 @@ Sentry.init({
 });
 function App(): JSX.Element {
   //const [cameraPermission, setCameraPermission] = useState<any>();
+
+  //const App: React.FC = () => {
+  const [isReady, setIsReady] = useState<boolean>(false);
   const [pushNotificationsPermission, setPushNotificationsPermission] =
     useState<any>();
 
@@ -55,4 +59,7 @@ function App(): JSX.Element {
     </SessionProvider>
   );
 }
+
+//export default memo(App);
+
 export default Sentry.wrap(App);

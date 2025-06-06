@@ -46,7 +46,7 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
 
   const toast = useToast();
 
-  const [showModal, setShowModal] = useState(true);
+  const [showModal, setShowModal] = useState(false);
   const [isBankNameFocus, setIsBankNameFocus] = useState(false);
   const [isAccountTypeFocus, setIsAccountTypeFocus] = useState(false);
   const [isDocumentTypeFocus, setIsDocumentTypeFocus] = useState(false);

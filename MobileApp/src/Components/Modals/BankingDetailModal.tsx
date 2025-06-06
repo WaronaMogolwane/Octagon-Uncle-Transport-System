@@ -28,7 +28,7 @@ import {
 import {BankingDetailDetailModalProps} from '../../Props/ModalProps';
 
 const BankingDetailModal = (props: BankingDetailDetailModalProps) => {
-  // Dynamic label for DocumentType dropdown
+  // Dynamic label for DocumentType dropdownn
   const documentTypeLabel =
     props.SelectedAccountType === 'personal'
       ? 'ID / Passport Number'

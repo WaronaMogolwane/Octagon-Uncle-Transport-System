@@ -228,17 +228,17 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
 
     await AddBankingDetail(bankingDetail)
       .then((response: any) => {
-        // if (response == 200) {
-        //   setShowModal(false);
-        //   setIsLoading(false);
-        //   SuccessToast();
-        //   SetSession(authToken!);
-        //   bankingFormik.resetForm();
-        //   formik.resetForm();
-        // } else {
-        //   setIsLoading(false);
-        //   FaliureToast();
-        // }
+        if (response == 200) {
+          setShowModal(false);
+          setIsLoading(false);
+          SuccessToast();
+          SetSession(authToken!);
+          bankingFormik.resetForm();
+          formik.resetForm();
+        } else {
+          setIsLoading(false);
+          FaliureToast();
+        }
       })
       .catch((error: any) => {
         setIsLoading(false);

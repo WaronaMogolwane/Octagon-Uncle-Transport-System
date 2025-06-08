@@ -10,9 +10,13 @@ import {
   AvatarFallbackText,
   AvatarImage,
   VStack,
+  Image,
 } from '@gluestack-ui/themed';
 import {CustomButton3} from '../Buttons';
 import {GestureResponderEvent} from 'react-native';
+import {ClientListCardStyles} from '../../Stylesheets/GlobalStyles';
+import {useState} from 'react';
+import {GetUserActiveStatus} from '../../Controllers/UserController';
 
 export const PendingClientListCard = (props: {
   firstName: string;
@@ -81,6 +85,7 @@ export const ClientListCard = (props: {
   lastName: string;
   email: string;
   numberOfPassengers: string;
+  userId: string;
   handleDriverCardPress: (
     values:
       | GestureResponderEvent
@@ -88,25 +93,37 @@ export const ClientListCard = (props: {
       | undefined,
   ) => void;
 }) => {
+  const [isActive, setIsActive] = useState(false);
+
+  GetUserActiveStatus(props.userId).then((result: any) => {
+    if (result[0].ActiveStatus == 1) {
+      setIsActive(true);
+    }
+  });
+
   return (
-    <Pressable onPress={props.handleDriverCardPress}>
-      <HStack space="md">
-        <Avatar>
-          <AvatarFallbackText>Profile Picture</AvatarFallbackText>
-          <AvatarImage
-            source={{
-              uri: 'https://media.licdn.com/dms/image/C4D03AQFotIRK58pRNA/profile-displayphoto-shrink_200_200/0/1525163555622?e=2147483647&v=beta&t=lvummEevyaevcll0SjNg8UvthCNqz05ate3HonR4zfc',
-            }}
-            alt="Driver profile picture."
-          />
-        </Avatar>
-        <VStack>
-          <Heading size="sm"> {props.firstName + ' ' + props.lastName}</Heading>
-          <Text size="sm">{props.email}</Text>
-          <Text size="sm">{'Passengers: ' + props.numberOfPassengers}</Text>
-        </VStack>
-      </HStack>
-      <Divider my="$3" />
-    </Pressable>
+    <View style={ClientListCardStyles.passengerItem}>
+      <Image
+        source={{
+          uri: 'https://media.licdn.com/dms/image/C4D03AQFotIRK58pRNA/profile-displayphoto-shrink_200_200/0/1525163555622?e=2147483647&v=beta&t=lvummEevyaevcll0SjNg8UvthCNqz05ate3HonR4zfc',
+        }}
+        alt="Driver profile picture."
+        style={ClientListCardStyles.passengerImage}
+      />
+      <View style={ClientListCardStyles.parentInfo}>
+        <Text style={ClientListCardStyles.clientName}>
+          {props.firstName} {props.lastName}
+        </Text>
+        <Text style={ClientListCardStyles.clientEmail}>{props.email}</Text>
+        <Text style={ClientListCardStyles.passengerCount}>
+          {props.numberOfPassengers}
+        </Text>
+      </View>
+      {isActive ? (
+        <View style={ClientListCardStyles.statusIndicatorActive} />
+      ) : (
+        <View style={ClientListCardStyles.statusIndicatorNotActive} />
+      )}
+    </View>
   );
 };

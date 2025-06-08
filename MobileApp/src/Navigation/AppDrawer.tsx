@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {createDrawerNavigator, DrawerItemList} from '@react-navigation/drawer';
 import HomeScreen from '../Screens/AppDrawer/HomeScreen/HomeScreen';
 import TripsScreen from '../Screens/AppDrawer/Trips/TripsScreen';
-import PaymentsScreen from '../Screens/AppDrawer/PaymentsScreen';
+import PaymentsScreen from '../Screens/AppDrawer/Payments/PaymentsScreen';
 import ManageVehiclesScreen from '../Screens/AppDrawer/Vehicles/ManageVehiclesScreen';
 import ManageDriversScreen from '../Screens/AppDrawer/ManageDrivers/ManageDriversScreen';
 import ManageClientsScreen from '../Screens/AppDrawer/ManageClients/ManageClientsScreen';
@@ -14,22 +14,18 @@ import BusinessDetailsScreen from '../Screens/AuthenticationStack/BusinessDetail
 import ProfileScreen from '../Screens/AppDrawer/Profile/ProfileScreen';
 import EditBusinessDetailsScreen from '../Screens/AppDrawer/Profile/EditBusinessDetailsScreen';
 import EditUserDetailsScreen from '../Screens/AppDrawer/Profile/EditUserDetailsScreen';
-import EditPaymentDetailsScreen from '../Screens/AppDrawer/Profile/EditPaymentDetailsScreen';
-
 import {Auth} from '../Classes/Auth';
 import {AuthContext} from '../Services/AuthenticationService';
+import ForgotPasswordScreen from '../Screens/AuthenticationStack/ForgotPasswordScreen';
 import {
+  ArrowLeft,
   AlignLeft,
   Aperture,
-  Baby,
   Bell,
   Bolt,
-  BookUser,
-  Bus,
   CarFront,
   GraduationCap,
   HandCoins,
-  KeySquare,
   Route,
   ShipWheel,
   University,
@@ -39,19 +35,19 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {Image, Pressable, StyleSheet, Text, View} from 'react-native';
 import {GetUser} from '../Controllers/UserController';
 import {ScrollView} from 'react-native-gesture-handler';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
-import TripVehiclePickerScreen from '../Screens/AppDrawer/Trips/TripVehiclePickerScreen';
 import {getHeaderTitle} from '@react-navigation/elements';
 import TripTransporterScreen from '../Screens/AppDrawer/Trips/TripTransporterScreen';
+import {AppDrawerScreenStyles} from '../Stylesheets/GlobalStyles';
+import RNFS from 'react-native-fs';
+import {RestoreImageViaAsyncStorage} from '../Services/ImageStorageService';
 
 const AppDrawer = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
   const [fullname, setFullname] = useState('');
+  const [profileImageExists, setProfileImageExists] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [profileImage, setProfileImage] = useState('');
-  const [isReloading, setIsReloading] = useState(false);
-  const [tracker, setTracker] = useState(false);
 
   const role: number = Number(auth.GetUserRole());
   // const role: number = 1;
@@ -63,11 +59,6 @@ const AppDrawer = ({navigation}: any) => {
   const iconSize = 20;
   const iconStrokeWidth = 1;
   const iconColor = '#000000';
-
-  const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
-
-  const date = new Date();
 
   const RoleLabel = (role: number) => {
     if (role == 1) {
@@ -84,7 +75,7 @@ const AppDrawer = ({navigation}: any) => {
         setFullname(result.firstName + ' ' + result.lastName);
       })
       .catch((error: any) => {
-        console.log(error);
+        throw new Error(error);
       });
   };
 
@@ -93,14 +84,24 @@ const AppDrawer = ({navigation}: any) => {
   }, []);
 
   useEffect(() => {
-    RestoreImageViaAsyncStorage().then((result: any) => {
-      if (result == '' || result == null) {
-        setProfileImage(result);
-      } else {
-        setProfileImage(result);
+    const checkImage = async () => {
+      try {
+        const filePath = `${RNFS.DocumentDirectoryPath}/profile_image.jpg`;
+        const exists = await RNFS.exists(filePath);
+
+        if (exists) {
+          setProfileImageExists(exists);
+        } else {
+          setProfileImageExists(false);
+        }
+      } catch (error) {
+        throw new Error('Error checking profile image: ' + error);
+        setProfileImageExists(false); // Fallback to default image on error
       }
-    });
-  }, [fullname, isReloading]);
+    };
+
+    checkImage();
+  }, [Date.now()]);
 
   return (
     <Drawer.Navigator
@@ -111,34 +112,30 @@ const AppDrawer = ({navigation}: any) => {
               <View>
                 <View>
                   <Image
-                    style={styles.coverPhoto}
+                    style={AppDrawerScreenStyles.coverPhoto}
                     alt="profile photo"
                     source={require('../Images/background_image.jpg')}
                   />
                 </View>
-                <View style={styles.avatarContainer}>
+                <View style={AppDrawerScreenStyles.avatarContainer}>
                   <Pressable
-                    onPress={() => {
-                      navigation.navigate('Profile');
-                    }}>
+                    onPress={() => navigation.navigate('Profile')}
+                    style={({pressed}) => [{opacity: pressed ? 0.7 : 1}]}>
                     <Image
-                      alt="profile photo"
+                      style={AppDrawerScreenStyles.avatar}
+                      alt="Profile Photo"
                       source={
-                        profileImage == ''
-                          ? require('../Images/default_avatar_image.jpg')
-                          : {
-                              uri:
-                                storageUrl +
-                                profileImage +
-                                '?xc=' +
-                                date.getTime() +
-                                date.getDate(),
+                        profileImageExists
+                          ? {
+                              uri: `file://${
+                                RNFS.DocumentDirectoryPath
+                              }/profile_image.jpg?${Date.now()}`,
                             }
+                          : require(`../Images/default_avatar_image.jpg`)
                       }
-                      style={styles.avatar}
                     />
                   </Pressable>
-                  <Text style={styles.name}>{fullname}</Text>
+                  <Text style={AppDrawerScreenStyles.name}>{fullname}</Text>
                   <Text
                     style={{fontSize: 16, color: '#111', paddingBottom: 10}}>
                     {RoleLabel(role)}
@@ -152,7 +149,7 @@ const AppDrawer = ({navigation}: any) => {
       }}
       initialRouteName="Home"
       screenOptions={{
-        drawerStyle: {backgroundColor: '#e8f0f3', width: 250},
+        drawerStyle: {backgroundColor: '#ffffff', width: 250},
         headerTintColor: '#e8f0f3',
         headerTitleStyle: {fontWeight: 'bold'},
         drawerActiveTintColor: 'blue',
@@ -160,26 +157,56 @@ const AppDrawer = ({navigation}: any) => {
         header: ({navigation, route, options}) => {
           const title = getHeaderTitle(options, route.name);
 
+          const iconSeletor = () => {
+            if (
+              title == 'User Account' ||
+              title == 'Edit Personal Details' ||
+              title == 'Business Information' ||
+              title == 'Forgot Password'
+            ) {
+              return <ArrowLeft size={25} strokeWidth={2} color={'black'} />;
+            } else if (title == 'Assign Passenger') {
+              return <ArrowLeft size={25} strokeWidth={2} color={'black'} />;
+            } else if (title == 'Trips') {
+              if (role != 1) {
+                return <AlignLeft size={25} strokeWidth={2} color={'black'} />;
+              } else {
+                return <ArrowLeft size={25} strokeWidth={2} color={'black'} />;
+              }
+            } else {
+              return <AlignLeft size={25} strokeWidth={2} color={'black'} />;
+            }
+          };
+
           return (
-            <View style={{flexDirection: 'row', backgroundColor: '#e8f0f3'}}>
+            <View style={AppDrawerScreenStyles.toolbarContainer}>
               <View style={{width: '20%'}}>
                 <Pressable
-                  style={{marginVertical: 15, marginStart: 15}}
+                  style={AppDrawerScreenStyles.toolbarLeftContainer}
                   onPress={() => {
-                    navigation.toggleDrawer();
-                    setIsReloading(!isReloading);
+                    if (
+                      title == 'User Account' ||
+                      title == 'Edit Personal Details' ||
+                      title == 'Business Information'
+                    ) {
+                      navigation.navigate('Profile');
+                    } else if (title == 'Assign Passenger') {
+                      navigation.navigate('Manage Trip');
+                    } else if (title == 'Trips') {
+                      role != 1
+                        ? navigation.toggleDrawer()
+                        : navigation.navigate('Manage Trip');
+                    } else if (title == 'Forgot Password') {
+                      navigation.navigate('Edit User Account');
+                    } else {
+                      navigation.toggleDrawer();
+                    }
                   }}>
-                  <AlignLeft size={25} strokeWidth={2} color={'black'} />
+                  {iconSeletor()}
                 </Pressable>
               </View>
               <View style={{width: '60%', justifyContent: 'center'}}>
-                <Text
-                  style={{
-                    fontSize: 25,
-                    fontWeight: 'bold',
-                    textAlign: 'center',
-                    color: 'black',
-                  }}>
+                <Text style={AppDrawerScreenStyles.toolbarText}>
                   {title != 'Home' ? title : ''}
                 </Text>
               </View>
@@ -189,11 +216,13 @@ const AppDrawer = ({navigation}: any) => {
                   alignItems: 'flex-end',
                 }}>
                 <Pressable
-                  style={{marginVertical: 15, marginEnd: 15}}
+                  style={AppDrawerScreenStyles.toolbarRightContainer}
                   onPress={() => {
                     navigation.toggleDrawer();
                   }}>
-                  <Bell size={25} strokeWidth={2} color={'black'} />
+                  {title == 'Home' ? (
+                    <Bell size={25} strokeWidth={2} color={'black'} />
+                  ) : null}
                 </Pressable>
               </View>
             </View>
@@ -204,7 +233,6 @@ const AppDrawer = ({navigation}: any) => {
         name="Home"
         component={HomeScreen}
         options={{
-          // headerShown: false,
           title: 'Home',
           drawerIcon: () => (
             <University
@@ -221,7 +249,6 @@ const AppDrawer = ({navigation}: any) => {
           name="Trip"
           component={TripsScreen}
           options={{
-            // drawerItemStyle: {display: 'none'},
             title: 'Trips',
             drawerIcon: () => (
               <Route
@@ -232,24 +259,9 @@ const AppDrawer = ({navigation}: any) => {
             ),
           }}
         />
-      ) : (
-        <Drawer.Screen
-          name="Trip Vehicle Picker"
-          component={TripVehiclePickerScreen}
-          options={{
-            title: 'Trips',
-            drawerIcon: () => (
-              <Route
-                size={iconSize}
-                strokeWidth={iconStrokeWidth}
-                color={iconColor}
-              />
-            ),
-          }}
-        />
-      )}
+      ) : null}
 
-      {role == 1 ? (
+      {role != 3 ? (
         <Drawer.Screen
           name="Payments"
           component={PaymentsScreen}
@@ -288,7 +300,7 @@ const AppDrawer = ({navigation}: any) => {
           options={{
             title: 'Manage Trips',
             drawerIcon: () => (
-              <BookUser
+              <Route
                 size={iconSize}
                 strokeWidth={iconStrokeWidth}
                 color={iconColor}
@@ -333,7 +345,7 @@ const AppDrawer = ({navigation}: any) => {
         name="Edit Business Details"
         component={EditBusinessDetailsScreen}
         options={{
-          title: 'Business',
+          title: 'Business Information',
           drawerItemStyle: {display: 'none'},
           drawerIcon: () => (
             <Aperture
@@ -345,10 +357,10 @@ const AppDrawer = ({navigation}: any) => {
         }}
       />
       <Drawer.Screen
-        name="Edit Payment Details"
-        component={EditPaymentDetailsScreen}
+        name="Forgot Password"
+        component={ForgotPasswordScreen}
         options={{
-          title: 'Payments',
+          title: 'Forgot Password',
           drawerItemStyle: {display: 'none'},
         }}
       />
@@ -364,11 +376,10 @@ const AppDrawer = ({navigation}: any) => {
         name="Edit User Details"
         component={EditUserDetailsScreen}
         options={{
-          title: 'Personal Details',
+          title: 'Edit Personal Details',
           drawerItemStyle: {display: 'none'},
         }}
       />
-
       <Drawer.Screen
         name="Business Detail"
         component={BusinessDetailsScreen}
@@ -431,68 +442,5 @@ const AppDrawer = ({navigation}: any) => {
     </Drawer.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: '#20B2AA',
-  },
-  headerContent: {
-    padding: 30,
-    alignItems: 'center',
-  },
-
-  image: {
-    width: 40,
-    height: 40,
-  },
-
-  body: {
-    padding: 30,
-  },
-  box: {
-    padding: 5,
-    marginTop: 5,
-    marginBottom: 5,
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    shadowColor: 'black',
-    shadowOpacity: 0.2,
-    shadowOffset: {
-      height: 1,
-      width: -2,
-    },
-    elevation: 2,
-  },
-  username: {
-    color: '#20B2AA',
-    fontSize: 22,
-    alignSelf: 'center',
-    marginLeft: 10,
-  },
-  container: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  coverPhoto: {
-    width: '100%',
-    height: 120,
-    resizeMode: 'cover',
-  },
-  avatarContainer: {
-    alignItems: 'center',
-    marginTop: -75,
-  },
-  avatar: {
-    width: 130,
-    height: 130,
-    borderRadius: 75,
-  },
-  name: {
-    marginTop: 15,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-});
 
 export default AppDrawer;

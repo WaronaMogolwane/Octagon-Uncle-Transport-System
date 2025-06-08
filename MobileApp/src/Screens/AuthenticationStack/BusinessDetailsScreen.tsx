@@ -6,24 +6,6 @@ import {
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {
-  Button,
-  ButtonText,
-  CloseIcon,
-  EditIcon,
-  Fab,
-  FabIcon,
-  Heading,
-  Icon,
-  Image,
-  Menu,
-  MenuItem,
-  MenuItemLabel,
-  Modal,
-  ModalBackdrop,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
   Text,
   Toast,
   ToastDescription,
@@ -36,27 +18,19 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {
-  AssignPassengerScreenStyles,
+  BusinessDetailsScreenStyles,
   ThemeStyles,
 } from '../../Stylesheets/GlobalStyles';
 import {BusinessDetailForm} from '../../Components/Forms/BusinessDetailForm';
 import {AddBusinessDetail} from '../../Controllers/BusinessDetailController';
-import {
-  CustomFormControlInput,
-  CustomFormControlInputNumber,
-} from '../../Components/CustomFormInput';
 import {BankingDetail} from '../../Models/BankingDetail';
 import {
   AddBankingDetail,
   GetBanksList,
-  ValidateAccount,
 } from '../../Controllers/BankingDetailController';
 import {Auth} from '../../Classes/Auth';
 import {AuthContext} from '../../Services/AuthenticationService';
-import {Dropdown} from 'react-native-element-dropdown';
 import {useStorageState} from '../../Services/StorageStateService';
-import {OpenCamera, OpenFilePicker} from '../../Services/CameraService';
-import {ImageOrVideo} from 'react-native-image-crop-picker';
 import BankingDetailModal from '../../Components/Modals/BankingDetailModal';
 
 const BusinessDetailsScreen = ({navigation, route}: any) => {
@@ -153,7 +127,9 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
           });
         }
       })
-      .catch(error => console.error(error));
+      .catch(error => {
+        throw new Error(error);
+      });
   };
 
   const SuccessToast = () => {
@@ -219,7 +195,9 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
         }
       })
       .catch((error: any) => {
-        console.log(error);
+        setIsLoading(false);
+        FaliureToast();
+        throw new Error(error);
       });
   };
 
@@ -351,84 +329,79 @@ const BusinessDetailsScreen = ({navigation, route}: any) => {
             <Text>Working</Text>
           </View>
         ) : null}
-        <View style={{paddingBottom: 15, paddingTop: 15}}>
-          <BankingDetailModal
-            ShowModal={showModal}
-            DropdownIsFocus={isFocus}
-            BankList={bankList}
-            BranchNumberIsInvalid={!!bankingFormik.errors.branchNumber}
-            BranchNumberErrorText={bankingFormik?.errors?.branchNumber}
-            BranchNumberValue={bankingFormik.values?.branchNumber}
-            BranchNumberOnChangeText={bankingFormik.handleChange(
-              'branchNumber',
-            )}
-            BranchNumberOnBlur={bankingFormik.handleBlur('branchNumber')}
-            AccountNameIsInvalid={!!bankingFormik.errors.accountName}
-            AccountNameErrorText={bankingFormik?.errors?.accountName}
-            AccountNameValue={bankingFormik.values?.accountName}
-            AccountNameOnChangeText={bankingFormik.handleChange('accountName')}
-            AccountNameOnBlur={bankingFormik.handleBlur('accountName')}
-            AccountNumberIsInvalid={!!bankingFormik.errors.accountNumber}
-            AccountNumberErrorText={bankingFormik?.errors?.accountNumber}
-            AccountNumberValue={bankingFormik.values?.accountNumber}
-            AccountNumberOnChangeText={bankingFormik.handleChange(
-              'accountNumber',
-            )}
-            AccountNumberOnBlur={bankingFormik.handleBlur('accountNumber')}
-            ComfirmAccountNumberIsInvalid={
-              !!bankingFormik.errors.comfirmAccountNumber
-            }
-            ComfirmAccountNumberErrorText={
-              bankingFormik?.errors?.comfirmAccountNumber
-            }
-            ComfirmAccountNumberValue={
-              bankingFormik.values?.comfirmAccountNumber
-            }
-            ComfirmAccountNumberOnChangeText={bankingFormik.handleChange(
-              'comfirmAccountNumber',
-            )}
-            ComfirmAccountNumberOnBlur={bankingFormik.handleBlur(
-              'comfirmAccountNumber',
-            )}
-            OnFocusBankingDetailDropdown={() => setIsFocus(true)}
-            OnBlurBankingDetailDropdown={() => setIsFocus(false)}
-            OnChangeBankingDetailDropdown={(item: any) => {
-              setBankName(item.name);
-              setPaystackBankId(item.id);
-              setPaystackBankCode(item.code);
-              setIsFocus(false);
-            }}
-            CloseBankingDetailModalButtonOnPress={() => {
-              setShowModal(false);
-              formik.resetForm();
-            }}
-            HandleSubmit={() => {
-              if (bankName != '') {
-                bankingFormik.handleSubmit();
-              } else {
-                setIsFocus(true);
 
-                toast.show({
-                  placement: 'top',
-                  render: ({id}) => {
-                    const toastId = 'toast-' + id;
-                    return (
-                      <Toast
-                        nativeID={toastId}
-                        action="attention"
-                        variant="outline">
-                        <VStack space="xs">
-                          <ToastTitle>
-                            Please select a bank to proceed
-                          </ToastTitle>
-                        </VStack>
-                      </Toast>
-                    );
-                  },
-                });
-              }
-            }}
-          />
+        <BankingDetailModal
+          ShowModal={showModal}
+          DropdownIsFocus={isFocus}
+          BankList={bankList}
+          BranchNumberIsInvalid={!!bankingFormik.errors.branchNumber}
+          BranchNumberErrorText={bankingFormik?.errors?.branchNumber}
+          BranchNumberValue={bankingFormik.values?.branchNumber}
+          BranchNumberOnChangeText={bankingFormik.handleChange('branchNumber')}
+          BranchNumberOnBlur={bankingFormik.handleBlur('branchNumber')}
+          AccountNameIsInvalid={!!bankingFormik.errors.accountName}
+          AccountNameErrorText={bankingFormik?.errors?.accountName}
+          AccountNameValue={bankingFormik.values?.accountName}
+          AccountNameOnChangeText={bankingFormik.handleChange('accountName')}
+          AccountNameOnBlur={bankingFormik.handleBlur('accountName')}
+          AccountNumberIsInvalid={!!bankingFormik.errors.accountNumber}
+          AccountNumberErrorText={bankingFormik?.errors?.accountNumber}
+          AccountNumberValue={bankingFormik.values?.accountNumber}
+          AccountNumberOnChangeText={bankingFormik.handleChange(
+            'accountNumber',
+          )}
+          AccountNumberOnBlur={bankingFormik.handleBlur('accountNumber')}
+          ComfirmAccountNumberIsInvalid={
+            !!bankingFormik.errors.comfirmAccountNumber
+          }
+          ComfirmAccountNumberErrorText={
+            bankingFormik?.errors?.comfirmAccountNumber
+          }
+          ComfirmAccountNumberValue={bankingFormik.values?.comfirmAccountNumber}
+          ComfirmAccountNumberOnChangeText={bankingFormik.handleChange(
+            'comfirmAccountNumber',
+          )}
+          ComfirmAccountNumberOnBlur={bankingFormik.handleBlur(
+            'comfirmAccountNumber',
+          )}
+          OnFocusBankingDetailDropdown={() => setIsFocus(true)}
+          OnBlurBankingDetailDropdown={() => setIsFocus(false)}
+          OnChangeBankingDetailDropdown={(item: any) => {
+            setBankName(item.name);
+            setPaystackBankId(item.id);
+            setPaystackBankCode(item.code);
+            setIsFocus(false);
+          }}
+          CloseBankingDetailModalButtonOnPress={() => {
+            setShowModal(false);
+            formik.resetForm();
+          }}
+          HandleSubmit={() => {
+            if (bankName != '') {
+              bankingFormik.handleSubmit();
+            } else {
+              setIsFocus(true);
+
+              toast.show({
+                placement: 'top',
+                render: ({id}) => {
+                  const toastId = 'toast-' + id;
+                  return (
+                    <Toast
+                      nativeID={toastId}
+                      action="attention"
+                      variant="outline">
+                      <VStack space="xs">
+                        <ToastTitle>Please select a bank to proceed</ToastTitle>
+                      </VStack>
+                    </Toast>
+                  );
+                },
+              });
+            }
+          }}
+        />
+        <View style={BusinessDetailsScreenStyles.container}>
           <BusinessDetailForm
             showButton={true}
             buttonText="Submit Business Details"

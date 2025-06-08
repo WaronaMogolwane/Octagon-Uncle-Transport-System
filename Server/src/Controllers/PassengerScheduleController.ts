@@ -3,6 +3,7 @@ import { PassengerSchedule } from "../Classes/PassengerSchedule";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 import {
   AutoInsertPassengerSchedule,
+  CheckPassengerSchedule,
   GetPassengerSchedule,
   InsertPassengerSchedule,
   InsertTempPassengerSchedule,
@@ -25,7 +26,8 @@ export const AddPassengerSchedule = async (req: any, res: any, next: any) => {
 
   await InsertPassengerSchedule(newPassenger, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -50,7 +52,8 @@ export const AddTempPassengerSchedule = async (
 
   await InsertTempPassengerSchedule(passengerId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -75,13 +78,28 @@ export const GetPassengerScheduleByPassengerId = async (
 
   await GetPassengerSchedule(passengerId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result[0],
+      });
+    }
+  });
+};
+
+export const CheckPassengerScheduleByPassengerId = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  let passengerId = req.query.PassengerId;
+
+  await CheckPassengerSchedule(passengerId, (error, result) => {
+    if (error) {
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else {
       res.status(200).json({
         RecordRetrieved: true,
@@ -111,7 +129,8 @@ export const UpdatePassengerScheduleByPassengerId = async (
 
   await UpdatePassengerSchedule(newPassengerSchedule, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,

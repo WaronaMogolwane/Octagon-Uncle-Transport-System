@@ -2,25 +2,22 @@ import Router from "express-promise-router";
 import {
   CheckUserEmail,
   GetUser,
+  GetUserActiveStatus,
+  RestoreUserPassword,
   UpdateUserEmail,
   UpdateUserPassword,
 } from "../Controllers/UserController";
 
 const router = Router();
 
-router.get("/get-user", GetUser, async (req, res, next) => {});
+// GET Routes
+router.get("/get-user", GetUser);
+router.get("/get-user-active-status", GetUserActiveStatus);
+router.get("/check-user-email", CheckUserEmail);
 
-router.get("/check-user-email", CheckUserEmail, async (req, res, next) => {});
+// PATCH Routes
+router.patch("/update-user-email", UpdateUserEmail);
+router.patch("/update-user-password", UpdateUserPassword);
+router.patch("/restore-user-password", RestoreUserPassword);
 
-router.patch(
-  "/update-user-email",
-  UpdateUserEmail,
-  async (req, res, next) => {}
-);
-
-router.patch(
-  "/update-user-password",
-  UpdateUserPassword,
-  async (req, res, next) => {}
-);
 export default router;

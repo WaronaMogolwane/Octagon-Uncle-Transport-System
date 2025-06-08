@@ -1,9 +1,12 @@
-import {GestureResponderEvent, View} from 'react-native';
-import React, {useState} from 'react';
+import {ActivityIndicator, GestureResponderEvent, View} from 'react-native';
+import React, {useContext, useState} from 'react';
 import {CustomFormControlInput} from '../../Components/CustomFormInput';
 import {CustomButton1} from '../../Components/Buttons';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {
+  ForgotPasswordScreenStyles,
+  ThemeStyles,
+} from '../../Stylesheets/GlobalStyles';
 import {
   ModalBackdrop,
   ModalContent,
@@ -20,16 +23,39 @@ import {
   Text,
   Button,
   Modal,
+  useToast,
+  Toast,
+  ToastDescription,
+  ToastTitle,
+  VStack,
 } from '@gluestack-ui/themed';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {SetPasswordForm} from '../../Components/Forms/SetPasswordForm';
+import {
+  CheckDuplicateEmail,
+  RestorUserPassword,
+  UpdateUserPassword,
+} from '../../Controllers/UserController';
+import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
+import {AuthContext} from '../../Services/AuthenticationService';
 
-const ForgotPasswordScreen = () => {
-  const phoneRegExp: RegExp =
-    /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/;
+const ForgotPasswordScreen = ({route, navigation}: any) => {
+  const {signIn, session, signUp, emailOtp, verifyOtp}: any =
+    useContext(AuthContext);
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [userId, setUserId] = useState('');
+
+  const userRole = route.params?.userRole;
+  const toast = useToast();
+
   const passwordExp: RegExp =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+
   const registerSchema = yup.object().shape({
     password: yup
       .string()
@@ -37,20 +63,160 @@ const ForgotPasswordScreen = () => {
       .matches(
         passwordExp,
         'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
-      )
-      .required('Password is required'),
+      ),
     confirmPassword: yup
       .string()
       .oneOf([yup.ref('password')], 'Passwords must match'),
     email: yup.string().email('Invalid email').required('Email is required'),
-    phoneNumber: yup.string().matches(phoneRegExp, 'Phone number is not valid'),
+    otp: yup.string(),
   });
 
   const registerInitialValues = {
     password: '',
     confirmPassword: '',
     email: '',
-    cellphone: '',
+    otp: '',
+  };
+
+  const ShowSuccessToast = (label: string) => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="success" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Success</ToastTitle>
+              <ToastDescription>{label} changed successfully.</ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const ShowFaliureToast = (label: string) => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="error" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Error</ToastTitle>
+              <ToastDescription>
+                {label} change unsuccessful, please try again.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const UpdatePassword = () => {
+    RestorUserPassword(userId, formik.values.confirmPassword).then(
+      (response: any) => {
+        if (response[1] == 200) {
+          if (userRole == '1' || userRole == '2' || userRole == '3') {
+            navigation.navigate('Edit User Account');
+            setIsLoading(false);
+          } else {
+            ShowSuccessToast('Password');
+            navigation.navigate('Sign In');
+            setIsLoading(false);
+          }
+        } else {
+          ShowFaliureToast('Password');
+          setIsLoading(false);
+        }
+      },
+    );
+  };
+
+  const CheckEmailAddress = () => {
+    CheckDuplicateEmail(formik.values?.email.toLowerCase()).then(
+      (result: any) => {
+        if (result[0].result[0] == false) {
+          SendOtp();
+          setUserId(result[0].result[1][0][0].UserId);
+          setIsLoading(false);
+        } else {
+          ShowNoEmailToast();
+          setIsLoading(false);
+        }
+      },
+    );
+  };
+
+  const VerifyOtp = async () => {
+    verifyOtp(
+      formik.values.otp,
+      formik.values.email,
+      (error: any, result: any) => {
+        if (error) {
+          console.warn(error);
+          ShowWrongOTPToast();
+          setIsLoading(false);
+        } else {
+          setIsEmailVerified(true);
+          setShowModal(false);
+          setIsLoading(false);
+        }
+      },
+    );
+  };
+
+  const SendOtp = async () => {
+    await emailOtp(formik.values.email, (error: any, result: any) => {
+      if (error) {
+        setIsLoading(false);
+        throw new Error(error);
+      } else {
+        console.log(result.data);
+        setShowModal(true);
+        setIsLoading(false);
+      }
+    });
+  };
+
+  const ShowNoEmailToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="error" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Email not found</ToastTitle>
+              <ToastDescription>
+                The email provided is not registered please try check it and try
+                agin.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
+  };
+
+  const ShowWrongOTPToast = () => {
+    toast.show({
+      placement: 'top',
+      render: ({id}) => {
+        const toastId = 'toast-' + id;
+        return (
+          <Toast nativeID={toastId} action="success" variant="solid">
+            <VStack space="xs">
+              <ToastTitle>Wrong OTP</ToastTitle>
+              <ToastDescription>
+                The OTP entered is incorrect, please check it and try again.
+              </ToastDescription>
+            </VStack>
+          </Toast>
+        );
+      },
+    });
   };
 
   const formik = useFormik({
@@ -59,18 +225,35 @@ const ForgotPasswordScreen = () => {
 
     onSubmit: (values, {resetForm}) => {
       if (isEmailVerified) {
+        setIsLoading(true);
+        UpdatePassword();
       } else {
-        setShowOtpModal(true);
+        setIsLoading(true);
+        CheckEmailAddress();
       }
     },
   });
-  const [showOtpModal, setShowOtpModal] = useState(false);
-  const [isEmailVerified, setIsEmailVerified] = useState(false);
 
   return (
     <SafeAreaView style={ThemeStyles.container}>
+      {isLoading ? (
+        <View
+          style={{
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: '#ffffff75',
+            zIndex: 100,
+          }}>
+          <ActivityIndicator size="large" />
+        </View>
+      ) : null}
       {isEmailVerified ? (
-        <View>
+        <View style={ForgotPasswordScreenStyles.container}>
           <SetPasswordForm
             passwordIsInvalid={!!formik.errors.password}
             passwordOnChangeText={formik.handleChange('password')}
@@ -93,7 +276,7 @@ const ForgotPasswordScreen = () => {
           />
         </View>
       ) : (
-        <View>
+        <View style={ForgotPasswordScreenStyles.container}>
           <CustomFormControlInput
             labelText="Email"
             placeHolder="Email"
@@ -105,27 +288,31 @@ const ForgotPasswordScreen = () => {
             onBlur={formik.handleBlur('email')}
             value={formik.values?.email}
           />
-          <CustomFormControlInput
-            labelText="Cellphone"
-            placeHolder="Cellphone"
-            isInvalid={!!formik.errors.cellphone}
-            isRequired={true}
-            type="text"
-            onChangeText={formik.handleChange('cellphone')}
-            errorText={formik?.errors?.cellphone}
-            onBlur={formik.handleBlur('cellphone')}
-            value={formik.values?.cellphone}
-          />
           <CustomButton1
             title={'Confirm Email'}
-            onPress={() => {
+            onPress={
               formik.handleSubmit as (
                 values:
                   | GestureResponderEvent
                   | React.FormEvent<HTMLFormElement>
                   | undefined,
-              ) => void;
+              ) => void
+            }
+          />
+          <VerifyEmailModal
+            ShowModal={showModal}
+            ToEmailAddress={formik.values.email}
+            VerifyOtpButtonOnPress={() => {
+              VerifyOtp();
             }}
+            CloseOtpModalButtonOnPress={() => {
+              setShowModal(false);
+            }}
+            otpIsInvalid={!!formik.errors.otp}
+            otpOnChangeText={formik.handleChange('otp')}
+            otpErrorText={formik?.errors?.otp}
+            otpOnBlur={formik.handleBlur('otp')}
+            otpValue={formik.values?.otp}
           />
         </View>
       )}
@@ -144,7 +331,7 @@ const ForgotPasswordScreen = () => {
             </ModalCloseButton>
           </ModalHeader>
           <ModalBody>
-            <Text>Enter the OTP sent to {}</Text>
+            <Text>Enter the OTP sent to {formik.values?.email}</Text>
             <Input
               variant="outline"
               size="md"

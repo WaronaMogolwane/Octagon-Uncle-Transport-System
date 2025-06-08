@@ -21,6 +21,7 @@ import {
 } from '../../../Services/AuthenticationService';
 import {GestureResponderEvent} from 'react-native';
 import {Auth} from '../../../Classes/Auth';
+import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 export const DriversScreen = () => {
   const {session, isLoading}: any = useContext(AuthContext);
   const [auth, setAuth] = useState(new Auth(session));
@@ -92,7 +93,7 @@ export const DriversScreen = () => {
         ) {
           DeleteUserByUserIdAndRole(currentDriver.UserId, '3', (error: any) => {
             if (error) {
-              console.error(error);
+              throw new Error(error);
               ShowRemoveDriverToast(false);
             } else {
               GetDrivers(auth.GetBusinessId());
@@ -110,7 +111,7 @@ export const DriversScreen = () => {
       businessId,
       (error: any, result: any) => {
         if (error) {
-          console.error(error);
+          throw new Error(error);
         } else {
           setDriversList(result.data);
         }
@@ -147,7 +148,7 @@ export const DriversScreen = () => {
     GetDrivers(auth.GetBusinessId());
   }, [auth]);
   return (
-    <View style={{flex: 1}}>
+    <View style={ThemeStyles.container}>
       {DriversList[0] ? (
         <FlatList
           mt="$3"

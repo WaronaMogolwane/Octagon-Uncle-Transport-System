@@ -1,6 +1,6 @@
-CREATE PROCEDURE `CheckUserEmail` (_Email VARCHAR(100))
+CREATE DEFINER=`sqladmin`@`%` PROCEDURE `CheckUserEmail`(_Email VARCHAR(100))
 BEGIN
-	SELECT Email
+	SELECT Email, UserId
     FROM User
     WHERE Email = _Email;
 END

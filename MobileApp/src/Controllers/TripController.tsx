@@ -15,6 +15,9 @@ import {
   UndoTripDropOffTimeInDB,
   UndoTripEndInDB,
   UndoTripPickUpTimeInDB,
+  GetDailytTripsTransporterFromDB,
+  GetDailytTripsParentFromDB,
+  GetDailytTripsDriverFromDB,
 } from '../Data/TripDAL';
 import {Trip} from '../Models/Trip';
 
@@ -24,6 +27,18 @@ export const AddTrip = async (trip: Trip) => {
 
 export const GetTrip = async (tripId: string) => {
   return await GetTripFromDB(tripId);
+};
+
+export const GetDailytTripsTransporter = async (businessId: string) => {
+  return await GetDailytTripsTransporterFromDB(businessId);
+};
+
+export const GetDailytTripsParent = async (businessId: string) => {
+  return await GetDailytTripsParentFromDB(businessId);
+};
+
+export const GetDailytTripsDriver = async (driverId: string) => {
+  return await GetDailytTripsDriverFromDB(driverId);
 };
 
 export const GetUpcomingTripsForClient = async (ParentId: string) => {
@@ -42,12 +57,18 @@ export const GetPastTripsForDriver = async (driverId: string) => {
   return await GetPastTripsDriverFromDB(driverId);
 };
 
-export const GetUpcomingTripsForTransporter = async (businessId: string) => {
-  return await GetUpcomingTripsTransporterFromDB(businessId);
+export const GetUpcomingTripsForTransporter = async (
+  businessId: string,
+  vehicleId: string,
+) => {
+  return await GetUpcomingTripsTransporterFromDB(businessId, vehicleId);
 };
 
-export const GetPastTripsForTransporter = async (businessId: string) => {
-  return await GetPastTripsTransporterFromDB(businessId);
+export const GetPastTripsForTransporter = async (
+  businessId: string,
+  vehicleId: string,
+) => {
+  return await GetPastTripsTransporterFromDB(businessId, vehicleId);
 };
 
 export const UpdateTrip = async (trip: Trip) => {

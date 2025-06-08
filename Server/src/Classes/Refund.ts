@@ -1,7 +1,8 @@
 export class Refund {
-    transaction: number;
+    transaction: string;
     amount: number;
     currency: string;
+    transactionReference: string;
     merchant_note?: string;
     customer_note?: string;
 }

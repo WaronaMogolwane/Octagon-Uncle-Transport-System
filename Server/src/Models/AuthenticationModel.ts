@@ -5,6 +5,7 @@ import { DbPool } from "../Services/DatabaseService";
 import { UserCredentials } from "../Classes/UserCredentials";
 import { UserInvitation } from "../Classes/UserInvitation";
 import { ErrorResponse } from "../Classes/ErrorResponse";
+import { randomUUID } from "node:crypto";
 
 export const InsertOtp = async (
   email: string,
@@ -48,30 +49,30 @@ export const GetOtp = async (
     },
   );
 };
-export const GetUserByEmailPassword = async (
-  user: UserCredentials,
-  callback: (error: any, result: any) => void,
-) => {
-  DbPool.query(
-    {
-      sql: "CALL GetUserByEmailPassword(?,?)",
-      timeout: 40000,
-      values: [user.email, user.password],
-    },
-    (err: any, res: any) => {
-      if (err) {
-        callback(err, null);
+export const GetUserByEmailPassword = async (user: UserCredentials): Promise<any> => {
+  return new Promise((resolve, reject) => {
+    DbPool.query(
+      {
+        sql: "CALL GetUserByEmailPassword(?, ?)",
+        timeout: 40000, // Optional timeout
+        values: [user.email, user.password], // Parameterized query for security
+      },
+      (err: any, res: any) => {
+        if (err) {
+          return reject(err); // Reject with the database error
+        }
+
+        if (!res || !res[0] || !res[0][0]) {
+          // Return a structured error if no user is found
+          const error = new ErrorResponse(404, "No user found.");
+          return reject(error);
+        }
+
+        // Resolve with the result if the user is found
+        resolve(res);
       }
-      if (!res[0][0]) {
-        let error: ErrorResponse = {
-          message: "No user found.",
-        };
-        callback(error, null);
-      } else {
-        callback(null, res);
-      }
-    },
-  );
+    );
+  });
 };
 export const InsertNewUser = async (
   user: User,
@@ -100,9 +101,10 @@ export const InsertUserInvitation = async (
   userInvitation: UserInvitation,
   callback: (error: any, result: any) => void,
 ) => {
+  const newUserId: string = randomUUID();
   DbPool.query(
     {
-      sql: "CALL InsertUserInvitation(?,?,?,?,?,?)",
+      sql: "CALL InsertUserInvitation(?,?,?,?,?,?,?)",
       timeout: 40000,
       values: [
         userInvitation.businessId,
@@ -111,13 +113,18 @@ export const InsertUserInvitation = async (
         userInvitation.userEmail,
         userInvitation.firstName,
         userInvitation.lastName,
+        newUserId
       ],
     },
     (err, res) => {
       if (err) {
         callback(err, null);
       } else {
-        callback(null, res);
+        const response = {
+          result: res,
+          userId: newUserId
+        };
+        callback(null, response);
       }
     },
   );
@@ -201,6 +208,25 @@ export const UpdateUserInvitationToUsed = async (
       if (err) {
         callback(err, null);
       } else {
+        callback(null, res);
+      }
+    })
+}
+export const GetUserInvitationByEmailAndUserRole = async (email: string, userRole: string, callback: (error: any, result: any) => void) => {
+  DbPool.query({
+    sql: "CALL GetUserInvitationByEmailUserRole(?,?)",
+    timeout: 40000,
+    values: [
+      email,
+      userRole
+    ],
+  },
+    (err, res) => {
+
+      if (err) {
+        callback(err, null);
+      }
+      else {
         callback(null, res);
       }
     })

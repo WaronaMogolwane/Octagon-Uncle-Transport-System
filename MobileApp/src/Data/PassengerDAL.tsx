@@ -1,5 +1,5 @@
 import {SERVER_HOST, SERVER_PORT} from '@env';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import {Passenger} from '../Models/Passenger';
 import {SplitTimeString, ConvertDate} from '../Services/DataConverterService';
 
@@ -27,7 +27,7 @@ export const AddPassengerToDB = async (passenger: Passenger) => {
       //data = response.data;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   [];
@@ -35,15 +35,12 @@ export const AddPassengerToDB = async (passenger: Passenger) => {
   return statusCode;
 };
 
-export const GetPassengerFromDatabase = async (
-  passengerId: string,
-  uid: string,
-) => {};
-
-export const GetActivePassengerForBusinessFromDB = async (
+export const GetUnassignedPassengerForBusinessFromDB = async (
   businessId: string,
 ) => {
   let result: any;
+  let status: any;
+  let errorCode: any;
   const tripData: {}[] = [];
   let passsengers = {};
 
@@ -53,6 +50,49 @@ export const GetActivePassengerForBusinessFromDB = async (
         BusinessId: businessId,
       },
     })
+    .then((response: any) => {
+      let res = [...response.data.result];
+      status = response.status;
+
+      res.forEach(data => {
+        passsengers = {
+          passengerId: data.PassengerId,
+          passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
+          editedName: `${data.FirstName} ${data.LastName}`,
+          age: data.Age,
+          homeAddress: data.HomeAddress,
+          destinationAddress: data.DestinationAddress,
+          parentId: data.ParentId,
+        };
+
+        tripData.push(passsengers);
+      });
+
+      result = tripData;
+    })
+    .catch((error: AxiosError) => {
+      errorCode = error;
+    });
+
+  return [result, status, errorCode];
+};
+
+export const GetActivePassengerForBusinessFromDB = async (
+  businessId: string,
+) => {
+  let result: any;
+  const tripData: {}[] = [];
+  let passsengers = {};
+
+  await axios
+    .get(
+      `${SERVER_HOST}:${SERVER_PORT}/passenger/get-business-active-passengers`,
+      {
+        params: {
+          BusinessId: businessId,
+        },
+      },
+    )
     .then((response: any) => {
       let res = [...response.data.result];
 
@@ -100,6 +140,8 @@ export const GetActivePassengerForParentFromDB = async (parentId: string) => {
         passsengers = {
           passengerId: data.PassengerId,
           passengerName: `${data.FirstName} ${data.LastName} (${data.HomeAddress})`,
+          firstName: data.FirstName,
+          lastName: data.LastName,
           editedName: `${data.FirstName} ${data.LastName}`,
           age: data.Age,
           homeAddress: data.HomeAddress,
@@ -120,8 +162,8 @@ export const GetActivePassengerForParentFromDB = async (parentId: string) => {
 };
 
 export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
-  let result: any;
-  const tripData: {}[] = [];
+  let result: {}[] = [];
+  const passengerData: {}[] = [];
   let passsengers = {};
 
   await axios
@@ -135,7 +177,6 @@ export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
     )
     .then((response: any) => {
       let res = [...response.data.result];
-
       res.forEach(data => {
         passsengers = {
           passengerId: data.PassengerId,
@@ -155,10 +196,10 @@ export const GetAllPassengerForBusinessFromDB = async (businessId: string) => {
           userId: data.UserId,
         };
 
-        tripData.push(passsengers);
+        passengerData.push(passsengers);
       });
 
-      result = tripData;
+      result = passengerData;
     })
     .catch((error: any) => {
       result = error;
@@ -250,7 +291,7 @@ export const GetParentPassengersFromDB = async (parentId: string) => {
       result = tripData;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
       result = error;
     });
 
@@ -272,7 +313,7 @@ export const DeletePassengerFromDB = async (passengerId: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return [data, statusCode];
@@ -300,7 +341,7 @@ export const DeletePassengerRequestFromDB = async (
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return [data, statusCode];
@@ -332,7 +373,7 @@ export const UpdatePassengerInDB = async (passenger: Passenger) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return [data, statusCode];
@@ -353,7 +394,7 @@ export const UpdateIsAssignedInDB = async (passengerId: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
     });
 
   return [data, statusCode];

@@ -1,63 +1,61 @@
 import cors from "cors";
 import dotenv from "dotenv";
-dotenv.config();
 import express from "express";
+import bodyParser from "body-parser";
 import { firebase } from "./firebase";
 import ErrorHandler from "./Middleware/ErrorHandler";
-import authRoute from "./Routes/AuthenticationRoutes";
-import bankingDetailRoute from "./Routes/BankingDetailRoutes";
-import businessDetailRoute from "./Routes/BusinessDetailRoutes";
-import driverVehicleLinkingRoute from "./Routes/DriverVehicleLinkingRoutes";
-import passengerDriverVehicleLinkingRoute from "./Routes/PassengerDriverVehicleLinkingRoutes";
-import passengerRoute from "./Routes/PassengerRoutes";
-import passengerScheduleRoute from "./Routes/PassengerScheduleRoutes";
-import paymentsRoute from "./Routes/PaymentsRoute";
-import pushNotificationsRoute from "./Routes/PushNotificationsRoute";
-import tripRoute from "./Routes/TripRoutes";
-import userProfileRoute from "./Routes/UserDetailRoutes";
-import userRoute from "./Routes/UserRoutes";
-import vehicleRoute from "./Routes/VehicleRoutes";
-import WinstonLogger from "./Utilities/WinstonLogger";
 import { MainWorker } from "./Worker/MainWorker";
+import { RegisterRoutes } from "./Routes/Routes";
+
+// Import the FUNCTION to create Winston loggers (File/Console only)
+import { CreateLogger as CreateWinstonLogger } from './Utilities/WinstonLogger'; // Adjust path
+
+// Import the CustomLogger class (ensure this is the MODIFIED version that accepts eventLogger)
+import { CustomLogger } from "./Classes/CustomLogger"; // Adjust path
+
+// Import the logger instances from your WindowsLogger.ts file
+import { ServerEventLogger } from "./Utilities/WindowsLogger"; // Adjust path
+
+
+// Initialize dotenv configuration
+dotenv.config();
+
+const serverWinstonLogger = CreateWinstonLogger("Octagon Uncle Server");
+
+// Create CustomLogger Instances, Wrapping Winston AND Passing node-windows EventLoggers
+const ServerLogger = new CustomLogger(serverWinstonLogger, {
+  eventLogger: ServerEventLogger
+});
+
+// Application Setup
+const NODE_ENV = process.env.NODE_ENV || "production";
+const PORT = process.env.OUTS_SERVER_PORT;
 
 const app = express();
+
+// Middleware setup
 app.use(cors());
-
-const PORT = process.env.OUTS_SERVER_PORT || 8081;
-var bodyParser = require("body-parser");
 app.use(bodyParser.json({ limit: "50mb" }));
-app.use(
-  bodyParser.urlencoded({
-    limit: "50mb",
-    extended: true,
-    parameterLimit: 50000,
-  })
-);
-RegisterRoutes();
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true, parameterLimit: 50000 }));
 
-const fbp = firebase;
+// Register API Routes
+RegisterRoutes(app);
 
+// Error Handling Middleware
 app.use(ErrorHandler);
 
-const mainWorker: MainWorker = new MainWorker();
-mainWorker.StartJobs();
 
-app.listen(PORT, function () {
-  WinstonLogger.info(`Server is live on Port ${PORT}`);
+// Start the Express Server
+app.listen(PORT, () => {
+  ServerLogger.Log(`Octagon Uncle server is live on Port ${PORT}`);
 });
-function RegisterRoutes() {
-  app.use("/auth", authRoute);
-  app.use("/user", userRoute);
-  app.use("/user-profile", userProfileRoute);
-  app.use("/passenger", passengerRoute);
-  app.use("/trip", tripRoute);
-  app.use("/vehicle", vehicleRoute);
-  app.use("/business-detail", businessDetailRoute);
-  app.use("/banking-detail", bankingDetailRoute);
-  app.use("/payments", paymentsRoute);
-  app.use("/push-notifications", pushNotificationsRoute);
-  app.use("/passenger-driver-vehicle-linking", passengerDriverVehicleLinkingRoute);
-  app.use("/passenger-schedule", passengerScheduleRoute);
-  app.use("/driver-vehicle-linking", driverVehicleLinkingRoute);
+
+
+// Start Worker Jobs (Conditionally)
+if (NODE_ENV !== "development") {
+  const mainWorker = new MainWorker();
+  mainWorker.StartJobs();
 }
 
+// Export the logger instances
+export { ServerLogger }

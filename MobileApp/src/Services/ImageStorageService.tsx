@@ -1,36 +1,89 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNFS from 'react-native-fs';
 
 export const RestoreImageViaAsyncStorage = async () => {
-  let image: string = '';
   try {
     const value = await AsyncStorage.getItem('profileImage');
-    if (value !== null) {
-      // value previously stored
-      image = value;
-    }
+    return value ?? '';
   } catch (e) {
     // error reading value
-    console.error(
+    throw new Error(
       'There was an error retrieving the image path via async: ' + e,
     );
+    return '';
   }
-  return image;
 };
 
 export const SaveImageViaAsyncStorage = async (imageUri: string) => {
-  try {
-    await AsyncStorage.setItem('profileImage', imageUri);
-  } catch (e) {
-    // saving error
-    console.error('There was an error saving the image path via async: ' + e);
+  if (imageUri) {
+    try {
+      await AsyncStorage.setItem('profileImage', imageUri);
+    } catch (e) {
+      // saving error
+      throw new Error(
+        'There was an error saving the image path via async: ' + e,
+      );
+    }
+  } else {
+    console.log('Image path is empty');
   }
 };
 
 export const ClearImageViaAsyncStorage = async () => {
   try {
     await AsyncStorage.removeItem('profileImage');
+    console.log('Image path cleared successfully');
   } catch (e) {
     // remove error
-    console.error('There was an error clearing the image path via async: ' + e);
+    throw new Error(
+      'There was an error clearing the image path via async: ' + e,
+    );
+  }
+};
+
+export const SaveImage = async (imageUrl: string) => {
+  // const imageUrl = 'https://example.com/your-image.jpg'; // Replace with your image URL
+  const downloadDest = `${RNFS.DocumentDirectoryPath}/profile_image.jpg`;
+
+  try {
+    // Check if file already exists
+    const fileExists = await RNFS.exists(downloadDest);
+
+    // If file exists, delete it
+    if (fileExists) {
+      await RNFS.unlink(downloadDest);
+      console.log('Old image deleted:', downloadDest);
+    }
+
+    // Download and save the new image
+    const downloadResponse = await RNFS.downloadFile({
+      fromUrl: imageUrl,
+      toFile: downloadDest,
+    }).promise;
+
+    if (downloadResponse.statusCode === 200) {
+      console.log('Image saved successfully:', downloadDest);
+    } else {
+      console.log('Failed to save image:', downloadResponse.statusCode);
+    }
+  } catch (err) {
+    console.log('Error saving image:', err);
+  }
+};
+
+export const DeleteImage = async () => {
+  const downloadDest = `${RNFS.DocumentDirectoryPath}/profile_image.jpg`;
+
+  try {
+    // Check if file already exists
+    const fileExists = await RNFS.exists(downloadDest);
+
+    // If file exists, delete it
+    if (fileExists) {
+      await RNFS.unlink(downloadDest);
+      console.log('Image deleted:', downloadDest);
+    }
+  } catch (err) {
+    console.log('Error saving image:', err);
   }
 };

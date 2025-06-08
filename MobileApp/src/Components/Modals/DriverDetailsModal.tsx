@@ -28,7 +28,7 @@ const DriverDetailsModal = (props: DriverDetailsModalProps) => {
         isOpen={props.ShowModal}
         onClose={props.CloseOtpModalButtonOnPress}>
         <ModalBackdrop />
-        <ModalContent backgroundColor="#fff">
+        <ModalContent backgroundColor="#ffffff">
           <ModalHeader>
             <Heading size="lg">Manage Driver</Heading>
             <ModalCloseButton>

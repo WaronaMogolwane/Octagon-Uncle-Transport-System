@@ -1,7 +1,16 @@
-import {Text, View} from 'react-native';
+import {
+  GestureResponderEvent,
+  Image,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import React from 'react';
-import {TripCardDriverStyles} from '../../Stylesheets/GlobalStyles';
-import {Card} from '@gluestack-ui/themed';
+import {
+  TripCardStyles,
+  TripTransporterCardStyles,
+} from '../../Stylesheets/GlobalStyles';
+import {ChevronLeft, ChevronRight} from 'lucide-react-native';
 
 type tripCardProps = {
   passengerName: string;
@@ -10,280 +19,213 @@ type tripCardProps = {
   pickUpDate: string;
   pickUpLocation: string;
   tripStatus: number;
+  leg: number;
+  handleIconPress: (
+    values:
+      | GestureResponderEvent
+      | React.FormEvent<HTMLFormElement>
+      | undefined,
+  ) => void;
 };
 
-export const TripCardTransporter = (props: tripCardProps) => {
+export const TripTransporterCard = (props: tripCardProps) => {
+  const iconSize = 35;
+  const iconStrokeWidth = 1.2;
+
   const tripStatus = () => {
-    if (props.tripStatus == 1) {
+    if (props.tripStatus == 0) {
+      return null;
+    } else if (props.tripStatus == 1) {
       return (
-        <View
-          style={{
-            borderRadius: 20, // Half of the width or height
-            backgroundColor: '#fadcdc',
-          }}>
-          <Text
-            style={{
-              textAlign: 'center',
+        <Text
+          style={[
+            TripTransporterCardStyles.tripStatusText,
+            {
               color: '#c26b71',
-              fontWeight: '500',
-              padding: 5,
-            }}>
-            Uncompleted
-          </Text>
-        </View>
+            },
+          ]}>
+          Uncompleted
+        </Text>
       );
     } else if (props.tripStatus == 2) {
       return (
-        <View
-          style={{
-            borderRadius: 20, // Half of the width or height
-            backgroundColor: '#f5eede',
-          }}>
-          <Text
-            style={{
-              textAlign: 'center',
-              color: '#e89d0e',
-              fontWeight: '500',
-              padding: 5,
-            }}>
-            Picked-up
-          </Text>
-        </View>
+        <Text
+          style={[
+            TripTransporterCardStyles.tripStatusText,
+            {color: '#e89d0e'},
+          ]}>
+          Picked-up
+        </Text>
       );
     } else if (props.tripStatus == 3) {
       return (
-        <View
-          style={{
-            borderRadius: 20, // Half of the width or height
-            backgroundColor: '#d6f3f1',
-          }}>
-          <Text
-            style={{
-              textAlign: 'center',
-              color: '#3ba2a9',
-              fontWeight: '500',
-              padding: 5,
-            }}>
-            Completed
-          </Text>
-        </View>
+        <Text
+          style={[
+            TripTransporterCardStyles.tripStatusText,
+            {color: '#3ba2a9'},
+          ]}>
+          Completed
+        </Text>
       );
     }
   };
 
+  const arrowRight = (
+    <ChevronRight
+      size={iconSize}
+      strokeWidth={iconStrokeWidth}
+      color={'#3ba2a9'}
+      style={{marginEnd: 10}}
+    />
+  );
+
+  const arrowLeft = (
+    <ChevronLeft
+      size={iconSize}
+      strokeWidth={iconStrokeWidth}
+      color={'#c26b71'}
+      style={{marginEnd: 10}}
+    />
+  );
+
+  function getMeridiem(): string {
+    const now = new Date();
+    const hours = now.getHours();
+    return hours >= 12 ? 'PM' : 'AM';
+  }
+
   return (
-    <Card
-      size="sm"
-      variant="outline"
-      style={{
-        margin: 12,
-        backgroundColor: '#ffffff',
-        borderRadius: 30,
-        elevation: 5,
-      }}>
-      <View
-        style={{
-          marginBottom: 5,
-          alignItems: 'flex-start',
-          marginHorizontal: 15,
-          marginVertical: 10,
-          backgroundColor: '#ffffff',
-          flex: 1,
-          justifyContent: 'space-between',
-          borderRadius: 20,
-        }}>
-        <View>
-          <View
-            style={{
-              flexDirection: 'row',
-              marginBottom: 10,
-              alignItems: 'center',
-            }}>
-            <View style={{width: '50%'}}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: '600',
-                  textAlign: 'justify',
-                }}>
-                {props.passengerName}
-              </Text>
-            </View>
-            <View style={{width: '50%'}}>
-              <View style={{marginStart: 10}}>{tripStatus()}</View>
-            </View>
-          </View>
+    <View style={TripCardStyles.passengerItem}>
+      <Image
+        source={require('../../Images/default_avatar_image.jpg')}
+        style={TripCardStyles.profileImage}
+      />
 
-          <View style={{flexDirection: 'row', marginBottom: 10}}>
-            <View style={{width: '50%'}}>
-              <Text style={TripCardDriverStyles.cardText}>Pickup Date</Text>
-              <Text>{props.pickUpDate}</Text>
-            </View>
-            <View style={{width: '50%'}}>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={TripCardDriverStyles.cardText}>Pickup Time</Text>
-                <Text style={{marginEnd: 20}}> {props.pickUpTime}</Text>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={TripCardDriverStyles.cardText}>Dropoff Time</Text>
-                <Text style={{marginEnd: 20}}> {props.dropOffTime}</Text>
-              </View>
-            </View>
-          </View>
+      <View style={TripCardStyles.passengerInfo}>
+        <Text style={TripCardStyles.passengerName}>
+          {props.passengerName}, {props.pickUpDate.replace(/-/g, '/')}
+        </Text>
+        <View style={TripTransporterCardStyles.timeContainer}>
+          {props.pickUpTime == '' ||
+          props.pickUpTime == undefined ||
+          props.pickUpTime == null ? null : (
+            <Text style={TripCardStyles.pickupTime}>
+              Pickup: {props.pickUpTime + ' ' + getMeridiem()}
+            </Text>
+          )}
         </View>
-
-        <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Location </Text>
-          <Text>{props.pickUpLocation}</Text>
-        </View>
+        {tripStatus()}
       </View>
-    </Card>
+      {props.leg == 0 ? arrowRight : arrowLeft}
+    </View>
   );
 };
 
 export const TripCardTransporterComplete = (props: tripCardProps) => {
+  const iconSize = 40;
+  const iconStrokeWidth = 1.2;
+
   const tripStatus = () => {
     if (props.tripStatus == 0) {
       return (
-        <View
-          style={{
-            borderRadius: 20, // Half of the width or height
-            backgroundColor: '#fadcdc',
-          }}>
-          <Text
-            style={{
-              textAlign: 'center',
+        <Text
+          style={[
+            TripTransporterCardStyles.tripStatusText,
+            {
               color: '#c26b71',
-              fontWeight: '500',
-              padding: 5,
-            }}>
-            Uncompleted
-          </Text>
-        </View>
+            },
+          ]}>
+          Uncompleted
+        </Text>
       );
     } else if (props.tripStatus == 1) {
       return (
-        <View
-          style={{
-            borderRadius: 20, // Half of the width or height
-            backgroundColor: '#fadcdc',
-          }}>
-          <Text
-            style={{
-              textAlign: 'center',
+        <Text
+          style={[
+            TripTransporterCardStyles.tripStatusText,
+            {
               color: '#c26b71',
-              fontWeight: '500',
-              padding: 5,
-            }}>
-            Uncompleted
-          </Text>
-        </View>
+            },
+          ]}>
+          Uncompleted
+        </Text>
       );
     } else if (props.tripStatus == 2) {
       return (
-        <View
-          style={{
-            borderRadius: 20, // Half of the width or height
-            backgroundColor: '#f5eede',
-          }}>
-          <Text
-            style={{
-              textAlign: 'center',
-              color: '#e89d0e',
-              fontWeight: '500',
-              padding: 5,
-            }}>
-            Picked-up
-          </Text>
-        </View>
+        <Text
+          style={[
+            TripTransporterCardStyles.tripStatusText,
+            {color: '#e89d0e'},
+          ]}>
+          Picked-up
+        </Text>
       );
     } else if (props.tripStatus == 3) {
       return (
-        <View
-          style={{
-            borderRadius: 20, // Half of the width or height
-            backgroundColor: '#d6f3f1',
-          }}>
-          <Text
-            style={{
-              textAlign: 'center',
-              color: '#3ba2a9',
-              fontWeight: '500',
-              padding: 5,
-            }}>
-            Completed
-          </Text>
-        </View>
+        <Text
+          style={[
+            TripTransporterCardStyles.tripStatusText,
+            {color: '#3ba2a9'},
+          ]}>
+          Completed
+        </Text>
       );
     }
   };
 
+  const arrowRight = (
+    <ChevronRight
+      size={iconSize}
+      strokeWidth={iconStrokeWidth}
+      color={'#3ba2a9'}
+    />
+  );
+
+  const arrowLeft = (
+    <ChevronLeft
+      size={iconSize}
+      strokeWidth={iconStrokeWidth}
+      color={'#c26b71'}
+    />
+  );
+
+  function getMeridiem(): string {
+    const now = new Date();
+    const hours = now.getHours();
+    return hours >= 12 ? 'PM' : 'AM';
+  }
+
   return (
-    <Card
-      size="sm"
-      variant="outline"
-      style={{
-        margin: 12,
-        backgroundColor: '#ffffff',
-        borderRadius: 30,
-        elevation: 5,
-      }}>
-      <View
-        style={{
-          marginBottom: 5,
-          alignItems: 'flex-start',
-          marginHorizontal: 15,
-          marginVertical: 10,
-          backgroundColor: '#ffffff',
-          flex: 1,
-          justifyContent: 'space-between',
-          borderRadius: 20,
-        }}>
-        <View>
-          <View
-            style={{
-              flexDirection: 'row',
-              marginBottom: 10,
-              alignItems: 'center',
-            }}>
-            <View style={{width: '50%'}}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: '600',
-                  textAlign: 'justify',
-                }}>
-                {props.passengerName}
-              </Text>
-            </View>
-            <View style={{width: '50%'}}>
-              <View style={{marginStart: 10}}>{tripStatus()}</View>
-            </View>
-          </View>
+    <View style={TripCardStyles.passengerItem}>
+      <Image
+        source={require('../../Images/default_avatar_image.jpg')}
+        style={TripCardStyles.profileImage}
+      />
 
-          <View style={{flexDirection: 'row', marginBottom: 10}}>
-            <View style={{width: '50%'}}>
-              <Text style={TripCardDriverStyles.cardText}>Pickup Date</Text>
-              <Text>{props.pickUpDate}</Text>
-            </View>
-            <View style={{width: '50%'}}>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={TripCardDriverStyles.cardText}>Pickup Time</Text>
-                <Text style={{marginEnd: 20}}> {props.pickUpTime}</Text>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={TripCardDriverStyles.cardText}>Dropoff Time</Text>
-                <Text style={{marginEnd: 20}}> {props.dropOffTime}</Text>
-              </View>
-            </View>
-          </View>
-        </View>
+      <View style={TripCardStyles.passengerInfo}>
+        <Text style={TripCardStyles.passengerName}>
+          {props.passengerName}, {props.pickUpDate.replace(/-/g, '/')}
+        </Text>
+        <View style={TripTransporterCardStyles.timeContainer}>
+          {props.pickUpTime == '' ||
+          props.pickUpTime == undefined ||
+          props.pickUpTime == null ? null : (
+            <Text style={TripCardStyles.pickupTime}>
+              Pickup: {props.pickUpTime + ' ' + getMeridiem()}
+            </Text>
+          )}
 
-        <View style={TripCardDriverStyles.cardContainer}>
-          <Text style={TripCardDriverStyles.cardText}>Location </Text>
-          <Text>{props.pickUpLocation}</Text>
+          {props.dropOffTime == '' ||
+          props.dropOffTime == undefined ||
+          props.dropOffTime == null ? null : (
+            <Text style={TripCardStyles.dropOffTime}>
+              Dropoff: {props.dropOffTime + ' ' + getMeridiem()}
+            </Text>
+          )}
         </View>
+        {tripStatus()}
       </View>
-    </Card>
+      {props.leg == 0 ? arrowRight : arrowLeft}
+    </View>
   );
 };

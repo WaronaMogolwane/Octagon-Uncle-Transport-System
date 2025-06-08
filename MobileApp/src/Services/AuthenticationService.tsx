@@ -1,13 +1,18 @@
 import React, {useState} from 'react';
-import {setStorageItemAsync, useStorageState} from './StorageStateService';
+import {
+  SaveTokens,
+  setStorageItemAsync,
+  useStorageState,
+} from './StorageStateService';
 import {AuthenticationResponseModel} from '../Models/AuthenticationResponseModel';
-import axios from 'axios';
+import axios, {AxiosError, AxiosResponse} from 'axios';
 import {UserSignIn} from '../Controllers/AuthenticationController';
 //import {SERVER_HOST, SERVER_PORT} from '../Const/colors';
 import {SERVER_HOST, SERVER_PORT} from '@env';
 
 import {UserInvitation} from '../Models/UserInvitation';
 import {User} from '../Models/UserModel';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 export const AuthContext = React.createContext<{
   signIn?: (
@@ -67,6 +72,7 @@ export function SessionProvider(props: any, navigation: any) {
   const [[isLoading, session], setSession] = useStorageState('session');
   const [[tokenIsLoading, authToken], setAuthToken] =
     useStorageState('authToken');
+
   return (
     <AuthContext.Provider
       value={{
@@ -78,11 +84,15 @@ export function SessionProvider(props: any, navigation: any) {
           await LoginWithEmailPassword(
             userEmail,
             userPassword,
-            (error, result) => {
+            async (error, result) => {
               if (error) {
                 callback(error, null);
               } else {
-                setSession(result.headers.sessionid);
+                const {accessToken, refreshToken} = result.data;
+
+                // Save tokens securely
+                await SaveTokens(accessToken, refreshToken);
+                setSession(accessToken); // Update session
                 callback(null, result.data);
               }
             },
@@ -92,16 +102,31 @@ export function SessionProvider(props: any, navigation: any) {
           user: User,
           callback: (error: any, result: any) => void,
         ) => {
-          await CreateUserWithEmailPassword(user, (error, result) => {
+          await CreateUserWithEmailPassword(user, async (error, result) => {
             if (error) {
               callback(error, null);
             } else {
-              setAuthToken(result.headers.sessionid);
-              callback(null, result);
+              const {accessToken, refreshToken} = result.data;
+
+              try {
+                // Save tokens securely in EncryptedStorage
+                await EncryptedStorage.setItem('accessToken', accessToken);
+                await EncryptedStorage.setItem('refreshToken', refreshToken);
+
+                // Set session for the app (e.g., update global auth state)
+                setAuthToken(accessToken);
+
+                callback(null, result);
+              } catch (storageError) {
+                throw new Error('Error saving tokens: ' + storageError);
+                callback(storageError, null);
+              }
             }
           });
         },
         signOut: async () => {
+          await EncryptedStorage.removeItem('accessToken');
+          await EncryptedStorage.removeItem('refreshToken');
           setSession(null);
         },
         emailOtp: async (
@@ -133,7 +158,7 @@ export function SessionProvider(props: any, navigation: any) {
           userinvitation: UserInvitation,
           callback: (error: any, resul: any) => void,
         ) => {
-          await InsertUserInvitation(userinvitation, (error, result) => {
+          await InsertUserInvitation(userinvitation, (error, result: any) => {
             if (error) {
               callback(error, null);
             } else {
@@ -162,6 +187,7 @@ export const CreateUserWithEmailPassword = async (
       Email: user.email,
       UserRole: user.userRole,
       BusinessId: user.businessId,
+      UserId: user.userId,
     })
     .then((response: any) => {
       callback(null, response);
@@ -199,10 +225,10 @@ export const LoginWithEmailPassword = async (
       email: userEmail,
       password: userPassword,
     })
-    .then((response: any) => {
+    .then((response: AxiosResponse) => {
       callback(null, response);
     })
-    .catch(error => {
+    .catch((error: AxiosError) => {
       callback(error, null);
     });
 };
@@ -247,6 +273,25 @@ export const InsertUserInvitation = async (
       lastName: userInvitation.lastName,
       userEmail: userInvitation.userEmail,
       userRole: userInvitation.userRole,
+    })
+    .then((response: any) => {
+      callback(null, response);
+    })
+    .catch(error => {
+      callback(error, null);
+    });
+};
+export const GetUserInvitationByEmail = async (
+  email: string,
+  userRole: number,
+  callback: (error: any, result: any) => void,
+) => {
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/auth/get-user-invitation`, {
+      params: {
+        email: email,
+        userRole: userRole,
+      },
     })
     .then((response: any) => {
       callback(null, response);
@@ -364,4 +409,26 @@ export const GetClientsByBusinessId = async (
     .catch(error => {
       callback(error, null);
     });
+};
+export const RefreshAccessToken = async (): Promise<string | null> => {
+  try {
+    const refreshToken = await EncryptedStorage.getItem('refreshToken');
+    if (!refreshToken) {
+      throw new Error('No refresh token found.');
+      return null;
+    }
+
+    const response = await axios.post(
+      `${SERVER_HOST}:${SERVER_PORT}/auth/refresh-token`,
+      {refreshToken},
+    );
+
+    const {accessToken} = response.data;
+    await EncryptedStorage.setItem('accessToken', accessToken);
+
+    return accessToken; // Return the new access token
+  } catch (error) {
+    throw new Error('Error refreshing access token: ' + error);
+    return null; // Return null if there's an error
+  }
 };

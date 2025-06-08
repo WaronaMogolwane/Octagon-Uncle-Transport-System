@@ -30,8 +30,11 @@ export const InsertPassengerDriverVehicleLinkingToDB = async (
 
 export const GetPassengerDriverVehicleLinkingFromDB = async (
   businessId: string,
+  dVLId: string,
 ) => {
   let result: any;
+  let statusCode: any;
+  let errorMessege: any;
   const pDVLData: {}[] = [];
   let pDVL = {};
 
@@ -41,11 +44,13 @@ export const GetPassengerDriverVehicleLinkingFromDB = async (
       {
         params: {
           BusinessId: businessId,
+          DVLId: dVLId,
         },
       },
     )
     .then((response: any) => {
       let res = [...response.data.result];
+      statusCode = response.status;
 
       res.forEach(data => {
         pDVL = {
@@ -64,16 +69,15 @@ export const GetPassengerDriverVehicleLinkingFromDB = async (
       result = pDVLData;
     })
     .catch((error: any) => {
-      console.log(error);
-      result = error;
+      throw new Error(error);
+      errorMessege = error;
     });
 
-  return result;
+  return [result, statusCode, errorMessege];
 };
 
 export const RemovePassengerDriverLinkingFromDB = async (pDVLId: string) => {
   let result: any;
-
   await axios
     .delete(
       `${SERVER_HOST}:${SERVER_PORT}/passenger-driver-vehicle-linking/delete-passenger-driver-vehicle-link`,

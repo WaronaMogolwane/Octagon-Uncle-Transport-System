@@ -1,30 +1,10 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {Text, View} from 'react-native';
 import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
-
-import {
-  Banknote,
-  BookUser,
-  BriefcaseBusiness,
-  CreditCard,
-  LogOut,
-  User,
-} from 'lucide-react-native';
-import {
-  ArrowLeftIcon,
-  Button,
-  ButtonIcon,
-  ButtonText,
   CloseIcon,
   Heading,
   Icon,
-  Image,
   Modal,
   ModalBackdrop,
   ModalCloseButton,
@@ -33,105 +13,24 @@ import {
   ModalHeader,
   ModalBody,
 } from '@gluestack-ui/themed';
-import {Auth} from '../../../Classes/Auth';
-import {GetUser} from '../../../Controllers/UserController';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {
-  RestoreImageViaAsyncStorage,
   ClearImageViaAsyncStorage,
+  DeleteImage,
 } from '../../../Services/ImageStorageService';
+import {
+  ProfileScreenStyles,
+  ThemeStyles,
+} from '../../../Stylesheets/GlobalStyles';
+import {SettingsCard} from '../../../Components/Cards/SettingsCard';
+import {CustomButton1} from '../../../Components/Buttons';
+import RNFS from 'react-native-fs';
 
 const ProfileScreen = ({navigation}: any) => {
   const {signOut, session}: any = useContext(AuthContext);
-  const [auth, setAuth] = useState(new Auth(session));
-
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [profileImage, setProfileImage] = useState('');
-  const iconSize = 50;
-  const iconStrokeWidth = 1;
-  const iconColor = '#000000';
 
   const ref = React.useRef(null);
-
-  const userId = auth.GetUserId();
-  const role: number = Number(auth.GetUserRole());
-  // const role: number = 2;
-
-  const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
-
-  const date = new Date();
-
-  useEffect(() => {
-    GetUserName();
-  }, []);
-
-  useEffect(() => {
-    RestoreImageViaAsyncStorage().then((result: any) => {
-      setProfileImage(result);
-    });
-  }, [firstName]);
-
-  const iconSelector = (id: number) => {
-    if (id == 1) {
-      return (
-        <View>
-          <User
-            size={iconSize}
-            strokeWidth={iconStrokeWidth}
-            color={iconColor}
-            style={styles.image}
-          />
-        </View>
-      );
-    } else if (id == 2) {
-      return (
-        <View>
-          <BookUser
-            size={iconSize}
-            strokeWidth={iconStrokeWidth}
-            color={iconColor}
-            style={styles.image}
-          />
-        </View>
-      );
-    } else if (id == 3) {
-      return (
-        <View>
-          <Banknote
-            size={iconSize}
-            strokeWidth={iconStrokeWidth}
-            color={iconColor}
-            style={styles.image}
-          />
-        </View>
-      );
-    } else if (id == 4) {
-      return (
-        <View>
-          <BriefcaseBusiness
-            size={iconSize}
-            strokeWidth={iconStrokeWidth}
-            color={iconColor}
-            style={styles.image}
-          />
-        </View>
-      );
-    }
-  };
-
-  const GetUserName = async () => {
-    GetUser(userId)
-      .then((result: any) => {
-        setFirstName(result.firstName);
-        setLastName(result.lastName);
-      })
-      .catch((error: any) => {
-        console.log(error);
-      });
-  };
 
   const SignOutModal = () => {
     return (
@@ -153,49 +52,20 @@ const ProfileScreen = ({navigation}: any) => {
             <View>
               <Text>Are you sure you want to sign out?</Text>
             </View>
-            <View style={{marginTop: 15}}></View>
           </ModalBody>
           <ModalFooter>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-              }}>
-              <View style={{padding: 5}}>
-                <Button
-                  size="md"
-                  variant="solid"
-                  action="secondary"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={() => {
-                    setShowModal(false);
-                  }}>
-                  <ButtonIcon as={ArrowLeftIcon} />
-                  <ButtonText>Back</ButtonText>
-                </Button>
-              </View>
-              <View style={{padding: 5}}>
-                <Button
-                  size="md"
-                  variant="solid"
-                  action="negative"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={async () => {
-                    ClearImageViaAsyncStorage().then(async () => {
-                      await signOut();
-                    });
-                  }}>
-                  <LogOut
-                    size={26}
-                    strokeWidth={iconStrokeWidth}
-                    color={'#FFFFFF'}
-                    style={styles.image}
-                  />
-                  <ButtonText>Sign Out</ButtonText>
-                </Button>
-              </View>
+            <View style={{flex: 1}}>
+              <CustomButton1
+                styles={{marginTop: 10}}
+                title="Sign out"
+                size="md"
+                action="negative"
+                isDisabled={false}
+                isFocusVisible={false}
+                onPress={async () => {
+                  SignOut();
+                }}
+              />
             </View>
           </ModalFooter>
         </ModalContent>
@@ -203,184 +73,49 @@ const ProfileScreen = ({navigation}: any) => {
     );
   };
 
+  const SignOut = async () => {
+    ClearImageViaAsyncStorage().then(async () => {
+      DeleteImage();
+      await signOut();
+    });
+  };
+
   return (
-    <SafeAreaView>
-      <ScrollView>
-        <View>
-          <View>
-            <View>
-              <Image
-                style={styles.coverPhoto}
-                alt="profile photo"
-                source={require('../../../Images/background_image.jpg')}
-              />
-            </View>
-            <View style={styles.avatarContainer}>
-              <Image
-                alt="profile photo"
-                source={
-                  profileImage == ''
-                    ? require('../../../Images/default_avatar_image.jpg')
-                    : {
-                        uri:
-                          storageUrl +
-                          profileImage +
-                          '?xc=' +
-                          date.getTime() +
-                          date.getDate(),
-                      }
-                }
-                style={styles.avatar}
-              />
-              <Text style={styles.name}>{firstName + ' ' + lastName}</Text>
-            </View>
-          </View>
+    <SafeAreaView style={ThemeStyles.container}>
+      {SignOutModal()}
+      <View>
+        <Text style={ProfileScreenStyles.headingText}>Settings</Text>
+      </View>
 
-          <View style={styles.body}>
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('Edit User Account');
-              }}>
-              <View style={styles.box}>
-                <View>{iconSelector(1)}</View>
+      <SettingsCard
+        Title={'Account'}
+        Description={'Update your account settings'}
+        HandleOnPress={() => navigation.navigate('Edit User Account')}
+      />
 
-                <Text style={styles.username}>Account</Text>
-              </View>
-            </TouchableOpacity>
+      <SettingsCard
+        Title={'Personal Information'}
+        Description={'Edit or view personal information'}
+        HandleOnPress={() => navigation.navigate('Edit User Details')}
+      />
 
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('Edit User Details');
-              }}>
-              <View style={styles.box}>
-                <View>{iconSelector(2)}</View>
+      <SettingsCard
+        Title={'Business Information'}
+        Description={'Edit or view business information'}
+        HandleOnPress={() => navigation.navigate('Edit Business Details')}
+      />
 
-                <Text style={styles.username}>Personal</Text>
-              </View>
-            </TouchableOpacity>
-            {role == 2 ? (
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate('Edit Payment Details');
-                }}>
-                <View style={styles.box}>
-                  <View>{iconSelector(3)}</View>
-
-                  <Text style={styles.username}>Payments</Text>
-                </View>
-              </TouchableOpacity>
-            ) : null}
-
-            <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('Edit Business Details');
-              }}>
-              <View style={styles.box}>
-                <View>{iconSelector(4)}</View>
-
-                <Text style={styles.username}>Business</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-          <View>{SignOutModal()}</View>
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}>
-            <View
-              style={{
-                flex: 1,
-                flexDirection: 'row',
-              }}>
-              <View style={{padding: 5}}>
-                <Button
-                  size="md"
-                  variant="solid"
-                  action="negative"
-                  isDisabled={false}
-                  isFocusVisible={false}
-                  onPress={() => {
-                    setShowModal(true);
-                  }}>
-                  <LogOut
-                    size={26}
-                    strokeWidth={iconStrokeWidth}
-                    color={'#FFFFFF'}
-                    style={styles.image}
-                  />
-                  <ButtonText>Sign Out</ButtonText>
-                </Button>
-              </View>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
+      <CustomButton1
+        styles={ProfileScreenStyles.button}
+        title="Sign Out"
+        size="md"
+        action={undefined}
+        isDisabled={false}
+        isFocusVisible={false}
+        onPress={() => setShowModal(true)}
+      />
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  header: {
-    backgroundColor: '#20B2AA',
-  },
-  headerContent: {
-    padding: 30,
-    alignItems: 'center',
-  },
-
-  image: {
-    width: 40,
-    height: 40,
-  },
-
-  body: {
-    padding: 30,
-  },
-  box: {
-    padding: 5,
-    marginTop: 5,
-    marginBottom: 5,
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    shadowColor: 'black',
-    shadowOpacity: 0.2,
-    shadowOffset: {
-      height: 1,
-      width: -2,
-    },
-    elevation: 2,
-  },
-  username: {
-    color: '#20B2AA',
-    fontSize: 22,
-    alignSelf: 'center',
-    marginLeft: 10,
-  },
-  container: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  coverPhoto: {
-    width: '100%',
-    height: 130,
-    resizeMode: 'cover',
-  },
-  avatarContainer: {
-    alignItems: 'center',
-    marginTop: -75,
-  },
-  avatar: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-  },
-  name: {
-    marginTop: 15,
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-});
 
 export default ProfileScreen;

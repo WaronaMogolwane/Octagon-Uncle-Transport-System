@@ -12,6 +12,7 @@ import {
   DeletePassengerByPassengerId,
   DeletePassengerRequestByPassengerId,
   GetActivePassengersByParentId,
+  GetPassengersByBusinessId,
 } from "../Models/PassengerModel";
 import { ErrorResponse } from "../Classes/ErrorResponse";
 
@@ -32,7 +33,8 @@ export const AddPassenger = async (req: any, res: any, next: any) => {
   );
   await InsertPassenger(newPassenger, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -53,7 +55,8 @@ export const GetPassenger = async (req: any, res: any, next: any) => {
 
   await GetPassengerByPassengerId(passengerId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result[0] == "") {
       let err: any = {
         status: 405,
@@ -86,7 +89,8 @@ export const UpdatePassengerDetail = async (req: any, res: any, next: any) => {
   );
   await UpdatePassenger(passenger, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -111,7 +115,8 @@ export const UpdatePassengerIsAssigned = async (
 
   await UpdateIsAssigned(passengerId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result.affectedRows == 0) {
       let err: any = {
         status: 499,
@@ -132,13 +137,8 @@ export const GetPassengersByParent = async (req: any, res: any, next: any) => {
 
   await GetAllPassengersByParentId(parentId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else {
       res.status(200).json({
         RecordRetrieved: true,
@@ -148,7 +148,27 @@ export const GetPassengersByParent = async (req: any, res: any, next: any) => {
   });
 };
 
-export const GetPassengersByBusiness = async (
+export const GetPassengersDropdownByBusiness = async (
+  req: any,
+  res: any,
+  next: any
+) => {
+  let businessId = req.query.BusinessId;
+
+  await GetPassengersByBusinessId(businessId, (error, result) => {
+    if (error) {
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
+    } else {
+      res.status(200).json({
+        RecordRetrieved: true,
+        result: result[0],
+      });
+    }
+  });
+};
+
+export const GetPassengersActiveByBusiness = async (
   req: any,
   res: any,
   next: any
@@ -157,13 +177,8 @@ export const GetPassengersByBusiness = async (
 
   await GetActivePassengersByBusinessId(businessId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else {
       res.status(200).json({
         RecordRetrieved: true,
@@ -182,13 +197,8 @@ export const GetActivePassengersByParent = async (
 
   await GetActivePassengersByParentId(parentId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else {
       res.status(200).json({
         RecordRetrieved: true,
@@ -207,13 +217,8 @@ export const GetAllPassengersByBusiness = async (
 
   await GetAllPassengersByBusinessId(businessId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else {
       res.status(200).json({
         RecordRetrieved: true,
@@ -232,13 +237,8 @@ export const GetPendingPassengersByBusiness = async (
 
   await GetPendingPassengersByBusinessId(businessId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else {
       res.status(200).json({
         RecordRetrieved: true,
@@ -253,13 +253,8 @@ export const DeletePassenger = async (req: any, res: any, next: any) => {
 
   await DeletePassengerByPassengerId(passengerId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else {
       res.status(200).json({
         RecordRetrieved: true,
@@ -277,13 +272,8 @@ export const DeletePassengerRequest = async (req: any, res: any, next: any) => {
 
   await DeletePassengerRequestByPassengerId(deleteRequest, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
-    } else if (result[0] == "") {
-      let err: any = {
-        status: 405,
-        message: "Record not found",
-      };
-      next(err);
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else {
       res.status(200).json({
         RecordRetrieved: true,

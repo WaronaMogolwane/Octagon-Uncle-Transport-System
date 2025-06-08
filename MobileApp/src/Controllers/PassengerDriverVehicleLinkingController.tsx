@@ -12,8 +12,11 @@ export const AddPassengerDriverVehicleLinking = async (
   return await InsertPassengerDriverVehicleLinkingToDB(pDVL);
 };
 
-export const GetPassengerDriverVehicleLinking = async (businessId: string) => {
-  return await GetPassengerDriverVehicleLinkingFromDB(businessId);
+export const GetPassengerDriverVehicleLinking = async (
+  businessId: string,
+  dVLId: string,
+) => {
+  return await GetPassengerDriverVehicleLinkingFromDB(businessId, dVLId);
 };
 
 export const RemovePassengerDriverLinking = async (pDVLId: string) => {

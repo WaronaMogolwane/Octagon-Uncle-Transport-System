@@ -1,7 +1,6 @@
 import {GestureResponderEvent, View} from 'react-native';
 import {UserDetailForm} from '../../Components/Forms/UserDetailForm';
 import {
-  Image,
   ToastDescription,
   ToastTitle,
   VStack,
@@ -9,14 +8,16 @@ import {
   Toast,
   ScrollView,
 } from '@gluestack-ui/themed';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {
+  PersonalDetailsScreenStyles,
+  ThemeStyles,
+} from '../../Stylesheets/GlobalStyles';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {UserDetail} from '../../Models/UserDetail';
 import {AddUserDetail} from '../../Controllers/UserDetailController';
-import {CustomButton1} from '../../Components/Buttons';
-import {useContext, useEffect, useState} from 'react';
+import {useContext, useState} from 'react';
 import {decode} from 'base-64';
 import {useStorageState} from '../../Services/StorageStateService';
 import {Auth} from '../../Classes/Auth';
@@ -24,7 +25,6 @@ import {AuthContext} from '../../Services/AuthenticationService';
 global.atob = decode;
 
 export default function PersonalDetailsScreen({route, navigation}: any) {
-  const {userRole, businessId} = route.params;
   const {sessionId} = route.params;
   const [[tokenIsLoading, authToken], setAuthToken] =
     useStorageState('authToken');
@@ -86,7 +86,9 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
           });
         }
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        throw new Error(error);
+      });
   };
 
   const userDetailSchema = yup.object().shape({
@@ -149,7 +151,7 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
   return (
     <ScrollView>
       <SafeAreaView style={ThemeStyles.container}>
-        <View style={ThemeStyles.container}>
+        {/* <View style={ThemeStyles.container}>
           <View style={{margin: 5}}>
             <Image
               size="xl"
@@ -160,8 +162,8 @@ export default function PersonalDetailsScreen({route, navigation}: any) {
               }}
             />
           </View>
-        </View>
-        <View style={{paddingBottom: 15, paddingTop: 15}}>
+        </View> */}
+        <View style={PersonalDetailsScreenStyles.container}>
           <UserDetailForm
             showButton={true}
             heading="Add User Details"

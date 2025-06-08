@@ -5,6 +5,7 @@ export class UserInvitation {
     lastName: string
     userEmail: string
     userRole: string
+    userId?: string
 
     constructor(
         businessId: string,
@@ -12,7 +13,8 @@ export class UserInvitation {
         firstName: string,
         lastName: string,
         userEmail: string,
-        userRole: string
+        userRole: string,
+        userId: string
     ) {
         this.businessId = businessId,
             this.invitationCode = invitationCode;
@@ -20,5 +22,6 @@ export class UserInvitation {
         this.lastName = lastName;
         this.userEmail = userEmail;
         this.userRole = userRole;
+        this.userId = userId;
     }
 }

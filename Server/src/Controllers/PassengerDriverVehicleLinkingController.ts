@@ -23,7 +23,8 @@ export const AddPassengerDriverVehicleLinking = async (
     newPassengerDriverVehicleLinking,
     (error, result) => {
       if (error) {
-        next(new ErrorResponse(501, error.message));
+        const err: Error = new Error(error.message);
+        next(new ErrorResponse(400, err.message, err.stack));
       } else if (result.affectedRows == 0) {
         let err: any = {
           status: 499,
@@ -45,13 +46,17 @@ export const GetPassengerDriverVehicleLinking = async (
   res: any,
   next: any
 ) => {
-  let businessId = req.query.BusinessId;
+  let businessInfo = {
+    businessId: req.query.BusinessId,
+    dVLId: req.query.DVLId,
+  };
 
   await GetPassengerDriverVehicleLinkingByBusinessId(
-    businessId,
+    businessInfo,
     (error, result) => {
       if (error) {
-        next(new ErrorResponse(501, error.message));
+        const err: Error = new Error(error.message);
+        next(new ErrorResponse(400, err.message, err.stack));
       } else if (result.affectedRows == 0) {
         let err: any = {
           status: 499,
@@ -79,7 +84,8 @@ export const RemovePassengerDriverVehicleLinking = async (
     passengerVehicleLinkingId,
     (error, result) => {
       if (error) {
-        next(new ErrorResponse(501, error.message));
+        const err: Error = new Error(error.message);
+        next(new ErrorResponse(400, err.message, err.stack));
       } else if (result.affectedRows == 0) {
         let err: any = {
           status: 499,

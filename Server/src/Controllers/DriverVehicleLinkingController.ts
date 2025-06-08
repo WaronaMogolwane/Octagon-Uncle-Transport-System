@@ -6,7 +6,8 @@ export const GetDriverId = async (req: any, res: any, next: any) => {
 
   await GetDriverIdByVehicleId(vehicleId, (error, result) => {
     if (error) {
-      next(new ErrorResponse(501, error.message));
+      const err: Error = new Error(error.message);
+      next(new ErrorResponse(400, err.message, err.stack));
     } else if (result[0] == "") {
       let err: any = {
         status: 405,

@@ -22,10 +22,32 @@ export const GetUserFromDB = async (userId: string) => {
       res = user;
     })
     .catch((error: AxiosError) => {
-      console.error(error);
+      throw new Error(error.stack);
       res = error;
     });
   return res;
+};
+
+export const GetUserActiveStatusFromDB = async (userId: string) => {
+  let res: any;
+  let errorCode: any;
+
+  await axios
+    .get(`${SERVER_HOST}:${SERVER_PORT}/user/get-user-active-status`, {
+      params: {
+        UserId: userId,
+      },
+    })
+    .then((response: AxiosResponse) => {
+      let result = response.data.result[0];
+
+      res = result;
+    })
+    .catch((error: AxiosError) => {
+      throw new Error(error.stack);
+      errorCode = error;
+    });
+  return [res, errorCode];
 };
 
 export const UpdateUserEmailInDB = async (
@@ -50,7 +72,7 @@ export const UpdateUserEmailInDB = async (
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.error(error);
+      throw new Error(error);
       errorMessage = error;
     });
 
@@ -73,7 +95,7 @@ export const CheckDuplicateEmailFromDB = async (email: string) => {
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
       errorMessage = error;
     });
 
@@ -102,7 +124,34 @@ export const UpdateUserPasswordInDB = async (
       statusCode = response.status;
     })
     .catch((error: any) => {
-      console.log(error);
+      throw new Error(error);
+      errorMessage = error;
+    });
+
+  return [data, statusCode, errorMessage];
+};
+
+export const RestoreUserPasswordInDB = async (
+  userId: string,
+  newPassword: string,
+) => {
+  let statusCode: any;
+  let data: any;
+  let errorMessage: any;
+
+  await axios
+    .patch(`${SERVER_HOST}:${SERVER_PORT}/user/restore-user-password`, {
+      user: {
+        UserId: userId,
+        Password: newPassword,
+      },
+    })
+    .then((response: any) => {
+      data = response.data;
+      statusCode = response.status;
+    })
+    .catch((error: any) => {
+      throw new Error(error);
       errorMessage = error;
     });
 

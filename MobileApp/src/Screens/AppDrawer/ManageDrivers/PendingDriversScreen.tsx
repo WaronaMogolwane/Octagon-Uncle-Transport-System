@@ -25,6 +25,7 @@ import {
 } from '../../../Services/AuthenticationService';
 import {PendingDriverListCard} from '../../../Components/Cards/DriverListCard';
 import {Auth} from '../../../Classes/Auth';
+import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 
 export const PendingDriverscreen = () => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -43,8 +44,8 @@ export const PendingDriverscreen = () => {
     setTimeout(() => {
       try {
         GetPendingDrivers(auth.GetBusinessId());
-      } catch (error) {
-        console.error(error);
+      } catch (error: any) {
+        throw new Error(error);
       }
     }, 2000);
     setRefreshingPendingDrivers(false);
@@ -53,7 +54,7 @@ export const PendingDriverscreen = () => {
     await DeleteUserInvitation(invitationId, 3, (error: any) => {
       if (error) {
         setRefreshingPendingDrivers(false);
-        console.error(error.response.data);
+        throw new Error(error.response.data);
       } else {
         GetPendingDrivers(auth.GetBusinessId());
         setRefreshingPendingDrivers(false);
@@ -67,7 +68,7 @@ export const PendingDriverscreen = () => {
       '3',
       (error: any, result: any) => {
         if (error) {
-          console.error(error.response.data);
+          throw new Error(error.response.data);
         } else {
           setPendingDriversList(result.data);
         }
@@ -128,7 +129,7 @@ export const PendingDriverscreen = () => {
     }
   }, [session]);
   return (
-    <View style={{flex: 1}}>
+    <View style={ThemeStyles.container}>
       {PendingDriversList[0] ? (
         <FlatList
           data={PendingDriversList}

@@ -31,11 +31,16 @@ import {PendingClientsScreen} from './PendingClientsScreen';
 import {GetClientsInvitation} from '../../../Controllers/ClientController';
 import {Auth} from '../../../Classes/Auth';
 import ClientInvitationModal from '../../../Components/Modals/ClientInvitationModal';
+import PaymentScheduleModal from '../../../Components/Modals/PaymentScheduleModal';
+import {PaymentSchedule} from '../../../Models/PaymentShedule';
+import {CreatePaymentSchedule} from '../../../Controllers/PaymentsController';
 
 const ManageClientsScreen = ({navigation}: any) => {
   const {createUserInvitation, session}: any = useContext(AuthContext);
   const [showAlertDialog, setShowAlertDialog] = React.useState(false);
   const [showInvitationModal, setShowInvitationModal] = useState(false);
+  const [showPaymentScheduleModal, setShowPaymentScheduleModal] =
+    useState(false);
   const [auth, setAuth] = useState(new Auth(session));
   const addClientSchema = yup.object().shape({
     firstName: yup
@@ -50,11 +55,27 @@ const ManageClientsScreen = ({navigation}: any) => {
       .required('Required'),
     email: yup.string().email('Invalid email').required('Email is required'),
   });
+  const paymentScheduleSchema = yup.object().shape({
+    amount: yup
+      .number()
+      .min(10000, 'Amount too low!')
+      .max(1000000, 'Choose a lower amount')
+      .required('Required'),
+    paymentDay: yup
+      .number()
+      .min(1, 'Day of the month does not exist!')
+      .max(29, 'Pick a different payment day!')
+      .required('Required'),
+  });
   const removeClientSchema = yup.object().shape({
     confirmClientName: yup.string().required('Required'),
   });
   const registerRemoveClientValues = {
     confirmClientName: '',
+  };
+  const registerPaymentScheduleValues = {
+    amount: 0,
+    paymentDay: 0,
   };
   const registerAddClientValues = {
     firstName: '',
@@ -72,7 +93,16 @@ const ManageClientsScreen = ({navigation}: any) => {
   const addClientFormik = useFormik({
     initialValues: registerAddClientValues,
     validationSchema: addClientSchema,
-
+    onSubmit: async values => {
+      if (addClientFormik.isValid) {
+        setShowInvitationModal(false);
+        setShowPaymentScheduleModal(true);
+      }
+    },
+  });
+  const paymentScheduleFormik = useFormik({
+    initialValues: registerPaymentScheduleValues,
+    validationSchema: paymentScheduleSchema,
     onSubmit: async values => {
       let userInvitation: UserInvitation = {
         businessId: auth.GetBusinessId(),
@@ -82,24 +112,34 @@ const ManageClientsScreen = ({navigation}: any) => {
         userEmail: addClientFormik.values.email,
         userRole: '2',
       };
-      if (addClientFormik.isValid) {
+      if (paymentScheduleFormik.isValid) {
         await createUserInvitation(
           userInvitation,
-          (error: any, result: any) => {
+          async (error: any, result: any) => {
             if (error) {
-              console.error(error.response.data);
+              throw new Error(error.response.data);
             } else {
-              setShowInvitationModal(false);
-              setShowAlertDialog(true);
-              GetClientsInvitation(
-                auth.GetBusinessId(),
-                '2',
-                (error: any, result: any) => {
-                  if (error) {
-                  } else {
-                  }
-                },
+              const userId: string = result.data.userId;
+              let paymentSchedule: PaymentSchedule = new PaymentSchedule(
+                userId,
+                paymentScheduleFormik.values.amount.toString(),
+                paymentScheduleFormik.values.paymentDay,
               );
+              try {
+                await CreatePaymentSchedule(paymentSchedule);
+                setShowPaymentScheduleModal(false);
+                setShowAlertDialog(true);
+                paymentScheduleFormik.resetForm();
+                await GetClientsInvitation(
+                  auth.GetBusinessId(),
+                  '2',
+                  (error: any, result: any) => {
+                    // handle result or error if needed
+                  },
+                );
+              } catch (error: any) {
+                throw new Error(error.toString());
+              }
             }
           },
         );
@@ -168,7 +208,10 @@ const ManageClientsScreen = ({navigation}: any) => {
       </Fab>
     );
   };
-
+  const PaymentScheduleModalBackPress = () => {
+    setShowPaymentScheduleModal(false);
+    setShowInvitationModal(true);
+  };
   return (
     <NavigationContainer independent={true}>
       <Tab.Navigator>
@@ -191,6 +234,7 @@ const ManageClientsScreen = ({navigation}: any) => {
         emailErrorText={addClientFormik?.errors?.email}
         emailOnBlur={addClientFormik.handleBlur('email')}
         emailValue={addClientFormik.values?.email}
+        confirmButtonText={'Next'}
         ShowModal={showInvitationModal}
         SendInviteOnPress={
           addClientFormik.handleSubmit as (
@@ -202,6 +246,35 @@ const ManageClientsScreen = ({navigation}: any) => {
         }
         CloseOtpModalButtonOnPress={() => {
           setShowInvitationModal(false);
+        }}
+      />
+      <PaymentScheduleModal
+        AmountIsInvalid={!!paymentScheduleFormik.errors.amount}
+        AmountOnChangeText={paymentScheduleFormik.handleChange('amount')}
+        AmountErrorText={paymentScheduleFormik?.errors?.amount}
+        AmountOnBlur={paymentScheduleFormik.handleBlur('amount')}
+        AmountValue={paymentScheduleFormik.values?.amount.toString()}
+        PaymentDayIsInvalid={!!paymentScheduleFormik.errors.paymentDay}
+        PaymentDayOnChangeText={paymentScheduleFormik.handleChange(
+          'paymentDay',
+        )}
+        PaymentDayErrorText={paymentScheduleFormik?.errors?.paymentDay}
+        PaymentDayOnBlur={paymentScheduleFormik.handleBlur('paymentDay')}
+        PaymentDayValue={paymentScheduleFormik.values?.paymentDay.toString()}
+        ShowModal={showPaymentScheduleModal}
+        SendInviteOnPress={
+          paymentScheduleFormik.handleSubmit as (
+            values:
+              | GestureResponderEvent
+              | React.FormEvent<HTMLFormElement>
+              | undefined,
+          ) => void
+        }
+        CloseModalOnPress={() => {
+          setShowPaymentScheduleModal(false);
+        }}
+        BackOnPpress={() => {
+          PaymentScheduleModalBackPress();
         }}
       />
       <InviteClientFab />

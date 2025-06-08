@@ -25,6 +25,7 @@ import {
 } from '../../../Services/AuthenticationService';
 import {PendingDriverListCard} from '../../../Components/Cards/DriverListCard';
 import {Auth} from '../../../Classes/Auth';
+import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 
 export const PendingClientsScreen = () => {
   const {session}: any = useContext(AuthContext);
@@ -49,7 +50,7 @@ export const PendingClientsScreen = () => {
     await DeleteUserInvitation(invitationId, 2, (error: any) => {
       if (error) {
         setRefreshingPendingCliients(false);
-        console.error(error.response.data);
+        throw new Error(error.response.data);
       } else {
         GetPendingClients(auth.GetBusinessId());
         setRefreshingPendingCliients(false);
@@ -63,7 +64,7 @@ export const PendingClientsScreen = () => {
       '2',
       (error: any, result: any) => {
         if (error) {
-          console.error(error.response.data);
+          throw new Error(error.response.data);
         } else {
           setPendingClientsList(result.data);
         }
@@ -124,7 +125,7 @@ export const PendingClientsScreen = () => {
     }
   }, [session]);
   return (
-    <View style={{flex: 1}}>
+    <View style={ThemeStyles.container}>
       {PendingClientsList[0] ? (
         <FlatList
           data={PendingClientsList}

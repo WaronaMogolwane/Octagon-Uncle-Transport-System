@@ -21,6 +21,7 @@ import {GestureResponderEvent} from 'react-native';
 import ClientDetailsModal from '../../../Components/Modals/ClientDetailsModal';
 import {ClientListCard} from '../../../Components/Cards/ClientListCard';
 import {Auth} from '../../../Classes/Auth';
+import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 
 export const ClientsScreen = () => {
   const {session}: any = useContext(AuthContext);
@@ -92,7 +93,7 @@ export const ClientsScreen = () => {
         ) {
           DeleteUserByUserIdAndRole(currentClient.UserId, '2', (error: any) => {
             if (error) {
-              console.error(error);
+              throw new Error(error);
               ShowRemoveClientToast(false);
             } else {
               GetClients(auth.GetBusinessId());
@@ -110,7 +111,7 @@ export const ClientsScreen = () => {
       businessId,
       (error: any, result: any) => {
         if (error) {
-          console.error(error.response.data);
+          throw new Error(error.response.data);
         } else {
           setClientsList(result.data);
         }
@@ -149,7 +150,7 @@ export const ClientsScreen = () => {
     }
   }, [session]);
   return (
-    <View style={{flex: 1}}>
+    <View style={ThemeStyles.container}>
       {ClientsList[0] ? (
         <FlatList
           mt="$3"
@@ -169,6 +170,7 @@ export const ClientsScreen = () => {
                 setcurrentClient(item);
                 setshowClientDetailsModal(true);
               }}
+              userId={item.UserId}
             />
           )}
           keyExtractor={(item: any) => item.UserId}

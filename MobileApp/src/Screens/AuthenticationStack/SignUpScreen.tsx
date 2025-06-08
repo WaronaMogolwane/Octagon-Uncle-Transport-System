@@ -2,11 +2,14 @@ import {useContext, useState} from 'react';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {View, GestureResponderEvent} from 'react-native';
+import {View, GestureResponderEvent, ActivityIndicator} from 'react-native';
 import {SignUpForm} from '../../Components/Forms/SignUpForm';
 import VerifyEmailModal from '../../Components/Modals/VerifyEmailModal';
-import {ThemeStyles} from '../../Stylesheets/GlobalStyles';
-import {UserSignUp} from '../../Controllers/AuthenticationController';
+import {SignUpScreenStyles, ThemeStyles} from '../../Stylesheets/GlobalStyles';
+import {
+  GetUserInvitation,
+  UserSignUp,
+} from '../../Controllers/AuthenticationController';
 import {User} from '../../Models/UserModel';
 import {useStorageState} from '../../Services/StorageStateService';
 import {
@@ -17,15 +20,19 @@ import {
   useToast,
 } from '@gluestack-ui/themed';
 import {AuthContext} from '../../Services/AuthenticationService';
+import {AxiosError} from 'axios';
+import uuid from 'react-native-uuid';
 
 const SignUpScreen = ({route, navigation}: any) => {
-  const {userRole, businessId} = route.params;
+  const {userRole, businessId, userId} = route.params;
   const [showModal, setShowModal] = useState(false);
   const {signIn, session, signUp, emailOtp, verifyOtp}: any =
     useContext(AuthContext);
   const toast = useToast();
 
   const [isEmailVerified, setIsEmailVerified] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [role, setRole] = useState('');
 
   const phoneRegExp: RegExp =
@@ -60,17 +67,29 @@ const SignUpScreen = ({route, navigation}: any) => {
     initialValues: registerInitialValues,
     validationSchema: registerSchema,
     onSubmit: async (values, {resetForm}) => {
+      setIsLoading(true);
       if (formik.isValid) {
         if (userRole == 1 && !isEmailVerified) {
           await emailOtp(formik.values.email, (error: any, result: any) => {
             if (error) {
-              console.error(error);
+              setIsLoading(false);
+              throw new Error(error);
             } else {
               setShowModal(true);
+              setIsLoading(false);
             }
           });
         } else {
-          await SignUpNewUser();
+          await GetInvitation(
+            formik.values.email,
+            (error: any, result: any) => {
+              if (error) {
+              } else {
+                SignUpNewUser(result[0].UserId);
+              }
+            },
+          );
+          setIsLoading(false);
         }
       }
     },
@@ -99,7 +118,7 @@ const SignUpScreen = ({route, navigation}: any) => {
   const SendOtp = async () => {
     await emailOtp(formik.values.email, (error: any, result: any) => {
       if (error) {
-        console.error(error);
+        throw new Error(error);
       } else {
         console.log(result.data);
       }
@@ -112,7 +131,7 @@ const SignUpScreen = ({route, navigation}: any) => {
       formik.values.email,
       (error: any, result: any) => {
         if (error) {
-          console.warn(error);
+          console.warn(error.response?.data);
         } else {
           ShowToast();
           setIsEmailVerified(true);
@@ -122,17 +141,18 @@ const SignUpScreen = ({route, navigation}: any) => {
       },
     );
   };
-  const SignUpNewUser: any = async () => {
+  const SignUpNewUser = async (userId?: string) => {
+    const newUserId: any = userId;
     const newUser: User = {
+      userId: newUserId,
       email: formik.values.email,
       password: formik.values.password,
       businessId: businessId,
       userRole: userRole,
     };
-
     await signUp(newUser, (error: any, result: any) => {
       if (error) {
-        console.error(error);
+        throw new Error(error);
       } else {
         ShowToast();
         navigation.navigate({
@@ -143,10 +163,41 @@ const SignUpScreen = ({route, navigation}: any) => {
       }
     });
   };
-
+  const GetInvitation = async (
+    email: string,
+    callback: (error: any, result: any) => void,
+  ) => {
+    await GetUserInvitation(
+      email,
+      userRole,
+      async (error: AxiosError, result: any) => {
+        if (error) {
+          callback(error, null);
+        } else {
+          callback(null, result);
+        }
+      },
+    );
+  };
   return (
     <SafeAreaView style={ThemeStyles.container}>
-      <View>
+      <View style={SignUpScreenStyles.container}>
+        {isLoading ? (
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: '#ffffff75',
+              zIndex: 100,
+            }}>
+            <ActivityIndicator size="large" />
+          </View>
+        ) : null}
         <SignUpForm
           emailIsInvalid={!!formik.errors.email}
           emailOnChangeText={formik.handleChange('email')}

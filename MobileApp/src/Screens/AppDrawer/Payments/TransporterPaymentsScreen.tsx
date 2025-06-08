@@ -2,11 +2,7 @@
 import React, {useContext, useEffect, useState, useCallback} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Linking, RefreshControl, ScrollView} from 'react-native';
-import {
-  CustomButton1,
-  CustomButton2,
-  CustomButton3,
-} from '../../../Components/Buttons';
+import {CustomButton1, CustomButton2} from '../../../Components/Buttons';
 import {ThemeStyles} from '../../../Stylesheets/GlobalStyles';
 import {
   GetBalanceByBusinessId,
@@ -28,6 +24,7 @@ import {PaymentCard} from '../../../Components/Cards/PaymentCards';
 import BankingDetailModal from '../../../Components/Modals/BankingDetailModal';
 import {useFormik} from 'formik';
 import {
+  AddBankingDetail,
   GetBankingDetail,
   GetBanksList,
   UpdateBankingDetail,
@@ -68,7 +65,40 @@ const TransporterPaymentsScreen = ({
   const [bankName, setBankName] = useState('');
   const [paystackBankCode, setPaystackBankCode] = useState('');
   const [paystackBankId, setPaystackBankId] = useState('');
+  const [isBankNameFocus, setIsBankNameFocus] = useState(false);
+  const [isAccountTypeFocus, setIsAccountTypeFocus] = useState(false);
+  const [isDocumentTypeFocus, setIsDocumentTypeFocus] = useState(false);
+  const [accountType, setAccountType] = useState('');
+  const [documentType, setDocumentType] = useState('');
+  const UpdateBankingDetails = async (values: any) => {
+    setShowModal(false);
+    try {
+      const updatedDetail = new BankingDetail(
+        bankName,
+        values.branchNumber.trim(),
+        values.accountName.trim(),
+        values.accountNumber.trim(),
+        auth.GetBusinessId(), /// oooo nice ima steal this
+        paystackBankId,
+        paystackBankCode,
+        accountType, //These are from the drop down
+        documentType, // these are from the drop down
+        values.documentNumber.trim(),
+        bankingDetail?.bankingDetailId, //this would be the place where you put the bankingDetailId
+        bankingDetail?.recipientCode, //this where yould put you recipient number
+      ); //where do i get them??
 
+      const response = await UpdateBankingDetail(updatedDetail);
+      if (response[1] === 200) {
+        ShowToast(true, 'Success', 'Details saved successfully.');
+      } else {
+        throw new Error('Failed to save details');
+      }
+    } catch {
+      setShowModal(true);
+      ShowToast(false, 'Failure', 'Details were not saved. Please try again.');
+    }
+  };
   // Utility Functions
   const FormatBalance = (balance: string) => {
     const formatter = new Intl.NumberFormat('en-ZA', {
@@ -171,6 +201,9 @@ const TransporterPaymentsScreen = ({
             bankingDetailData.BusinessId,
             bankingDetailData.PaystackBankId,
             bankingDetailData.PaystackBankCode,
+            bankingDetailData.accountType,
+            bankingDetailData.documentType,
+            bankingDetailData.documentNumber,
             bankingDetailData.RecipientCode,
             bankingDetailData.BankingDetailId,
           ),
@@ -182,64 +215,128 @@ const TransporterPaymentsScreen = ({
     }
   };
 
-  const UpdateBankingDetails = async (values: any) => {
-    setShowModal(false);
-    try {
-      const updatedDetail = new BankingDetail(
-        bankName,
-        values.branchNumber.trim(),
-        values.accountName.trim(),
-        values.accountNumber.trim(),
-        auth.GetBusinessId(),
-        paystackBankId,
-        paystackBankCode,
-        '',
-      );
-
-      const response = await UpdateBankingDetail(updatedDetail);
-      if (response[1] === 200) {
-        ShowToast(true, 'Success', 'Details saved successfully.');
-      } else {
-        throw new Error('Failed to save details');
-      }
-    } catch {
-      setShowModal(true);
-      ShowToast(false, 'Failure', 'Details were not saved. Please try again.');
-    }
-  };
-
   const RefreshPayments = useCallback(() => {
     setRefreshingPayments(true);
     GetPaymentValues().finally(() => setRefreshingPayments(false));
   }, []);
+  const accountTypeList = [
+    {label: 'Business', value: 'business'},
+    {label: 'Personal', value: 'personal'},
+  ];
+
+  const fullDocumentTypeList = [
+    {label: 'Identity Number', value: 'identityNumber'},
+    {label: 'Passport Number', value: 'passportNumber'},
+    {
+      label: 'Business Registration Number',
+      value: 'businessRegistrationNumber',
+    },
+  ];
+
+  // Filter documentTypeList based on accountType
+  const documentTypeList =
+    accountType === 'business'
+      ? fullDocumentTypeList.filter(
+          item => item.value === 'businessRegistrationNumber',
+        )
+      : fullDocumentTypeList.filter(
+          item => item.value !== 'businessRegistrationNumber',
+        );
+  useEffect(() => {
+    // Reset documentType if it’s no longer valid based on accountType
+    if (
+      accountType === 'business' &&
+      documentType !== 'businessRegistrationNumber'
+    ) {
+      setDocumentType('');
+    } else if (
+      accountType === 'personal' &&
+      documentType === 'businessRegistrationNumber'
+    ) {
+      setDocumentType('');
+    }
+  }, [accountType]);
 
   useEffect(() => {
     GetPaymentValues();
     Linking.addEventListener('url', RefreshPayments);
   }, [reference]);
+  const SubmitBankingDetail = async (values: any) => {
+    // setIsLoading(true);
+    let bankingDetail = new BankingDetail(
+      bankName,
+      values.branchNumber.trim(),
+      values.accountName.trim(),
+      values.accountNumber.trim(),
+      auth.GetBusinessId(),
+      paystackBankId,
+      paystackBankCode,
+      accountType,
+      documentType,
+      values.documentNumber.trim(),
+      '',
+      '',
+    );
 
-  // Formik Configuration
+    await AddBankingDetail(bankingDetail)
+      .then((response: any) => {
+        if (response == 200) {
+          setShowModal(false);
+
+          bankingFormik.resetForm();
+        } else {
+        }
+      })
+      .catch((error: any) => {
+        // setIsLoading(false);
+        // FaliureToast();
+        throw new Error(error);
+      });
+  };
+
+  const bankingDetailInitialValues = {
+    branchNumber: '',
+    accountName: '',
+    accountNumber: '',
+    comfirmAccountNumber: '',
+    documentNumber: '',
+  };
   const bankingDetailSchema = yup.object().shape({
-    branchNumber: yup.string().required('Branch number is required'),
-    accountName: yup.string().required('Account name is required'),
+    branchNumber: yup
+      .string()
+      // .matches(/^(\$?[1-9]\d{0,2}(,\d{3})*|\d+)?(\.\d{1,2})?$/, 'not valid')
+      .min(5, 'Branch number should be more than 5 digits')
+      .max(10, 'Branch number should not be more than 10 digits')
+      .required('is required'),
+    accountName: yup
+      .string() // ayt
+      .min(2, 'Account name too short!')
+      .max(100, 'Account name too long')
+      .required('is required'),
     accountNumber: yup
       .string()
-      .required('Account number is required')
-      .oneOf([yup.ref('comfirmAccountNumber')], 'Account number must match'),
-    comfirmAccountNumber: yup.string().required('Confirmation required'),
+      .min(5, 'Account number too short')
+      .max(20, 'Account number too long!')
+      .required('is required'),
+    comfirmAccountNumber: yup
+      .string()
+      .min(5, 'Account number too short')
+      .max(20, 'Account number too long!')
+      .required('is required')
+      .oneOf([yup.ref('accountNumber')], 'Account number must match'),
+    documentNumber: yup
+      .string()
+      .min(2, 'Document number too short')
+      .max(50, 'Document number too long')
+      .required('is required'),
   });
-
+  // Formik Configuration
   const bankingFormik = useFormik({
-    initialValues: {
-      bankName: bankingDetail?.bankName,
-      branchNumber: bankingDetail?.branchNumber,
-      accountName: bankingDetail?.accountName,
-      accountNumber: bankingDetail?.accountNumber,
-      comfirmAccountNumber: bankingDetail?.accountNumber,
-    },
+    initialValues: bankingDetailInitialValues,
     validationSchema: bankingDetailSchema,
-    enableReinitialize: true,
-    onSubmit: UpdateBankingDetails,
+    onSubmit: (values, {resetForm}) => {
+      SubmitBankingDetail(values);
+    },
   });
 
   return (
@@ -338,66 +435,135 @@ const TransporterPaymentsScreen = ({
       </ScrollView>
       <BankingDetailModal
         ShowModal={showModal}
-        DropdownIsFocus={isFocus}
+        DropdownIsFocus={isBankNameFocus}
+        DropdownIsFocusAccount={isAccountTypeFocus}
+        DropdownIsFocusDocument={isDocumentTypeFocus}
         BankList={bankList}
+        AccountTypeList={accountTypeList}
+        DocumentTypeList={documentTypeList}
+        SelectedBankName={bankName}
+        SelectedAccountType={accountType}
+        SelectedDocumentType={documentType}
         BranchNumberIsInvalid={!!bankingFormik.errors.branchNumber}
-        BranchNumberErrorText={bankingFormik.errors.branchNumber}
-        BranchNumberValue={bankingFormik.values.branchNumber}
+        BranchNumberErrorText={bankingFormik?.errors?.branchNumber}
+        BranchNumberValue={bankingFormik.values?.branchNumber}
         BranchNumberOnChangeText={bankingFormik.handleChange('branchNumber')}
         BranchNumberOnBlur={bankingFormik.handleBlur('branchNumber')}
         AccountNameIsInvalid={!!bankingFormik.errors.accountName}
-        AccountNameErrorText={bankingFormik.errors.accountName}
-        AccountNameValue={bankingFormik.values.accountName}
+        AccountNameErrorText={bankingFormik?.errors?.accountName}
+        AccountNameValue={bankingFormik.values?.accountName}
         AccountNameOnChangeText={bankingFormik.handleChange('accountName')}
         AccountNameOnBlur={bankingFormik.handleBlur('accountName')}
         AccountNumberIsInvalid={!!bankingFormik.errors.accountNumber}
-        AccountNumberErrorText={bankingFormik.errors.accountNumber}
-        AccountNumberValue={bankingFormik.values.accountNumber}
+        AccountNumberErrorText={bankingFormik?.errors?.accountNumber}
+        AccountNumberValue={bankingFormik.values?.accountNumber}
         AccountNumberOnChangeText={bankingFormik.handleChange('accountNumber')}
         AccountNumberOnBlur={bankingFormik.handleBlur('accountNumber')}
         ComfirmAccountNumberIsInvalid={
           !!bankingFormik.errors.comfirmAccountNumber
         }
         ComfirmAccountNumberErrorText={
-          bankingFormik.errors.comfirmAccountNumber
+          bankingFormik?.errors?.comfirmAccountNumber
         }
-        ComfirmAccountNumberValue={bankingFormik.values.comfirmAccountNumber}
+        ComfirmAccountNumberValue={bankingFormik.values?.comfirmAccountNumber}
         ComfirmAccountNumberOnChangeText={bankingFormik.handleChange(
           'comfirmAccountNumber',
         )}
         ComfirmAccountNumberOnBlur={bankingFormik.handleBlur(
           'comfirmAccountNumber',
         )}
-        OnFocusBankingDetailDropdown={() => setIsFocus(true)}
-        OnBlurBankingDetailDropdown={() => setIsFocus(false)}
+        DocumentNumberIsInvalid={!!bankingFormik.errors.documentNumber}
+        DocumentNumberErrorText={bankingFormik?.errors?.documentNumber}
+        DocumentNumberValue={bankingFormik.values?.documentNumber}
+        DocumentNumberOnChangeText={bankingFormik.handleChange(
+          'documentNumber',
+        )}
+        DocumentNumberOnBlur={bankingFormik.handleBlur('documentNumber')}
+        OnFocusBankingDetailDropdown={() => setIsBankNameFocus(true)}
+        OnBlurBankingDetailDropdown={() => setIsBankNameFocus(false)}
         OnChangeBankingDetailDropdown={(item: any) => {
           setBankName(item.name);
           setPaystackBankId(item.id);
           setPaystackBankCode(item.code);
-          setIsFocus(false);
+          setIsBankNameFocus(false);
+        }}
+        OnFocusAccountTypeDropdown={() => setIsAccountTypeFocus(true)}
+        OnBlurAccountTypeDropdown={() => setIsAccountTypeFocus(false)}
+        OnChangeAccountTypeDropdown={(item: any) => {
+          setIsAccountTypeFocus(false);
+          setAccountType(item.value);
+        }}
+        OnFocusDocumentTypeDropdown={() => setIsDocumentTypeFocus(true)}
+        OnBlurDocumentTypeDropdown={() => setIsDocumentTypeFocus(false)}
+        OnChangeDocumentTypeDropdown={(item: any) => {
+          setIsDocumentTypeFocus(false);
+          setDocumentType(item.value);
         }}
         CloseBankingDetailModalButtonOnPress={() => {
           setShowModal(false);
           bankingFormik.resetForm();
         }}
         HandleSubmit={() => {
-          if (bankName !== '') {
-            bankingFormik.handleSubmit();
-          } else {
-            setIsFocus(true);
+          if (bankName === '') {
+            setIsBankNameFocus(true);
             toast.show({
               placement: 'top',
-              render: ({id}) => (
-                <Toast
-                  nativeID={`toast-${id}`}
-                  action="attention"
-                  variant="outline">
-                  <VStack space="xs">
-                    <ToastTitle>Please select a bank to proceed</ToastTitle>
-                  </VStack>
-                </Toast>
-              ),
+              render: ({id}) => {
+                const toastId = 'toast-' + id;
+                return (
+                  <Toast
+                    nativeID={toastId}
+                    action="attention"
+                    variant="outline">
+                    <VStack space="xs">
+                      <ToastTitle>Please select a bank to proceed</ToastTitle>
+                    </VStack>
+                  </Toast>
+                );
+              },
             });
+          } else if (accountType === '') {
+            setIsAccountTypeFocus(true);
+            toast.show({
+              placement: 'top',
+              render: ({id}) => {
+                const toastId = 'toast-' + id;
+                return (
+                  <Toast
+                    nativeID={toastId}
+                    action="attention"
+                    variant="outline">
+                    <VStack space="xs">
+                      <ToastTitle>
+                        Please select an account type to proceed
+                      </ToastTitle>
+                    </VStack>
+                  </Toast>
+                );
+              },
+            });
+          } else if (documentType === '') {
+            setIsDocumentTypeFocus(true);
+            toast.show({
+              placement: 'top',
+              render: ({id}) => {
+                const toastId = 'toast-' + id;
+                return (
+                  <Toast
+                    nativeID={toastId}
+                    action="attention"
+                    variant="outline">
+                    <VStack space="xs">
+                      <ToastTitle>
+                        Please select a document type to proceed
+                      </ToastTitle>
+                    </VStack>
+                  </Toast>
+                );
+              },
+            });
+          } else {
+            bankingFormik.handleSubmit();
           }
         }}
       />

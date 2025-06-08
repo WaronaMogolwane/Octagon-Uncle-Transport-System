@@ -290,6 +290,7 @@ const HomeScreen = ({navigation}: any) => {
       }
     });
   };
+  };
 
   const GetPassengers = async () => {
     if (role == 1) {

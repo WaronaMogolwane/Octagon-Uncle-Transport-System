@@ -58,6 +58,9 @@ function App(): JSX.Element {
       </GluestackUIProvider>
     </SessionProvider>
   );
+};
+
+export default memo(App);
 }
 
 //export default memo(App);

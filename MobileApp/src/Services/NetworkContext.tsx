@@ -7,13 +7,7 @@ import React, {
   memo,
 } from 'react';
 import NetInfo, {NetInfoState} from '@react-native-community/netinfo';
-import {
-  Box,
-  Text,
-  SafeAreaView,
-  Spinner,
-  Pressable,
-} from '@gluestack-ui/themed';
+import {Text, SafeAreaView} from '@gluestack-ui/themed';
 
 const Logger = {
   log: (...args: any[]) => console.log(...args),
@@ -114,12 +108,10 @@ const NetworkProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
     const unsubscribe = NetInfo.addEventListener((state: NetInfoState) => {
       const newConnectedState = state.isConnected ?? false;
 
-      // Clear any existing timeout
       if (debounceTimeoutRef.current) {
         clearTimeout(debounceTimeoutRef.current);
       }
 
-      // Set a new timeout to debounce the state change
       debounceTimeoutRef.current = setTimeout(() => {
         if (newConnectedState !== isConnected) {
           Logger.log('Network state updated after debounce:', {
@@ -139,7 +131,6 @@ const NetworkProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
       }, DEBOUNCE_TIME);
     });
 
-    // Cleanup on unmount
     return () => {
       Logger.log('Unsubscribing from NetInfo listener');
       if (debounceTimeoutRef.current) {

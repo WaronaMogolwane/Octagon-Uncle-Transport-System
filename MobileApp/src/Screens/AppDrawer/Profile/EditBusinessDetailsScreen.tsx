@@ -2,7 +2,6 @@ import {
   ActivityIndicator,
   GestureResponderEvent,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -27,13 +26,14 @@ import {
 } from '../../../Controllers/BusinessDetailController';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
-import {RestoreImageViaAsyncStorage} from '../../../Services/ImageStorageService';
 import {
   EditBusinessDetailScreenStyles,
   ThemeStyles,
 } from '../../../Stylesheets/GlobalStyles';
 import {CustomButton1} from '../../../Components/Buttons';
 import {GetUserProfileImage} from '../../../Controllers/UserDetailController';
+// @ts-ignore
+import defaultAvatar from './../../../Images/default_avatar_image.jpg';
 
 const EditBusinessDetailsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -350,9 +350,7 @@ const EditBusinessDetailsScreen = ({navigation}: any) => {
             <Image
               alt="profile photo"
               source={
-                profileImage == ''
-                  ? require('./../../../Images/default_avatar_image.jpg')
-                  : {uri: storageUrl + profileImage}
+                profileImage ? {uri: storageUrl + profileImage} : defaultAvatar
               }
               style={EditBusinessDetailScreenStyles.avatar}
             />

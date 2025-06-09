@@ -7,9 +7,13 @@ import React, {
   memo,
 } from 'react';
 import NetInfo, {NetInfoState} from '@react-native-community/netinfo';
-import {Box, Text, SafeAreaView, View, Button} from '@gluestack-ui/themed';
-import {ActivityIndicator} from 'react-native';
-import {CustomButton1} from '../Components/Buttons';
+import {
+  Box,
+  Text,
+  SafeAreaView,
+  Spinner,
+  Pressable,
+} from '@gluestack-ui/themed';
 
 const Logger = {
   log: (...args: any[]) => console.log(...args),
@@ -30,8 +34,9 @@ const NetworkContext = createContext<NetworkContextType>({
   checkNetwork: async () => true,
 });
 
+const DEBOUNCE_TIME = 1000; // 1 second debounce period
+
 const NetworkProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
-  const [isCheckingNetwork, setIsCheckingNetwork] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState<boolean>(true);
   const [networkType, setNetworkType] = useState<NetInfoState['type'] | null>(
     null,
@@ -39,8 +44,10 @@ const NetworkProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [manualRetryRequired, setManualRetryRequired] =
     useState<boolean>(false);
+  const [isRetryLoading, setIsRetryLoading] = useState<boolean>(false);
   const [lastChecked, setLastChecked] = useState<number>(0);
   const forceShowBannerRef = useRef<boolean>(false);
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const checkNetwork = async (): Promise<boolean> => {
     const now = Date.now();
@@ -79,6 +86,7 @@ const NetworkProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
   };
 
   useEffect(() => {
+    // Initial network state fetch
     NetInfo.fetch()
       .then(state => {
         const newConnectedState = state.isConnected ?? false;
@@ -102,39 +110,53 @@ const NetworkProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
         setIsLoading(false);
       });
 
+    // Network state listener with debouncing
     const unsubscribe = NetInfo.addEventListener((state: NetInfoState) => {
       const newConnectedState = state.isConnected ?? false;
-      if (newConnectedState !== isConnected) {
-        Logger.log('Network state updated:', {
-          isConnected: newConnectedState,
-          type: state.type,
-        });
-        setIsConnected(newConnectedState);
-        setNetworkType(state.type);
-        setLastChecked(Date.now());
-        if (newConnectedState) {
-          setManualRetryRequired(false);
-          forceShowBannerRef.current = false;
-        } else {
-          forceShowBannerRef.current = true;
-        }
+
+      // Clear any existing timeout
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
       }
+
+      // Set a new timeout to debounce the state change
+      debounceTimeoutRef.current = setTimeout(() => {
+        if (newConnectedState !== isConnected) {
+          Logger.log('Network state updated after debounce:', {
+            isConnected: newConnectedState,
+            type: state.type,
+          });
+          setIsConnected(newConnectedState);
+          setNetworkType(state.type);
+          setLastChecked(Date.now());
+          if (newConnectedState) {
+            setManualRetryRequired(false);
+            forceShowBannerRef.current = false;
+          } else {
+            forceShowBannerRef.current = true;
+          }
+        }
+      }, DEBOUNCE_TIME);
     });
 
+    // Cleanup on unmount
     return () => {
       Logger.log('Unsubscribing from NetInfo listener');
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
       unsubscribe();
     };
   }, [isConnected]);
 
-  // const handleRetry = async () => {
-  //   setIsCheckingNetwork(true);
-  //   const connected = await checkNetwork();
-  //   setIsCheckingNetwork(false);
-  //   if (!connected) {
-  //     forceShowBannerRef.current = true;
-  //   }
-  // };
+  const handleRetry = async () => {
+    setIsRetryLoading(true);
+    const connected = await checkNetwork();
+    setIsRetryLoading(false);
+    if (!connected) {
+      forceShowBannerRef.current = true;
+    }
+  };
 
   return (
     <NetworkContext.Provider
@@ -159,27 +181,26 @@ const NetworkProvider: React.FC<{children: React.ReactNode}> = ({children}) => {
             alignItems: 'center',
             backgroundColor: '$white',
           }}>
-          {isCheckingNetwork ? (
-            <View
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#ffffff75',
-                zIndex: 100,
-              }}>
-              <ActivityIndicator size="large" />
-              <Text>Working</Text>
-            </View>
-          ) : null}
           <Text color="$black">No internet connection.</Text>
           <Text color="$black">
             Please check your connection and try again.
           </Text>
+          {/* <Pressable
+            onPress={handleRetry}
+            disabled={isRetryLoading}
+            px="$2"
+            py="$1"
+            bg={isRetryLoading ? '$gray300' : '$red700'}
+            borderRadius="$sm"
+            flexDirection="row"
+            alignItems="center">
+            {isRetryLoading ? (
+              <Spinner size="small" color="$white" mr="$2" />
+            ) : null}
+            <Text color="$white" fontWeight="$bold">
+              {isRetryLoading ? 'Retrying...' : 'Retry'}
+            </Text>
+          </Pressable> */}
         </SafeAreaView>
       )}
     </NetworkContext.Provider>

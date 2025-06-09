@@ -111,6 +111,46 @@ const HomeScreen = ({navigation}: any) => {
     },
   ];
 
+  const [isConnected, setIsConnected] = useState(true); // Assuming default is true
+
+  const fetchData = useCallback(async () => {
+    if (!isConnected) return; // Skip if offline
+    setIsDataLoading(true);
+
+    try {
+      await GetUserName();
+
+      if (role === 1) {
+        await Promise.all([
+          GetPaymentsForThisMonth(),
+          GetDeclinedPaymentSummary(),
+          GetPassengers(),
+          GetVehicleCount(),
+          GetAvailableBalance(auth.GetBusinessId()),
+          GetDailyBusinessTrips(),
+        ]);
+      } else if (role === 2) {
+        await Promise.all([
+          GetDailyParentTrips(),
+          GetPassengers(),
+          GetActivePasengers(),
+        ]);
+      } else if (role === 3) {
+        await Promise.all([GetVehicleInfomation(), GetDailyDriverTrips()]);
+      }
+
+      await GetProfileImage();
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setIsDataLoading(false);
+    }
+  }, [isConnected, role, auth]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]); // Depend on fetchData, which includes isConnected
+
   useEffect(() => {
     GetUserName();
 
@@ -693,3 +733,6 @@ const HomeScreen = ({navigation}: any) => {
 };
 
 export default HomeScreen;
+function setIsDataLoading(arg0: boolean) {
+  throw new Error('Function not implemented.');
+}

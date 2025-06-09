@@ -33,7 +33,7 @@ import {
 import {CustomButton1} from '../../../Components/Buttons';
 import {GetUserProfileImage} from '../../../Controllers/UserDetailController';
 // @ts-ignore
-import defaultAvatar from './../../../Images/default_avatar_image.jpg';
+import defaultAvatar from './../../../Images/briefcase.jpg';
 
 const EditBusinessDetailsScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);

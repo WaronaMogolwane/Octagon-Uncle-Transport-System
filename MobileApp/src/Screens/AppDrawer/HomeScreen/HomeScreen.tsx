@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {AuthContext} from '../../../Services/AuthenticationService';
 import {Auth} from '../../../Classes/Auth';
 import {FlatList} from 'react-native';
@@ -76,7 +76,7 @@ const HomeScreen = ({navigation}: any) => {
   const businessId = auth.GetBusinessId();
 
   const storageUrl: string =
-    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport/';
+    'https://f005.backblazeb2.com/file/Dev-Octagon-Uncle-Transport';
 
   const pieChartData = [
     {
@@ -135,27 +135,27 @@ const HomeScreen = ({navigation}: any) => {
     GetProfileImage();
   }, []);
 
-  const GetPaymentsForThisMonth = async () => {
+  const GetPaymentsForThisMonth = useCallback(async () => {
     try {
       const result = await GetPaymentsSummaryForThisMonth(businessId);
       const expectedPayments: any = result;
       expectedPayments.Amount = FormatBalance(expectedPayments.Amount || '0');
       setExpectedPaymentsSummary(expectedPayments);
     } catch (error: any) {
-      console.error(error?.response?.data || error);
+      throw new Error(error.response?.data || 'Unknown error');
     }
-  };
+  }, [businessId]);
 
-  const GetDeclinedPaymentSummary = async () => {
+  const GetDeclinedPaymentSummary = useCallback(async () => {
     try {
       const result = await GetDeclinedPaymentsSummary(businessId);
       const declinedPayments: any = result;
       declinedPayments.Amount = FormatBalance(declinedPayments.Amount || '0');
       setDeclinedPaymentsSummary(declinedPayments);
     } catch (error: any) {
-      console.error(error?.response?.data || error);
+      throw new Error(error.response?.data || 'Unknown error');
     }
-  };
+  }, [businessId]);
 
   const GetProfileImage = async () => {
     const downloadDest = `${RNFS.DocumentDirectoryPath}/profile_image.jpg`;
@@ -172,7 +172,7 @@ const HomeScreen = ({navigation}: any) => {
           if (result[1] == 200) {
             // Download and save the new image
             const downloadResponse = await RNFS.downloadFile({
-              fromUrl: storageUrl + result[0],
+              fromUrl: storageUrl + '/' + result[0],
               toFile: downloadDest,
             }).promise;
 
@@ -277,19 +277,19 @@ const HomeScreen = ({navigation}: any) => {
     });
   };
 
-  const GetVehicleCount = async () => {
-    await GetVehicles(businessId, (error: any, result: any) => {
+  const GetVehicleCount = useCallback(async () => {
+    GetVehicles(businessId, (error: any, result: any) => {
       if (error) {
         throw new Error(error.response.data);
       } else {
-        if (result.data.length != 0) {
-          setVehicleCount(result.data.length);
+        if (result.length !== 0) {
+          setVehicleCount(result.length);
         } else {
           setVehicleCount('0');
         }
       }
     });
-  };
+  }, [businessId]);
 
   const GetPassengers = async () => {
     if (role == 1) {

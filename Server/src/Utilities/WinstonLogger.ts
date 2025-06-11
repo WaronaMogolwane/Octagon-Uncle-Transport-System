@@ -5,8 +5,8 @@ import fs from "fs";
 // Remove this import as we are removing the transport:
 // const EventLogTransport = require('winston-winlog4').default;
 
-// Ensure the Logs directory exists
-const logDirectory = "./Logs"; // Adjust path as needed
+// CHANGED: Log directory now read from environment variable or falls back to C:/OctagonUncle/Logs
+const logDirectory = process.env.OUTS_LOG_BASE_DIR || "./Logs";
 if (!fs.existsSync(logDirectory)) {
     fs.mkdirSync(logDirectory, { recursive: true });
 }

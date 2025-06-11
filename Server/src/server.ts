@@ -28,7 +28,7 @@ const ServerLogger = new CustomLogger(serverWinstonLogger, {
 });
 
 // Application Setup
-const NODE_ENV = process.env.NODE_ENV || "production";
+const NODE_ENV = process.env.NODE_ENV;
 const PORT = process.env.OUTS_SERVER_PORT;
 
 const app = express();
@@ -52,7 +52,7 @@ app.listen(PORT, () => {
 
 
 // Start Worker Jobs (Conditionally)
-if (NODE_ENV !== "development") {
+if (NODE_ENV === "development") {
   const mainWorker = new MainWorker();
   mainWorker.StartJobs();
 }

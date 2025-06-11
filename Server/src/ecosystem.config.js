@@ -1,6 +1,10 @@
 // src/ecosystem.config.js (MANUAL UPDATE REQUIRED FOR THESE PATHS AND env_file REFERENCES)
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+
+// CHANGED: Log base directory now read from environment variable or falls back to C:/OctagonUncle/Logs
+const logBaseDir = process.env.OUTS_LOG_BASE_DIR || "./Logs";
+
 module.exports = {
   apps: [
     {
@@ -43,9 +47,10 @@ module.exports = {
         NODE_PATH: "C:\\OctagonUncle\\shared_node_modules", // **IMPORTANT:** Update this absolute path on your server
       },
 
-      log_file: "./Logs/server_combined.log",
-      out_file: "./Logs/server_out.log",
-      error_file: "./Logs/server_error.log",
+      // CHANGED: Log files now use the logBaseDir variable
+      log_file: `${logBaseDir}/server_combined.log`,
+      out_file: `${logBaseDir}/server_out.log`,
+      error_file: `${logBaseDir}/server_error.log`,
       merge_logs: true,
       log_date_format: "YYYY-MM-DD HH:mm:ss",
       max_memory_restart: "300M",
@@ -87,9 +92,10 @@ module.exports = {
         NODE_PATH: "C:\\OctagonUncle\\shared_node_modules",
       },
 
-      log_file: "./Logs/worker_combined.log",
-      out_file: "./Logs/worker_out.log",
-      error_file: "./Logs/worker_error.log",
+      // CHANGED: Log files now use the logBaseDir variable
+      log_file: `${logBaseDir}/worker_combined.log`,
+      out_file: `${logBaseDir}/worker_out.log`,
+      error_file: `${logBaseDir}/worker_error.log`,
       merge_logs: true,
       log_date_format: "YYYY-MM-DD HH:mm:ss",
       max_memory_restart: "300M",

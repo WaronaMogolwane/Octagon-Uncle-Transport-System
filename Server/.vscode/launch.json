@@ -10,7 +10,8 @@
       "runtimeArgs": ["run-script", "build"],
       "runtimeExecutable": "npm",
       "skipFiles": ["<node_internals>/**"],
-      "type": "node"
+      "type": "node",
+      "console": "integratedTerminal" // Added this line
     },
     {
       "name": "Rebuild",
@@ -18,15 +19,17 @@
       "runtimeArgs": ["run-script", "rebuild"],
       "runtimeExecutable": "npm",
       "skipFiles": ["<node_internals>/**"],
-      "type": "node"
+      "type": "node",
+      "console": "integratedTerminal" // Added this line
     },
     {
       "name": "Clean",
       "request": "launch",
-      "runtimeArgs": ["run-script", "clean"],
+      "runtimeArgs": ["run-script", "clean-all"], // Changed to clean-all for consistency with package.json
       "runtimeExecutable": "npm",
       "skipFiles": ["<node_internals>/**"],
-      "type": "node"
+      "type": "node",
+      "console": "integratedTerminal" // Added this line
     },
     {
       "name": "Debug",
@@ -34,7 +37,8 @@
       "runtimeArgs": ["run-script", "debug"],
       "runtimeExecutable": "npm",
       "skipFiles": ["<node_internals>/**"],
-      "type": "node"
+      "type": "node",
+      "console": "integratedTerminal" // Added this line
     },
     {
       "name": "Build & Debug",
@@ -42,7 +46,8 @@
       "runtimeArgs": ["run-script", "build-debug"],
       "runtimeExecutable": "npm",
       "skipFiles": ["<node_internals>/**"],
-      "type": "node"
+      "type": "node",
+      "console": "integratedTerminal" // Added this line
     },
     {
       "name": "Rebuild & Debug",
@@ -50,7 +55,35 @@
       "runtimeArgs": ["run-script", "rebuild-debug"],
       "runtimeExecutable": "npm",
       "skipFiles": ["<node_internals>/**"],
-      "type": "node"
+      "type": "node",
+      "console": "integratedTerminal" // Added this line
+    },
+    {
+      "name": "Build: Live",
+      "request": "launch",
+      "runtimeArgs": ["run-script", "build:live"],
+      "runtimeExecutable": "npm",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal" // Added this line
+    },
+    {
+      "name": "Build: UAT",
+      "request": "launch",
+      "runtimeArgs": ["run-script", "build:uat"],
+      "runtimeExecutable": "npm",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal" // Added this line
+    },
+    {
+      "name": "Build: Development",
+      "request": "launch",
+      "runtimeArgs": ["run-script", "build:development"],
+      "runtimeExecutable": "npm",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal" // Added this line
     }
   ]
 }

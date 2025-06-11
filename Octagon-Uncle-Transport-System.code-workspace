@@ -1,20 +1,63 @@
 {
   "folders": [
     {
-      "path": "Admin"
-    },
-    {
-      "path": "Server"
-    },
-    {
-      "path": "DatabaseScripts"
-    },
-    {
-      "path": "MobileApp"
+      "path": "." // This defines the entire directory where this .code-workspace file resides as the single workspace root.
     }
   ],
   "settings": {
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    // This files.exclude block ensures a clean, flat Explorer view, hiding specific folders/files
+    "files.exclude": {
+      "**/node_modules": true, // Hide node_modules in all subfolders
+      "**/bin": true, // Hide compiled output folders (like Server/bin)
+      "**/Logs": true, // Hide Logs folders (like Server/Logs, MobileApp/Logs)
+      "**/.expo": true, // Hide Expo-specific build folders
+      "**/.gradle": true, // Hide Gradle build folders (Android)
+      "**/.idea": true, // Hide IntelliJ idea folders (Android Studio)
+      "**/build": true, // Hide generic build folders
+      "**/dist": true, // Hide dist folders
+      "**/web-build": true, // Hide web build folders
+      "**/.cxx": true, // Android NDK build artifacts
+      "**/.DS_Store": true, // macOS specific desktop services store
+      "**/*.jsbundle": true, // React Native JavaScript bundles
+      "**/*.tsbuildinfo": true, // TypeScript build info files
+      "**/npm-debug.*": true, //npm debug logs
+      "**/yarn-debug.*": true, //Yarn debug logs
+      "**/yarn-error.*": true, //Yarn error logs
+      "**/.metro-health-check*": true, //Metro temporary files
+      "**/DerivedData": true, //Xcode derived data
+      "**/.xccheckout": true, //Xcode source control checkouts
+      "**/*.ipa": true, //iOS application archives
+      "**/*.hmap": true, //Xcode header maps
+      "**/*.xcuserstate": true, //Xcode user state
+      "**/xcuserdata": true, //Xcode user data
+      "**/Pods": true, //CocoaPods dependencies (iOS)
+      "**/vendor/bundle": true, //Ruby Bundler (if used for Fastlane/etc.)
+      "**/fastlane/report.xml": true, //Fastlane reports
+      "**/fastlane/Preview.html": true, //Fastlane previews
+      "**/fastlane/screenshots": true, //Fastlane screenshots
+      "**/fastlane/test_output": true, //Fastlane test output
+      "**/local.properties": true, //Android local properties
+      "**/.orig.*": true, //Git original files
+      "**/*.jks": true, //Java KeyStore files
+      "**/*.p8": true, //Apple developer key files
+      "**/*.p12": true, //PKCS#12 archive files
+      "**/*.key": true, //Generic key files
+      "**/*.mobileprovision": true, //iOS provisioning profiles
+      "**/*.hprof": true, //JVM heap dump files
+      "**/*.pem": true, //Generic PEM files
+      // Specific .env files (hide if you primarily interact with them via build artifacts)
+      "**/.env.development": true,
+      "**/.env.uat": true,
+      "**/.env.live": true,
+      "**/.env": true, // Hide generic .env if you use named ones
+      "**/.env*.local": true, // Hide .env.local variations
+      // Explicitly hide sensitive files by relative path
+      "Server/service-account-key.json": true,
+      "MobileApp/service-account-key.json": true, // Assuming one exists here
+      "firebase.ts": true, // If it contains sensitive info
+      "Server/OUTS.env": true // Specific ignore if it exists
+    }
   }
 }

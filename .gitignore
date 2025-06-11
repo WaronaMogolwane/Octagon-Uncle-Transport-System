@@ -38,6 +38,8 @@ yarn-error.*
 
 .env
 Server/.env
+Server/.env.LIVE
+Server/.env.UAT
 Server/logs
 Server/service-account-key.json
 MobileApp/.env

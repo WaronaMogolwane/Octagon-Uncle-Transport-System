@@ -1,20 +1,27 @@
 {
   "folders": [
     {
-      "path": "Admin"
-    },
-    {
-      "path": "Server"
-    },
-    {
-      "path": "DatabaseScripts"
-    },
-    {
-      "path": "MobileApp"
+      "path": "." // This tells VS Code to treat the directory containing this .code-workspace file as the single root.
     }
   ],
   "settings": {
     "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "files.exclude": {
+      // Exclude common build/temp/config folders that you don't need cluttering the top level
+      "node_modules": true,
+      "bin": true, // Hide compiled output folder
+      "Logs": true, // Hide log files
+      ".vscode": false, // Hide VS Code's own configuration folder for the workspace
+      // Add any other specific files or folders you wish to hide from this flat root view:
+      "package-lock.json": true, // Often included in other folders, can hide if redundant
+      "tsconfig.json": true, // Hide if you prefer it only visible when navigating into specific projects
+      "web.config": true, // Hide if preferred
+      // Hide specific .env files from the root if you prefer them less prominent:
+      ".env.development": true,
+      ".env.uat": true,
+      ".env.live": true
+      // You can add more patterns here to hide other specific files or directories
+    }
   }
 }

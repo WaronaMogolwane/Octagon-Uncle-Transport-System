@@ -39,16 +39,18 @@ const SignUpScreen = ({route, navigation}: any) => {
     /^[+]?[(]?[0-9]{3}[)]?[-s.]?[0-9]{3}[-s.]?[0-9]{4,6}$/;
   // const passwordExp1: RegExp =
   //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+
   const passwordExp: RegExp =
-    /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[A-Z])(?=.*[-\#\$\.\%\&\*\?\!\_\,\+\=\@])(?=.*[a-zA-Z]).{8,16}$/;
+    /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[-#$%&*?!_,+=@]).{8,}$/;
 
   const registerSchema = yup.object().shape({
     password: yup
       .string()
       .min(8, 'Password must be at least 8 characters')
+      .max(128, 'Password cannot exceed 128 characters') // Optional: Add a reasonable max length
       .matches(
         passwordExp,
-        'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character',
+        'Password must contain at least one uppercase letter, one lowercase letter, one digit, and one special character (-, #, $, %, &, *, ?, !, _, ,, +, =, @)',
       )
       .required('Password is required'),
     confirmPassword: yup

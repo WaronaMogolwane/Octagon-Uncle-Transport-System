@@ -299,11 +299,15 @@ const TripsScreen = ({navigation}: any) => {
                 WarningToast();
               }
             } else if (Number(item.tripStatus) == 3) {
-              UndoTripDropOffTime(item.tripId).then(() => {
-                setIsLoading(true);
-                GetUpcomingTrips();
-                GetPastTrips();
-              });
+              if (currentDate == item.pickUpDate.toString()) {
+                UndoTripDropOffTime(item.tripId).then(() => {
+                  setIsLoading(true);
+                  GetUpcomingTrips();
+                  GetPastTrips();
+                });
+              } else {
+                WarningToast();
+              }
             }
           }}
         />

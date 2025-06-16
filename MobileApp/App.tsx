@@ -60,7 +60,7 @@ function App(): JSX.Element {
   };
 
   return (
-    <GluestackUIProvider config={config}>
+    <GluestackUIProvider config={config} colorMode="light">
       <SafeAreaView
         style={{flex: 1, backgroundColor: backgroundStyle.backgroundColor}}>
         {isReady ? (

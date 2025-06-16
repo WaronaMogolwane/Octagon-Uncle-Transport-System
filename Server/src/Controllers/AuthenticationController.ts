@@ -37,9 +37,14 @@ export const CheckIfUserExists = async (req: any, res: any, next: any) => {
     next();
   }
 };
-export const RegisterUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const RegisterUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   try {
-    const newUserId = req.body.UserRole === "1" ? randomUUID() : req.body.UserId;
+    const newUserId =
+      req.body.UserRole === "1" ? randomUUID() : req.body.UserId;
     if (req.body.UserRole === "1") {
       req.body.BusinessId = newUserId;
     }
@@ -57,19 +62,32 @@ export const RegisterUser = async (req: Request, res: Response, next: NextFuncti
         return next(new ErrorResponse(400, error.message, error.stack));
       }
 
-      await InsertUserBusinessLink(newUser.userId, newUser.businessId, (linkError) => {
-        if (linkError) {
-          return next(new ErrorResponse(400, linkError.message, linkError.stack));
+      await InsertUserBusinessLink(
+        newUser.userId,
+        newUser.businessId,
+        (linkError) => {
+          if (linkError) {
+            return next(
+              new ErrorResponse(400, linkError.message, linkError.stack)
+            );
+          }
+          req.body.UserId = newUser.userId;
+          req.body.successMessage = "User successfully created.";
+          next();
         }
-        req.body.UserId = newUser.userId;
-        req.body.successMessage = "User successfully created.";
-        next();
-      });
+      );
     });
   } catch (err) {
-    next(new ErrorResponse(500, 'An unexpected error occurred.', (err as Error).stack));
+    next(
+      new ErrorResponse(
+        500,
+        "An unexpected error occurred.",
+        (err as Error).stack
+      )
+    );
   }
-}; export const SendEmailOtp = async (req: any, res: any, next: any) => {
+};
+export const SendEmailOtp = async (req: any, res: any, next: any) => {
   let userDetails: any = req.body.userDetails;
   let otp: string = CreateOtp(5);
   const message =
@@ -91,28 +109,34 @@ export const RegisterUser = async (req: Request, res: Response, next: NextFuncti
       };
       next(errorResponse);
     } else {
+      console.log(emailData);
       SendEmail(emailData).then(
         (value) => {
           res.status(200).send("OTP sent.");
         },
         (error) => {
+          console.log(error);
           errorResponse = {
             status: error.responseCode || 500,
             message: error.response || "Mail Server Error: " + error,
           };
           next(errorResponse);
-        },
+        }
       );
     }
   });
 };
-export const VerifyOtp = async (req: Request, res: Response, next: NextFunction) => {
+export const VerifyOtp = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let errorResponse: ErrorResponse;
   let email: string = req.body.email;
   let otp: string = req.body.otp;
   await GetOtp(email, otp, async (error, result) => {
     if (error) {
-      const err: Error = new Error(error.message)
+      const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
     } else {
       if (result[0][0]) {
@@ -138,7 +162,11 @@ export const VerifyOtp = async (req: Request, res: Response, next: NextFunction)
     }
   });
 };
-export const UserLogin = async (req: Request, res: Response, next: NextFunction) => {
+export const UserLogin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // Input validation
     const { email, password } = req.body;
@@ -172,32 +200,40 @@ export const UserLogin = async (req: Request, res: Response, next: NextFunction)
     next(JSON.stringify(error));
   }
 };
-export const VerifyUserInvitation = async (req: Request, res: Response, next: NextFunction) => {
+export const VerifyUserInvitation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const invitationCode: string = req.body.invitationCode;
   const userRole: string = req.body.userRole;
   await GetUserInvitation(invitationCode, userRole, async (error, result) => {
     if (error) {
-      const err: Error = new Error(error.message)
+      const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
     } else {
       if (result[0][0]) {
         let userInvitation = result[0][0];
         let userInvitationExpireDate = new Date(userInvitation.ExpiryDate);
         if (IsUserInvitationValid(userInvitationExpireDate)) {
-          await UpdateUserInvitationToUsed(invitationCode, userRole, (error, result) => {
-            if (error) {
-              errorResponse = {
-                message: error,
-                status: error.message,
-              };
-              next(errorResponse);
+          await UpdateUserInvitationToUsed(
+            invitationCode,
+            userRole,
+            (error, result) => {
+              if (error) {
+                errorResponse = {
+                  message: error,
+                  status: error.message,
+                };
+                next(errorResponse);
+              } else {
+                res.status(201).send({
+                  Message: "User invitation verified.",
+                  Data: userInvitation,
+                });
+              }
             }
-            else {
-              res
-                .status(201)
-                .send({ Message: "User invitation verified.", Data: userInvitation });
-            }
-          })
+          );
         } else {
           res.status(400).send({
             message: "User invitation expired.",
@@ -233,135 +269,156 @@ export const SendUserInvitation = async (req: any, res: any, next: any) => {
     emailHtml: CreateOtpEmailHtml(
       userInviation.firstName,
       message,
-      userInviation.invitationCode,
+      userInviation.invitationCode
     ),
   };
   InsertUserInvitation(userInviation, (error, result) => {
     if (error) {
-      const err: Error = new Error(error.message)
+      const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
     } else {
       SendEmail(emailData).then(
         (value) => {
-          res.status(200).json(result)
+          res.status(200).json(result);
         },
         (error) => {
           next(error);
-        },
+        }
       );
     }
-  })
-}
-export const GetInvitationByEmailAndRole = async (req: Request, res: Response, next: NextFunction) => {
+  });
+};
+export const GetInvitationByEmailAndRole = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let email: string = req.query.email.toString();
   let userRole: string = req.query.userRole.toString();
-  await GetUserInvitationByEmailAndUserRole(email, userRole, (error, result) => {
-    if (error) {
-      const err: Error = new Error(error.message)
-      next(new ErrorResponse(400, err.message, err.stack));
-
-    }
-    else {
-      if (result[0]) {
-        res.status(200).json(result[0]);
+  await GetUserInvitationByEmailAndUserRole(
+    email,
+    userRole,
+    (error, result) => {
+      if (error) {
+        const err: Error = new Error(error.message);
+        next(new ErrorResponse(400, err.message, err.stack));
+      } else {
+        if (result[0]) {
+          res.status(200).json(result[0]);
+        } else {
+          res
+            .status(400)
+            .send(new ErrorResponse(400, "No pending invitations found."));
+        }
       }
-      else {
-        res.status(400).send(new ErrorResponse(400, "No pending invitations found."));
-      }
     }
-  });
-}
-export const GetPendingInvitations = async (req: Request, res: Response, next: NextFunction) => {
+  );
+};
+export const GetPendingInvitations = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let businessId: string = req.query.businessId.toString();
   let userRole: string = req.query.userRole.toString();
-  await GetInvitationsByBusinessIdUserRole(businessId, userRole, (error, result) => {
-    if (error) {
-      const err: Error = new Error(error.message)
-      next(new ErrorResponse(400, err.message, err.stack));
-
-    }
-    else {
-      if (result[0]) {
-        res.status(200).send(result[0]);
+  await GetInvitationsByBusinessIdUserRole(
+    businessId,
+    userRole,
+    (error, result) => {
+      if (error) {
+        const err: Error = new Error(error.message);
+        next(new ErrorResponse(400, err.message, err.stack));
+      } else {
+        if (result[0]) {
+          res.status(200).send(result[0]);
+        } else {
+          res
+            .status(400)
+            .send(new ErrorResponse(400, "No pending invitations found."));
+        }
       }
-      else {
-        res.status(400).send(new ErrorResponse(400, "No pending invitations found."));
-      }
     }
-  });
-}
-export const GetBusinessDrivers = async (req: Request, res: Response, next: NextFunction) => {
+  );
+};
+export const GetBusinessDrivers = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let businessId: string = req.query.businessId.toString();
   await GetDriversByBusinessId(businessId, (error, result) => {
     if (error) {
-      const err: Error = new Error(error.message)
+      const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
-
-    }
-    else {
+    } else {
       if (result[0]) {
         res.status(200).send(result[0]);
-      }
-      else {
+      } else {
         res.status(400).send(new ErrorResponse(400, "No drivers found."));
       }
     }
   });
-}
-export const GetBusinessClients = async (req: Request, res: Response, next: NextFunction) => {
+};
+export const GetBusinessClients = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let businessId: string = req.query.businessId.toString();
   await GetClientsByBusinessId(businessId, (error, result) => {
     if (error) {
-      const err: Error = new Error(error.message)
+      const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
-
-    }
-    else {
+    } else {
       if (result[0]) {
         res.status(200).send(result[0]);
-      }
-      else {
+      } else {
         res.status(400).send(new ErrorResponse(400, "No drivers found."));
       }
     }
   });
-}
-export const RemoveUserInvitation = async (req: Request, res: Response, next: NextFunction) => {
+};
+export const RemoveUserInvitation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let userInviteId = req.body.UserInvitationId;
   let userRole = req.body.UserRole;
   await DeleteUserInvitation(userInviteId, userRole, (error, result) => {
     if (error) {
-      const err: Error = new Error(error.message)
+      const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
-
-    }
-    else {
+    } else {
       if (result.affectedRows !== 0) {
         res.status(200).send("User invitation deleted.");
-      }
-      else {
-        res.status(400).send(new ErrorResponse(400, "User invitation not found."));
+      } else {
+        res
+          .status(400)
+          .send(new ErrorResponse(400, "User invitation not found."));
       }
     }
   });
-}
-export const DeactivateUser = async (req: Request, res: Response, next: NextFunction) => {
+};
+export const DeactivateUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   let userId = req.body.UserId;
   let userRole = req.body.UserRole;
   await UpdateUserToNotActive(userId, userRole, (error, result) => {
     if (error) {
-      const err: Error = new Error(error.message)
+      const err: Error = new Error(error.message);
       next(new ErrorResponse(400, err.message, err.stack));
-
-    }
-    else {
+    } else {
       if (result.affectedRows === 1) {
         res.status(200).send("User Deactivated.");
-      }
-      else {
-        res.status(400).send(new ErrorResponse(400, "User not deactivated. No user found."));
+      } else {
+        res
+          .status(400)
+          .send(new ErrorResponse(400, "User not deactivated. No user found."));
       }
     }
   });
-}
-
+};

@@ -1,6 +1,5 @@
-import { Email } from '../Classes/Email';
-import { mailTransporter } from '../Services/EmailService';
-
+import { Email } from "../Classes/Email";
+import { mailTransporter } from "../Services/EmailService";
 
 /**
  * Sends an email using the provided email data.
@@ -12,20 +11,18 @@ import { mailTransporter } from '../Services/EmailService';
 export const SendEmail = async (emailData: Email): Promise<string> => {
   try {
     const email = {
-      from: `"<span class="math-inline">\{emailData\.fromName\}" <</span>{emailData.fromAddress}>`,
+      from: `"${emailData.fromName}" <${emailData.fromAddress}>`,
       to: emailData.toAddress,
       subject: emailData.subject,
       html: emailData.emailHtml,
     };
 
-
     await mailTransporter.sendMail(email, null);
-    return 'success';
+    return "success";
   } catch (error) {
     return Promise.reject(error);
   }
 };
-
 
 /**
  * Creates the HTML content for an OTP (One-Time Password) email.
@@ -35,7 +32,11 @@ export const SendEmail = async (emailData: Email): Promise<string> => {
  * @param {string} otp - The One-Time Password to be included in the email.
  * @returns {string} The HTML string for the OTP email.
  */
-export const CreateOtpEmailHtml = (firstName: string, emailMessage: string, otp: string) => {
+export const CreateOtpEmailHtml = (
+  firstName: string,
+  emailMessage: string,
+  otp: string
+) => {
   return `
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <title></title>

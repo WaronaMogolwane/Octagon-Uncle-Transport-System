@@ -33,7 +33,7 @@ const DriverInvitationModal = (props: InvitationModalProps) => {
         isOpen={props.ShowModal}
         onClose={props.CloseOtpModalButtonOnPress}>
         <ModalBackdrop />
-        <ModalContent>
+        <ModalContent style={{backgroundColor: '#ffffff'}}>
           <ModalHeader>
             <Heading size="lg">Invite Driver</Heading>
             <ModalCloseButton>

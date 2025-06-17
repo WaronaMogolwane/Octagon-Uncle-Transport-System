@@ -38,7 +38,7 @@ const NewVehicleModal = (props: VehicleModalProps) => {
         isOpen={props.ShowModal}
         onClose={props.HandleCloseModal}>
         <ModalBackdrop />
-        <ModalContent backgroundColor="#fff" height={'90%'}>
+        <ModalContent style={{backgroundColor: '#ffffff'}} height={'90%'}>
           <ModalHeader>
             <Heading size="lg">Add New Vehicle</Heading>
             <ModalCloseButton>

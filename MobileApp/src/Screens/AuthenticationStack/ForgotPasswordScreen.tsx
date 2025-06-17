@@ -323,7 +323,7 @@ const ForgotPasswordScreen = ({route, navigation}: any) => {
           setShowOtpModal(false);
         }}>
         <ModalBackdrop />
-        <ModalContent>
+        <ModalContent style={{backgroundColor: '#ffffff'}}>
           <ModalHeader>
             <Heading size="lg">Email verification</Heading>
             <ModalCloseButton>

@@ -393,7 +393,7 @@ const TripsScreen = ({navigation}: any) => {
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />
-        <ModalContent>
+        <ModalContent style={{backgroundColor: '#ffffff'}}>
           <ModalHeader>
             <Heading size="lg">Address</Heading>
             <ModalCloseButton>

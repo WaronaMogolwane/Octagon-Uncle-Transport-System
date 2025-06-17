@@ -55,7 +55,6 @@ import {Auth} from '../../../Classes/Auth';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import filter from 'lodash.filter';
 import {CustomButton1} from '../../../Components/Buttons';
-import COLORS from '../../../Const/colors';
 
 const ManagePassengerScreen = ({navigation}: any) => {
   const {session, isLoading}: any = useContext(AuthContext);
@@ -750,8 +749,8 @@ const ManagePassengerScreen = ({navigation}: any) => {
           setShowCard(false);
         }}
         finalFocusRef={ref}>
-        <ModalBackdrop style={{backgroundColor: '#ffffff'}} />
-        <ModalContent>
+        <ModalBackdrop />
+        <ModalContent style={{backgroundColor: '#ffffff'}}>
           <ScrollView style={{height: '80%'}}>
             <ModalHeader>
               <Heading size="lg">Passenger Details</Heading>

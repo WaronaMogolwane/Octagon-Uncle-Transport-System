@@ -321,7 +321,7 @@ const AssignPassengerScreen = ({route, navigation}: any) => {
         }}
         finalFocusRef={ref}>
         <ModalBackdrop />
-        <ModalContent>
+        <ModalContent style={{backgroundColor: '#ffffff'}}>
           <ModalHeader>
             <Heading size="lg">{passengerName}</Heading>
             <ModalCloseButton>

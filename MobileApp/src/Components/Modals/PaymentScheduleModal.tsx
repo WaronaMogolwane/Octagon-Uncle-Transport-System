@@ -32,7 +32,7 @@ const PaymentScheduleModal = (props: PaymentScheduleModalProps) => {
     <View>
       <Modal isOpen={props.ShowModal} onClose={props.CloseModalOnPress}>
         <ModalBackdrop />
-        <ModalContent>
+        <ModalContent style={{backgroundColor: '#ffffff'}}>
           <ModalHeader>
             <Heading size="lg">Create Payment Plan</Heading>
             <ModalCloseButton>

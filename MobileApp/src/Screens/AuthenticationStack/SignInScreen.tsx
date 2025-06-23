@@ -81,7 +81,6 @@ const SignInScreen = ({navigation}: any) => {
             } else if (result) {
               resetForm();
               setIsLoading(false);
-              navigation.navigate('Home'); // Navigate to Home on success
             }
           },
         );

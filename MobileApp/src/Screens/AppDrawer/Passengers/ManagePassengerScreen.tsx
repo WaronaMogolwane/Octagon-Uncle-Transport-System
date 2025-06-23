@@ -221,7 +221,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
       parentName={itemData.parentName}
       reason={itemData.reason}
       isActive={itemData.isActive}
-      onPress={() => {
+      handleEdit={() => {
         setPassengerId(itemData.passengerId);
         setFirstName(itemData.passengerFirstName);
         setLastName(itemData.passengerLastName);
@@ -234,11 +234,20 @@ const ManagePassengerScreen = ({navigation}: any) => {
         setShowReasonField(true);
         setShowButton(true);
       }}
+      handleDelete={function (
+        values:
+          | GestureResponderEvent
+          | React.FormEvent<HTMLFormElement>
+          | undefined,
+      ): void {
+        throw new Error('Function not implemented.');
+      }}
     />
   );
 
   const UpdatePassengerDetails = async (values: any) => {
-    setIsLoading(true);
+    // setIsLoading(true);
+
     const updatePassenger = new Passenger(
       passengerId,
       values.firstname != '' ? values.firstname.trim() : firstName,
@@ -667,73 +676,87 @@ const ManagePassengerScreen = ({navigation}: any) => {
           </ModalHeader>
           <ModalBody style={{marginBottom: 30, height: '75%'}}>
             <ScrollView>
-              <AddPassengerForm
-                firstNameIsInvalid={!!updateFormik.errors.firstname}
-                firstNameOnChangeText={updateFormik.handleChange('firstname')}
-                firstNameErrorText={updateFormik?.errors?.firstname}
-                firstNameOnBlur={updateFormik.handleBlur('firstname')}
-                firstNameValue={updateFormik.values?.firstname}
-                lastNameIsInvalid={!!updateFormik.errors.lastname}
-                lastNameOnChangeText={updateFormik.handleChange('lastname')}
-                lastNameErrorText={updateFormik?.errors?.lastname}
-                lastNameOnBlur={updateFormik.handleBlur('lastname')}
-                lastNameValue={updateFormik.values?.lastname}
-                ageIsInvalid={!!updateFormik.errors.age}
-                ageOnChangeText={updateFormik.handleChange('age')}
-                ageErrorText={updateFormik?.errors?.age}
-                ageOnBlur={updateFormik.handleBlur('age')}
-                ageValue={updateFormik.values?.age}
-                homeAddressIsInvalid={!!updateFormik.errors.homeAddress}
-                homeAddressOnChangeText={updateFormik.handleChange(
-                  'homeAddress',
-                )}
-                homeAddressErrorText={updateFormik?.errors?.homeAddress}
-                homeAddressOnBlur={updateFormik.handleBlur('homeAddress')}
-                homeAddressValue={updateFormik.values?.homeAddress}
-                destinationAddressIsInvalid={
-                  !!updateFormik.errors.destinationAddress
-                }
-                destinationAddressOnChangeText={updateFormik.handleChange(
-                  'destinationAddress',
-                )}
-                destinationAddressErrorText={
-                  updateFormik?.errors?.destinationAddress
-                }
-                destinationAddressOnBlur={updateFormik.handleBlur(
-                  'destinationAddress',
-                )}
-                destinationAddressValue={
-                  updateFormik.values?.destinationAddress
-                }
-                suburbIsInvalid={!!updateFormik.errors.suburb}
-                suburbOnChangeText={updateFormik.handleChange('suburb')}
-                suburbErrorText={updateFormik?.errors?.suburb}
-                suburbOnBlur={updateFormik.handleBlur('suburb')}
-                suburbValue={updateFormik.values?.suburb}
-                cityIsInvalid={!!updateFormik.errors.city}
-                cityOnChangeText={updateFormik.handleChange('city')}
-                cityErrorText={updateFormik?.errors?.city}
-                cityOnBlur={updateFormik.handleBlur('city')}
-                cityValue={updateFormik.values?.city}
-                provinceIsInvalid={!!updateFormik.errors.province}
-                provinceOnChangeText={updateFormik.handleChange('province')}
-                provinceErrorText={updateFormik?.errors?.province}
-                provinceOnBlur={updateFormik.handleBlur('province')}
-                provinceValue={updateFormik.values?.province}
-                postalCodeIsInvalid={!!updateFormik.errors.postalCode}
-                postalCodeOnChangeText={updateFormik.handleChange('postalCode')}
-                postalCodeErrorText={updateFormik?.errors?.postalCode}
-                postalCodeOnBlur={updateFormik.handleBlur('postalCode')}
-                postalCodeValue={updateFormik.values?.postalCode}
-                submitPassenger={
-                  updateFormik.handleSubmit as (
-                    values:
-                      | GestureResponderEvent
-                      | React.FormEvent<HTMLFormElement>
-                      | undefined,
-                  ) => void
-                }
-              />
+              {IsLoading ? (
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 500,
+                  }}>
+                  <ActivityIndicator size="large" />
+                  <Text>Working</Text>
+                </View>
+              ) : (
+                <AddPassengerForm
+                  firstNameIsInvalid={!!updateFormik.errors.firstname}
+                  firstNameOnChangeText={updateFormik.handleChange('firstname')}
+                  firstNameErrorText={updateFormik?.errors?.firstname}
+                  firstNameOnBlur={updateFormik.handleBlur('firstname')}
+                  firstNameValue={updateFormik.values?.firstname}
+                  lastNameIsInvalid={!!updateFormik.errors.lastname}
+                  lastNameOnChangeText={updateFormik.handleChange('lastname')}
+                  lastNameErrorText={updateFormik?.errors?.lastname}
+                  lastNameOnBlur={updateFormik.handleBlur('lastname')}
+                  lastNameValue={updateFormik.values?.lastname}
+                  ageIsInvalid={!!updateFormik.errors.age}
+                  ageOnChangeText={updateFormik.handleChange('age')}
+                  ageErrorText={updateFormik?.errors?.age}
+                  ageOnBlur={updateFormik.handleBlur('age')}
+                  ageValue={updateFormik.values?.age}
+                  homeAddressIsInvalid={!!updateFormik.errors.homeAddress}
+                  homeAddressOnChangeText={updateFormik.handleChange(
+                    'homeAddress',
+                  )}
+                  homeAddressErrorText={updateFormik?.errors?.homeAddress}
+                  homeAddressOnBlur={updateFormik.handleBlur('homeAddress')}
+                  homeAddressValue={updateFormik.values?.homeAddress}
+                  destinationAddressIsInvalid={
+                    !!updateFormik.errors.destinationAddress
+                  }
+                  destinationAddressOnChangeText={updateFormik.handleChange(
+                    'destinationAddress',
+                  )}
+                  destinationAddressErrorText={
+                    updateFormik?.errors?.destinationAddress
+                  }
+                  destinationAddressOnBlur={updateFormik.handleBlur(
+                    'destinationAddress',
+                  )}
+                  destinationAddressValue={
+                    updateFormik.values?.destinationAddress
+                  }
+                  suburbIsInvalid={!!updateFormik.errors.suburb}
+                  suburbOnChangeText={updateFormik.handleChange('suburb')}
+                  suburbErrorText={updateFormik?.errors?.suburb}
+                  suburbOnBlur={updateFormik.handleBlur('suburb')}
+                  suburbValue={updateFormik.values?.suburb}
+                  cityIsInvalid={!!updateFormik.errors.city}
+                  cityOnChangeText={updateFormik.handleChange('city')}
+                  cityErrorText={updateFormik?.errors?.city}
+                  cityOnBlur={updateFormik.handleBlur('city')}
+                  cityValue={updateFormik.values?.city}
+                  provinceIsInvalid={!!updateFormik.errors.province}
+                  provinceOnChangeText={updateFormik.handleChange('province')}
+                  provinceErrorText={updateFormik?.errors?.province}
+                  provinceOnBlur={updateFormik.handleBlur('province')}
+                  provinceValue={updateFormik.values?.province}
+                  postalCodeIsInvalid={!!updateFormik.errors.postalCode}
+                  postalCodeOnChangeText={updateFormik.handleChange(
+                    'postalCode',
+                  )}
+                  postalCodeErrorText={updateFormik?.errors?.postalCode}
+                  postalCodeOnBlur={updateFormik.handleBlur('postalCode')}
+                  postalCodeValue={updateFormik.values?.postalCode}
+                  submitPassenger={
+                    updateFormik.handleSubmit as (
+                      values:
+                        | GestureResponderEvent
+                        | React.FormEvent<HTMLFormElement>
+                        | undefined,
+                    ) => void
+                  }
+                />
+              )}
             </ScrollView>
           </ModalBody>
         </ModalContent>
@@ -840,6 +863,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
                       if (isDeleted) {
                         showDeletePendingToast();
                       } else {
+                        setShowCard(false);
                         setShowReason(true);
                       }
                     }}
@@ -954,6 +978,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
     validationSchema: updatePassengerSchema,
 
     onSubmit: (values, {resetForm}) => {
+      setIsLoading(true);
       UpdatePassengerDetails(values);
     },
   });
@@ -1076,7 +1101,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
     return false;
   };
 
-  //Contains Upcoming Flatlist for all roles
+  //Contains All Passengers under a business owner
   function FirstRoute() {
     return (
       <View style={ThemeStyles.container}>
@@ -1095,7 +1120,7 @@ const ManagePassengerScreen = ({navigation}: any) => {
     );
   }
 
-  //Contains Past Flatlist for all roles
+  //Contains Pending Passengers for deletion
   function SecondRoute() {
     return (
       <View style={ThemeStyles.container}>
